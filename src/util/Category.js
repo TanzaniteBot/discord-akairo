@@ -1,7 +1,7 @@
 // @ts-check
 "use strict";
 
-const { Collection } = require("discord.js");
+import { Collection } from "discord.js";
 
 /**
  * A group of modules.
@@ -9,7 +9,7 @@ const { Collection } = require("discord.js");
  * @param {Iterable} [iterable] - Entries to set.
  * @extends {Collection}
  */
-class Category extends Collection {
+export default class Category extends Collection {
 	constructor(id, iterable) {
 		super(iterable);
 
@@ -52,5 +52,3 @@ class Category extends Collection {
 		return this.id;
 	}
 }
-
-module.exports = Category;

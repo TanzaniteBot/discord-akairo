@@ -1,7 +1,7 @@
 // @ts-check
 "use strict";
 
-class Util {
+export default class Util {
 	static isPromise(value) {
 		return (
 			value &&
@@ -84,5 +84,3 @@ class Util {
 		return null;
 	}
 }
-
-module.exports = Util;

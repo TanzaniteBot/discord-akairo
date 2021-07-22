@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "ESNext",
 		"target": "esNext",
 		"lib": [
 			"ESNext",
@@ -17,7 +17,8 @@
 		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"noEmit": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"moduleResolution": "Node"
 	},
 	"files": ["./src/index.d.ts"]
 }

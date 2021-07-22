@@ -10,9 +10,8 @@
  * @typedef {import("discord.js").MessageEmbed} MessageEmbed
  * @typedef {import("discord.js").WebhookEditMessageOptions} WebhookEditMessageOptions
  * @typedef {import("discord.js").MessageEmbedOptions} MessageEmbedOptions
- * @typedef {import("discord-api-types/v9").APIMessage} APIMessage
- * @typedef {import("../../struct/commands/CommandHandler")} CommandHandler
- * @typedef {import("../../util/AkairoMessage")} AkairoMessage
+ * @typedef {import("../../struct/commands/CommandHandler").default} CommandHandler
+ * @typedef {import("../../util/AkairoMessage").default} AkairoMessage
  * @typedef {import("../../struct/commands/CommandHandler").ParsedComponentData} ParsedComponentData
  */
 /**
@@ -21,18 +20,14 @@
  * @typedef {import("discord.js").Message & TempMessage} Message
  */
 
-const {
-	Collection,
-	MessagePayload,
-	CommandInteraction
-} = require("discord.js");
+import { Collection, MessagePayload, CommandInteraction } from "discord.js";
 
 /**
  * Command utilities.
  * @param {CommandHandler} handler - The command handler.
  * @param {Message} message - Message that triggered the command.
  */
-class CommandUtil {
+export default class CommandUtil {
 	/**
 	 * @param {CommandHandler} handler - The command handler.
 	 * @param {Message|AkairoMessage} message - The message
@@ -131,7 +126,7 @@ class CommandUtil {
 	/**
 	 * Sends a response or edits an old response if available.
 	 * @param {string | MessagePayload | MessageOptions | InteractionReplyOptions} options - Options to use.
-	 * @returns {Promise<Message|APIMessage>}
+	 * @returns {Promise<Message>}
 	 */
 	// eslint-disable-next-line consistent-return
 	async send(options) {
@@ -190,7 +185,7 @@ class CommandUtil {
 	/**
 	 * Sends a response, overwriting the last response.
 	 * @param {string | MessagePayload | MessageOptions} options - Options to use.
-	 * @returns {Promise<Message | APIMessage>}
+	 * @returns {Promise<Message>}
 	 */
 	async sendNew(options) {
 		if (!(this.message.interaction instanceof CommandInteraction)) {
@@ -210,7 +205,7 @@ class CommandUtil {
 	/**
 	 * Send an inline reply or respond to a slash command.
 	 * @param {string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions} options - Options to use.
-	 * @returns {Promise<Message|APIMessage>}
+	 * @returns {Promise<Message>}
 	 */
 	reply(options) {
 		/** @type {ReplyMessageOptions | InteractionReplyOptions} */
@@ -268,12 +263,10 @@ class CommandUtil {
 	}
 }
 
-module.exports = CommandUtil;
-
 /**
  * Extra properties applied to the Discord.js message object.
  * @typedef {Object} MessageExtensions
  * @prop {?CommandUtil} util - Utilities for command responding.
- * Available on all messages after 'all' inhibitors and built-in inhibitors (bot, client).
+ * Available on all messages after `all" inhibitors and built-in inhibitors (bot, client).
  * Not all properties of the util are available, depending on the input.
  */

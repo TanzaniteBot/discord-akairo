@@ -1,4 +1,7 @@
-const { Command } = require("../../src");
+// @ts-check
+"enable strict";
+
+import { Command } from "../../src";
 
 class ConditionalPromiseCommand extends Command {
 	constructor() {
@@ -14,4 +17,4 @@ class ConditionalPromiseCommand extends Command {
 	}
 }
 
-module.exports = ConditionalPromiseCommand;
+export default ConditionalPromiseCommand;

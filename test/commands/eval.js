@@ -1,3 +1,5 @@
+// @ts-check
+"enable strict";
 const { Command } = require("../..");
 const util = require("util");
 

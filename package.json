@@ -6,6 +6,8 @@
 	"types": "./src/index.d.ts",
 	"author": "1Computer",
 	"license": "MIT",
+	"type": "module",
+	"sourceType": "module",
 	"keywords": [
 		"discord",
 		"discord-js",
@@ -20,11 +22,12 @@
 	"devDependencies": {
 		"@discordjs/voice": "^0.5.0",
 		"@types/node": "^10.14.4",
-		"discord-api-types": "^0.19.0-next.f393ba520d7d6d2aacaca7b3ca5d355fab614f6e",
-		"discord.js": "NotEnoughUpdates/discord.js",
+		"discord-api-types": "^0.19.0",
+		"discord.js": "https://github.com/NotEnoughUpdates/discord.js",
 		"discord.js-docgen": "discordjs/docgen",
-		"eslint": "^7.27.0",
+		"eslint": "^7.31.0",
 		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-import": "^2.23.4",
 		"jsdoc": "^3.6.4",
 		"prettier": "^2.3.0",
 		"typescript": "^3.4.2"

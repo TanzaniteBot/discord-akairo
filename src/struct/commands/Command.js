@@ -6,24 +6,21 @@
  * @typedef {import("./CommandHandler").DefaultArgumentOptions} DefaultArgumentOptions
  * @typedef {import("./CommandHandler").PrefixSupplier} PrefixSupplier
  * @typedef {import("./CommandHandler").IgnoreCheckPredicate} IgnoreCheckPredicate
- * @typedef {import("../../util/AkairoMessage")} AkairoMessage
+ * @typedef {import("../../util/AkairoMessage").default} AkairoMessage
  * @typedef {import("./arguments/ArgumentRunner").ArgumentRunnerState} ArgumentRunnerState
  * @typedef {import("./ContentParser").ContentParserResult} ContentParserResult
- * @typedef {import("./Flag")} Flag
+ * @typedef {import("./Flag").default} Flag
  * @typedef {import("discord.js").PermissionResolvable} PermissionResolvable
  * @typedef {import("discord.js").Snowflake} Snowflake
- */
-/**
- * @typedef {Object} TempMessage
- * @property {import("./CommandUtil")} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("discord.js").ApplicationCommandOptionData} ApplicationCommandOptionData
+ * @typedef {import("./CommandUtil").Message} Message
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoModule = require("../AkairoModule");
-const Argument = require("./arguments/Argument");
-const ArgumentRunner = require("./arguments/ArgumentRunner");
-const ContentParser = require("./ContentParser");
+import AkairoError from "../../util/AkairoError";
+import AkairoModule from "../AkairoModule";
+import Argument from "./arguments/Argument";
+import ArgumentRunner from "./arguments/ArgumentRunner";
+import ContentParser from "./ContentParser";
 
 /**
  * Represents a command.
@@ -31,7 +28,7 @@ const ContentParser = require("./ContentParser");
  * @param {CommandOptions} [options={}] - Options for the command.
  * @extends {AkairoModule}
  */
-class Command extends AkairoModule {
+export default class Command extends AkairoModule {
 	/**
 	 * @param {string} id - Command ID.
 	 * @param {CommandOptions} options - Options for the command.
@@ -247,6 +244,7 @@ class Command extends AkairoModule {
 
 		/**
 		 * Option for using slash command
+		 * @type {ApplicationCommandOptionData[]}
 		 */
 		this.slashOptions = slashOptions;
 
@@ -298,7 +296,7 @@ class Command extends AkairoModule {
 	 * @param {AkairoMessage} message - Message for slash command
 	 * @param {any} args - Slash command options
 	 * @returns {any}
-	 * Disabled cause it wouldnt work with the current design
+	 * Disabled cause it wouldn't work with the current design
 	 */
 	// execSlash() {
 	// 	if (this.slash) {
@@ -336,8 +334,6 @@ class Command extends AkairoModule {
 	 */
 }
 
-module.exports = Command;
-
 /**
  * Options to use for command execution behavior.
  * Also includes properties from AkairoModuleOptions.
@@ -348,7 +344,7 @@ module.exports = Command;
  * @prop {string} [separator] - Custom separator for argument input.
  * @prop {string[]} [flags=[]] - Flags to use when using an ArgumentGenerator.
  * @prop {string[]} [optionFlags=[]] - Option flags to use when using an ArgumentGenerator.
- * @prop {string} [channel] - Restricts channel to either 'guild' or 'dm'.
+ * @prop {string} [channel] - Restricts channel to either 'guild" or "dm".
  * @prop {boolean} [ownerOnly=false] - Whether or not to allow client owner(s) only.
  * @prop {boolean} [superUserOnly=false] - Whether or not to allow client SuperUsers(s) only.
  * @prop {boolean} [typing=false] - Whether or not to type in channel during execution.
@@ -363,11 +359,11 @@ module.exports = Command;
  * The args object will have `match` and `matches` properties.
  * @prop {ExecutionPredicate} [condition] - Whether or not to run on messages that are not directly commands.
  * @prop {BeforeAction} [before] - Function to run before argument parsing and execution.
- * @prop {KeySupplier|string} [lock] - The key type or key generator for the locker. If lock is a string, it's expected one of 'guild', 'channel', or 'user'.
+ * @prop {KeySupplier|string} [lock] - The key type or key generator for the locker. If lock is a string, it's expected one of "guild", "channel", or "user".
  * @prop {Snowflake|Snowflake[]|IgnoreCheckPredicate} [ignoreCooldown] - ID of user(s) to ignore cooldown or a function to ignore.
  * @prop {Snowflake|Snowflake[]|IgnoreCheckPredicate} [ignorePermissions] - ID of user(s) to ignore `userPermissions` checks or a function to ignore.
  * @prop {DefaultArgumentOptions} [argumentDefaults] - The default argument options.
- * @prop {string} [description=''] - Description of the command.
+ * @prop {string} [description=""] - Description of the command.
  */
 
 /**

@@ -1,40 +1,63 @@
 // @ts-check
 "use strict";
 
-module.exports = {
+import AkairoClient from "./struct/AkairoClient";
+import AkairoHandler from "./struct/AkairoHandler";
+import AkairoModule from "./struct/AkairoModule";
+import ClientUtil from "./struct/ClientUtil";
+import Command from "./struct/commands/Command";
+import CommandHandler from "./struct/commands/CommandHandler";
+import CommandUtil from "./struct/commands/CommandUtil";
+import Flag from "./struct/commands/Flag";
+import Argument from "./struct/commands/arguments/Argument";
+import TypeResolver from "./struct/commands/arguments/TypeResolver";
+import Inhibitor from "./struct/inhibitors/Inhibitor";
+import InhibitorHandler from "./struct/inhibitors/InhibitorHandler";
+import Listener from "./struct/listeners/Listener";
+import ListenerHandler from "./struct/listeners/ListenerHandler";
+import Task from "./struct/tasks/Task";
+import TaskHandler from "./struct/tasks/TaskHandler";
+import AkairoError from "./util/AkairoError";
+import AkairoMessage from "./util/AkairoMessage";
+import Category from "./util/Category";
+import * as Constants from "./util/Category";
+import Util from "./util/Util";
+import packagedotjson from "../package.json";
+
+export default {
 	// Core
-	AkairoClient: require("./struct/AkairoClient"),
-	AkairoHandler: require("./struct/AkairoHandler"),
-	AkairoModule: require("./struct/AkairoModule"),
-	ClientUtil: require("./struct/ClientUtil"),
+	AkairoClient,
+	AkairoHandler,
+	AkairoModule,
+	ClientUtil,
 
 	// Commands
-	Command: require("./struct/commands/Command"),
-	CommandHandler: require("./struct/commands/CommandHandler"),
-	CommandUtil: require("./struct/commands/CommandUtil"),
-	Flag: require("./struct/commands/Flag"),
+	Command,
+	CommandHandler,
+	CommandUtil,
+	Flag,
 
 	// Arguments
-	Argument: require("./struct/commands/arguments/Argument"),
-	TypeResolver: require("./struct/commands/arguments/TypeResolver"),
+	Argument,
+	TypeResolver,
 
 	// Inhibitors
-	Inhibitor: require("./struct/inhibitors/Inhibitor"),
-	InhibitorHandler: require("./struct/inhibitors/InhibitorHandler"),
+	Inhibitor,
+	InhibitorHandler,
 
 	// Listeners
-	Listener: require("./struct/listeners/Listener"),
-	ListenerHandler: require("./struct/listeners/ListenerHandler"),
+	Listener,
+	ListenerHandler,
 
 	// Tasks
-	Task: require("./struct/tasks/Task"),
-	TaskHandler: require("./struct/tasks/TaskHandler"),
+	Task,
+	TaskHandler,
 
 	// Utilities
-	AkairoError: require("./util/AkairoError"),
-	AkairoMessage: require("./util/AkairoMessage"),
-	Category: require("./util/Category"),
-	Constants: require("./util/Constants"),
-	Util: require("./util/Util"),
-	version: require("../package.json").version
+	AkairoError,
+	AkairoMessage,
+	Category,
+	Constants,
+	Util,
+	version: packagedotjson.version
 };

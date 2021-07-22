@@ -2,17 +2,17 @@
 "use strict";
 
 /**
- * @typedef {import("../struct/AkairoClient")} AkairoClient
+ * @typedef {import("../struct/AkairoClient").default} AkairoClient
  */
 
-const AkairoError = require("../util/AkairoError");
-const { AkairoHandlerEvents } = require("../util/Constants");
-const AkairoModule = require("./AkairoModule");
-const Category = require("../util/Category");
-const { Collection } = require("discord.js");
-const EventEmitter = require("events");
-const fs = require("fs");
-const path = require("path");
+import AkairoError from "../util/AkairoError";
+import { AkairoHandlerEvents } from "../util/Constants";
+import AkairoModule from "./AkairoModule";
+import Category from "../util/Category";
+import { Collection } from "discord.js";
+import EventEmitter from "events";
+import { readdirSync, statSync } from "fs";
+import { dirname, sep, extname, resolve, join } from "path";
 
 /**
  * Base class for handling modules.
@@ -20,7 +20,7 @@ const path = require("path");
  * @param {AkairoHandlerOptions} options - Options for module loading and handling.
  * @extends {EventEmitter}
  */
-class AkairoHandler extends EventEmitter {
+export default class AkairoHandler extends EventEmitter {
 	/**
 	 * @param {AkairoClient} client - The Akairo client.
 	 * @param {AkairoHandlerOptions} options - Options for module loading and handling.
@@ -99,7 +99,7 @@ class AkairoHandler extends EventEmitter {
 		this.modules.set(mod.id, mod);
 
 		if (mod.categoryID === "default" && this.automateCategories) {
-			const dirs = path.dirname(filepath).split(path.sep);
+			const dirs = dirname(filepath).split(sep);
 			mod.categoryID = dirs[dirs.length - 1];
 		}
 
@@ -132,7 +132,7 @@ class AkairoHandler extends EventEmitter {
 	load(thing, isReload = false) {
 		const isClass = typeof thing === "function";
 		// @ts-expect-error
-		if (!isClass && !this.extensions.has(path.extname(thing))) return undefined;
+		if (!isClass && !this.extensions.has(extname(thing))) return undefined;
 
 		let mod = isClass
 			? thing
@@ -174,7 +174,7 @@ class AkairoHandler extends EventEmitter {
 		// @ts-expect-error
 		const filepaths = this.constructor.readdirRecursive(directory);
 		for (let filepath of filepaths) {
-			filepath = path.resolve(filepath);
+			filepath = resolve(filepath);
 			if (filter(filepath)) this.load(filepath);
 		}
 
@@ -260,12 +260,12 @@ class AkairoHandler extends EventEmitter {
 		const result = [];
 
 		(function read(dir) {
-			const files = fs.readdirSync(dir);
+			const files = readdirSync(dir);
 
 			for (const file of files) {
-				const filepath = path.join(dir, file);
+				const filepath = join(dir, file);
 
-				if (fs.statSync(filepath).isDirectory()) {
+				if (statSync(filepath).isDirectory()) {
 					read(filepath);
 				} else {
 					result.push(filepath);
@@ -276,8 +276,6 @@ class AkairoHandler extends EventEmitter {
 		return result;
 	}
 }
-
-module.exports = AkairoHandler;
 
 /**
  * Emitted when a module is loaded.

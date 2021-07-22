@@ -7,8 +7,8 @@
  * @typedef {import("discord.js").UserResolvable} UserResolvable
  */
 
-const { Client } = require("discord.js");
-const ClientUtil = require("./ClientUtil");
+import { Client } from "discord.js";
+import ClientUtil from "./ClientUtil.js";
 
 /**
  * The Akairo framework client.
@@ -17,7 +17,7 @@ const ClientUtil = require("./ClientUtil");
  * @param {ClientOptions} [clientOptions] - Options for Discord JS client.
  * If not specified, the previous options parameter is used instead.
  */
-class AkairoClient extends Client {
+export default class AkairoClient extends Client {
 	constructor(options = {}, clientOptions) {
 		super(clientOptions || options);
 
@@ -68,11 +68,9 @@ class AkairoClient extends Client {
 	}
 }
 
-module.exports = AkairoClient;
-
 /**
  * Options for the client.
  * @typedef {Object} AkairoOptions
- * @prop {Snowflake|Snowflake[]} [ownerID=''] - Discord ID of the client owner(s).
- * @prop {Snowflake|Snowflake[]} [superUserID=''] - Discord ID of the client superUsers(s).
+ * @prop {Snowflake|Snowflake[]} [ownerID=""] - Discord ID of the client owner(s).
+ * @prop {Snowflake|Snowflake[]} [superUserID=""] - Discord ID of the client superUsers(s).
  */

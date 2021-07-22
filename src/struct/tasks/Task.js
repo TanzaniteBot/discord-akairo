@@ -2,12 +2,12 @@
 "use strict";
 
 /**
- * @typedef {import('../AkairoModule').AkairoModuleOptions} AkairoModuleOptions
- * @typedef {import('./TaskHandler')} TaskHandler
+ * @typedef {import("../AkairoModule").AkairoModuleOptions} AkairoModuleOptions
+ * @typedef {import("./TaskHandler").default} TaskHandler
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoModule = require("../AkairoModule");
+import AkairoError from "../../util/AkairoError";
+import AkairoModule from "../AkairoModule";
 
 /**
  * Represents a task.
@@ -15,7 +15,7 @@ const AkairoModule = require("../AkairoModule");
  * @param {TaskOptions} [options={}] - Options for the listener.
  * @extends {AkairoModule}
  */
-class Task extends AkairoModule {
+export default class Task extends AkairoModule {
 	/**
 	 * @param {string} id - The ID of this task.
 	 * @param {TaskHandler} handler - Options for the task
@@ -75,8 +75,6 @@ class Task extends AkairoModule {
 	 */
 }
 
-module.exports = Task;
-
 /**
  * Options to use for task execution behavior.
  * Also includes properties from {@link AkairoModuleOptions}.
@@ -84,5 +82,5 @@ module.exports = Task;
  * @prop {number} delay The amount of time between the task being executed.
  * @prop {boolean} runOnStart Whether or not the task runs on start.
  * @prop {string} event - Event name to listen to.
- * @prop {string} [type='on'] - Type of listener, either 'on' or 'once'.
+ * @prop {string} [type="on"] - Type of listener, either "on" or "once".
  */

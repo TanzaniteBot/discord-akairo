@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+// @ts-check
+"enable strict";
 
 const { Command, Flag } = require("../..");
 const util = require("util");

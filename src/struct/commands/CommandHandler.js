@@ -8,39 +8,25 @@
  * @typedef {import("discord.js").CommandInteraction} CommandInteraction
  * @typedef {import("discord.js").PartialMessage} PartialMessage
  * @typedef {import("../AkairoHandler").AkairoHandlerOptions} AkairoHandlerOptions
- * @typedef {import("../AkairoClient")} AkairoClient
+ * @typedef {import("../AkairoClient").default} AkairoClient
  * @typedef {import("./arguments/Argument").DefaultArgumentOptions} DefaultArgumentOptions
- * @typedef {import("../inhibitors/InhibitorHandler")} InhibitorHandler
- * @typedef {import("../listeners/ListenerHandler")} ListenerHandler
- * @typedef {import("../AkairoModule")} AkairoModule
- */
-/**
- * @typedef {Object} TempMessage
- * @property {CommandUtil} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("../inhibitors/InhibitorHandler").default} InhibitorHandler
+ * @typedef {import("../listeners/ListenerHandler").default} ListenerHandler
+ * @typedef {import("../AkairoModule").default} AkairoModule
+ * @typedef {import("./CommandUtil").Message} Message
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoHandler = require("../AkairoHandler");
-const {
-	BuiltInReasons,
-	CommandHandlerEvents
-} = require("../../util/Constants");
-const { Collection } = require("discord.js");
-const Command = require("./Command");
-const CommandUtil = require("./CommandUtil");
-const Flag = require("./Flag");
-const {
-	deepAssign,
-	flatMap,
-	intoArray,
-	intoCallable,
-	isPromise,
-	prefixCompare
-	// @ts-expect-error
-} = require("../../util/Util");
-const AkairoMessage = require("../../util/AkairoMessage");
-const TypeResolver = require("./arguments/TypeResolver");
+import AkairoError from "../../util/AkairoError";
+import AkairoHandler from "../AkairoHandler";
+import { BuiltInReasons } from "../../util/Constants";
+import { CommandHandlerEvents } from "../../util/Constants";
+import { Collection } from "discord.js";
+import Command from "./Command";
+import CommandUtil from "./CommandUtil";
+import Flag from "./Flag";
+import Util from "../../util/Util";
+import AkairoMessage from "../../util/AkairoMessage";
+import TypeResolver from "./arguments/TypeResolver";
 
 /**
  * Loads commands and handles messages.
@@ -48,7 +34,7 @@ const TypeResolver = require("./arguments/TypeResolver");
  * @param {CommandHandlerOptions} options - Options.
  * @extends {AkairoHandler}
  */
-class CommandHandler extends AkairoHandler {
+export default class CommandHandler extends AkairoHandler {
 	constructor(
 		client,
 		{
@@ -89,7 +75,7 @@ class CommandHandler extends AkairoHandler {
 			throw new AkairoError(
 				"INVALID_CLASS_TO_HANDLE",
 				classToHandle.name,
-				Command.name
+				Flag.name
 			);
 		}
 
@@ -247,7 +233,7 @@ class CommandHandler extends AkairoHandler {
 		 * Default argument options.
 		 * @type {DefaultArgumentOptions}
 		 */
-		this.argumentDefaults = deepAssign(
+		this.argumentDefaults = Util.deepAssign(
 			{
 				prompt: {
 					start: "",
@@ -444,7 +430,7 @@ class CommandHandler extends AkairoHandler {
 
 			if (newEntry) {
 				this.prefixes = this.prefixes.sort((aVal, bVal, aKey, bKey) =>
-					prefixCompare(aKey, bKey)
+					Util.prefixCompare(aKey, bKey)
 				);
 			}
 		}
@@ -577,7 +563,8 @@ class CommandHandler extends AkairoHandler {
 
 		const message = new AkairoMessage(this.client, interaction, {
 			slash: true,
-			replied: this.autoDefer || command.slashEphemeral
+			replied: this.autoDefer || command.slashEphemeral,
+			command
 		});
 
 		try {
@@ -621,18 +608,22 @@ class CommandHandler extends AkairoHandler {
 				return false;
 			}
 
+
 			const convertedOptions = {};
-			for (const option of interaction.options.values()) {
-				if (option.member) convertedOptions[option.name] = option.member;
-				else if (option.channel) convertedOptions[option.name] = option.channel;
-				else if (option.role) convertedOptions[option.name] = option.role;
-				else convertedOptions[option.name] = option.value;
+			for (const option of command.slashOptions){
+				convertedOptions[option.name] = interaction.options.get(option.name, option.required||false)
 			}
+			// for (const option of interaction.options.values()) {
+			// 	if (option.member) convertedOptions[option.name] = option.member;
+			// 	else if (option.channel) convertedOptions[option.name] = option.channel;
+			// 	else if (option.role) convertedOptions[option.name] = option.role;
+			// 	else convertedOptions[option.name] = option.value;
+			// }
 
 			let key;
 			try {
 				if (command.lock) key = command.lock(message, convertedOptions);
-				if (isPromise(key)) key = await key;
+				if (Util.isPromise(key)) key = await key;
 				if (key) {
 					if (command.locker.has(key)) {
 						key = null;
@@ -698,7 +689,7 @@ class CommandHandler extends AkairoHandler {
 			}
 
 			const before = command.before(message);
-			if (isPromise(before)) await before;
+			if (Util.isPromise(before)) await before;
 
 			const args = await command.parse(message, content);
 			if (Flag.is(args, "cancel")) {
@@ -725,7 +716,7 @@ class CommandHandler extends AkairoHandler {
 
 			if (!ignore) {
 				if (command.lock) key = command.lock(message, args);
-				if (isPromise(key)) key = await key;
+				if (Util.isPromise(key)) key = await key;
 				if (key) {
 					if (command.locker.has(key)) {
 						key = null;
@@ -814,7 +805,7 @@ class CommandHandler extends AkairoHandler {
 						if (await this.runPostTypeInhibitors(message, command)) return;
 						// @ts-expect-error
 						const before = command.before(message);
-						if (isPromise(before)) await before;
+						if (Util.isPromise(before)) await before;
 						// @ts-expect-error
 						await this.runCommand(message, command, { match, matches });
 					} catch (err) {
@@ -848,7 +839,7 @@ class CommandHandler extends AkairoHandler {
 				(async () => {
 					// @ts-expect-error
 					let cond = command.condition(message);
-					if (isPromise(cond)) cond = await cond;
+					if (Util.isPromise(cond)) cond = await cond;
 					if (cond) trueCommands.push(command);
 				})()
 			);
@@ -867,7 +858,7 @@ class CommandHandler extends AkairoHandler {
 					try {
 						if (await this.runPostTypeInhibitors(message, command)) return;
 						const before = command.before(message);
-						if (isPromise(before)) await before;
+						if (Util.isPromise(before)) await before;
 						await this.runCommand(message, command, {});
 					} catch (err) {
 						this.emitError(err, message, command);
@@ -1015,7 +1006,7 @@ class CommandHandler extends AkairoHandler {
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
 				let missing = command.clientPermissions(message);
-				if (isPromise(missing)) missing = await missing;
+				if (Util.isPromise(missing)) missing = await missing;
 
 				if (missing != null) {
 					this.emit(
@@ -1060,7 +1051,7 @@ class CommandHandler extends AkairoHandler {
 			if (!isIgnored) {
 				if (typeof command.userPermissions === "function") {
 					let missing = command.userPermissions(message);
-					if (isPromise(missing)) missing = await missing;
+					if (Util.isPromise(missing)) missing = await missing;
 
 					if (missing != null) {
 						this.emit(
@@ -1187,8 +1178,8 @@ class CommandHandler extends AkairoHandler {
 	 * @returns {Promise<ParsedComponentData>}
 	 */
 	async parseCommand(message) {
-		const allowMention = await intoCallable(this.prefix)(message);
-		let prefixes = intoArray(allowMention);
+		const allowMention = await Util.intoCallable(this.prefix)(message);
+		let prefixes = Util.intoArray(allowMention);
 		if (allowMention) {
 			const mentions = [
 				`<@${this.client.user.id}>`,
@@ -1197,7 +1188,7 @@ class CommandHandler extends AkairoHandler {
 			prefixes = [...mentions, ...prefixes];
 		}
 
-		prefixes.sort(prefixCompare);
+		prefixes.sort(Util.prefixCompare);
 		return this.parseMultiplePrefixes(
 			message,
 			prefixes.map(p => [p, null])
@@ -1216,12 +1207,14 @@ class CommandHandler extends AkairoHandler {
 		}
 
 		const promises = this.prefixes.map(async (cmds, provider) => {
-			const prefixes = intoArray(await intoCallable(provider)(message));
+			const prefixes = Util.intoArray(
+				await Util.intoCallable(provider)(message)
+			);
 			return prefixes.map(p => [p, cmds]);
 		});
 
-		const pairs = flatMap(await Promise.all(promises), x => x);
-		pairs.sort(([a], [b]) => prefixCompare(a, b));
+		const pairs = Util.flatMap(await Promise.all(promises), x => x);
+		pairs.sort(([a], [b]) => Util.prefixCompare(a, b));
 		return this.parseMultiplePrefixes(message, pairs);
 	}
 
@@ -1454,11 +1447,9 @@ class CommandHandler extends AkairoHandler {
 	 */
 }
 
-module.exports = CommandHandler;
-
 /**
  * Emitted when a message is blocked by a pre-message inhibitor.
- * The built-in inhibitors are 'client' and 'bot'.
+ * The built-in inhibitors are "client" and "bot".
  * @event CommandHandler#messageBlocked
  * @param {Message} message - Message sent.
  * @param {string} reason - Reason for the block.
@@ -1479,7 +1470,7 @@ module.exports = CommandHandler;
 
 /**
  * Emitted when a command is blocked by a post-message inhibitor.
- * The built-in inhibitors are 'owner', 'guild', and 'dm'.
+ * The built-in inhibitors are "owner", "guild", and "dm".
  * @event CommandHandler#commandBlocked
  * @param {Message} message - Message sent.
  * @param {Command} command - Command blocked.
@@ -1532,7 +1523,7 @@ module.exports = CommandHandler;
  * @event CommandHandler#missingPermissions
  * @param {Message} message - Message sent.
  * @param {Command} command - Command blocked.
- * @param {string} type - Either 'client' or 'user'.
+ * @param {string} type - Either "client" or "user".
  * @param {any} missing - The missing permissions.
  */
 
@@ -1562,7 +1553,7 @@ module.exports = CommandHandler;
  * @typedef {AkairoHandlerOptions} CommandHandlerOptions
  * @prop {boolean} [blockClient=true] - Whether or not to block self.
  * @prop {boolean} [blockBots=true] - Whether or not to block bots.
- * @prop {string|string[]|PrefixSupplier} [prefix='!'] - Default command prefix(es).
+ * @prop {string|string[]|PrefixSupplier} [prefix="!"] - Default command prefix(es).
  * @prop {boolean|MentionPrefixPredicate} [allowMention=true] - Whether or not to allow mentions to the client user as a prefix.
  * @prop {RegExp} [aliasReplacement] - Regular expression to automatically make command aliases.
  * For example, using `/-/g` would mean that aliases containing `-` would be valid with and without it.

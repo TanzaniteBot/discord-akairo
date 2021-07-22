@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
+// @ts-check
+"enable strict";
 
-const { Command } = require("../..");
+const { Command } = require("../../src/index.js");
 const sleep = require("util").promisify(setTimeout);
 
-class LockCommand extends Command {
+export class LockCommand extends Command {
 	constructor() {
 		super("lock", {
 			aliases: ["lock"],

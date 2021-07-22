@@ -2,26 +2,21 @@
 "use strict";
 
 /**
- * @typedef {import("../Command")} Command
- * @typedef {import("../../AkairoClient")} AkairoClient
- * @typedef {import("../CommandUtil").CommandHandler} CommandHandler
+ * @typedef {import("../Command").default} Command
+ * @typedef {import("../../AkairoClient").default} AkairoClient
+ * @typedef {import("../CommandHandler").default} CommandHandler
+ * @typedef {import("../CommandUtil").default} CommandUtil
+ * @typedef {import("./TypeResolver").default} TypeResolver
  * @typedef {import("discord.js").MessageOptions} MessageOptions
  * @typedef {import("discord.js").MessageEmbed} MessageEmbed
  * @typedef {import("discord.js").MessageAttachment} MessageAttachment
  * @typedef {import("discord.js").MessageAdditions} MessageAdditions
- * @typedef {import("../CommandUtil")} CommandUtil
- * @typedef {import("./TypeResolver")} TypeResolver
- */
-/**
- * @typedef {Object} TempMessage
- * @property {import("../CommandUtil")} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("./../CommandUtil").Message} Message
  */
 
-const { ArgumentMatches, ArgumentTypes } = require("../../../util/Constants");
-const Flag = require("../Flag");
-// @ts-expect-error
-const { choice, intoCallable, isPromise } = require("../../../util/Util");
+import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants";
+import Flag from "../Flag";
+import Util from "../../../util/Util";
 
 /**
  * Represents an argument for a command.
@@ -149,26 +144,26 @@ class Argument {
 	async process(message, phrase) {
 		const commandDefs = this.command.argumentDefaults;
 		const handlerDefs = this.handler.argumentDefaults;
-		const optional = choice(
+		const optional = Util.choice(
 			this.prompt && this.prompt.optional,
 			commandDefs.prompt && commandDefs.prompt.optional,
 			handlerDefs.prompt && handlerDefs.prompt.optional
 		);
 
 		const doOtherwise = async failure => {
-			const otherwise = choice(
+			const otherwise = Util.choice(
 				this.otherwise,
 				commandDefs.otherwise,
 				handlerDefs.otherwise
 			);
 
-			const modifyOtherwise = choice(
+			const modifyOtherwise = Util.choice(
 				this.modifyOtherwise,
 				commandDefs.modifyOtherwise,
 				handlerDefs.modifyOtherwise
 			);
 
-			let text = await intoCallable(otherwise).call(this, message, {
+			let text = await Util.intoCallable(otherwise).call(this, message, {
 				phrase,
 				failure
 			});
@@ -199,7 +194,10 @@ class Argument {
 				return doOtherwise(null);
 			}
 
-			return intoCallable(this.default)(message, { phrase, failure: null });
+			return Util.intoCallable(this.default)(message, {
+				phrase,
+				failure: null
+			});
 		}
 
 		const res = await this.cast(message, phrase);
@@ -214,7 +212,7 @@ class Argument {
 
 			return this.default == null
 				? res
-				: intoCallable(this.default)(message, { phrase, failure: res });
+				: Util.intoCallable(this.default)(message, { phrase, failure: res });
 		}
 
 		return res;
@@ -257,7 +255,7 @@ class Argument {
 			inputPhrase,
 			inputParsed
 		) => {
-			let text = await intoCallable(prompter).call(this, message, {
+			let text = await Util.intoCallable(prompter).call(this, message, {
 				retries: retryCount,
 				infinite: isInfinite,
 				message: inputMessage,
@@ -320,9 +318,7 @@ class Argument {
 					sentStart = await (message.util || message.channel).send(startText);
 					if (message.util && sentStart) {
 						message.util.setEditable(false);
-						// @ts-expect-error
 						message.util.setLastResponse(sentStart);
-						// @ts-expect-error
 						message.util.addMessage(sentStart);
 					}
 				}
@@ -464,7 +460,7 @@ class Argument {
 
 		if (typeof type === "function") {
 			let res = type(message, phrase);
-			if (isPromise(res)) res = await res;
+			if (Util.isPromise(res)) res = await res;
 			return res;
 		}
 
@@ -488,7 +484,7 @@ class Argument {
 
 		if (resolver.type(type)) {
 			let res = resolver.type(type).call(this, message, phrase);
-			if (isPromise(res)) res = await res;
+			if (Util.isPromise(res)) res = await res;
 			return res;
 		}
 
@@ -737,15 +733,15 @@ class Argument {
 	}
 }
 
-module.exports = Argument;
+export default Argument;
 
 /**
  * Options for how an argument parses text.
  * @typedef {Object} ArgumentOptions
  * @prop {string} id - ID of the argument for use in the args object.
  * This does nothing inside an ArgumentGenerator.
- * @prop {ArgumentMatch} [match='phrase'] - Method to match text.
- * @prop {ArgumentType|ArgumentTypeCaster} [type='string'] - Type to cast to.
+ * @prop {ArgumentMatch} [match="phrase"] - Method to match text.
+ * @prop {ArgumentType|ArgumentTypeCaster} [type="string"] - Type to cast to.
  * @prop {string|string[]} [flag] - The string(s) to use as the flag for flag or option match.
  * @prop {boolean} [multipleFlags=false] - Whether or not to have flags process multiple inputs.
  * For option flags, this works like the separate match; the limit option will also work here.
@@ -786,8 +782,8 @@ module.exports = Argument;
  * @typedef {Object} ArgumentPromptOptions
  * @prop {number} [retries=1] - Amount of retries allowed.
  * @prop {number} [time=30000] - Time to wait for input.
- * @prop {string} [cancelWord='cancel'] - Word to use for cancelling the command.
- * @prop {string} [stopWord='stop'] - Word to use for ending infinite prompts.
+ * @prop {string} [cancelWord="cancel"] - Word to use for cancelling the command.
+ * @prop {string} [stopWord="stop"] - Word to use for ending infinite prompts.
  * @prop {boolean} [optional=false] - Prompts only when argument is provided but was not of the right type.
  * @prop {boolean} [infinite=false] - Prompts forever until the stop word, cancel word, time limit, or retry limit.
  * Note that the retry count resets back to one on each valid entry.
@@ -849,7 +845,7 @@ module.exports = Argument;
  * - `listener` matches the ID of a listener.
  *
  * Possible Discord-related types.
- * These types can be plural (add an 's' to the end) and a collection of matching objects will be used.
+ * These types can be plural (add an "s" to the end) and a collection of matching objects will be used.
  * - `user` tries to resolve to a user.
  * - `member` tries to resolve to a member.
  * - `relevant` tries to resolve to a relevant user, works in both guilds and DMs.

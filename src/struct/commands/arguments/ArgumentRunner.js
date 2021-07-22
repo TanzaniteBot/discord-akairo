@@ -2,23 +2,19 @@
 "use strict";
 
 /**
- * @typedef {import("../Command")} Command
+ * @typedef {import("../Command").default} Command
  * @typedef {import("../ContentParser").ContentParserResult} ContentParserResult
  * @typedef {import("../CommandUtil").CommandHandler} CommandHandler
  * @typedef {import("../Command").ArgumentGenerator} ArgumentGenerator
- * @typedef {import("../../AkairoClient")} AkairoClient
+ * @typedef {import("../../AkairoClient").default} AkairoClient
  * @typedef {import("./Argument").ArgumentOptions} ArgumentOptions
- */
-/**
- * @typedef {Object} TempMessage
- * @property {import("../CommandUtil")} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("./../CommandUtil").Message} Message
  */
 
-const AkairoError = require("../../../util/AkairoError");
-const Argument = require("./Argument");
-const { ArgumentMatches } = require("../../../util/Constants");
-const Flag = require("../Flag");
+import AkairoError from "../../../util/AkairoError.js";
+import Argument from "./Argument.js";
+import { ArgumentMatches } from "../../../util/Constants.js";
+import Flag from "../Flag.js";
 
 /**
  * Runs arguments.
@@ -416,7 +412,7 @@ class ArgumentRunner {
 	}
 }
 
-module.exports = ArgumentRunner;
+export default ArgumentRunner;
 
 /**
  * State for the argument runner.

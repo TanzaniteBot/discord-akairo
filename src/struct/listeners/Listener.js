@@ -2,13 +2,13 @@
 "use strict";
 
 /**
- * @typedef {import('../AkairoModule').AkairoModuleOptions} AkairoModuleOptions
- * @typedef {import('./ListenerHandler').EventEmitter} EventEmitter
- * @typedef {import('./ListenerHandler')} ListenerHandler
+ * @typedef {import("../AkairoModule").AkairoModuleOptions} AkairoModuleOptions
+ * @typedef {import("./ListenerHandler").default} ListenerHandler
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoModule = require("../AkairoModule");
+import { EventEmitter } from "events";
+import AkairoError from "../../util/AkairoError";
+import AkairoModule from "../AkairoModule";
 
 /**
  * Represents a listener.
@@ -16,7 +16,7 @@ const AkairoModule = require("../AkairoModule");
  * @param {ListenerOptions} [options={}] - Options for the listener.
  * @extends {AkairoModule}
  */
-class Listener extends AkairoModule {
+export default class Listener extends AkairoModule {
 	/**
 	 * @param {string} id - The ID of this listener.
 	 * @param {ListenerHandler} handler - Options for the listener
@@ -82,7 +82,6 @@ class Listener extends AkairoModule {
 	 */
 }
 
-module.exports = Listener;
 
 /**
  * Options to use for listener execution behavior.
@@ -90,5 +89,5 @@ module.exports = Listener;
  * @typedef {AkairoModuleOptions} ListenerOptions
  * @prop {string|EventEmitter} emitter - The event emitter, either a key from `ListenerHandler#emitters` or an EventEmitter.
  * @prop {string} event - Event name to listen to.
- * @prop {string} [type='on'] - Type of listener, either 'on' or 'once'.
+ * @prop {string} [type="on"] - Type of listener, either "on" or "once".
  */

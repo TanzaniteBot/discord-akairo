@@ -2,17 +2,16 @@
 "use strict";
 
 /**
- * @typedef {import("../AkairoClient")} AkairoClient
+ * @typedef {import("../AkairoClient").default} AkairoClient
  * @typedef {import("../AkairoHandler").AkairoHandlerOptions} AkairoHandlerOptions
- * @typedef {import("../AkairoHandler")} EventEmitter
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoHandler = require("../AkairoHandler");
-const { Collection } = require("discord.js");
-// @ts-expect-error
-const { isEventEmitter } = require("../../util/Util");
-const Listener = require("./Listener");
+import AkairoError from "../../util/AkairoError";
+import AkairoHandler from "../AkairoHandler";
+import { Collection } from "discord.js";
+import Util from "../../util/Util";
+import Listener from "./Listener";
+import EventEmitter from "events";
 
 /**
  * Loads listeners and registers them with EventEmitters.
@@ -20,7 +19,7 @@ const Listener = require("./Listener");
  * @param {AkairoHandlerOptions} options - Options.
  * @extends {AkairoHandler}
  */
-class ListenerHandler extends AkairoHandler {
+export default class ListenerHandler extends AkairoHandler {
 	/**
 	 * @param {AkairoClient} client - The Akairo client.
 	 * @param {AkairoHandlerOptions} options - Options.
@@ -58,11 +57,10 @@ class ListenerHandler extends AkairoHandler {
 
 		/**
 		 * EventEmitters for use, mapped by name to EventEmitter.
-		 * By default, 'client' is set to the given client.
+		 * By default, "client" is set to the given client.
 		 * @type {Collection<string, EventEmitter>}
 		 */
 		this.emitters = new Collection();
-		// @ts-expect-error
 		this.emitters.set("client", this.client);
 
 		/**
@@ -118,11 +116,11 @@ class ListenerHandler extends AkairoHandler {
 		 * @type {AkairoHandler}
 		 */
 		// @ts-expect-error
-		const emitter = isEventEmitter(listener.emitter)
+		const emitter = Util.isEventEmitter(listener.emitter)
 			? listener.emitter
 			: // @ts-expect-error
 			  this.emitters.get(listener.emitter);
-		if (!isEventEmitter(emitter))
+		if (!Util.isEventEmitter(emitter))
 			throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		if (listener.type === "once") {
@@ -152,11 +150,11 @@ class ListenerHandler extends AkairoHandler {
 		 * @type {AkairoHandler}
 		 */
 		// @ts-expect-error
-		const emitter = isEventEmitter(listener.emitter)
+		const emitter = Util.isEventEmitter(listener.emitter)
 			? listener.emitter
 			: // @ts-expect-error
 			  this.emitters.get(listener.emitter);
-		if (!isEventEmitter(emitter))
+		if (!Util.isEventEmitter(emitter))
 			throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		emitter.removeListener(listener.event, listener.exec);
@@ -171,7 +169,7 @@ class ListenerHandler extends AkairoHandler {
 	 */
 	setEmitters(emitters) {
 		for (const [key, value] of Object.entries(emitters)) {
-			if (!isEventEmitter(value))
+			if (!Util.isEventEmitter(value))
 				throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
 			this.emitters.set(key, value);
 		}
@@ -227,8 +225,6 @@ class ListenerHandler extends AkairoHandler {
 	 * @returns {ListenerHandler}
 	 */
 }
-
-module.exports = ListenerHandler;
 
 /**
  * Emitted when a listener is loaded.

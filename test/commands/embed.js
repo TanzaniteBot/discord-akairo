@@ -1,3 +1,5 @@
+// @ts-check
+"enable strict";
 const { Command } = require("../..");
 
 class EmbedCommand extends Command {

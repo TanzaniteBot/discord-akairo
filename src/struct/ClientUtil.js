@@ -2,7 +2,7 @@
 "use strict";
 
 /**
- * @typedef {import("./AkairoClient")} AkairoClient
+ * @typedef {import("./AkairoClient").default} AkairoClient
  * @typedef {import("discord.js").Snowflake} Snowflake
  * @typedef {import("discord.js").User} User
  * @typedef {import("discord.js").GuildMember} GuildMember
@@ -16,18 +16,18 @@
  * @typedef {import("stream")} Stream
  */
 
-const {
+import {
 	Collection,
 	MessageAttachment,
 	MessageEmbed,
 	Permissions
-} = require("discord.js");
+} from "discord.js";
 
 /**
  * Client utilities to help with common tasks.
  * @param {AkairoClient} client - The client.
  */
-class ClientUtil {
+export default class ClientUtil {
 	constructor(client) {
 		/**
 		 * The Akairo client.
@@ -486,5 +486,3 @@ class ClientUtil {
 		return new Collection(iterable);
 	}
 }
-
-module.exports = ClientUtil;

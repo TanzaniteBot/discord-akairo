@@ -2,9 +2,7 @@
 "use strict";
 
 /**
- * @typedef {Object} TempMessage
- * @property {import("./CommandUtil")} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("./CommandUtil").Message} Message
  */
 
 /**
@@ -12,7 +10,7 @@
  * @param {string} type - Type of flag.
  * @param {any} [data={}] - Extra data.
  */
-class Flag {
+export default class Flag {
 	constructor(type, data = {}) {
 		this.type = type;
 		Object.assign(this, data);
@@ -66,5 +64,3 @@ class Flag {
 		return value instanceof Flag && value.type === type;
 	}
 }
-
-module.exports = Flag;

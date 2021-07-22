@@ -5,28 +5,24 @@
  * @typedef {import("discord.js").Collection} Collection
  * @typedef {import("../ClientUtil").AkairoClient} AkairoClient
  * @typedef {import("../AkairoHandler").AkairoHandlerOptions} AkairoHandlerOptions
- * @typedef {import("../commands/Command")} Command
- * @typedef {import("../../util/AkairoMessage")} AkairoMessage
- */
-/**
- * @typedef {Object} TempMessage
- * @property {import("../commands/CommandUtil")} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("../commands/Command").default} Command
+ * @typedef {import("../../util/AkairoMessage").default} AkairoMessage
+ * @typedef {import("../commands/CommandUtil").Message} Message
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoHandler = require("../AkairoHandler");
-const Inhibitor = require("./Inhibitor");
-// @ts-expect-error
-const { isPromise } = require("../../util/Util");
+import AkairoError from "../../util/AkairoError";
+import AkairoHandler from "../AkairoHandler";
+import Inhibitor from "./Inhibitor";
+import Util from "../../util/Util";
 
+const name = Inhibitor.name
 /**
  * Loads inhibitors and checks messages.
  * @param {AkairoClient} client - The Akairo client.
  * @param {AkairoHandlerOptions} options - Options.
  * @extends {AkairoHandler}
  */
-class InhibitorHandler extends AkairoHandler {
+export default class InhibitorHandler extends AkairoHandler {
 	/**
 	 * @param {AkairoClient} client - The Akairo client.
 	 * @param {AkairoHandlerOptions} options - Options.
@@ -50,7 +46,7 @@ class InhibitorHandler extends AkairoHandler {
 			throw new AkairoError(
 				"INVALID_CLASS_TO_HANDLE",
 				classToHandle.name,
-				Inhibitor.name
+				name
 			);
 		}
 
@@ -78,7 +74,7 @@ class InhibitorHandler extends AkairoHandler {
 	/**
 	 * Tests inhibitors against the message.
 	 * Returns the reason if blocked.
-	 * @param {string} type - Type of inhibitor, 'all', 'pre', or 'post'.
+	 * @param {string} type - Type of inhibitor, "all", "pre", or "post".
 	 * @param {Message|AkairoMessage} message - Message to test.
 	 * @param {Command} [command] - Command to use.
 	 * @returns {Promise<string|void>}
@@ -97,7 +93,7 @@ class InhibitorHandler extends AkairoHandler {
 				(async () => {
 					// @ts-expect-error
 					let inhibited = inhibitor.exec(message, command);
-					if (isPromise(inhibited)) inhibited = await inhibited;
+					if (Util.isPromise(inhibited)) inhibited = await inhibited;
 					if (inhibited) return inhibitor;
 					return null;
 				})()
@@ -181,7 +177,6 @@ class InhibitorHandler extends AkairoHandler {
 	 */
 }
 
-module.exports = InhibitorHandler;
 
 /**
  * Emitted when an inhibitor is loaded.

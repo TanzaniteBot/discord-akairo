@@ -1,6 +1,8 @@
 // @ts-check
 "use strict";
 
+import Command from "../struct/commands/Command";
+
 /**
  * @typedef {import("discord.js").InteractionReplyOptions} InteractionReplyOptions
  * @typedef {import("discord.js").CommandInteraction} CommandInteraction
@@ -12,17 +14,13 @@
  * @typedef {import("discord.js").ThreadChannel} ThreadChannel
  * @typedef {import("discord.js").GuildMember} GuildMember
  * @typedef {import("discord.js").Guild} Guild
- * @typedef {import("discord-api-types").APIMessage} APIMessage
+ * @typedef {import("discord-api-types/v8").APIMessage} APIMessage
  * @typedef {import("discord.js").Snowflake} Snowflake
  * @typedef {import("discord.js").MessagePayload} MessagePayload
- * @typedef {import("discord-api-types/v8").APIInteractionGuildMember} APIInteractionGuildMember
- * @typedef {import("../struct/AkairoClient")} AkairoClient
- * @typedef {import("../struct/commands/CommandUtil")} CommandUtil
- */
-/**
- * @typedef {Object} TempMessage
- * @property {CommandUtil} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("discord-api-types/v9").APIInteractionGuildMember} APIInteractionGuildMember
+ * @typedef {import("../struct/AkairoClient").default} AkairoClient
+ * @typedef {import("../struct/commands/CommandUtil").default} CommandUtil
+ * @typedef {import("../struct/commands/CommandUtil").Message} Message
  */
 
 /**
@@ -31,14 +29,14 @@
  * @param {CommandInteraction} interaction - CommandInteraction
  * @param {{slash: boolean, replied: boolean}} additionalInfo - Other information
  */
-class AkairoMessage {
+export default class AkairoMessage {
 	/**
 	 * A command interaction represented as a message.
 	 * @param {AkairoClient} client - AkairoClient
 	 * @param {CommandInteraction} interaction - CommandInteraction
-	 * @param {{slash: boolean, replied: boolean}} additionalInfo - Other information
+	 * @param {{slash: boolean, replied: boolean, command: Command}} additionalInfo - Other information
 	 */
-	constructor(client, interaction, { slash, replied }) {
+	constructor(client, interaction, { slash, replied, command }) {
 		/**
 		 * The author of the interaction.
 		 * @type {User}
@@ -112,16 +110,8 @@ class AkairoMessage {
 		 */
 		// @ts-expect-error
 		this.util = { parsed: { slash } };
-		for (const option of interaction.options.values()) {
-			if (option.member) {
-				this.content += ` ${option.name}: ${option.member}`;
-			} else if (option.channel) {
-				this.content += ` ${option.name}: ${option.channel}`;
-			} else if (option.role) {
-				this.content += ` ${option.name}: ${option.role}`;
-			} else {
-				this.content += ` ${option.name}: ${option.value}`;
-			}
+		for (const option of command.slashOptions){
+			this.content += ` ${option.name}: ${interaction.options.get(option.name, option.required||false)}`;
 		}
 	}
 
@@ -142,4 +132,3 @@ class AkairoMessage {
 		return this.interaction.deleteReply();
 	}
 }
-module.exports = AkairoMessage;

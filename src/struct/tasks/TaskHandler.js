@@ -2,13 +2,13 @@
 "use strict";
 
 /**
- * @typedef {import("../AkairoClient")} AkairoClient
+ * @typedef {import("../AkairoClient").default} AkairoClient
  * @typedef {import("../AkairoHandler").AkairoHandlerOptions} AkairoHandlerOptions
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoHandler = require("../AkairoHandler");
-const Task = require("./Task");
+import AkairoError from "../../util/AkairoError.js";
+import AkairoHandler from "../AkairoHandler.js";
+import Task from "./Task.js";
 
 /**
  * Loads tasks.
@@ -16,7 +16,7 @@ const Task = require("./Task");
  * @param {AkairoHandlerOptions} options - Options.
  * @extends {AkairoHandler}
  */
-class TaskHandler extends AkairoHandler {
+export default class TaskHandler extends AkairoHandler {
 	/**
 	 * @param {AkairoClient} client - The Akairo client.
 	 * @param {AkairoHandlerOptions} options - Options.
@@ -35,7 +35,7 @@ class TaskHandler extends AkairoHandler {
 			throw new AkairoError(
 				"INVALID_CLASS_TO_HANDLE",
 				classToHandle.name,
-				Task.name
+				name
 			);
 		}
 
@@ -62,4 +62,3 @@ class TaskHandler extends AkairoHandler {
 		});
 	}
 }
-module.exports = TaskHandler;

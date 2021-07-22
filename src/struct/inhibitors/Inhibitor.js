@@ -7,12 +7,12 @@
  */
 /**
  * @typedef {Object} TempMessage
- * @property {import("../commands/CommandUtil")} [util] - command util
+ * @property {import("../commands/CommandUtil").default} [util] - command util
  * @typedef {import("discord.js").Message & TempMessage} Message
  */
 
-const AkairoError = require("../../util/AkairoError");
-const AkairoModule = require("../AkairoModule");
+import AkairoError from "../../util/AkairoError";
+import AkairoModule from "../AkairoModule";
 
 /**
  * Represents an inhibitor.
@@ -20,7 +20,7 @@ const AkairoModule = require("../AkairoModule");
  * @param {InhibitorOptions} [options={reason = "", type = "post",priority = 0 }] - Options for the inhibitor.
  * @extends {AkairoModule}
  */
-class Inhibitor extends AkairoModule {
+ export default class Inhibitor extends AkairoModule {
 	/**
 	 * @param {string} id - Inhibitor ID.
 	 * @param {InhibitorOptions} [options={reason = "", type = "post",priority = 0}] - Options for the inhibitor.
@@ -89,14 +89,13 @@ class Inhibitor extends AkairoModule {
 	 */
 }
 
-module.exports = Inhibitor;
 
 /**
  * Options to use for inhibitor execution behavior.
  * Also includes properties from AkairoModuleOptions.
  * @typedef {AkairoModuleOptions}  InhibitorOptions
- * @prop {string} [reason=''] - Reason emitted when command or message is blocked.
- * @prop {string} [type='post'] - Can be 'all' to run on all messages, 'pre' to run on messages not blocked by the built-in inhibitors, or 'post' to run on messages that are commands.
+ * @prop {string} [reason=""] - Reason emitted when command or message is blocked.
+ * @prop {string} [type="post"] - Can be "all" to run on all messages, "pre" to run on messages not blocked by the built-in inhibitors, or "post" to run on messages that are commands.
  * @prop {number} [priority=0] - Priority for the inhibitor for when more than one inhibitors block a message.
  * The inhibitor with the highest priority is the one that is used for the block reason.
  */

@@ -2,10 +2,10 @@
 "use strict";
 
 /**
- * @typedef {import('./arguments/Argument').ArgumentOptions} ArgumentOptions
+ * @typedef {import("./arguments/Argument").ArgumentOptions} ArgumentOptions
  */
 
-const { ArgumentMatches } = require("../../util/Constants");
+import { ArgumentMatches } from "../../util/Constants.js";
 
 /*
  * Grammar:
@@ -263,9 +263,9 @@ class Parser {
 		this.separated = separated;
 		this.position = 0;
 		/*
-		 * Phrases are `{ type: 'Phrase', value, raw }`.
-		 * Flags are `{ type: 'Flag', key, raw }`.
-		 * Option flags are `{ type: 'OptionFlag', key, value, raw }`.
+		 * Phrases are `{ type: "Phrase", value, raw }`.
+		 * Flags are `{ type: "Flag", key, raw }`.
+		 * Option flags are `{ type: "OptionFlag", key, value, raw }`.
 		 * The `all` property is partitioned into `phrases`, `flags`, and `optionFlags`.
 		 */
 		this.results = {
@@ -350,7 +350,7 @@ class Parser {
 			return parsed;
 		}
 
-		// Otherwise, `this.lookahead('OptionFlagWord')` should be true.
+		// Otherwise, `this.lookahead("OptionFlagWord")` should be true.
 		const flag = this.match("OptionFlagWord");
 		const parsed = {
 			type: "OptionFlag",
@@ -454,7 +454,7 @@ class Parser {
  * @param {ContentParserOptions} options - Options.
  * @private
  */
-class ContentParser {
+export default class ContentParser {
 	constructor({
 		flagWords = [],
 		optionFlagWords = [],
@@ -520,8 +520,6 @@ class ContentParser {
 	}
 }
 
-module.exports = ContentParser;
-
 /**
  * Options for the content parser.
  * @typedef {Object} ContentParserOptions
@@ -552,8 +550,8 @@ module.exports = ContentParser;
 /**
  * A single phrase or flag.
  * @typedef {Object} StringData
- * @prop {string} type - One of 'Phrase', 'Flag', 'OptionFlag'.
+ * @prop {string} type - One of "Phrase", "Flag", "OptionFlag".
  * @prop {string} raw - The raw string with whitespace and/or separator.
- * @prop {?string} key - The key of a 'Flag' or 'OptionFlag'.
- * @prop {?string} value - The value of a 'Phrase' or 'OptionFlag'.
+ * @prop {?string} key - The key of a "Flag" or "OptionFlag".
+ * @prop {?string} value - The value of a "Phrase" or "OptionFlag".
  */

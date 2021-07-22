@@ -3,24 +3,20 @@
 
 /**
  * @typedef {import("../CommandUtil").CommandHandler} CommandHandler
- * @typedef {import("../../AkairoClient")} AkairoClient
+ * @typedef {import("../../AkairoClient").default} AkairoClient
  * @typedef {import("./Argument").ArgumentTypeCaster} ArgumentTypeCaster
- * @typedef {import("../../listeners/ListenerHandler")} ListenerHandler
- * @typedef {import("../../inhibitors/InhibitorHandler")} InhibitorHandler
- * @typedef {import("../CommandUtil")} CommandUtil
+ * @typedef {import("../../listeners/ListenerHandler").default} ListenerHandler
+ * @typedef {import("../../inhibitors/InhibitorHandler").default} InhibitorHandler
+ * @typedef {import("../CommandUtil").default} CommandUtil
  * @typedef {import("discord.js").User} User
  * @typedef {import("discord.js").GuildMember} GuildMember
  * @typedef {import("discord.js").Snowflake} Snowflake
- */
-/**
- * @typedef {Object} TempMessage
- * @property {import("../CommandUtil")} [util] - command util
- * @typedef {import("discord.js").Message & TempMessage} Message
+ * @typedef {import("./../CommandUtil").Message} Message
  */
 
-const { ArgumentTypes } = require("../../../util/Constants");
-const { Collection } = require("discord.js");
-const { URL } = require("url");
+import { ArgumentTypes } from "../../../util/Constants";
+import { Collection } from "discord.js";
+import { URL } from "url";
 
 /**
  * Type resolver for command arguments.
@@ -709,4 +705,4 @@ class TypeResolver {
 	}
 }
 
-module.exports = TypeResolver;
+export default TypeResolver;

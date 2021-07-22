@@ -2,9 +2,9 @@
 "use strict";
 
 /**
- * @typedef {import("./AkairoHandler")} AkairoHandler
- * @typedef {import("../util/Category")} Category
- * @typedef {import("./AkairoClient")} AkairoClient
+ * @typedef {import("./AkairoHandler").default} AkairoHandler
+ * @typedef {import("../util/Category").default} Category
+ * @typedef {import("./AkairoClient").default} AkairoClient
  */
 
 /**
@@ -12,7 +12,11 @@
  * @param {string} id - ID of module.
  * @param {AkairoModuleOptions} [options={}] - Options.
  */
-class AkairoModule {
+export default class AkairoModule {
+	/**
+	 * @param {string} id
+	 * @param {AkairoModuleOptions} [options={}] - Options.
+	 */
 	constructor(id, { category = "default" } = {}) {
 		/**
 		 * ID of the module.
@@ -76,10 +80,8 @@ class AkairoModule {
 	}
 }
 
-module.exports = AkairoModule;
-
 /**
  * Options for module.
  * @typedef {Object} AkairoModuleOptions
- * @prop {string} [category='default'] - Category ID for organization purposes.
+ * @prop {string} [category="default"] - Category ID for organization purposes.
  */

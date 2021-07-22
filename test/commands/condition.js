@@ -1,3 +1,6 @@
+// @ts-check
+"enable strict";
+// @ts-ignore
 const { Command } = require("../../src");
 
 class ConditionalCommand extends Command {
