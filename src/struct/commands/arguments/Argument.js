@@ -14,9 +14,9 @@
  * @typedef {import("./../CommandUtil").Message} Message
  */
 
-import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants";
-import Flag from "../Flag";
-import Util from "../../../util/Util";
+import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
+import Flag from "../Flag.js";
+import Util from "../../../util/Util.js";
 
 /**
  * Represents an argument for a command.

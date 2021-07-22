@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
-const { Listener } = require("../..");
+import { Listener } from "../../src/index.js";
 
-class MessageListener extends Listener {
+export default class MessageListener extends Listener {
 	constructor() {
 		super("message", {
 			emitter: "client",
@@ -15,5 +15,3 @@ class MessageListener extends Listener {
 		console.log(msg.content);
 	}
 }
-
-module.exports = MessageListener;

@@ -4,14 +4,14 @@
 /**
  * @typedef {import("../AkairoClient").default} AkairoClient
  * @typedef {import("../AkairoHandler").AkairoHandlerOptions} AkairoHandlerOptions
+ * @typedef {import("events")} EventEmitter
  */
 
-import AkairoError from "../../util/AkairoError";
-import AkairoHandler from "../AkairoHandler";
-import { Collection } from "discord.js";
-import Util from "../../util/Util";
-import Listener from "./Listener";
-import EventEmitter from "events";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoHandler from "../AkairoHandler.js";
+const { Collection } =await import("discord.js")
+import Util from "../../util/Util.js";
+import Listener from "./Listener.js";
 
 /**
  * Loads listeners and registers them with EventEmitters.

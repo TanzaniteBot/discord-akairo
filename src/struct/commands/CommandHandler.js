@@ -16,17 +16,16 @@
  * @typedef {import("./CommandUtil").Message} Message
  */
 
-import AkairoError from "../../util/AkairoError";
-import AkairoHandler from "../AkairoHandler";
-import { BuiltInReasons } from "../../util/Constants";
-import { CommandHandlerEvents } from "../../util/Constants";
-import { Collection } from "discord.js";
-import Command from "./Command";
-import CommandUtil from "./CommandUtil";
-import Flag from "./Flag";
-import Util from "../../util/Util";
-import AkairoMessage from "../../util/AkairoMessage";
-import TypeResolver from "./arguments/TypeResolver";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoHandler from "../AkairoHandler.js";
+import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
+const {Collection } = await import("discord.js")
+import Command from "./Command.js";
+import CommandUtil from "./CommandUtil.js";
+import Flag from "./Flag.js";
+import Util from "../../util/Util.js";
+import AkairoMessage from "../../util/AkairoMessage.js";
+import TypeResolver from "./arguments/TypeResolver.js";
 
 /**
  * Loads commands and handles messages.
@@ -608,17 +607,13 @@ export default class CommandHandler extends AkairoHandler {
 				return false;
 			}
 
-
 			const convertedOptions = {};
-			for (const option of command.slashOptions){
-				convertedOptions[option.name] = interaction.options.get(option.name, option.required||false)
+			for (const option of command.slashOptions) {
+				convertedOptions[option.name] = interaction.options.get(
+					option.name,
+					option.required || false
+				);
 			}
-			// for (const option of interaction.options.values()) {
-			// 	if (option.member) convertedOptions[option.name] = option.member;
-			// 	else if (option.channel) convertedOptions[option.name] = option.channel;
-			// 	else if (option.role) convertedOptions[option.name] = option.role;
-			// 	else convertedOptions[option.name] = option.value;
-			// }
 
 			let key;
 			try {

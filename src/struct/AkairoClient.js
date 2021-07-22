@@ -7,7 +7,7 @@
  * @typedef {import("discord.js").UserResolvable} UserResolvable
  */
 
-import { Client } from "discord.js";
+const { Client } = await import("discord.js")
 import ClientUtil from "./ClientUtil.js";
 
 /**

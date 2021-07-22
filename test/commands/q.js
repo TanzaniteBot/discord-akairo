@@ -1,8 +1,10 @@
+// @ts-check
+"enable strict";
 /* eslint-disable no-console */
 
-const { Command } = require("../..");
+import { Command } from "../../src/index.js";
 
-class QCommand extends Command {
+export default class QCommand extends Command {
 	constructor() {
 		super("q", {
 			aliases: ["q"]
@@ -14,5 +16,3 @@ class QCommand extends Command {
 		return this.handler.handleDirectCommand(message, "", command);
 	}
 }
-
-module.exports = QCommand;

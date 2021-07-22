@@ -1,7 +1,7 @@
 // @ts-check
 "use strict";
 
-import { Collection } from "discord.js";
+const { Collection } = await import("discord.js")
 
 /**
  * A group of modules.

@@ -10,6 +10,8 @@ import AkairoError from "../../util/AkairoError.js";
 import AkairoHandler from "../AkairoHandler.js";
 import Task from "./Task.js";
 
+const name = Task.name;
+
 /**
  * Loads tasks.
  * @param {AkairoClient} client - The Akairo client.

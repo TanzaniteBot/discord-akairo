@@ -1,4 +1,4 @@
-const TestClient = require("./struct/TestClient");
+import TestClient from "./struct/TestClient.js";
 const client = new TestClient();
 
 const { token } = require("./auth.json");

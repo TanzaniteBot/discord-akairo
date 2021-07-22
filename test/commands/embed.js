@@ -1,8 +1,8 @@
 // @ts-check
 "enable strict";
-const { Command } = require("../..");
+import { Command } from "../../src/index.js";
 
-class EmbedCommand extends Command {
+export default class EmbedCommand extends Command {
 	constructor() {
 		super("embed", {
 			aliases: ["embed"],
@@ -39,5 +39,3 @@ class EmbedCommand extends Command {
 		});
 	}
 }
-
-module.exports = EmbedCommand;

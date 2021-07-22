@@ -2,10 +2,10 @@
 // @ts-check
 "enable strict";
 
-const { Command, Flag } = require("../..");
-const util = require("util");
+import { Command, Flag } from "../../src/index.js";
+import { inspect } from "util";
 
-class FCommand extends Command {
+export default class FCommand extends Command {
 	constructor() {
 		super("f", {
 			aliases: ["f"],
@@ -29,8 +29,6 @@ class FCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = FCommand;

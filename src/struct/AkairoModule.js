@@ -14,7 +14,7 @@
  */
 export default class AkairoModule {
 	/**
-	 * @param {string} id
+	 * @param {string} id - ID of module.
 	 * @param {AkairoModuleOptions} [options={}] - Options.
 	 */
 	constructor(id, { category = "default" } = {}) {

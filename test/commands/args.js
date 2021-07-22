@@ -2,11 +2,10 @@
 // @ts-check
 "enable strict";
 
-// @ts-ignore
-const { Command } = require("../..");
-const util = require("util");
+import { Command } from "../../src/index.js";
+import { inspect } from "util";
 
-class ArgsCommand extends Command {
+export default class ArgsCommand extends Command {
 	constructor() {
 		super("args", {
 			aliases: ["args"],
@@ -51,8 +50,6 @@ class ArgsCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = ArgsCommand;

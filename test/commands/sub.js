@@ -1,9 +1,11 @@
+// @ts-check
+"enable strict";
 /* eslint-disable no-console */
 
-const { Command } = require("../../src");
-const util = require("util");
+import { Command } from "../../src/index.js";
+import { inspect } from "util";
 
-class SubCommand extends Command {
+export default class SubCommand extends Command {
 	constructor() {
 		super("sub", {
 			args: [
@@ -15,8 +17,6 @@ class SubCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = SubCommand;

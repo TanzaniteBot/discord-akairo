@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
+// @ts-check
+"enable strict";
 
-const { Command } = require("../..");
-const util = require("util");
+import { Command } from "../../src/index.js";
+import { inspect } from "util";
 
-class PCommand extends Command {
+export default class PCommand extends Command {
 	constructor() {
 		super("p", {
 			aliases: ["p"],
@@ -29,8 +31,6 @@ class PCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = PCommand;

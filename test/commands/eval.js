@@ -1,9 +1,9 @@
 // @ts-check
 "enable strict";
-const { Command } = require("../..");
-const util = require("util");
+import { Command } from "../../src/index.js";
+import { inspect } from "util";
 
-class EvalCommand extends Command {
+export default class EvalCommand extends Command {
 	constructor() {
 		super("eval", {
 			aliases: ["eval", "e"],
@@ -33,7 +33,8 @@ class EvalCommand extends Command {
 		// eslint-disable-next-line no-unused-vars
 		const print = (...a) => {
 			const cleaned = a.map(obj => {
-				if (typeof o !== "string") obj = util.inspect(obj, { depth: 1 });
+				// @ts-expect-error
+				if (typeof o !== "string") obj = inspect(obj, { depth: 1 });
 				return obj.replace(tokenRegex, "[TOKEN]");
 			});
 
@@ -64,7 +65,7 @@ class EvalCommand extends Command {
 			if (output && typeof output.then === "function") output = await output;
 
 			if (typeof output !== "string")
-				output = util.inspect(output, { depth: 0 });
+				output = inspect(output, { depth: 0 });
 			output = `${logs.join("\n")}\n${
 				logs.length && output === "undefined" ? "" : output
 			}`;
@@ -113,5 +114,3 @@ class EvalCommand extends Command {
 		}
 	}
 }
-
-module.exports = EvalCommand;

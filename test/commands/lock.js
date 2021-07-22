@@ -2,10 +2,10 @@
 // @ts-check
 "enable strict";
 
-const { Command } = require("../../src/index.js");
+import { Command } from "../../src/index.js";
 const sleep = require("util").promisify(setTimeout);
 
-export class LockCommand extends Command {
+export default class LockCommand extends Command {
 	constructor() {
 		super("lock", {
 			aliases: ["lock"],
@@ -21,5 +21,3 @@ export class LockCommand extends Command {
 		);
 	}
 }
-
-module.exports = LockCommand;

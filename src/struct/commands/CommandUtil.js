@@ -20,7 +20,7 @@
  * @typedef {import("discord.js").Message & TempMessage} Message
  */
 
-import { Collection, MessagePayload, CommandInteraction } from "discord.js";
+const  { Collection, MessagePayload, CommandInteraction } =await import("discord.js")
 
 /**
  * Command utilities.

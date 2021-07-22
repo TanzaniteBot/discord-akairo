@@ -4,11 +4,11 @@
 /**
  * @typedef {import("../AkairoModule").AkairoModuleOptions} AkairoModuleOptions
  * @typedef {import("./ListenerHandler").default} ListenerHandler
+ * @typedef {import("events")} EventEmitter
  */
 
-import { EventEmitter } from "events";
-import AkairoError from "../../util/AkairoError";
-import AkairoModule from "../AkairoModule";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoModule from "../AkairoModule.js";
 
 /**
  * Represents a listener.
@@ -81,7 +81,6 @@ export default class Listener extends AkairoModule {
 	 * @returns {Listener}
 	 */
 }
-
 
 /**
  * Options to use for listener execution behavior.

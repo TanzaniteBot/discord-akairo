@@ -16,12 +16,12 @@
  * @typedef {import("stream")} Stream
  */
 
-import {
+const {
 	Collection,
 	MessageAttachment,
 	MessageEmbed,
 	Permissions
-} from "discord.js";
+} =  await import("discord.js")
 
 /**
  * Client utilities to help with common tasks.

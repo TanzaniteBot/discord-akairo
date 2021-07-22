@@ -5,11 +5,11 @@
  * @typedef {import("../struct/AkairoClient").default} AkairoClient
  */
 
-import AkairoError from "../util/AkairoError";
-import { AkairoHandlerEvents } from "../util/Constants";
-import AkairoModule from "./AkairoModule";
-import Category from "../util/Category";
-import { Collection } from "discord.js";
+import AkairoError from "../util/AkairoError.js";
+import { AkairoHandlerEvents } from "../util/Constants.js";
+import AkairoModule from "./AkairoModule.js";
+import Category from "../util/Category.js";
+const  { Collection } = await import("discord.js")
 import EventEmitter from "events";
 import { readdirSync, statSync } from "fs";
 import { dirname, sep, extname, resolve, join } from "path";

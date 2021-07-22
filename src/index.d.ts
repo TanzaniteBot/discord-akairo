@@ -1371,233 +1371,9 @@ export class CommandHandler extends AkairoHandler {
 	 */
 	public useListenerHandler(ListenerHandler: ListenerHandler): this;
 
-	public on(
-		event: "commandBlocked",
-		listener: (
-			message: Message,
-			command: Command,
-			reason: typeof Constants["BuiltInReasons"] | string
-		) => any
-	): this;
-
-	/**
-	 * Emitted when a command breaks out with a retry prompt.
-	 * @param message - Message sent.
-	 * @param command - Command being broken out.
-	 * @param breakMessage - Breakout message.
-	 */
-	public on(
-		event: "commandBreakout",
-		listener: (message: Message, command: Command, breakMessage: Message) => any
-	): this;
-
-	/**
-	 * Emitted when a command is cancelled via prompt or argument cancel.
-	 * @param message - Message sent.
-	 * @param command - Command executed.
-	 * @param retryMessage - Message to retry with. This is passed when a prompt was broken out of with a message that looks like a command.
-	 */
-	public on(
-		event: "commandCancelled",
-		listener: (
-			message: Message,
-			command: Command,
-			retryMessage?: Message
-		) => any
-	): this;
-
-	/**
-	 * Emitted when a command finishes execution.
-	 * @param message - Message sent.
-	 * @param command - Command executed.
-	 * @param args - The args passed to the command.
-	 * @param returnValue - The command's return value.
-	 */
-	public on(
-		event: "commandFinished",
-		listener: (
-			message: Message,
-			command: Command,
-			args: any,
-			returnValue: any
-		) => any
-	): this;
-	public on(
-		event: "commandInvalid",
-		listener: (message: Message, command: Command) => any
-	): this;
-	public on(
-		event: "commandLocked",
-		listener: (message: Message, command: Command) => any
-	): this;
-
-	/**
-	 * Emitted when a command starts execution.
-	 * @param message - Message sent.
-	 * @param command - Command executed.
-	 * @param args - The args passed to the command.
-	 */
-	public on(
-		event: "commandStarted",
-		listener: (message: Message, command: Command, args: any) => any
-	): this;
-
-	/**
-	 * Emitted when a command or slash command is found on cooldown.
-	 * @param message - Message sent.
-	 * @param command - Command blocked.
-	 * @param remaining - Remaining time in milliseconds for cooldown.
-	 */
-	public on(
-		event: "cooldown",
-		listener: (message: Message, command: Command, remaining: number) => any
-	): this;
-
-	/**
-	 * Emitted when a command or inhibitor errors.
-	 * @param error - The error.
-	 * @param message - Message sent.
-	 * @param command - Command executed.
-	 */
-	public on(
-		event: "error",
-		listener: (error: Error, message: Message, command?: Command) => any
-	): this;
-
-	/**
-	 * Emitted when a user is in a command argument prompt.
-	 * Used to prevent usage of commands during a prompt.
-	 * @param message - Message sent.
-	 */
-	public on(event: "inPrompt", listener: (message: Message) => any): this;
-
-	/**
-	 * Emitted when a command is loaded.
-	 * @param command - Module loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	public on(
-		event: "load",
-		listener: (command: Command, isReload: boolean) => any
-	): this;
-
-	/**
-	 * Emitted when a message is blocked by a pre-message inhibitor. The built-in inhibitors are 'client' and 'bot'.
-	 * @param message - Message sent.
-	 * @param reason - Reason for the block.
-	 */
-	public on(
-		event: "messageBlocked",
-		listener: (message: Message, reason: string) => any
-	): this;
-	public on(
-		event: "messageBlocked",
-		listener: (message: Message | AkairoMessage, reason: string) => any
-	): this;
-
-	/**
-	 * Emitted when a message does not start with the prefix or match a command.
-	 * @param message - Message sent.
-	 */
-	public on(event: "messageInvalid", listener: (message: Message) => any): this;
-
-	/**
-	 * Emitted when a command permissions check is failed.
-	 * @param message - Message sent.
-	 * @param command - Command blocked.
-	 * @param type - Either 'client' or 'user'.
-	 * @param missing - The missing permissions.
-	 */
-	public on(
-		event: "missingPermissions",
-		listener: (
-			message: Message,
-			command: Command,
-			type: "client" | "user",
-			missing?: any
-		) => any
-	): this;
-
-	/**
-	 * Emitted when a command is removed.
-	 * @param command - Command removed.
-	 */
-	public on(event: "remove", listener: (command: Command) => any): this;
-
-	/**
-	 * Emitted when a slash command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
-	 * @param message - The slash message.
-	 * @param command - Command blocked.
-	 * @param reason - Reason for the block.
-	 */
-	public on(
-		event: "slashBlocked",
-		listener: (message: AkairoMessage, command: Command, reason: string) => any
-	): this;
-
-	/**
-	 * Emitted when a slash command errors.
-	 * @param error - The error.
-	 * @param message - The slash message.
-	 * @param command - Command executed.
-	 */
-	public on(
-		event: "slashError",
-		listener: (error: Error, message: AkairoMessage, command: Command) => any
-	): this;
-
-	/**
-	 * Emitted when a slash command finishes execution.
-	 * @param message - The slash message.
-	 * @param command - Command executed.
-	 * @param args - The args passed to the command.
-	 * @param returnValue - The command's return value.
-	 */
-	public on(
-		event: "slashFinished",
-		listener: (
-			message: AkairoMessage,
-			command: Command,
-			args: any,
-			returnValue: any
-		) => any
-	): this;
-
-	/**
-	 * Emitted when a slash command permissions check is failed.
-	 * @param message - The slash message.
-	 * @param command - Command blocked.
-	 * @param type - Either 'client' or 'user'.
-	 * @param missing - The missing permissions.
-	 */
-	public on(
-		event: "slashMissingPermissions",
-		listener: (
-			message: AkairoMessage,
-			command: Command,
-			type: "user" | "client",
-			missing?: any
-		) => any
-	): this;
-
-	/**
-	 * Emitted when a an incoming interaction command cannot be matched with a command.
-	 * @param interaction - The incoming interaction.
-	 */
-	public on(
-		event: "slashNotFound",
-		listener: (interaction: AkairoMessage) => any
-	): this;
-
-	/**
-	 * Emitted when a slash command starts execution.
-	 * @param message - The slash message.
-	 * @param command - Command executed.
-	 * @param args - The args passed to the command.
-	 */
-	public on(
-		event: "slashStarted",
-		listener: (message: AkairoMessage, command: Command, args: any) => any
+	public on<K extends keyof CommandHandlerEvents>(
+		event: K,
+		listener: (...args: CommandHandlerEvents[K]) => Awaited<void>
 	): this;
 }
 
@@ -1902,20 +1678,9 @@ export class InhibitorHandler extends AkairoHandler {
 		command?: Command
 	): Promise<string | void>;
 
-	/**
-	 * Emitted when an inhibitor is removed.
-	 * @param inhibitor - Inhibitor removed.
-	 */
-	public on(event: "remove", listener: (inhibitor: Inhibitor) => any): this;
-
-	/**
-	 * Emitted when an inhibitor is loaded.
-	 * @param inhibitor - Inhibitor loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	public on(
-		event: "load",
-		listener: (inhibitor: Inhibitor, isReload: boolean) => any
+	public on<K extends keyof InhibitorHandlerEvents>(
+		event: K,
+		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
 	): this;
 }
 
@@ -2063,20 +1828,9 @@ export class ListenerHandler extends AkairoHandler {
 	 */
 	public setEmitters(emitters: { [x: string]: EventEmitter }): void;
 
-	/**
-	 * Emitted when a listener is removed.
-	 * @param listener - Listener removed.
-	 */
-	public on(event: "remove", listener: (listener: Listener) => any): this;
-
-	/**
-	 * Emitted when a listener is loaded.
-	 * @param listener - Listener loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	public on(
-		event: "load",
-		listener: (listener: Listener, isReload: boolean) => any
+	public on<K extends keyof ListenerHandlerEvents>(
+		event: K,
+		listener: (...args: ListenerHandlerEvents[K]) => Awaited<void>
 	): this;
 }
 
@@ -2205,18 +1959,10 @@ export class TaskHandler extends AkairoHandler {
 	 */
 	public startAll(): void;
 
-	/**
-	 * Emitted when a task is loaded.
-	 * @param task - Task loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	public on(event: "load", task: (task: Task, isReload: boolean) => any): this;
-
-	/**
-	 * Emitted when a task is removed.
-	 * @param task - Task removed.
-	 */
-	public on(event: "remove", task: (task: Task) => any): this;
+	public on<K extends keyof TaskHandlerEvents>(
+		event: K,
+		listener: (...args: TaskHandlerEvents[K]) => Awaited<void>
+	): this;
 }
 
 /**
@@ -3249,6 +2995,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 		command: Command,
 		reason: typeof Constants["BuiltInReasons"]
 	];
+
 	/**
 	 * Emitted when a command breaks out with a retry prompt.
 	 * @param message - Message sent.
@@ -3256,6 +3003,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param breakMessage - Breakout message.
 	 */
 	commandBreakout: [message: Message, command: Command, breakMessage: Message];
+
 	/**
 	 * Emitted when a command is cancelled via prompt or argument cancel.
 	 * @param message - Message sent.
@@ -3269,9 +3017,206 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	];
 
 	/**
-	 * E
+	 * Emitted when a command finishes execution.
+	 * @param message - Message sent.
+	 * @param command - Command executed.
+	 * @param args - The args passed to the command.
+	 * @param returnValue - The command's return value.
+	 */
+	commandFinished: [
+		message: Message,
+		command: Command,
+		args: any,
+		returnValue: any
+	];
+
+	/**
+	 * Emitted when a command is invalid
+	 * @param message - Message sent.
+	 * @param command - Command executed.
 	 */
 	commandInvalid: [message: Message, command: Command];
+
+	/**
+	 * Emitted when a command is locked
+	 * @param message - Message sent.
+	 * @param command - Command executed.
+	 */
+	commandLocked: [message: Message, command: Command];
+
+	/**
+	 * Emitted when a command starts execution.
+	 * @param message - Message sent.
+	 * @param command - Command executed.
+	 * @param args - The args passed to the command.
+	 */
+	commandStarted: [message: Message, command: Command, args: any];
+
+	/**
+	 * Emitted when a command or slash command is found on cooldown.
+	 * @param message - Message sent.
+	 * @param command - Command blocked.
+	 * @param remaining - Remaining time in milliseconds for cooldown.
+	 */
+	cooldown: [message: Message, command: Command, remaining: number];
+
+	/**
+	 * Emitted when a command or inhibitor errors.
+	 * @param error - The error.
+	 * @param message - Message sent.
+	 * @param command - Command executed.
+	 */
+	error: [error: Error, message: Message, command?: Command];
+
+	/**
+	 * Emitted when a user is in a command argument prompt.
+	 * Used to prevent usage of commands during a prompt.
+	 * @param message - Message sent.
+	 */
+	inPrompt: [message: Message];
+
+	/**
+	 * Emitted when a command is loaded.
+	 * @param command - Module loaded.
+	 * @param isReload - Whether or not this was a reload.
+	 */
+	load: [command: Command, isReload: boolean];
+
+	/**
+	 * Emitted when a message is blocked by a pre-message inhibitor. The built-in inhibitors are 'client' and 'bot'.
+	 * @param message - Message sent.
+	 * @param reason - Reason for the block.
+	 */
+	messageBlocked: [message: Message | AkairoMessage, reason: string];
+
+	/**
+	 * Emitted when a message does not start with the prefix or match a command.
+	 * @param message - Message sent.
+	 */
+	messageInvalid: [message: Message];
+
+	/**
+	 * Emitted when a command permissions check is failed.
+	 * @param message - Message sent.
+	 * @param command - Command blocked.
+	 * @param type - Either 'client' or 'user'.
+	 * @param missing - The missing permissions.
+	 */
+	missingPermissions: [
+		message: Message,
+		command: Command,
+		type: "client" | "user",
+		missing?: any
+	];
+
+	/**
+	 * Emitted when a command is removed.
+	 * @param command - Command removed.
+	 */
+	remove: [command: Command];
+
+	/**
+	 * Emitted when a slash command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
+	 * @param message - The slash message.
+	 * @param command - Command blocked.
+	 * @param reason - Reason for the block.
+	 */
+	slashBlocked: [message: AkairoMessage, command: Command, reason: string];
+
+	/**
+	 * Emitted when a slash command errors.
+	 * @param error - The error.
+	 * @param message - The slash message.
+	 * @param command - Command executed.
+	 */
+	slashError: [error: Error, message: AkairoMessage, command: Command];
+
+	/**
+	 * Emitted when a slash command finishes execution.
+	 * @param message - The slash message.
+	 * @param command - Command executed.
+	 * @param args - The args passed to the command.
+	 * @param returnValue - The command's return value.
+	 */
+	slashFinished: [
+		message: AkairoMessage,
+		command: Command,
+		args: any,
+		returnValue: any
+	];
+
+	/**
+	 * Emitted when a slash command permissions check is failed.
+	 * @param message - The slash message.
+	 * @param command - Command blocked.
+	 * @param type - Either 'client' or 'user'.
+	 * @param missing - The missing permissions.
+	 */
+	slashMissingPermissions: [
+		message: AkairoMessage,
+		command: Command,
+		type: "user" | "client",
+		missing?: any
+	];
+
+	/**
+	 * Emitted when a an incoming interaction command cannot be matched with a command.
+	 * @param interaction - The incoming interaction.
+	 */
+	slashNotFound: [interaction: AkairoMessage];
+
+	/**
+	 * Emitted when a slash command starts execution.
+	 * @param message - The slash message.
+	 * @param command - Command executed.
+	 * @param args - The args passed to the command.
+	 */
+	slashStarted: [message: AkairoMessage, command: Command, args: any];
+}
+
+export interface InhibitorHandlerEvents extends AkairoHandlerEvents {
+	/**
+	 * Emitted when an inhibitor is removed.
+	 * @param inhibitor - Inhibitor removed.
+	 */
+	remove: [inhibitor: Inhibitor];
+
+	/**
+	 * Emitted when an inhibitor is loaded.
+	 * @param inhibitor - Inhibitor loaded.
+	 * @param isReload - Whether or not this was a reload.
+	 */
+	load: [inhibitor: Inhibitor, isReload: boolean];
+}
+
+export interface ListenerHandlerEvents extends AkairoHandlerEvents {
+	/**
+	 * Emitted when a listener is removed.
+	 * @param listener - Listener removed.
+	 */
+	remove: [listener: Listener];
+
+	/**
+	 * Emitted when a listener is loaded.
+	 * @param listener - Listener loaded.
+	 * @param isReload - Whether or not this was a reload.
+	 */
+	load: [listener: Listener, isReload: boolean];
+}
+
+export interface TaskHandlerEvents extends AkairoHandlerEvents {
+	/**
+	 * Emitted when a task is removed.
+	 * @param task - Task removed.
+	 */
+	remove: [task: Task];
+
+	/**
+	 * Emitted when a task is loaded.
+	 * @param task - Task loaded.
+	 * @param isReload - Whether or not this was a reload.
+	 */
+	load: [task: Task, isReload: boolean];
 }
 
 //#endregion

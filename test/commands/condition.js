@@ -1,9 +1,8 @@
 // @ts-check
 "enable strict";
-// @ts-ignore
-const { Command } = require("../../src");
+import { Command } from "../../src/index.js";
 
-class ConditionalCommand extends Command {
+export default class ConditionalCommand extends Command {
 	constructor() {
 		super("condition");
 	}
@@ -16,5 +15,3 @@ class ConditionalCommand extends Command {
 		return message.util.reply("made you condition");
 	}
 }
-
-module.exports = ConditionalCommand;

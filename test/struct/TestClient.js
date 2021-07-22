@@ -1,13 +1,11 @@
-const {
+import {
 	AkairoClient,
 	CommandHandler,
 	InhibitorHandler,
-	ListenerHandler,
-	SQLiteProvider
-} = require("../../src/index");
-const sqlite = require("sqlite");
+	ListenerHandler
+} from "../../src/index.js";
 
-class TestClient extends AkairoClient {
+export default class TestClient extends AkairoClient {
 	constructor() {
 		super({
 			ownerID: "123992700587343872"
@@ -49,19 +47,6 @@ class TestClient extends AkairoClient {
 			directory: "./test/listeners/"
 		});
 
-		const db = sqlite
-			.open("./test/db.sqlite")
-			.then(d =>
-				d
-					.run(
-						"CREATE TABLE IF NOT EXISTS guilds (id TEXT NOT NULL UNIQUE, settings TEXT)"
-					)
-					.then(() => d)
-			);
-		this.settings = new SQLiteProvider(db, "guilds", {
-			dataColumn: "settings"
-		});
-
 		this.setup();
 	}
 
@@ -94,5 +79,3 @@ class TestClient extends AkairoClient {
 		console.log("Ready!"); // eslint-disable-line no-console
 	}
 }
-
-module.exports = TestClient;

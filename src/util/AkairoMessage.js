@@ -1,8 +1,6 @@
 // @ts-check
 "use strict";
 
-import Command from "../struct/commands/Command";
-
 /**
  * @typedef {import("discord.js").InteractionReplyOptions} InteractionReplyOptions
  * @typedef {import("discord.js").CommandInteraction} CommandInteraction
@@ -21,6 +19,7 @@ import Command from "../struct/commands/Command";
  * @typedef {import("../struct/AkairoClient").default} AkairoClient
  * @typedef {import("../struct/commands/CommandUtil").default} CommandUtil
  * @typedef {import("../struct/commands/CommandUtil").Message} Message
+ * @typedef {import("../struct/commands/Command").default} Command
  */
 
 /**
@@ -110,8 +109,11 @@ export default class AkairoMessage {
 		 */
 		// @ts-expect-error
 		this.util = { parsed: { slash } };
-		for (const option of command.slashOptions){
-			this.content += ` ${option.name}: ${interaction.options.get(option.name, option.required||false)}`;
+		for (const option of command.slashOptions) {
+			this.content += ` ${option.name}: ${interaction.options.get(
+				option.name,
+				option.required || false
+			)}`;
 		}
 	}
 

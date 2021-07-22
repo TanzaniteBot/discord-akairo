@@ -1,28 +1,27 @@
 // @ts-check
 "use strict";
 
-import AkairoClient from "./struct/AkairoClient";
-import AkairoHandler from "./struct/AkairoHandler";
-import AkairoModule from "./struct/AkairoModule";
-import ClientUtil from "./struct/ClientUtil";
-import Command from "./struct/commands/Command";
-import CommandHandler from "./struct/commands/CommandHandler";
-import CommandUtil from "./struct/commands/CommandUtil";
-import Flag from "./struct/commands/Flag";
-import Argument from "./struct/commands/arguments/Argument";
-import TypeResolver from "./struct/commands/arguments/TypeResolver";
-import Inhibitor from "./struct/inhibitors/Inhibitor";
-import InhibitorHandler from "./struct/inhibitors/InhibitorHandler";
-import Listener from "./struct/listeners/Listener";
-import ListenerHandler from "./struct/listeners/ListenerHandler";
-import Task from "./struct/tasks/Task";
-import TaskHandler from "./struct/tasks/TaskHandler";
-import AkairoError from "./util/AkairoError";
-import AkairoMessage from "./util/AkairoMessage";
-import Category from "./util/Category";
-import * as Constants from "./util/Category";
-import Util from "./util/Util";
-import packagedotjson from "../package.json";
+import AkairoClient from "./struct/AkairoClient.js";
+import AkairoHandler from "./struct/AkairoHandler.js";
+import AkairoModule from "./struct/AkairoModule.js";
+import ClientUtil from "./struct/ClientUtil.js";
+import Command from "./struct/commands/Command.js";
+import CommandHandler from "./struct/commands/CommandHandler.js";
+import CommandUtil from "./struct/commands/CommandUtil.js";
+import Flag from "./struct/commands/Flag.js";
+import Argument from "./struct/commands/arguments/Argument.js";
+import TypeResolver from "./struct/commands/arguments/TypeResolver.js";
+import Inhibitor from "./struct/inhibitors/Inhibitor.js";
+import InhibitorHandler from "./struct/inhibitors/InhibitorHandler.js";
+import Listener from "./struct/listeners/Listener.js";
+import ListenerHandler from "./struct/listeners/ListenerHandler.js";
+import Task from "./struct/tasks/Task.js";
+import TaskHandler from "./struct/tasks/TaskHandler.js";
+import AkairoError from "./util/AkairoError.js";
+import AkairoMessage from "./util/AkairoMessage.js";
+import Category from "./util/Category.js";
+import * as Constants from "./util/Constants.js";
+import Util from "./util/Util.js";
 
 export default {
 	// Core
@@ -59,5 +58,5 @@ export default {
 	Category,
 	Constants,
 	Util,
-	version: packagedotjson.version
+	version: require("../package.json").version
 };

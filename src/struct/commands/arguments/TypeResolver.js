@@ -14,8 +14,8 @@
  * @typedef {import("./../CommandUtil").Message} Message
  */
 
-import { ArgumentTypes } from "../../../util/Constants";
-import { Collection } from "discord.js";
+import { ArgumentTypes } from "../../../util/Constants.js";
+const { Collection } = await import("discord.js")
 import { URL } from "url";
 
 /**

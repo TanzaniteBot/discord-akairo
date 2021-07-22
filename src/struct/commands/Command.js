@@ -16,11 +16,11 @@
  * @typedef {import("./CommandUtil").Message} Message
  */
 
-import AkairoError from "../../util/AkairoError";
-import AkairoModule from "../AkairoModule";
-import Argument from "./arguments/Argument";
-import ArgumentRunner from "./arguments/ArgumentRunner";
-import ContentParser from "./ContentParser";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoModule from "../AkairoModule.js";
+import Argument from "./arguments/Argument.js";
+import ArgumentRunner from "./arguments/ArgumentRunner.js";
+import ContentParser from "./ContentParser.js";
 
 /**
  * Represents a command.

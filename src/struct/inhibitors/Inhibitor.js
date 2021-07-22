@@ -11,8 +11,8 @@
  * @typedef {import("discord.js").Message & TempMessage} Message
  */
 
-import AkairoError from "../../util/AkairoError";
-import AkairoModule from "../AkairoModule";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoModule from "../AkairoModule.js";
 
 /**
  * Represents an inhibitor.
@@ -20,7 +20,7 @@ import AkairoModule from "../AkairoModule";
  * @param {InhibitorOptions} [options={reason = "", type = "post",priority = 0 }] - Options for the inhibitor.
  * @extends {AkairoModule}
  */
- export default class Inhibitor extends AkairoModule {
+export default class Inhibitor extends AkairoModule {
 	/**
 	 * @param {string} id - Inhibitor ID.
 	 * @param {InhibitorOptions} [options={reason = "", type = "post",priority = 0}] - Options for the inhibitor.
@@ -88,7 +88,6 @@ import AkairoModule from "../AkairoModule";
 	 * @returns {Inhibitor}
 	 */
 }
-
 
 /**
  * Options to use for inhibitor execution behavior.

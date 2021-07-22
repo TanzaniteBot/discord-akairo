@@ -1,9 +1,11 @@
+// @ts-check
+"enable strict";
 /* eslint-disable no-console */
 
-const { Command } = require("../..");
-const util = require("util");
+import { Command } from "../../src/index.js";
+import { inspect } from "util";
 
-class SeparateCommand extends Command {
+export default class SeparateCommand extends Command {
 	constructor() {
 		super("separate", {
 			aliases: ["separate", "sep"],
@@ -23,8 +25,6 @@ class SeparateCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = SeparateCommand;

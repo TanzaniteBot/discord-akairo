@@ -1,13 +1,14 @@
 // @ts-check
 "enable strict";
 
-import { Command } from "../../src";
+import { Command } from "../../src/index.js";
 
-class ConditionalPromiseCommand extends Command {
+export default class ConditionalPromiseCommand extends Command {
 	constructor() {
 		super("condition.promise");
 	}
 
+	// @ts-expect-error
 	condition(message) {
 		return Promise.resolve(message.content === "make me promise condition");
 	}
@@ -16,5 +17,3 @@ class ConditionalPromiseCommand extends Command {
 		return message.util.reply("made you promise condition");
 	}
 }
-
-export default ConditionalPromiseCommand;

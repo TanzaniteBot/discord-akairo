@@ -1,6 +1,6 @@
-const { Command } = require("../..");
+import { Command } from "../../src/index.js";
 
-class AyyCommand extends Command {
+export default class AyyCommand extends Command {
 	constructor() {
 		super("ayy", {
 			regex: /^ayy+$/i
@@ -11,5 +11,3 @@ class AyyCommand extends Command {
 		return message.reply("lmao");
 	}
 }
-
-module.exports = AyyCommand;

@@ -10,12 +10,12 @@
  * @typedef {import("../commands/CommandUtil").Message} Message
  */
 
-import AkairoError from "../../util/AkairoError";
-import AkairoHandler from "../AkairoHandler";
-import Inhibitor from "./Inhibitor";
-import Util from "../../util/Util";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoHandler from "../AkairoHandler.js";
+import Inhibitor from "./Inhibitor.js";
+import Util from "../../util/Util.js";
 
-const name = Inhibitor.name
+const name = Inhibitor.name;
 /**
  * Loads inhibitors and checks messages.
  * @param {AkairoClient} client - The Akairo client.
@@ -176,7 +176,6 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * @returns {InhibitorHandler}
 	 */
 }
-
 
 /**
  * Emitted when an inhibitor is loaded.

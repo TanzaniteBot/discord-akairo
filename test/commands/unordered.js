@@ -1,9 +1,11 @@
+// @ts-check
+"enable strict";
 /* eslint-disable no-console */
 
-const { Command } = require("../..");
-const util = require("util");
+import { Command } from "../../src/index.js";
+import { inspect } from "util";
 
-class UnorderedCommand extends Command {
+export default class UnorderedCommand extends Command {
 	constructor() {
 		super("unordered", {
 			aliases: ["unordered", "un"],
@@ -23,8 +25,6 @@ class UnorderedCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = UnorderedCommand;

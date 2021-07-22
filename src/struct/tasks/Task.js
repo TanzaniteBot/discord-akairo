@@ -6,8 +6,8 @@
  * @typedef {import("./TaskHandler").default} TaskHandler
  */
 
-import AkairoError from "../../util/AkairoError";
-import AkairoModule from "../AkairoModule";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoModule from "../AkairoModule.js";
 
 /**
  * Represents a task.

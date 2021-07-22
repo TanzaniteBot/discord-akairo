@@ -1,12 +1,15 @@
+// @ts-check
+"enable strict";
 /* eslint-disable no-console */
 
+import _ from "../../src/index.js";
 const {
 	Argument: { compose, range, union },
 	Command
-} = require("../..");
-const util = require("util");
+} = _;
+import { inspect } from "util";
 
-class TestCommand extends Command {
+export default class TestCommand extends Command {
 	constructor() {
 		super("test", {
 			aliases: ["test", "test-a"],
@@ -26,8 +29,6 @@ class TestCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = TestCommand;

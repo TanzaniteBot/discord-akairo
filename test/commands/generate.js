@@ -2,10 +2,10 @@
 // @ts-check
 "enable strict";
 
-const { Command, Flag } = require("../..");
-const util = require("util");
+import { Command, Flag } from "../../src/index.js";
+import { inspect } from "util";
 
-class GenerateCommand extends Command {
+export default class GenerateCommand extends Command {
 	constructor() {
 		super("generate", {
 			aliases: ["generate", "g"]
@@ -26,8 +26,6 @@ class GenerateCommand extends Command {
 	}
 
 	exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+		message.channel.send(inspect(args, { depth: 1 }), { code: "js" });
 	}
 }
-
-module.exports = GenerateCommand;
