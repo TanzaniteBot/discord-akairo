@@ -76,7 +76,7 @@ _discord-akairo_
 `yarn add SkyBlockDev/discord-akairo`
 
 _discord.js_  
-`yarn add discordjs/discord.js`
+`yarn add discord.js@dev`
 
 ## Links
 

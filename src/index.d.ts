@@ -287,8 +287,6 @@ declare module "discord-akairo" {
 
 		/**
 		 * Casts a phrase to this argument's type.
-		 * @param type - The type to cast to.
-		 * @param resolver - The type resolver.
 		 * @param message - Message that called the command.
 		 * @param phrase - Phrase to process.
 		 */
@@ -314,6 +312,8 @@ declare module "discord-akairo" {
 
 		/**
 		 * Casts a phrase to this argument's type.
+		 * @param type - The type to cast to.
+		 * @param resolver - The type resolver.
 		 * @param message - Message that called the command.
 		 * @param phrase - Phrase to process.
 		 */
