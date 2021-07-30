@@ -120,6 +120,19 @@ class AkairoMessage {
 	}
 
 	/**
+	 * The url to jump to this message
+	 * @type {string|null}
+	 * @readonly
+	 */
+	get url() {
+		return this.interaction.ephemeral
+			? null
+			: `https://discord.com/channels/${this.guild ? this.guild.id : "@me"}/${
+					this.channel.id
+			  }/${this.id}`;
+	}
+
+	/**
 	 * Replies or edits the reply of the slash command.
 	 * @param {string | MessagePayload | InteractionReplyOptions} options The options to edit the reply.
 	 * @returns {Promise<Message | APIMessage>}

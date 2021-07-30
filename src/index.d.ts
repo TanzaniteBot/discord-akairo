@@ -834,6 +834,9 @@ declare module "discord-akairo" {
 		/** Utilities for command responding. */
 		public util: CommandUtil;
 
+		/** The url to jump to this message */
+		public readonly url: string | null;
+
 		/**
 		 * Deletes the reply to the command.
 		 */
