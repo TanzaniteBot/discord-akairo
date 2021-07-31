@@ -42,13 +42,13 @@ class TypeResolver {
 
 		/**
 		 * The inhibitor handler.
-		 * @type {InhibitorHandler}
+		 * @type {InhibitorHandler|null}
 		 */
 		this.inhibitorHandler = null;
 
 		/**
 		 * The listener handler.
-		 * @type {ListenerHandler}
+		 * @type {ListenerHandler|null}
 		 */
 		this.listenerHandler = null;
 
@@ -190,6 +190,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				return this.client.util.resolveMember(
 					phrase,
 					message.guild.members.cache
@@ -201,6 +202,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const members = this.client.util.resolveMembers(
 					phrase,
 					message.guild.members.cache
@@ -213,21 +215,23 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 
 				const person = message.channel.type.startsWith("GUILD")
 					? this.client.util.resolveMember(phrase, message.guild.members.cache)
 					: message.channel.type === "DM"
 					? this.client.util.resolveUser(
 							phrase,
+							// @ts-expect-error
 							new Collection([
 								[message.channel.recipient.id, message.channel.recipient],
-								[this.client.user.id, this.client.user]
+								[this.client.user?.id, this.client.user]
 							])
 					  )
 					: this.client.util.resolveUser(
-							phrase,
+							phrase, // @ts-expect-error
 							new Collection([
-								[this.client.user.id, this.client.user]
+								[this.client.user?.id, this.client.user]
 								// Not sure why this is here, bots can't be in group dms
 								// @ts-expect-error
 							]).concat(message.channel.recipients)
@@ -244,21 +248,23 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
 				const persons = message.channel.type.startsWith("GUILD")
-					? this.client.util.resolveMembers(phrase, message.guild.members.cache)
+					? // @ts-expect-error
+					  this.client.util.resolveMembers(phrase, message.guild.members.cache)
 					: message.channel.type === "DM"
 					? this.client.util.resolveUsers(
 							phrase,
+							// @ts-expect-error
 							new Collection([
 								[message.channel.recipient.id, message.channel.recipient],
-								[this.client.user.id, this.client.user]
+								[this.client.user?.id, this.client.user]
 							])
 					  )
 					: this.client.util.resolveUsers(
 							phrase,
+							// @ts-expect-error
 							new Collection([
-								[this.client.user.id, this.client.user]
+								[this.client.user?.id, this.client.user]
 								// Not sure why this is here, bots can't be in group dms
 								// @ts-expect-error
 							]).concat(message.channel.recipients)
@@ -281,6 +287,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				return this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -292,6 +299,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -304,7 +312,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -319,7 +327,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -335,7 +343,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -350,7 +358,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -366,7 +374,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -381,7 +389,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -399,7 +407,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -414,7 +422,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -430,7 +438,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -445,7 +453,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -461,7 +469,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -476,7 +484,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -494,7 +502,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
 					message.guild.channels.cache
@@ -509,7 +517,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-
+				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
 					message.guild.channels.cache
@@ -525,6 +533,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				return this.client.util.resolveRole(phrase, message.guild.roles.cache);
 			},
 
@@ -533,6 +542,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const roles = this.client.util.resolveRoles(
 					phrase,
 					message.guild.roles.cache
@@ -545,6 +555,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				return this.client.util.resolveEmoji(
 					phrase,
 					message.guild.emojis.cache
@@ -556,6 +567,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const emojis = this.client.util.resolveEmojis(
 					phrase,
 					message.guild.emojis.cache
@@ -593,6 +605,7 @@ class TypeResolver {
 				phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				for (const channel of message.guild.channels.cache.values()) {
 					if (channel.type !== "GUILD_TEXT") continue;
 					try {
@@ -653,6 +666,7 @@ class TypeResolver {
 				phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const id = phrase.match(/<@!?(\d{17,19})>/);
 				if (!id) return null;
 				return message.guild.members.cache.get(id[1]) || null;
@@ -663,6 +677,7 @@ class TypeResolver {
 				phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const id = phrase.match(/<#(\d{17,19})>/);
 				if (!id) return null;
 				return message.guild.channels.cache.get(id[1]) || null;
@@ -673,6 +688,7 @@ class TypeResolver {
 				phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const id = phrase.match(/<@&(\d{17,19})>/);
 				if (!id) return null;
 				return message.guild.roles.cache.get(id[1]) || null;
@@ -683,6 +699,7 @@ class TypeResolver {
 				phrase
 			) => {
 				if (!phrase) return null;
+				if (!message.guild) return null;
 				const id = phrase.match(/<a?:[a-zA-Z0-9_]+:(\d{17,19})>/);
 				if (!id) return null;
 				return message.guild.emojis.cache.get(id[1]) || null;
@@ -709,7 +726,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-				return this.inhibitorHandler.modules.get(phrase) || null;
+				return this.inhibitorHandler?.modules.get(phrase) || null;
 			},
 
 			[ArgumentTypes.LISTENER]: (
@@ -717,7 +734,7 @@ class TypeResolver {
 				/** @type {string} */ phrase
 			) => {
 				if (!phrase) return null;
-				return this.listenerHandler.modules.get(phrase) || null;
+				return this.listenerHandler?.modules.get(phrase) || null;
 			}
 		};
 
@@ -729,7 +746,7 @@ class TypeResolver {
 	/**
 	 * Gets the resolver function for a type.
 	 * @param {string} name - Name of type.
-	 * @returns {ArgumentTypeCaster}
+	 * @returns {ArgumentTypeCaster|undefined}
 	 */
 	type(name) {
 		return this.types.get(name);

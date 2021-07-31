@@ -77,7 +77,7 @@ class AkairoMessage {
 
 		/**
 		 * The guild the interaction was sent in (if in a guild channel).
-		 * @type {Guild}
+		 * @type {Guild | null }
 		 */
 		this.guild = interaction.guild;
 
@@ -96,7 +96,7 @@ class AkairoMessage {
 		/**
 		 * Represents the author of the interaction as a guild member.
 		 * Only available if the interaction comes from a guild where the author is still a member.
-		 * @type {GuildMember|APIInteractionGuildMember}
+		 * @type {GuildMember | APIInteractionGuildMember | null}
 		 */
 		this.member = interaction.member;
 
@@ -128,7 +128,7 @@ class AkairoMessage {
 		return this.interaction.ephemeral
 			? null
 			: `https://discord.com/channels/${this.guild ? this.guild.id : "@me"}/${
-					this.channel.id
+					this.channel?.id
 			  }/${this.id}`;
 	}
 

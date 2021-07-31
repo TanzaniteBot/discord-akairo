@@ -28,43 +28,43 @@ class AkairoModule {
 
 		/**
 		 * Category this belongs to.
-		 * @type {Category}
+		 * @type {Category?}
 		 */
 		this.category = null;
 
 		/**
 		 * The filepath.
-		 * @type {string}
+		 * @type {string?}
 		 */
 		this.filepath = null;
 
 		/**
 		 * The Akairo client.
-		 * @type {AkairoClient}
+		 * @type {AkairoClient?}
 		 */
 		this.client = null;
 
 		/**
 		 * The handler.
-		 * @type {AkairoHandler}
+		 * @type {AkairoHandler?}
 		 */
 		this.handler = null;
 	}
 
 	/**
 	 * Reloads the module.
-	 * @returns {AkairoModule}
+	 * @returns {AkairoModule|undefined}
 	 */
 	reload() {
-		return this.handler.reload(this.id);
+		return this.handler?.reload(this.id);
 	}
 
 	/**
 	 * Removes the module.
-	 * @returns {AkairoModule}
+	 * @returns {AkairoModule|undefined}
 	 */
 	remove() {
-		return this.handler.remove(this.id);
+		return this.handler?.remove(this.id);
 	}
 
 	/**

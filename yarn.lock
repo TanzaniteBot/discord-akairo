@@ -43,10 +43,10 @@
     discord-api-types "^0.18.1"
     tslib "^2.3.0"
 
-"@discordjs/collection@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@discordjs/collection/-/collection-0.2.0.tgz#ddf93c24956a70d4bc97bdd40027e6f0f2d5dafe"
-  integrity sha512-ZSiyfQsQmJq5EDgTocUg6n7IOft64MH/53RC8q3+Z5Ltipgc6eH1lLyDMJz2fcY/xq5zrILd9LyqFgEdragDNA==
+"@discordjs/collection@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@discordjs/collection/-/collection-0.2.1.tgz#ea4bc7b41b7b7b6daa82e439141222ec95c469b2"
+  integrity sha512-vhxqzzM8gkomw0TYRF3tgx7SwElzUlXT/Aa41O7mOcyN6wIJfj5JmDWaO5XGKsGSsNx7F3i5oIlrucCCWV1Nog==
 
 "@discordjs/form-data@^3.0.1":
   version "3.0.1"
@@ -493,10 +493,10 @@ discord.js-docgen@discordjs/docgen:
 
 discord.js@NotEnoughUpdates/discord.js:
   version "13.0.0-dev"
-  resolved "https://codeload.github.com/NotEnoughUpdates/discord.js/tar.gz/c453840a652e054e92d521106a1dec1255990511"
+  resolved "https://codeload.github.com/NotEnoughUpdates/discord.js/tar.gz/9db7fcc931d5cd1ef57fa5ee61e5fc2072dc1822"
   dependencies:
     "@discordjs/builders" "^0.2.0"
-    "@discordjs/collection" "^0.2.0"
+    "@discordjs/collection" "^0.2.1"
     "@discordjs/form-data" "^3.0.1"
     "@sapphire/async-queue" "^1.1.4"
     "@types/ws" "^7.4.5"
@@ -1821,10 +1821,10 @@ type-fest@^0.8.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.8.1.tgz#09e249ebde851d3b1e48d27c105444667f17b83d"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
 
-typescript@^3.4.2:
-  version "3.9.10"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
-  integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
+typescript@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
+  integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
 
 typical@^2.4.2, typical@^2.6.0, typical@^2.6.1:
   version "2.6.1"

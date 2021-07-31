@@ -312,6 +312,7 @@ class CommandHandler extends AkairoHandler {
 
 			this.client.on("messageCreate", async m => {
 				if (m.partial) await m.fetch();
+				// @ts-expect-error
 				this.handle(m);
 			});
 
@@ -379,7 +380,7 @@ class CommandHandler extends AkairoHandler {
 				return { name, description, options };
 			});
 
-		this.client.application.commands.set(slashCommandsApp);
+		this.client.application?.commands.set(slashCommandsApp);
 	}
 
 	/**
@@ -466,15 +467,15 @@ class CommandHandler extends AkairoHandler {
 			if (Array.isArray(command.prefix)) {
 				for (const prefix of command.prefix) {
 					const prefixes = this.prefixes.get(prefix);
-					if (prefixes.size === 1) {
+					if (prefixes?.size === 1) {
 						this.prefixes.delete(prefix);
 					} else {
-						prefixes.delete(prefix);
+						prefixes?.delete(prefix);
 					}
 				}
 			} else {
 				const prefixes = this.prefixes.get(command.prefix);
-				if (prefixes.size === 1) {
+				if (prefixes?.size === 1) {
 					this.prefixes.delete(command.prefix);
 				} else {
 					// @ts-expect-error
@@ -508,9 +509,12 @@ class CommandHandler extends AkairoHandler {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
+					// @ts-expect-error
 					message.util = this.commandUtils.get(message.id);
 				} else {
+					// @ts-expect-error
 					message.util = new CommandUtil(this, message);
+					// @ts-expect-error
 					this.commandUtils.set(message.id, message.util);
 				}
 			}
@@ -531,6 +535,7 @@ class CommandHandler extends AkairoHandler {
 			}
 
 			if (this.commandUtil) {
+				// @ts-expect-error
 				message.util.parsed = parsed;
 			}
 
@@ -540,6 +545,7 @@ class CommandHandler extends AkairoHandler {
 			} else {
 				ran = await this.handleDirectCommand(
 					message,
+					// @ts-expect-error
 					parsed.content,
 					parsed.command
 				);
@@ -588,6 +594,7 @@ class CommandHandler extends AkairoHandler {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
+					// @ts-expect-error
 					message.util = this.commandUtils.get(message.id);
 				} else {
 					message.util = new CommandUtil(this, message);
@@ -631,17 +638,17 @@ class CommandHandler extends AkairoHandler {
 				if (command.lock) key = command.lock(message, convertedOptions);
 				if (isPromise(key)) key = await key;
 				if (key) {
-					if (command.locker.has(key)) {
+					if (command.locker?.has(key)) {
 						key = null;
 						this.emit(CommandHandlerEvents.COMMAND_LOCKED, message, command);
 						return true;
 					}
-					command.locker.add(key);
+					command.locker?.add(key);
 				}
 			} catch (err) {
 				this.emitError(err, message, command);
 			} finally {
-				if (key) command.locker.delete(key);
+				if (key) command.locker?.delete(key);
 			}
 
 			if (this.autoDefer || command.slashEphemeral) {
@@ -724,13 +731,13 @@ class CommandHandler extends AkairoHandler {
 				if (command.lock) key = command.lock(message, args);
 				if (isPromise(key)) key = await key;
 				if (key) {
-					if (command.locker.has(key)) {
+					if (command.locker?.has(key)) {
 						key = null;
 						this.emit(CommandHandlerEvents.COMMAND_LOCKED, message, command);
 						return true;
 					}
 
-					command.locker.add(key);
+					command.locker?.add(key);
 				}
 			}
 
@@ -740,7 +747,7 @@ class CommandHandler extends AkairoHandler {
 			this.emitError(err, message, command);
 			return null;
 		} finally {
-			if (key) command.locker.delete(key);
+			if (key) command.locker?.delete(key);
 		}
 	}
 
@@ -896,7 +903,7 @@ class CommandHandler extends AkairoHandler {
 				message,
 				BuiltInReasons.AUTHOR_NOT_FOUND
 			);
-		} else if (this.blockClient && message.author.id === this.client.user.id) {
+		} else if (this.blockClient && message.author.id === this.client.user?.id) {
 			this.emit(
 				CommandHandlerEvents.MESSAGE_BLOCKED,
 				message,
@@ -1027,9 +1034,10 @@ class CommandHandler extends AkairoHandler {
 					return true;
 				}
 			} else if (message.guild) {
-				if (message.channel.type === "DM") return false;
+				if (message.channel?.type === "DM") return false;
 				const missing = message.channel
-					.permissionsFor(this.client.user)
+					// @ts-expect-error
+					?.permissionsFor(message.guild.me)
 					?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(
@@ -1072,9 +1080,9 @@ class CommandHandler extends AkairoHandler {
 						return true;
 					}
 				} else if (message.guild) {
-					if (message.channel.type === "DM") return false;
+					if (message.channel?.type === "DM") return false;
 					const missing = message.channel
-						.permissionsFor(message.author)
+						?.permissionsFor(message.author)
 						?.missing(command.userPermissions);
 					if (missing?.length) {
 						this.emit(
@@ -1188,8 +1196,8 @@ class CommandHandler extends AkairoHandler {
 		let prefixes = intoArray(allowMention);
 		if (allowMention) {
 			const mentions = [
-				`<@${this.client.user.id}>`,
-				`<@!${this.client.user.id}>`
+				`<@${this.client.user?.id}>`,
+				`<@!${this.client.user?.id}>`
 			];
 			prefixes = [...mentions, ...prefixes];
 		}
@@ -1252,7 +1260,7 @@ class CommandHandler extends AkairoHandler {
 	 * Associated commands refer to when a prefix is used in prefix overrides.
 	 * @param {Message|AkairoMessage} message - Message to parse.
 	 * @param {string} prefix - Prefix to use.
-	 * @param {Set<string>} [associatedCommands=null] - Associated commands.
+	 * @param {Set<string>|null} [associatedCommands=null] - Associated commands.
 	 * @returns {ParsedComponentData}
 	 */
 	parseWithPrefix(message, prefix, associatedCommands = null) {
@@ -1341,7 +1349,7 @@ class CommandHandler extends AkairoHandler {
 		let users = this.prompts.get(channel.id);
 		if (!users) this.prompts.set(channel.id, new Set());
 		users = this.prompts.get(channel.id);
-		users.add(user.id);
+		users?.add(user.id);
 	}
 
 	/**

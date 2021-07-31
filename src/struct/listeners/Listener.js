@@ -62,6 +62,7 @@ class Listener extends AkairoModule {
 	 * @param {...any} [args] - Arguments.
 	 * @returns {any}
 	 */
+	// @ts-expect-error
 	// eslint-disable-next-line no-unused-vars
 	exec(...args) {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");

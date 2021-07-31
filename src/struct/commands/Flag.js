@@ -46,7 +46,7 @@ class Flag {
 	 * Creates a flag that runs another command with the rest of the arguments.
 	 * @param {string} command - Command ID.
 	 * @param {boolean} [ignore=false] - Whether or not to ignore permission checks.
-	 * @param {string} [rest] - The rest of the arguments.
+	 * @param {string|null} [rest] - The rest of the arguments.
 	 * If this is not set, the argument handler will automatically use the rest of the content.
 	 * @returns {Flag}
 	 */

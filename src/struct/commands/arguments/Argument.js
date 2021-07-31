@@ -125,7 +125,7 @@ class Argument {
 
 	/**
 	 * The client.
-	 * @type {AkairoClient}
+	 * @type {AkairoClient?}
 	 */
 	get client() {
 		return this.command.client;
@@ -303,7 +303,7 @@ class Argument {
 		) => {
 			let sentStart;
 			// This is either a retry prompt, the start of a non-infinite, or the start of an infinite.
-			if (retryCount !== 1 || !isInfinite || !values.length) {
+			if (retryCount !== 1 || !isInfinite || !values?.length) {
 				const promptType = retryCount === 1 ? "start" : "retry";
 				const prompter =
 					retryCount === 1 ? promptOptions.start : promptOptions.retry;
@@ -320,9 +320,7 @@ class Argument {
 					sentStart = await (message.util || message.channel).send(startText);
 					if (message.util && sentStart) {
 						message.util.setEditable(false);
-						// @ts-expect-error
 						message.util.setLastResponse(sentStart);
-						// @ts-expect-error
 						message.util.addMessage(sentStart);
 					}
 				}
@@ -338,6 +336,7 @@ class Argument {
 						errors: ["time"]
 					})
 				).first();
+				// @ts-expect-error
 				if (message.util) message.util.addMessage(input);
 			} catch (err) {
 				const timeoutText = await getText(
@@ -357,19 +356,21 @@ class Argument {
 			}
 
 			if (promptOptions.breakout) {
+				// @ts-expect-error
 				const looksLike = await this.handler.parseCommand(input);
+				// @ts-expect-error
 				if (looksLike && looksLike.command) return Flag.retry(input);
 			}
 
 			if (
-				input.content.toLowerCase() === promptOptions.cancelWord.toLowerCase()
+				input?.content.toLowerCase() === promptOptions.cancelWord.toLowerCase()
 			) {
 				const cancelText = await getText(
 					"cancel",
 					promptOptions.cancel,
 					retryCount,
 					input,
-					input.content,
+					input?.content,
 					"cancel"
 				);
 				if (cancelText) {
@@ -382,17 +383,18 @@ class Argument {
 
 			if (
 				isInfinite &&
-				input.content.toLowerCase() === promptOptions.stopWord.toLowerCase()
+				input?.content.toLowerCase() === promptOptions.stopWord.toLowerCase()
 			) {
-				if (!values.length)
-					return promptOne(input, input.content, null, retryCount + 1);
+				if (!values?.length)
+					return promptOne(input, input?.content, null, retryCount + 1);
 				return values;
 			}
 
+			// @ts-expect-error
 			const parsedValue = await this.cast(input, input.content);
 			if (Argument.isFailure(parsedValue)) {
 				if (retryCount <= promptOptions.retries) {
-					return promptOne(input, input.content, parsedValue, retryCount + 1);
+					return promptOne(input, input?.content, parsedValue, retryCount + 1);
 				}
 
 				const endedText = await getText(
@@ -400,7 +402,7 @@ class Argument {
 					promptOptions.ended,
 					retryCount,
 					input,
-					input.content,
+					input?.content,
 					"stop"
 				);
 				if (endedText) {
@@ -411,10 +413,10 @@ class Argument {
 				return Flag.cancel();
 			}
 
-			if (isInfinite) {
+			if (isInfinite) {// @ts-expect-error
 				values.push(parsedValue);
-				const limit = promptOptions.limit;
-				if (values.length < limit)
+				const limit = promptOptions.limit;// @ts-expect-error
+				if (values.length < limit)// @ts-expect-error
 					return promptOne(message, input.content, parsedValue, 1);
 
 				return values;
@@ -430,7 +432,7 @@ class Argument {
 			parsedInput,
 			1 + additionalRetry
 		);
-		if (this.handler.commandUtil) {
+		if (this.handler.commandUtil &&message.util ) {
 			message.util.setEditable(false);
 		}
 
@@ -486,7 +488,7 @@ class Argument {
 		}
 
 		if (resolver.type(type)) {
-			let res = resolver.type(type).call(this, message, phrase);
+			let res = resolver.type(type)?.call(this, message, phrase);
 			if (isPromise(res)) res = await res;
 			return res;
 		}

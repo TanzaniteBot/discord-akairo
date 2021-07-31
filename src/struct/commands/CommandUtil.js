@@ -71,7 +71,7 @@ class CommandUtil {
 		if (this.handler.storeMessages) {
 			/**
 			 * Messages stored from prompts and prompt replies.
-			 * @type {Collection<Snowflake, Message>}
+			 * @type {Collection<Snowflake, Message>?}
 			 */
 			this.messages = new Collection();
 		} else {
@@ -87,7 +87,7 @@ class CommandUtil {
 
 	/**
 	 * Sets the last response.
-	 * @param {Message} message - Message to set.
+	 * @param {Message | undefined} message - Message to set.
 	 * @returns {Message}
 	 */
 	setLastResponse(message) {
@@ -108,10 +108,10 @@ class CommandUtil {
 		if (this.handler.storeMessages) {
 			if (Array.isArray(message)) {
 				for (const msg of message) {
-					this.messages.set(msg.id, msg);
+					this.messages?.set(msg.id, msg);
 				}
 			} else {
-				this.messages.set(message.id, message);
+				this.messages?.set(message.id, message);
 			}
 		}
 
@@ -131,11 +131,13 @@ class CommandUtil {
 	/**
 	 * Sends a response or edits an old response if available.
 	 * @param {string | MessagePayload | MessageOptions | InteractionReplyOptions} options - Options to use.
-	 * @returns {Promise<Message | APIMessage>}
+	 * @returns {Promise<Message | APIMessage | undefined>}
 	 */
 	async send(options) {
 		const hasFiles =
-			typeof options === "string" ? false : options.files?.length > 0;
+			typeof options === "string" || !options.files?.length
+				? false
+				: options.files?.length > 0;
 
 		/** @type {MessageOptions | InteractionReplyOptions} */
 		let newOptions = {};
@@ -156,11 +158,13 @@ class CommandUtil {
 			) {
 				return this.lastResponse.edit(options);
 			}
-			const sent = await this.message.channel.send(options);
+			const sent = await this.message.channel?.send(options);
 
+			// @ts-expect-error
 			const lastSent = this.setLastResponse(sent);
 			this.setEditable(!lastSent.attachments.size);
 
+			// @ts-expect-error
 			return sent;
 		} else {
 			// @ts-expect-error
@@ -191,14 +195,17 @@ class CommandUtil {
 	 */
 	async sendNew(options) {
 		if (!(this.message.interaction instanceof CommandInteraction)) {
-			const sent = await this.message.channel.send(options);
+			const sent = await this.message.channel?.send(options);
+			// @ts-expect-error
 			const lastSent = this.setLastResponse(sent);
 			this.setEditable(!lastSent.attachments.size);
+			// @ts-expect-error
 			return sent;
 		} else {
 			const sent = await this.message.interaction.followUp(options);
 			// @ts-expect-error
 			this.setLastResponse(sent);
+			// @ts-expect-error
 			return sent;
 		}
 	}
@@ -232,6 +239,7 @@ class CommandUtil {
 				failIfNotExists: newOptions.failIfNotExists ?? true
 			};
 		}
+		// @ts-expect-error
 		return this.send(newOptions);
 	}
 

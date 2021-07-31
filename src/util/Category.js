@@ -5,9 +5,11 @@ const { Collection } = require("discord.js");
 
 /**
  * A group of modules.
+ * @template K
+ * @template V
  * @param {string} id - ID of the category.
- * @param {Iterable} [iterable] - Entries to set.
- * @extends {Collection}
+ * @param {Iterable<[K, V][]>} [iterable] - Entries to set.
+ * @extends {Collection<K, V>}
  */
 class Category extends Collection {
 	/**
@@ -26,10 +28,11 @@ class Category extends Collection {
 
 	/**
 	 * Calls `reload()` on all items in this category.
-	 * @returns {Category}
+	 * @returns {this}
 	 */
 	reloadAll() {
 		for (const m of Array.from(this.values())) {
+			// @ts-expect-error
 			if (m.filepath) m.reload();
 		}
 
@@ -38,10 +41,11 @@ class Category extends Collection {
 
 	/**
 	 * Calls `remove()` on all items in this category.
-	 * @returns {Category}
+	 * @returns {this}
 	 */
 	removeAll() {
 		for (const m of Array.from(this.values())) {
+			// @ts-expect-error
 			if (m.filepath) m.remove();
 		}
 

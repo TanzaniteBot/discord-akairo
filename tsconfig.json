@@ -14,10 +14,12 @@
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"noEmit": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"checkJs": true,
+		"resolveJsonModule": true
 	},
-	"files": ["./src/index.d.ts"]
+	"include": ["src/**/*.ts", "src/**/*.js"],
+	"exclude": ["node_modules"]
 }

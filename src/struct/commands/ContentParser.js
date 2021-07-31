@@ -268,6 +268,14 @@ class Parser {
 		 * Option flags are `{ type: 'OptionFlag', key, value, raw }`.
 		 * The `all` property is partitioned into `phrases`, `flags`, and `optionFlags`.
 		 */
+		/**
+		 * @typedef {Object} results
+		 * @prop {any[]} all
+		 * @prop {any[]} phrases
+		 * @prop {any[]} flags
+		 * @prop {any[]} optionFlags
+		 */
+		/** @type {results} */
 		this.results = {
 			all: [],
 			phrases: [],

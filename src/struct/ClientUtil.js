@@ -45,8 +45,8 @@ class ClientUtil {
 	 * @returns {User}
 	 */
 	resolveUser(text, users, caseSensitive = false, wholeWord = false) {
+		// @ts-expect-error
 		return (
-			// @ts-expect-error
 			users.get(text) ||
 			users.find(user => this.checkUser(text, user, caseSensitive, wholeWord))
 		);
@@ -111,8 +111,8 @@ class ClientUtil {
 	 * @returns {GuildMember}
 	 */
 	resolveMember(text, members, caseSensitive = false, wholeWord = false) {
+		// @ts-expect-error
 		return (
-			// @ts-expect-error
 			members.get(text) ||
 			members.find(member =>
 				this.checkMember(text, member, caseSensitive, wholeWord)
@@ -187,8 +187,8 @@ class ClientUtil {
 	 * @returns {GuildChannel|ThreadChannel}
 	 */
 	resolveChannel(text, channels, caseSensitive = false, wholeWord = false) {
+		// @ts-expect-error
 		return (
-			// @ts-expect-error
 			channels.get(text) ||
 			channels.find(channel =>
 				this.checkChannel(text, channel, caseSensitive, wholeWord)
@@ -245,8 +245,8 @@ class ClientUtil {
 	 * @returns {Role}
 	 */
 	resolveRole(text, roles, caseSensitive = false, wholeWord = false) {
+		// @ts-expect-error
 		return (
-			// @ts-expect-error
 			roles.get(text) ||
 			roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord))
 		);
@@ -301,8 +301,8 @@ class ClientUtil {
 	 * @returns {Emoji}
 	 */
 	resolveEmoji(text, emojis, caseSensitive = false, wholeWord = false) {
+		// @ts-expect-error
 		return (
-			// @ts-expect-error
 			emojis.get(text) ||
 			emojis.find(emoji =>
 				this.checkEmoji(text, emoji, caseSensitive, wholeWord)
@@ -341,9 +341,9 @@ class ClientUtil {
 		if (match && emoji.id === match[1]) return true;
 
 		text = caseSensitive ? text : text.toLowerCase();
-		const name = caseSensitive ? emoji.name : emoji.name.toLowerCase();
+		const name = caseSensitive ? emoji.name : emoji.name?.toLowerCase();
 
-		if (!wholeWord) {
+		if (!wholeWord) {// @ts-expect-error
 			return name.includes(text) || name.includes(text.replace(/:/, ""));
 		}
 
@@ -359,8 +359,8 @@ class ClientUtil {
 	 * @returns {Guild}
 	 */
 	resolveGuild(text, guilds, caseSensitive = false, wholeWord = false) {
+// @ts-expect-error
 		return (
-			// @ts-expect-error
 			guilds.get(text) ||
 			guilds.find(guild =>
 				this.checkGuild(text, guild, caseSensitive, wholeWord)
@@ -433,10 +433,10 @@ class ClientUtil {
 	 * @returns {number}
 	 */
 	compareStreaming(oldMember, newMember) {
-		const s1 = oldMember.presence.activities?.some(
+		const s1 = oldMember.presence?.activities?.some(
 			activity => activity?.type === "STREAMING"
 		);
-		const s2 = newMember.presence.activities?.some(
+		const s2 = newMember.presence?.activities?.some(
 			activity => activity?.type === "STREAMING"
 		);
 		if (s1 === s2) return 0;

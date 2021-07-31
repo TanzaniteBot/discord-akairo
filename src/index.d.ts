@@ -814,7 +814,7 @@ declare module "discord-akairo" {
 		public createdTimestamp: number;
 
 		/** The guild the interaction was sent in (if in a guild channel). */
-		public guild?: Guild;
+		public guild?: Guild | null;
 
 		/** The ID of the interaction. */
 		public id: Snowflake;
@@ -1729,7 +1729,7 @@ declare module "discord-akairo" {
 			type: "all" | "pre" | "post",
 			message: Message | AkairoMessage,
 			command?: Command
-		): Promise<string | void>;
+		): Promise<string | null | void>;
 
 		public on<K extends keyof InhibitorHandlerEvents>(
 			event: K,
@@ -2039,10 +2039,10 @@ declare module "discord-akairo" {
 		public commandHandler: CommandHandler;
 
 		/** The inhibitor handler. */
-		public inhibitorHandler?: InhibitorHandler;
+		public inhibitorHandler?: InhibitorHandler | null;
 
 		/** The listener handler. */
-		public listenerHandler?: ListenerHandler;
+		public listenerHandler?: ListenerHandler | null;
 
 		/** Collection of types. */
 		public types: Collection<string, ArgumentTypeCaster>;
@@ -2069,7 +2069,7 @@ declare module "discord-akairo" {
 		 * Gets the resolver function for a type.
 		 * @param name - Name of type.
 		 */
-		public type(name: string): ArgumentTypeCaster;
+		public type(name: string): ArgumentTypeCaster | undefined;
 	}
 
 	/**

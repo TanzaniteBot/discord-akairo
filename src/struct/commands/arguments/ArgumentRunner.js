@@ -72,6 +72,7 @@ class ArgumentRunner {
 		const iter = generator(message, parsed, state);
 		let curr = await iter.next();
 		while (!curr.done) {
+			/** @type {any} */
 			const value = curr.value;
 			if (ArgumentRunner.isShortCircuit(value)) {
 				augmentRest(value);
@@ -149,6 +150,7 @@ class ArgumentRunner {
 
 				const phrase = parsed.phrases[i] ? parsed.phrases[i].value : "";
 				// `cast` is used instead of `process` since we do not want prompts.
+				// @ts-expect-error
 				const res = await arg.cast(message, phrase);
 				if (res != null) {
 					state.usedIndices.add(i);
@@ -163,6 +165,7 @@ class ArgumentRunner {
 		const index = arg.index == null ? state.phraseIndex : arg.index;
 		const ret = arg.process(
 			message,
+			// @ts-expect-error
 			parsed.phrases[index] ? parsed.phrases[index].value : ""
 		);
 		if (arg.index == null) {
@@ -217,6 +220,7 @@ class ArgumentRunner {
 
 		const res = [];
 		for (const phrase of phrases) {
+			// @ts-expect-error
 			const response = await arg.process(message, phrase.value);
 
 			if (Flag.is(response, "cancel")) {
@@ -245,7 +249,7 @@ class ArgumentRunner {
 		const names = Array.isArray(arg.flag) ? arg.flag : [arg.flag];
 		if (arg.multipleFlags) {
 			const amount = parsed.flags.filter(flag =>
-				names.some(name => name.toLowerCase() === flag.key.toLowerCase())
+				names.some(name => name?.toLowerCase() === flag.key?.toLowerCase())
 			).length;
 
 			// @ts-expect-error
@@ -253,7 +257,7 @@ class ArgumentRunner {
 		}
 
 		const flagFound = parsed.flags.some(flag =>
-			names.some(name => name.toLowerCase() === flag.key.toLowerCase())
+			names.some(name => name?.toLowerCase() === flag.key?.toLowerCase())
 		);
 
 		// @ts-expect-error
@@ -273,13 +277,14 @@ class ArgumentRunner {
 		if (arg.multipleFlags) {
 			const values = parsed.optionFlags
 				.filter(flag =>
-					names.some(name => name.toLowerCase() === flag.key.toLowerCase())
+					names.some(name => name?.toLowerCase() === flag.key?.toLowerCase())
 				)
 				.map(x => x.value)
 				.slice(0, arg.limit);
 
 			const res = [];
 			for (const value of values) {
+				// @ts-expect-error
 				res.push(await arg.process(message, value));
 			}
 
@@ -287,9 +292,10 @@ class ArgumentRunner {
 		}
 
 		const foundFlag = parsed.optionFlags.find(flag =>
+			// @ts-expect-error
 			names.some(name => name.toLowerCase() === flag.key.toLowerCase())
 		);
-
+// @ts-expect-error
 		return arg.process(message, foundFlag != null ? foundFlag.value : "");
 	}
 

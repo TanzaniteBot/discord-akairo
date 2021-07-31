@@ -45,7 +45,7 @@ class AkairoHandler extends EventEmitter {
 
 		/**
 		 * The main directory to modules.
-		 * @type {string}
+		 * @type {string|undefined}
 		 */
 		this.directory = directory;
 
@@ -93,12 +93,13 @@ class AkairoHandler extends EventEmitter {
 	 * @returns {void}
 	 */
 	register(mod, filepath) {
+		// @ts-expect-error
 		mod.filepath = filepath;
 		mod.client = this.client;
 		mod.handler = this;
 		this.modules.set(mod.id, mod);
 
-		if (mod.categoryID === "default" && this.automateCategories) {
+		if (mod.categoryID === "default" && this.automateCategories) {// @ts-expect-error
 			const dirs = path.dirname(filepath).split(path.sep);
 			mod.categoryID = dirs[dirs.length - 1];
 		}
@@ -107,8 +108,8 @@ class AkairoHandler extends EventEmitter {
 			this.categories.set(mod.categoryID, new Category(mod.categoryID));
 		}
 
-		const category = this.categories.get(mod.categoryID);
-		mod.category = category;
+		const category = this.categories.get(mod.categoryID);// @ts-expect-error
+		mod.category = category;// @ts-expect-error
 		category.set(mod.id, mod);
 	}
 
@@ -119,7 +120,7 @@ class AkairoHandler extends EventEmitter {
 	 */
 	deregister(mod) {
 		if (mod.filepath) delete require.cache[require.resolve(mod.filepath)];
-		this.modules.delete(mod.id);
+		this.modules.delete(mod.id);// @ts-expect-error
 		mod.category.delete(mod.id);
 	}
 
@@ -127,7 +128,7 @@ class AkairoHandler extends EventEmitter {
 	 * Loads a module, can be a module class or a filepath.
 	 * @param {string|Function} thing - Module class or path to module.
 	 * @param {boolean} [isReload=false] - Whether this is a reload or not.
-	 * @returns {AkairoModule}
+	 * @returns {AkairoModule|undefined}
 	 */
 	load(thing, isReload = false) {
 		const isClass = typeof thing === "function";
@@ -212,7 +213,7 @@ class AkairoHandler extends EventEmitter {
 	/**
 	 * Reloads a module.
 	 * @param {string} id - ID of the module.
-	 * @returns {AkairoModule}
+	 * @returns {AkairoModule|undefined}
 	 */
 	reload(id) {
 		const mod = this.modules.get(id.toString());
@@ -243,7 +244,7 @@ class AkairoHandler extends EventEmitter {
 	/**
 	 * Finds a category by name.
 	 * @param {string} name - Name to find with.
-	 * @returns {Category}
+	 * @returns {Category|undefined}
 	 */
 	findCategory(name) {
 		return this.categories.find(category => {
