@@ -343,7 +343,8 @@ class ClientUtil {
 		text = caseSensitive ? text : text.toLowerCase();
 		const name = caseSensitive ? emoji.name : emoji.name?.toLowerCase();
 
-		if (!wholeWord) {// @ts-expect-error
+		if (!wholeWord) {
+			// @ts-expect-error
 			return name.includes(text) || name.includes(text.replace(/:/, ""));
 		}
 
@@ -359,7 +360,7 @@ class ClientUtil {
 	 * @returns {Guild}
 	 */
 	resolveGuild(text, guilds, caseSensitive = false, wholeWord = false) {
-// @ts-expect-error
+		// @ts-expect-error
 		return (
 			guilds.get(text) ||
 			guilds.find(guild =>

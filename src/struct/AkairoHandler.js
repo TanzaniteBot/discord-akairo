@@ -99,7 +99,8 @@ class AkairoHandler extends EventEmitter {
 		mod.handler = this;
 		this.modules.set(mod.id, mod);
 
-		if (mod.categoryID === "default" && this.automateCategories) {// @ts-expect-error
+		if (mod.categoryID === "default" && this.automateCategories) {
+			// @ts-expect-error
 			const dirs = path.dirname(filepath).split(path.sep);
 			mod.categoryID = dirs[dirs.length - 1];
 		}
@@ -108,8 +109,8 @@ class AkairoHandler extends EventEmitter {
 			this.categories.set(mod.categoryID, new Category(mod.categoryID));
 		}
 
-		const category = this.categories.get(mod.categoryID);// @ts-expect-error
-		mod.category = category;// @ts-expect-error
+		const category = this.categories.get(mod.categoryID); // @ts-expect-error
+		mod.category = category; // @ts-expect-error
 		category.set(mod.id, mod);
 	}
 
@@ -120,7 +121,7 @@ class AkairoHandler extends EventEmitter {
 	 */
 	deregister(mod) {
 		if (mod.filepath) delete require.cache[require.resolve(mod.filepath)];
-		this.modules.delete(mod.id);// @ts-expect-error
+		this.modules.delete(mod.id); // @ts-expect-error
 		mod.category.delete(mod.id);
 	}
 

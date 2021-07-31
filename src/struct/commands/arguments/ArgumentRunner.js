@@ -295,7 +295,7 @@ class ArgumentRunner {
 			// @ts-expect-error
 			names.some(name => name.toLowerCase() === flag.key.toLowerCase())
 		);
-// @ts-expect-error
+		// @ts-expect-error
 		return arg.process(message, foundFlag != null ? foundFlag.value : "");
 	}
 

@@ -413,10 +413,12 @@ class Argument {
 				return Flag.cancel();
 			}
 
-			if (isInfinite) {// @ts-expect-error
+			if (isInfinite) {
+				// @ts-expect-error
 				values.push(parsedValue);
-				const limit = promptOptions.limit;// @ts-expect-error
-				if (values.length < limit)// @ts-expect-error
+				const limit = promptOptions.limit; // @ts-expect-error
+				if (values.length < limit)
+					// @ts-expect-error
 					return promptOne(message, input.content, parsedValue, 1);
 
 				return values;
@@ -432,7 +434,7 @@ class Argument {
 			parsedInput,
 			1 + additionalRetry
 		);
-		if (this.handler.commandUtil &&message.util ) {
+		if (this.handler.commandUtil && message.util) {
 			message.util.setEditable(false);
 		}
 
