@@ -73,7 +73,7 @@ Please see [this file](/docs/general/updates.md) for a list of changes in this f
 Requires Node 12+ and Discord.js v12.
 
 _discord-akairo_  
-`yarn add SkyBlockDev/discord-akairo`
+`yarn add discord-akairo@NotEnoughUpdates/discord-akairo`
 
 _discord.js_  
 `yarn add discord.js@dev`
