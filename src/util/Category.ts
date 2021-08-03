@@ -1,12 +1,15 @@
 import { Collection } from "discord.js";
-import AkairoModule from '../struct/AkairoModule';
+import AkairoModule from "../struct/AkairoModule";
 
 /**
  * A group of modules.
  * @param id - ID of the category.
  * @param iterable - Entries to set.
  */
-export default class Category<K extends string, V extends AkairoModule> extends Collection<K, V> {
+export default class Category<
+	K extends string,
+	V extends AkairoModule
+> extends Collection<K, V> {
 	public constructor(id: string, iterable: Iterable<readonly [K, V]>) {
 		super(iterable);
 

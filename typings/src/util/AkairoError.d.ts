@@ -4,8 +4,8 @@
  * @param args - Arguments.
  */
 export default class AkairoError extends Error {
-    code: string;
-    get name(): string;
-    constructor(key: string, ...args: (string | boolean)[]);
+	code: string;
+	get name(): string;
+	constructor(key: string, ...args: (string | boolean)[]);
 }
 //# sourceMappingURL=AkairoError.d.ts.map

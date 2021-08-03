@@ -28,7 +28,7 @@ export default class AkairoHandler extends EventEmitter {
 
 	/**
 	 * Class to handle.
-	 */	
+	 */
 	public classToHandle: typeof AkairoModule;
 
 	/**
@@ -125,7 +125,7 @@ export default class AkairoHandler extends EventEmitter {
 					if (!m) return null;
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
-			  // eslint-disable-next-line @typescript-eslint/no-var-requires
+					// eslint-disable-next-line @typescript-eslint/no-var-requires
 			  }.call(this, require(thing as string));
 
 		if (mod && mod.prototype instanceof this.classToHandle) {

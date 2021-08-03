@@ -7,49 +7,49 @@ import AkairoHandler from "./AkairoHandler";
  * @param options - Options.
  */
 export default abstract class AkairoModule {
-    /**
-     * Category this belongs to.
-     */
-    category: Category<string, AkairoModule>;
-    /**
-     * ID of the category this belongs to.
-     */
-    categoryID: string;
-    /**
-     *  The Akairo client.
-     */
-    client: AkairoClient;
-    /**
-     * The filepath.
-     */
-    filepath: string;
-    /**
-     * The handler.
-     */
-    handler: AkairoHandler;
-    constructor(id: string, { category }?: AkairoModuleOptions);
-    /**
-     * ID of the module.
-     */
-    id: string;
-    /**
-     * Reloads the module.
-     */
-    reload(): AkairoModule;
-    /**
-     * Removes the module.
-     */
-    remove(): AkairoModule;
-    /**
-     * Returns the ID.
-     */
-    toString(): string;
+	/**
+	 * Category this belongs to.
+	 */
+	category: Category<string, AkairoModule>;
+	/**
+	 * ID of the category this belongs to.
+	 */
+	categoryID: string;
+	/**
+	 *  The Akairo client.
+	 */
+	client: AkairoClient;
+	/**
+	 * The filepath.
+	 */
+	filepath: string;
+	/**
+	 * The handler.
+	 */
+	handler: AkairoHandler;
+	constructor(id: string, { category }?: AkairoModuleOptions);
+	/**
+	 * ID of the module.
+	 */
+	id: string;
+	/**
+	 * Reloads the module.
+	 */
+	reload(): AkairoModule;
+	/**
+	 * Removes the module.
+	 */
+	remove(): AkairoModule;
+	/**
+	 * Returns the ID.
+	 */
+	toString(): string;
 }
 export interface AkairoModuleOptions {
-    /**
-     * Category ID for organization purposes.
-     * Defaults to `default`.
-     */
-    category?: string;
+	/**
+	 * Category ID for organization purposes.
+	 * Defaults to `default`.
+	 */
+	category?: string;
 }
 //# sourceMappingURL=AkairoModule.d.ts.map

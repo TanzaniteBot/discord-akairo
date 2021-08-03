@@ -97,7 +97,10 @@ export default class TaskHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): TaskHandler {
+	public override loadAll(
+		directory?: string,
+		filter?: LoadPredicate
+	): TaskHandler {
 		return super.loadAll(directory, filter) as TaskHandler;
 	}
 

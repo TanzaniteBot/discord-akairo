@@ -183,32 +183,32 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Argument options or generator.
 	 */
-	 public args: ArgumentOptions[] | ArgumentGenerator;
+	public args: ArgumentOptions[] | ArgumentGenerator;
 
 	/**
 	 * Checks if the command should be ran by using an arbitrary condition.
 	 */
-	 public condition: ExecutionPredicate;
+	public condition: ExecutionPredicate;
 
 	/**
 	 * Runs before argument parsing and execution.
 	 */
-	 public before: BeforeAction;
+	public before: BeforeAction;
 
 	/**
 	 * The content parser.
 	 */
-	 public contentParser: ContentParser;
+	public contentParser: ContentParser;
 
 	/**
 	 * The argument runner.
 	 */
-	 public argumentRunner: ArgumentRunner;
+	public argumentRunner: ArgumentRunner;
 
 	/**
 	 * Generator for arguments.
 	 */
-	 public argumentGenerator: ArgumentGenerator;
+	public argumentGenerator: ArgumentGenerator;
 
 	constructor(id: string, options: CommandOptions) {
 		super(id, { category: options.category });

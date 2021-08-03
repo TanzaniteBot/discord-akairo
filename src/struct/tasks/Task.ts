@@ -72,11 +72,11 @@ export default abstract class Task extends AkairoModule {
 	 * Removes the task.
 	 */
 	public override remove(): Task {
-		return super.remove() as Task; 
+		return super.remove() as Task;
 	}
 
-	/** 
-	 * Returns the ID. 
+	/**
+	 * Returns the ID.
 	 */
 	public override toString(): string {
 		return super.toString();
