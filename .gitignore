@@ -4,5 +4,7 @@ node_modules
 .vscode
 
 test/auth.json
+dist/test/auth.json
 test/db.sqlite
+dist/test/db.sqlite
 tsconfig.tsbuildinfo

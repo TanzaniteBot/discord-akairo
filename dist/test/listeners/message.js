@@ -1,0 +1,17 @@
+"use strict";
+/* eslint-disable no-console */
+Object.defineProperty(exports, "__esModule", { value: true });
+const __1 = require("../..");
+class MessageListener extends __1.Listener {
+	constructor() {
+		super("message", {
+			emitter: "client",
+			event: "message",
+			category: "client"
+		});
+	}
+	exec(msg) {
+		console.log(msg.content);
+	}
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWVzc2FnZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3Rlc3QvbGlzdGVuZXJzL21lc3NhZ2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLCtCQUErQjs7QUFFL0IsNkJBQWlDO0FBRWpDLE1BQU0sZUFBZ0IsU0FBUSxZQUFRO0lBQ3JDO1FBQ0MsS0FBSyxDQUFDLFNBQVMsRUFBRTtZQUNoQixPQUFPLEVBQUUsUUFBUTtZQUNqQixLQUFLLEVBQUUsU0FBUztZQUNoQixRQUFRLEVBQUUsUUFBUTtTQUNsQixDQUFDLENBQUM7SUFDSixDQUFDO0lBRUQsSUFBSSxDQUFDLEdBQUc7UUFDUCxPQUFPLENBQUMsR0FBRyxDQUFDLEdBQUcsQ0FBQyxPQUFPLENBQUMsQ0FBQztJQUMxQixDQUFDO0NBQ0QiLCJzb3VyY2VzQ29udGVudCI6WyIvKiBlc2xpbnQtZGlzYWJsZSBuby1jb25zb2xlICovXG5cbmltcG9ydCB7IExpc3RlbmVyIH0gZnJvbSBcIi4uLy4uXCI7XG5cbmNsYXNzIE1lc3NhZ2VMaXN0ZW5lciBleHRlbmRzIExpc3RlbmVyIHtcblx0Y29uc3RydWN0b3IoKSB7XG5cdFx0c3VwZXIoXCJtZXNzYWdlXCIsIHtcblx0XHRcdGVtaXR0ZXI6IFwiY2xpZW50XCIsXG5cdFx0XHRldmVudDogXCJtZXNzYWdlXCIsXG5cdFx0XHRjYXRlZ29yeTogXCJjbGllbnRcIlxuXHRcdH0pO1xuXHR9XG5cblx0ZXhlYyhtc2cpIHtcblx0XHRjb25zb2xlLmxvZyhtc2cuY29udGVudCk7XG5cdH1cbn1cbiJdfQ==
