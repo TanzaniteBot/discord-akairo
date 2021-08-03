@@ -63,7 +63,7 @@ Please see [this file](/docs/general/updates.md) for a list of changes in this f
 - Events for various stages of command handling.
 - Reloadable listeners to easily separate your event handling.
 
-#### Useful utilities and database providers.
+#### Useful utilities.
 
 - Resolvers for members, users, and others that can filter by name.
 - Shortcut methods for making embeds and collections.
