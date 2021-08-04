@@ -64,20 +64,20 @@ Please see [this file](/docs/general/updates.md) for a list of changes in this f
 - Events for various stages of command handling.
 - Reloadable listeners to easily separate your event handling.
 
-#### Useful utilities and database providers.
+#### Useful utilities.
 
 - Resolvers for members, users, and others that can filter by name.
 - Shortcut methods for making embeds and collections.
 
 ## Installation
 
-Requires Node 12+ and Discord.js v12.
+Requires Node 16+ and Discord.js v13.
 
 _discord-akairo_  
-`yarn add SkyBlockDev/discord-akairo`
+`yarn add discord-akairo@NotEnoughUpdates/discord-akairo`
 
 _discord.js_  
-`yarn add discord.js@dev`
+`yarn add discord.js@NotEnoughUpdates/discord.js`
 
 ## Links
 
@@ -90,4 +90,4 @@ _discord.js_
 
 Open an issue or a pull request!  
 Everyone is welcome to do so.  
-Make sure to run `npm test` before committing.
+Make sure to run `yarn test` before committing.

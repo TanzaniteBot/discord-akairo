@@ -384,58 +384,68 @@ class Parser {
  * @private
  */
 class ContentParser {
-    flagWords;
-    optionFlagWords;
-    quoted;
-    separator;
-    constructor({ flagWords = [], optionFlagWords = [], quoted = true, 
-    // @ts-expect-error
-    separator } = {}) {
-        this.flagWords = flagWords;
-        this.flagWords.sort((a, b) => b.length - a.length);
-        this.optionFlagWords = optionFlagWords;
-        this.optionFlagWords.sort((a, b) => b.length - a.length);
-        this.quoted = Boolean(quoted);
-        this.separator = separator;
-    }
-    /**
-     * Parses content.
-     * @param {string} content - Content to parse.
-     * @returns {ContentParserResult}
-     */
-    parse(content) {
-        const tokens = new Tokenizer(content, {
-            flagWords: this.flagWords,
-            optionFlagWords: this.optionFlagWords,
-            quoted: this.quoted,
-            separator: this.separator
-        }).tokenize();
-        return new Parser(tokens, { separated: this.separator != null }).parse();
-    }
-    /**
-     * Extracts the flags from argument options.
-     * @param {ArgumentOptions[]} args - Argument options.
-     * @returns {ExtractedFlags}
-     */
-    static getFlags(args) {
-        const res = {
-            flagWords: [],
-            optionFlagWords: []
-        };
-        for (const arg of args) {
-            const arr = res[arg.match === Constants_1.ArgumentMatches.FLAG ? "flagWords" : "optionFlagWords"];
-            if (arg.match === Constants_1.ArgumentMatches.FLAG ||
-                arg.match === Constants_1.ArgumentMatches.OPTION) {
-                if (Array.isArray(arg.flag)) {
-                    arr.push(...arg.flag);
-                }
-                else {
-                    arr.push(arg.flag);
-                }
-            }
-        }
-        return res;
-    }
+	flagWords;
+	optionFlagWords;
+	quoted;
+	separator;
+	constructor({
+		flagWords = [],
+		optionFlagWords = [],
+		quoted = true,
+		// @ts-expect-error
+		separator
+	} = {}) {
+		this.flagWords = flagWords;
+		this.flagWords.sort((a, b) => b.length - a.length);
+		this.optionFlagWords = optionFlagWords;
+		this.optionFlagWords.sort((a, b) => b.length - a.length);
+		this.quoted = Boolean(quoted);
+		this.separator = separator;
+	}
+	/**
+	 * Parses content.
+	 * @param {string} content - Content to parse.
+	 * @returns {ContentParserResult}
+	 */
+	parse(content) {
+		const tokens = new Tokenizer(content, {
+			flagWords: this.flagWords,
+			optionFlagWords: this.optionFlagWords,
+			quoted: this.quoted,
+			separator: this.separator
+		}).tokenize();
+		return new Parser(tokens, { separated: this.separator != null }).parse();
+	}
+	/**
+	 * Extracts the flags from argument options.
+	 * @param {ArgumentOptions[]} args - Argument options.
+	 * @returns {ExtractedFlags}
+	 */
+	static getFlags(args) {
+		const res = {
+			flagWords: [],
+			optionFlagWords: []
+		};
+		for (const arg of args) {
+			const arr =
+				res[
+					arg.match === Constants_1.ArgumentMatches.FLAG
+						? "flagWords"
+						: "optionFlagWords"
+				];
+			if (
+				arg.match === Constants_1.ArgumentMatches.FLAG ||
+				arg.match === Constants_1.ArgumentMatches.OPTION
+			) {
+				if (Array.isArray(arg.flag)) {
+					arr.push(...arg.flag);
+				} else {
+					arr.push(arg.flag);
+				}
+			}
+		}
+		return res;
+	}
 }
 exports.default = ContentParser;
 /**

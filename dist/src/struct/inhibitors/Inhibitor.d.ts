@@ -65,20 +65,20 @@ export default abstract class Inhibitor extends AkairoModule {
  * Also includes properties from AkairoModuleOptions.
  */
 export interface InhibitorOptions extends AkairoModuleOptions {
-    /**
-     * Reason emitted when command or message is blocked.
-     */
-    reason?: string;
-    /**
-     * Can be 'all' to run on all messages, 'pre' to run on messages not blocked by the built-in inhibitors, or 'post' to run on messages that are commands.
-     * Defaults to `post`
-     */
-    type?: "all" | "pre" | "post";
-    /**
-     * Priority for the inhibitor for when more than one inhibitors block a message.
-     * The inhibitor with the highest priority is the one that is used for the block reason.
-     * Defaults to `0`
-     */
-    priority?: number;
+	/**
+	 * Reason emitted when command or message is blocked.
+	 */
+	reason?: string;
+	/**
+	 * Can be 'all' to run on all messages, 'pre' to run on messages not blocked by the built-in inhibitors, or 'post' to run on messages that are commands.
+	 * Defaults to `post`
+	 */
+	type?: "all" | "pre" | "post";
+	/**
+	 * Priority for the inhibitor for when more than one inhibitors block a message.
+	 * The inhibitor with the highest priority is the one that is used for the block reason.
+	 * Defaults to `0`
+	 */
+	priority?: number;
 }
 //# sourceMappingURL=Inhibitor.d.ts.map

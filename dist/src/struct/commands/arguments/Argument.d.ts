@@ -178,122 +178,128 @@ export default class Argument {
  * Options for how an argument parses text.
  */
 export interface ArgumentOptions {
-    /**
-     * Default value if no input or did not cast correctly.
-     * If using a flag match, setting the default value to a non-void value inverses the result.
-     */
-    default?: DefaultValueSupplier | any;
-    /** The description of the argument */
-    description?: string | any | any[];
-    /** The string(s) to use as the flag for flag or option match. */
-    flag?: string | string[];
-    /**  ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator. */
-    id?: string;
-    /**
-     * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
-     * Ignored when used with the unordered option.
-     */
-    index?: number;
-    /**
-     * Amount of phrases to match when matching more than one.
-     * Applicable to text, content, rest, or separate match only.
-     * Defaults to infinity.
-     */
-    limit?: number;
-    /** Method to match text. Defaults to 'phrase'. */
-    match?: ArgumentMatch;
-    /** Function to modify otherwise content. */
-    modifyOtherwise?: OtherwiseContentModifier;
-    /**
-     * Whether or not to have flags process multiple inputs.
-     * For option flags, this works like the separate match; the limit option will also work here.
-     * For flags, this will count the number of occurrences.
-     */
-    multipleFlags?: boolean;
-    /** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
-    otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
-    /** Prompt options for when user does not provide input. */
-    prompt?: ArgumentPromptOptions | boolean;
-    /** Type to cast to. */
-    type?: ArgumentType | ArgumentTypeCaster;
-    /**
-     * Marks the argument as unordered.
-     * Each phrase is evaluated in order until one matches (no input at all means no evaluation).
-     * Passing in a number forces evaluation from that index onwards.
-     * Passing in an array of numbers forces evaluation on those indices only.
-     * If there is a match, that index is considered used and future unordered args will not check that index again.
-     * If there is no match, then the prompting or default value is used.
-     * Applicable to phrase match only.
-     */
-    unordered?: boolean | number | number[];
+	/**
+	 * Default value if no input or did not cast correctly.
+	 * If using a flag match, setting the default value to a non-void value inverses the result.
+	 */
+	default?: DefaultValueSupplier | any;
+	/** The description of the argument */
+	description?: string | any | any[];
+	/** The string(s) to use as the flag for flag or option match. */
+	flag?: string | string[];
+	/**  ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator. */
+	id?: string;
+	/**
+	 * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
+	 * Ignored when used with the unordered option.
+	 */
+	index?: number;
+	/**
+	 * Amount of phrases to match when matching more than one.
+	 * Applicable to text, content, rest, or separate match only.
+	 * Defaults to infinity.
+	 */
+	limit?: number;
+	/** Method to match text. Defaults to 'phrase'. */
+	match?: ArgumentMatch;
+	/** Function to modify otherwise content. */
+	modifyOtherwise?: OtherwiseContentModifier;
+	/**
+	 * Whether or not to have flags process multiple inputs.
+	 * For option flags, this works like the separate match; the limit option will also work here.
+	 * For flags, this will count the number of occurrences.
+	 */
+	multipleFlags?: boolean;
+	/** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
+	otherwise?:
+		| string
+		| MessagePayload
+		| MessageOptions
+		| OtherwiseContentSupplier;
+	/** Prompt options for when user does not provide input. */
+	prompt?: ArgumentPromptOptions | boolean;
+	/** Type to cast to. */
+	type?: ArgumentType | ArgumentTypeCaster;
+	/**
+	 * Marks the argument as unordered.
+	 * Each phrase is evaluated in order until one matches (no input at all means no evaluation).
+	 * Passing in a number forces evaluation from that index onwards.
+	 * Passing in an array of numbers forces evaluation on those indices only.
+	 * If there is a match, that index is considered used and future unordered args will not check that index again.
+	 * If there is no match, then the prompting or default value is used.
+	 * Applicable to phrase match only.
+	 */
+	unordered?: boolean | number | number[];
 }
 /**
  * Data passed to argument prompt functions.
  */
 export interface ArgumentPromptData {
-    /** Whether the prompt is infinite or not. */
-    infinite: boolean;
-    /** The message that caused the prompt. */
-    message: Message;
-    /** Amount of retries so far. */
-    retries: number;
-    /** The input phrase that caused the prompt if there was one, otherwise an empty string. */
-    phrase: string;
-    /** The value that failed if there was one, otherwise null. */
-    failure: void | (Flag & {
-        value: any;
-    });
+	/** Whether the prompt is infinite or not. */
+	infinite: boolean;
+	/** The message that caused the prompt. */
+	message: Message;
+	/** Amount of retries so far. */
+	retries: number;
+	/** The input phrase that caused the prompt if there was one, otherwise an empty string. */
+	phrase: string;
+	/** The value that failed if there was one, otherwise null. */
+	failure:
+		| void
+		| (Flag & {
+				value: any;
+		  });
 }
 /**
  * A prompt to run if the user did not input the argument correctly.
  * Can only be used if there is not a default value (unless optional is true).
  */
 export interface ArgumentPromptOptions {
-    /**
-     * Whenever an input matches the format of a command, this option controls whether or not to cancel this command and run that command.
-     * The command to be run may be the same command or some other command.
-     * Defaults to true,
-     */
-    breakout?: boolean;
-    /** Text sent on cancellation of command. */
-    cancel?: string | MessagePayload | MessageOptions | PromptContentSupplier;
-    /** Word to use for cancelling the command. Defaults to 'cancel'. */
-    cancelWord?: string;
-    /** Text sent on amount of tries reaching the max. */
-    ended?: string | MessagePayload | MessageOptions | PromptContentSupplier;
-    /**
-     * Prompts forever until the stop word, cancel word, time limit, or retry limit.
-     * Note that the retry count resets back to one on each valid entry.
-     * The final evaluated argument will be an array of the inputs.
-     * Defaults to false.
-     */
-    infinite?: boolean;
-    /** Amount of inputs allowed for an infinite prompt before finishing. Defaults to Infinity. */
-    limit?: number;
-    /** Function to modify cancel messages. */
-    modifyCancel?: PromptContentModifier;
-    /** Function to modify out of tries messages. */
-    modifyEnded?: PromptContentModifier;
-    /** Function to modify retry prompts. */
-    modifyRetry?: PromptContentModifier;
-    /** Function to modify start prompts. */
-    modifyStart?: PromptContentModifier;
-    /** Function to modify timeout messages. */
-    modifyTimeout?: PromptContentModifier;
-    /** Prompts only when argument is provided but was not of the right type. Defaults to false. */
-    optional?: boolean;
-    /** Amount of retries allowed. Defaults to 1. */
-    retries?: number;
-    /** Text sent on a retry (failure to cast type). */
-    retry?: string | MessagePayload | MessageOptions | PromptContentSupplier;
-    /** Text sent on start of prompt. */
-    start?: string | MessagePayload | MessageOptions | PromptContentSupplier;
-    /** Word to use for ending infinite prompts. Defaults to 'stop'. */
-    stopWord?: string;
-    /** Time to wait for input. Defaults to 30000. */
-    time?: number;
-    /** Text sent on collector time out. */
-    timeout?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	/**
+	 * Whenever an input matches the format of a command, this option controls whether or not to cancel this command and run that command.
+	 * The command to be run may be the same command or some other command.
+	 * Defaults to true,
+	 */
+	breakout?: boolean;
+	/** Text sent on cancellation of command. */
+	cancel?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	/** Word to use for cancelling the command. Defaults to 'cancel'. */
+	cancelWord?: string;
+	/** Text sent on amount of tries reaching the max. */
+	ended?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	/**
+	 * Prompts forever until the stop word, cancel word, time limit, or retry limit.
+	 * Note that the retry count resets back to one on each valid entry.
+	 * The final evaluated argument will be an array of the inputs.
+	 * Defaults to false.
+	 */
+	infinite?: boolean;
+	/** Amount of inputs allowed for an infinite prompt before finishing. Defaults to Infinity. */
+	limit?: number;
+	/** Function to modify cancel messages. */
+	modifyCancel?: PromptContentModifier;
+	/** Function to modify out of tries messages. */
+	modifyEnded?: PromptContentModifier;
+	/** Function to modify retry prompts. */
+	modifyRetry?: PromptContentModifier;
+	/** Function to modify start prompts. */
+	modifyStart?: PromptContentModifier;
+	/** Function to modify timeout messages. */
+	modifyTimeout?: PromptContentModifier;
+	/** Prompts only when argument is provided but was not of the right type. Defaults to false. */
+	optional?: boolean;
+	/** Amount of retries allowed. Defaults to 1. */
+	retries?: number;
+	/** Text sent on a retry (failure to cast type). */
+	retry?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	/** Text sent on start of prompt. */
+	start?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	/** Word to use for ending infinite prompts. Defaults to 'stop'. */
+	stopWord?: string;
+	/** Time to wait for input. Defaults to 30000. */
+	time?: number;
+	/** Text sent on collector time out. */
+	timeout?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 }
 /**
  * The method to match arguments from text.
@@ -317,7 +323,16 @@ export interface ArgumentPromptOptions {
  * It preserves the original whitespace between phrases and the quotes around phrases.
  * - `none` matches nothing at all and an empty string will be used for type operations.
  */
-export declare type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" | "text" | "content" | "restContent" | "none";
+export declare type ArgumentMatch =
+	| "phrase"
+	| "flag"
+	| "option"
+	| "rest"
+	| "separate"
+	| "text"
+	| "content"
+	| "restContent"
+	| "none";
 /**
  * The type that the argument should be cast to.
  * - `string` does not cast to any type.
@@ -367,7 +382,62 @@ export declare type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "sep
  * A regular expression can also be used.
  * The evaluated argument will be an object containing the `match` and `matches` if global.
  */
-export declare type ArgumentType = "string" | "lowercase" | "uppercase" | "charCodes" | "number" | "integer" | "bigint" | "emojint" | "url" | "date" | "color" | "user" | "users" | "member" | "members" | "relevant" | "relevants" | "channel" | "channels" | "textChannel" | "textChannels" | "voiceChannel" | "voiceChannels" | "categoryChannel" | "categoryChannels" | "newsChannel" | "newsChannels" | "storeChannel" | "storeChannels" | "stageChannel" | "stageChannels" | "threadChannel" | "threadChannels" | "role" | "roles" | "emoji" | "emojis" | "guild" | "guilds" | "message" | "guildMessage" | "relevantMessage" | "invite" | "userMention" | "memberMention" | "channelMention" | "roleMention" | "emojiMention" | "commandAlias" | "command" | "inhibitor" | "listener" | (string | string[])[] | RegExp | string;
+export declare type ArgumentType =
+	| "string"
+	| "lowercase"
+	| "uppercase"
+	| "charCodes"
+	| "number"
+	| "integer"
+	| "bigint"
+	| "emojint"
+	| "url"
+	| "date"
+	| "color"
+	| "user"
+	| "users"
+	| "member"
+	| "members"
+	| "relevant"
+	| "relevants"
+	| "channel"
+	| "channels"
+	| "textChannel"
+	| "textChannels"
+	| "voiceChannel"
+	| "voiceChannels"
+	| "categoryChannel"
+	| "categoryChannels"
+	| "newsChannel"
+	| "newsChannels"
+	| "storeChannel"
+	| "storeChannels"
+	| "stageChannel"
+	| "stageChannels"
+	| "threadChannel"
+	| "threadChannels"
+	| "role"
+	| "roles"
+	| "emoji"
+	| "emojis"
+	| "guild"
+	| "guilds"
+	| "message"
+	| "guildMessage"
+	| "relevantMessage"
+	| "invite"
+	| "userMention"
+	| "memberMention"
+	| "channelMention"
+	| "roleMention"
+	| "emojiMention"
+	| "commandAlias"
+	| "command"
+	| "inhibitor"
+	| "listener"
+	| (string | string[])[]
+	| RegExp
+	| string;
 /**
  * A function for processing user input to use as an argument.
  * A void return value will use the default value for the argument or start a prompt.
@@ -376,7 +446,10 @@ export declare type ArgumentType = "string" | "lowercase" | "uppercase" | "charC
  * @param message - Message that triggered the command.
  * @param phrase - The user input.
  */
-export declare type ArgumentTypeCaster = (message: Message, phrase: string) => any;
+export declare type ArgumentTypeCaster = (
+	message: Message,
+	phrase: string
+) => any;
 /**
  * A function for processing some value to use as an argument.
  * This is mainly used in composing argument types.
@@ -388,61 +461,104 @@ export declare type ArgumentTypeCaster_ = (message: Message, value: any) => any;
  * Data passed to functions that run when things failed.
  */
 export interface FailureData {
-    /** The input phrase that failed if there was one, otherwise an empty string. */
-    phrase: string;
-    /** The value that failed if there was one, otherwise null. */
-    failure: void | (Flag & {
-        value: any;
-    });
+	/** The input phrase that failed if there was one, otherwise an empty string. */
+	phrase: string;
+	/** The value that failed if there was one, otherwise null. */
+	failure:
+		| void
+		| (Flag & {
+				value: any;
+		  });
 }
 /**
  * Defaults for argument options.
  */
 export interface DefaultArgumentOptions {
-    /** Default prompt options. */
-    prompt?: ArgumentPromptOptions;
-    /** Default text sent if argument parsing fails. */
-    otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
-    /** Function to modify otherwise content. */
-    modifyOtherwise?: OtherwiseContentModifier;
+	/** Default prompt options. */
+	prompt?: ArgumentPromptOptions;
+	/** Default text sent if argument parsing fails. */
+	otherwise?:
+		| string
+		| MessagePayload
+		| MessageOptions
+		| OtherwiseContentSupplier;
+	/** Function to modify otherwise content. */
+	modifyOtherwise?: OtherwiseContentModifier;
 }
 /**
  * Function get the default value of the argument.
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export declare type DefaultValueSupplier = (message: Message, data: FailureData) => any;
+export declare type DefaultValueSupplier = (
+	message: Message,
+	data: FailureData
+) => any;
 /**
  * A function for validating parsed arguments.
  * @param message - Message that triggered the command.
  * @param phrase - The user input.
  * @param value - The parsed value.
  */
-export declare type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
+export declare type ParsedValuePredicate = (
+	message: Message,
+	phrase: string,
+	value: any
+) => boolean;
 /**
  * A function modifying a prompt text.
  * @param message - Message that triggered the command.
  * @param text - Text to modify.
  * @param data - Miscellaneous data.
  */
-export declare type OtherwiseContentModifier = (message: Message, text: string, data: FailureData) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+export declare type OtherwiseContentModifier = (
+	message: Message,
+	text: string,
+	data: FailureData
+) =>
+	| string
+	| MessagePayload
+	| MessageOptions
+	| Promise<string | MessagePayload | MessageOptions>;
 /**
  * A function returning the content if argument parsing fails.
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export declare type OtherwiseContentSupplier = (message: Message, data: FailureData) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+export declare type OtherwiseContentSupplier = (
+	message: Message,
+	data: FailureData
+) =>
+	| string
+	| MessagePayload
+	| MessageOptions
+	| Promise<string | MessagePayload | MessageOptions>;
 /**
  * A function modifying a prompt text.
  * @param message - Message that triggered the command.
  * @param text - Text from the prompt to modify.
  * @param data - Miscellaneous data.
  */
-export declare type PromptContentModifier = (message: Message, text: string, data: ArgumentPromptData) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+export declare type PromptContentModifier = (
+	message: Message,
+	text: string,
+	data: ArgumentPromptData
+) =>
+	| string
+	| MessagePayload
+	| MessageOptions
+	| Promise<string | MessagePayload | MessageOptions>;
 /**
  * A function returning text for the prompt.
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export declare type PromptContentSupplier = (message: Message, data: ArgumentPromptData) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+export declare type PromptContentSupplier = (
+	message: Message,
+	data: ArgumentPromptData
+) =>
+	| string
+	| MessagePayload
+	| MessageOptions
+	| Promise<string | MessagePayload | MessageOptions>;
 //# sourceMappingURL=Argument.d.ts.map

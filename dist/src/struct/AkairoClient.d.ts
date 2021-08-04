@@ -34,9 +34,9 @@ export default class AkairoClient extends Client {
  * Options for the client.
  */
 export interface AkairoOptions {
-    /** Discord ID of the client owner(s). */
-    ownerID?: Snowflake | Snowflake[];
-    /** Discord ID of the client superUsers(s). */
-    superUserID?: Snowflake | Snowflake[];
+	/** Discord ID of the client owner(s). */
+	ownerID?: Snowflake | Snowflake[];
+	/** Discord ID of the client superUsers(s). */
+	superUserID?: Snowflake | Snowflake[];
 }
 //# sourceMappingURL=AkairoClient.d.ts.map

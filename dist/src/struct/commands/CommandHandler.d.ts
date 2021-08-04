@@ -461,15 +461,22 @@ export interface ParsedComponentData {
  * @param message - Message to check.
  * @param command - Command to check.
  */
-export declare type IgnoreCheckPredicate = (message: Message | AkairoMessage, command: Command) => boolean;
+export declare type IgnoreCheckPredicate = (
+	message: Message | AkairoMessage,
+	command: Command
+) => boolean;
 /**
  * A function that returns whether mentions can be used as a prefix.
  * @param message - Message to option for.
  */
-export declare type MentionPrefixPredicate = (message: Message) => boolean | Promise<boolean>;
+export declare type MentionPrefixPredicate = (
+	message: Message
+) => boolean | Promise<boolean>;
 /**
  * A function that returns the prefix(es) to use.
  * @param message - Message to get prefix for.
  */
-export declare type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
+export declare type PrefixSupplier = (
+	message: Message
+) => string | string[] | Promise<string | string[]>;
 //# sourceMappingURL=CommandHandler.d.ts.map

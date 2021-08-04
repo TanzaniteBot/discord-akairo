@@ -1,4 +1,7 @@
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
+import AkairoHandler, {
+	AkairoHandlerOptions,
+	LoadPredicate
+} from "../AkairoHandler";
 import Inhibitor from "./Inhibitor";
 import { Awaited, Collection, Message } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage";

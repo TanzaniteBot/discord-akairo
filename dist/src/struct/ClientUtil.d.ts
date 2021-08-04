@@ -1,5 +1,19 @@
 /// <reference types="node" />
-import { BufferResolvable, Collection, Emoji, Guild, GuildChannel, GuildMember, MessageAttachment, MessageEmbed, MessageEmbedOptions, Role, Snowflake, ThreadChannel, User } from "discord.js";
+import {
+	BufferResolvable,
+	Collection,
+	Emoji,
+	Guild,
+	GuildChannel,
+	GuildMember,
+	MessageAttachment,
+	MessageEmbed,
+	MessageEmbedOptions,
+	Role,
+	Snowflake,
+	ThreadChannel,
+	User
+} from "discord.js";
 import { Stream } from "stream";
 import AkairoClient from "./AkairoClient";
 /**

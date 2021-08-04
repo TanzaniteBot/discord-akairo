@@ -5,7 +5,7 @@ import { Collection } from "discord.js";
 import EventEmitter from "events";
 import AkairoClient from "./AkairoClient";
 export declare type Static<M> = {
-    (): M;
+	(): M;
 };
 /**
  * Base class for handling modules.
@@ -110,21 +110,21 @@ export declare type LoadPredicate = (filepath: string) => boolean;
  * Options for module loading and handling.
  */
 export interface AkairoHandlerOptions {
-    /** Whether or not to set each module's category to its parent directory name. */
-    automateCategories?: boolean;
-    /** Only classes that extends this class can be handled. */
-    classToHandle?: typeof AkairoModule;
-    /** Directory to modules. */
-    directory?: string;
-    /**
-     * File extensions to load.
-     * By default this is .js, .json, and .ts files.
-     */
-    extensions?: string[] | Set<string>;
-    /**
-     * Filter for files to be loaded.
-     * Can be set individually for each handler by overriding the `loadAll` method.
-     */
-    loadFilter?: LoadPredicate;
+	/** Whether or not to set each module's category to its parent directory name. */
+	automateCategories?: boolean;
+	/** Only classes that extends this class can be handled. */
+	classToHandle?: typeof AkairoModule;
+	/** Directory to modules. */
+	directory?: string;
+	/**
+	 * File extensions to load.
+	 * By default this is .js, .json, and .ts files.
+	 */
+	extensions?: string[] | Set<string>;
+	/**
+	 * Filter for files to be loaded.
+	 * Can be set individually for each handler by overriding the `loadAll` method.
+	 */
+	loadFilter?: LoadPredicate;
 }
 //# sourceMappingURL=AkairoHandler.d.ts.map
