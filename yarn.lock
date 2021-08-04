@@ -31,9 +31,9 @@
     js-tokens "^4.0.0"
 
 "@babel/parser@^7.9.4":
-  version "7.14.9"
-  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.14.9.tgz#596c1ad67608070058ebf8df50c1eaf65db895a4"
-  integrity sha512-RdUTOseXJ8POjjOeEBEvNMIZU/nm4yu2rufRkcibzkkg7DmQvXU8v3M4Xk9G7uuI86CDGkKcuDWgioqZm+mScQ==
+  version "7.15.0"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.15.0.tgz#b6d6e29058ca369127b0eeca2a1c4b5794f1b6b9"
+  integrity sha512-0v7oNOjr6YT9Z2RAOTv4T9aP+ubfx4Q/OhVtAet7PFDt0t9Oy6Jn+/rfC6b8HJ5zEqrQCiMxJfgtHpmIminmJQ==
 
 "@discordjs/builders@^0.3.0":
   version "0.3.0"
@@ -588,6 +588,10 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
+discord-akairo-message-util@NotEnoughUpdates/discord-akairo-message-util:
+  version "1.0.0"
+  resolved "https://codeload.github.com/NotEnoughUpdates/discord-akairo-message-util/tar.gz/62c36e6ad670802dfe8b2a130c95af20b5e28ca7"
+
 discord-api-types@^0.19.0:
   version "0.19.0"
   resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.19.0.tgz#86ba8021b29190cf860e90a2bc3e29b1d7aab3ba"
@@ -610,7 +614,7 @@ discord.js-docgen@discordjs/docgen:
 
 discord.js@NotEnoughUpdates/discord.js:
   version "13.0.0-dev"
-  resolved "https://codeload.github.com/NotEnoughUpdates/discord.js/tar.gz/b2d12adf278514799faaea6e46f87d867ce4c117"
+  resolved "https://codeload.github.com/NotEnoughUpdates/discord.js/tar.gz/d118277c618fdb08a15b90e3d342e5651befdee1"
   dependencies:
     "@discordjs/builders" "^0.3.0"
     "@discordjs/collection" "^0.2.1"

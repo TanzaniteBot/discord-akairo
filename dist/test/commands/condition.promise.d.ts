@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Command } from "../../src/index";
+import { Command } from "../dist/../../src/index";
 export default class ConditionalPromiseCommand extends Command {
     constructor();
     condition(message: Message): Promise<boolean>;
