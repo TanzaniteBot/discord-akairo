@@ -5,11 +5,11 @@ import AkairoHandler, {
 } from "../AkairoHandler";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants";
 import {
-	Channel,
 	Collection,
 	CommandInteraction,
 	Message,
 	Snowflake,
+	TextBasedChannels,
 	User
 } from "discord.js";
 import Command, { KeySupplier } from "./Command";
@@ -600,10 +600,7 @@ export default class CommandHandler extends AkairoHandler {
 			return false;
 		}
 
-		const message = new AkairoMessage(this.client, interaction, {
-			replied: this.autoDefer || command.slashEphemeral,
-			command
-		});
+		const message = new AkairoMessage(this.client, interaction, command);
 
 		try {
 			if (this.fetchMembers && message.guild && !message.member) {
@@ -924,7 +921,7 @@ export default class CommandHandler extends AkairoHandler {
 				CommandHandlerEvents.MESSAGE_BLOCKED,
 				message,
 				BuiltInReasons.BOT
-			); // @ts-expect-error
+			);
 		} else if (!slash && this.hasPrompt(message.channel, message.author)) {
 			this.emit(CommandHandlerEvents.IN_PROMPT, message);
 		} else {
@@ -1370,7 +1367,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param channel - Channel to add to.
 	 * @param user - User to add.
 	 */
-	public addPrompt(channel: Channel, user: User): void {
+	public addPrompt(channel: TextBasedChannels, user: User): void {
 		let users = this.prompts.get(channel.id);
 		if (!users) this.prompts.set(channel.id, new Set());
 		users = this.prompts.get(channel.id);
@@ -1382,7 +1379,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param channel - Channel to remove from.
 	 * @param user - User to remove.
 	 */
-	public removePrompt(channel: Channel, user: User): void {
+	public removePrompt(channel: TextBasedChannels, user: User): void {
 		const users = this.prompts.get(channel.id);
 		if (!users) return;
 		users.delete(user.id);
@@ -1394,7 +1391,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param channel - Channel to check.
 	 * @param user - User to check.
 	 */
-	public hasPrompt(channel: Channel, user: User): boolean {
+	public hasPrompt(channel: TextBasedChannels, user: User): boolean {
 		const users = this.prompts.get(channel.id);
 		if (!users) return false;
 		return users.has(user.id);

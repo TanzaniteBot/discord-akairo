@@ -5,7 +5,7 @@ import ClientUtil from "./ClientUtil";
  * @param options - Options for the client.
  * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
  */
-export default class AkairoClient extends Client {
+export default class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
     constructor(options?: AkairoOptions & ClientOptions, clientOptions?: ClientOptions);
     /**
      * The ID of the owner(s).
@@ -34,9 +34,9 @@ export default class AkairoClient extends Client {
  * Options for the client.
  */
 export interface AkairoOptions {
-	/** Discord ID of the client owner(s). */
-	ownerID?: Snowflake | Snowflake[];
-	/** Discord ID of the client superUsers(s). */
-	superUserID?: Snowflake | Snowflake[];
+    /** Discord ID of the client owner(s). */
+    ownerID?: Snowflake | Snowflake[];
+    /** Discord ID of the client superUsers(s). */
+    superUserID?: Snowflake | Snowflake[];
 }
 //# sourceMappingURL=AkairoClient.d.ts.map

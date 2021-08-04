@@ -1,5 +1,5 @@
-import { CommandUtil } from "discord-akairo";
 import packageJSON from "../package.json";
+import CommandUtil from "./struct/commands/CommandUtil";
 
 export { default as AkairoClient } from "./struct/AkairoClient";
 export { default as AkairoHandler } from "./struct/AkairoHandler";

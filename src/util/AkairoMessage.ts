@@ -28,7 +28,7 @@ export default class AkairoMessage {
 	public constructor(
 		client: AkairoClient,
 		interaction: CommandInteraction,
-		{ replied, command }: { replied: boolean; command: Command }
+		command: Command
 	) {
 		this.author = interaction.user;
 
@@ -49,8 +49,6 @@ export default class AkairoMessage {
 		this.interaction = interaction;
 
 		this.member = interaction.member;
-
-		this.replied = replied;
 
 		for (const option of command.slashOptions) {
 			this.content += ` ${option.name}: ${
@@ -104,8 +102,8 @@ export default class AkairoMessage {
 	 */
 	public id: Snowflake;
 
-	/** 
-	 * The command interaction. 
+	/**
+	 * The command interaction.
 	 */
 	public interaction: CommandInteraction;
 
@@ -115,13 +113,8 @@ export default class AkairoMessage {
 	 */
 	public member: GuildMember | APIInteractionGuildMember;
 
-	/** 
-	 * Whether or not the interaction has been replied to. 
-	 */
-	public replied: boolean;
-
-	/** 
-	 * Utilities for command responding. 
+	/**
+	 * Utilities for command responding.
 	 */
 	public util: CommandUtil;
 

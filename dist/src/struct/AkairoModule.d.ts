@@ -46,10 +46,10 @@ export default abstract class AkairoModule {
     toString(): string;
 }
 export interface AkairoModuleOptions {
-	/**
-	 * Category ID for organization purposes.
-	 * Defaults to `default`.
-	 */
-	category?: string;
+    /**
+     * Category ID for organization purposes.
+     * Defaults to `default`.
+     */
+    category?: string;
 }
 //# sourceMappingURL=AkairoModule.d.ts.map

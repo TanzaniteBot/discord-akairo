@@ -1,15 +1,5 @@
 import { APIMessage } from "discord-api-types";
-import {
-	Collection,
-	MessagePayload,
-	InteractionReplyOptions,
-	Message,
-	MessageEditOptions,
-	MessageOptions,
-	ReplyMessageOptions,
-	WebhookEditMessageOptions,
-	Snowflake
-} from "discord.js";
+import { Collection, MessagePayload, InteractionReplyOptions, Message, MessageEditOptions, MessageOptions, ReplyMessageOptions, WebhookEditMessageOptions, Snowflake } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage";
 import CommandHandler, { ParsedComponentData } from "./CommandHandler";
 /**
@@ -82,7 +72,7 @@ export default class CommandUtil {
      * If the message is a slash command, edits the slash response.
      * @param options - Options to use.
      */
-    edit(options: string | MessageEditOptions | MessagePayload | WebhookEditMessageOptions): Promise<Message>;
+    edit(options: string | MessageEditOptions | MessagePayload | WebhookEditMessageOptions): Promise<Message | APIMessage>;
     /**
      * Deletes the last response.
      */

@@ -1,5 +1,6 @@
 import { ArgumentTypes } from "../../../util/Constants";
 import {
+	BaseGuildVoiceChannel,
 	Collection,
 	GuildMember,
 	Message,
@@ -14,6 +15,7 @@ import { ArgumentTypeCaster } from "./Argument";
 import AkairoClient from "../../AkairoClient";
 import InhibitorHandler from "../../inhibitors/InhibitorHandler";
 import ListenerHandler from "../../listeners/ListenerHandler";
+import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels";
 
 /**
  * Type resolver for command arguments.
@@ -246,8 +248,9 @@ export default class TypeResolver {
 				if (!persons.size) return null;
 
 				if (message.channel.type.startsWith("GUILD")) {
-					// @ts-expect-error
-					return persons.map((member: GuildMember) => member.user);
+					return (persons as Collection<string, GuildMember>).map(
+						(member: GuildMember) => member.user
+					);
 				}
 
 				return persons;
@@ -258,7 +261,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				return this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 			},
 
@@ -267,7 +273,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				return channels.size ? channels : null;
 			},
@@ -277,7 +286,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || channel.type !== "GUILD_TEXT") return null;
 
@@ -289,7 +301,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 
@@ -302,7 +317,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || channel.type !== "GUILD_VOICE") return null;
 
@@ -314,7 +332,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 
@@ -327,7 +348,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || channel.type !== "GUILD_CATEGORY") return null;
 
@@ -339,7 +363,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 
@@ -354,7 +381,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || channel.type !== "GUILD_NEWS") return null;
 
@@ -366,7 +396,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 
@@ -379,7 +412,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || channel.type !== "GUILD_STORE") return null;
 
@@ -391,7 +427,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 
@@ -404,7 +443,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || channel.type !== "GUILD_STAGE_VOICE") return null;
 
@@ -416,7 +458,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 
@@ -431,7 +476,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channel = this.client.util.resolveChannel(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channel || !channel.type.includes("THREAD")) return null;
 
@@ -443,7 +491,10 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const channels = this.client.util.resolveChannels(
 					phrase,
-					message.guild.channels.cache
+					message.guild.channels.cache as Collection<
+						string,
+						GuildTextBasedChannels | BaseGuildVoiceChannel
+					>
 				);
 				if (!channels.size) return null;
 

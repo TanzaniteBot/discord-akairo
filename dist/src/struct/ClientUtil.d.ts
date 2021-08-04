@@ -1,20 +1,7 @@
 /// <reference types="node" />
-import {
-	BufferResolvable,
-	Collection,
-	Emoji,
-	Guild,
-	GuildChannel,
-	GuildMember,
-	MessageAttachment,
-	MessageEmbed,
-	MessageEmbedOptions,
-	Role,
-	Snowflake,
-	ThreadChannel,
-	User
-} from "discord.js";
+import { BaseGuildVoiceChannel, BufferResolvable, Collection, Emoji, Guild, GuildMember, MessageAttachment, MessageEmbed, MessageEmbedOptions, Role, Snowflake, User } from "discord.js";
 import { Stream } from "stream";
+import { GuildTextBasedChannels } from "../typings/guildTextBasedChannels";
 import AkairoClient from "./AkairoClient";
 /**
  * Client utilities to help with common tasks.
@@ -39,7 +26,7 @@ export default class ClientUtil {
      * @param caseSensitive - Makes checking by name case sensitive.
      * @param wholeWord - Makes checking by name match full word only.
      */
-    checkChannel(text: string, channel: GuildChannel | ThreadChannel, caseSensitive?: boolean, wholeWord?: boolean): boolean;
+    checkChannel(text: string, channel: GuildTextBasedChannels | BaseGuildVoiceChannel, caseSensitive?: boolean, wholeWord?: boolean): boolean;
     /**
      * Checks if a string could be referring to a emoji.
      * @param text - Text to check.
@@ -115,7 +102,7 @@ export default class ClientUtil {
      * @param caseSensitive - Makes finding by name case sensitive.
      * @param wholeWord - Makes finding by name match full word only.
      */
-    resolveChannel(text: string, channels: Collection<Snowflake, GuildChannel | ThreadChannel>, caseSensitive?: boolean, wholeWord?: boolean): GuildChannel | ThreadChannel;
+    resolveChannel(text: string, channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>, caseSensitive?: boolean, wholeWord?: boolean): GuildTextBasedChannels | BaseGuildVoiceChannel;
     /**
      * Resolves multiple channels from a string, such as an ID, a name, or a mention.
      * @param text - Text to resolve.
@@ -123,7 +110,7 @@ export default class ClientUtil {
      * @param caseSensitive - Makes finding by name case sensitive.
      * @param wholeWord - Makes finding by name match full word only.
      */
-    resolveChannels(text: string, channels: Collection<Snowflake, GuildChannel | ThreadChannel>, caseSensitive?: boolean, wholeWord?: boolean): Collection<Snowflake, GuildChannel | ThreadChannel>;
+    resolveChannels(text: string, channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>, caseSensitive?: boolean, wholeWord?: boolean): Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>;
     /**
      * Resolves a custom emoji from a string, such as a name or a mention.
      * @param text - Text to resolve.

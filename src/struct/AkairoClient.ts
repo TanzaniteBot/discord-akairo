@@ -6,7 +6,9 @@ import ClientUtil from "./ClientUtil";
  * @param options - Options for the client.
  * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
  */
-export default class AkairoClient extends Client {
+export default class AkairoClient<
+	Ready extends boolean = boolean
+> extends Client<Ready> {
 	public constructor(
 		options?: AkairoOptions & ClientOptions,
 		clientOptions?: ClientOptions

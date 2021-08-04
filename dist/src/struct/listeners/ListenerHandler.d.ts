@@ -1,8 +1,5 @@
 /// <reference types="node" />
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import { Awaited, Collection } from "discord.js";
 import Listener from "./Listener";
 import AkairoClient from "../AkairoClient";

@@ -2,10 +2,7 @@ import { Awaited, Collection } from "discord.js";
 import { TaskHandlerEvents } from "../../typings/events";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import Task from "./Task";
 /**
  * Loads tasks.

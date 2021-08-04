@@ -11,7 +11,7 @@ export default class InvalidMessageListener extends Listener {
 		});
 	}
 
-	exec(msg): void {
+	override exec(msg): void {
 		console.log(msg.util.parsed);
 	}
 }

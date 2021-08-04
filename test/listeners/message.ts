@@ -11,7 +11,7 @@ export default class MessageListener extends Listener {
 		});
 	}
 
-	exec(msg) {
+	override exec(msg) {
 		console.log(msg.content);
 	}
 }

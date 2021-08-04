@@ -16,7 +16,7 @@ export default class ArgumentRunner {
     /**
      * The Akairo client.
      */
-    get client(): import("../../AkairoClient").default;
+    get client(): import("../../AkairoClient").default<boolean>;
     /**
      * The command handler.
      */

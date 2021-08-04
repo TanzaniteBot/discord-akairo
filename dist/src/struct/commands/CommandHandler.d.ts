@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import { Channel, Collection, CommandInteraction, Message, Snowflake, User } from "discord.js";
+import { Collection, CommandInteraction, Message, Snowflake, TextBasedChannels, User } from "discord.js";
 import Command from "./Command";
 import CommandUtil from "./CommandUtil";
 import AkairoMessage from "../../util/AkairoMessage";
@@ -274,19 +274,19 @@ export default class CommandHandler extends AkairoHandler {
      * @param channel - Channel to add to.
      * @param user - User to add.
      */
-    addPrompt(channel: Channel, user: User): void;
+    addPrompt(channel: TextBasedChannels, user: User): void;
     /**
      * Removes an ongoing prompt.
      * @param channel - Channel to remove from.
      * @param user - User to remove.
      */
-    removePrompt(channel: Channel, user: User): void;
+    removePrompt(channel: TextBasedChannels, user: User): void;
     /**
      * Checks if there is an ongoing prompt.
      * @param channel - Channel to check.
      * @param user - User to check.
      */
-    hasPrompt(channel: Channel, user: User): boolean;
+    hasPrompt(channel: TextBasedChannels, user: User): boolean;
     /**
      * Finds a command by alias.
      * @param name - Alias to find with.
@@ -461,22 +461,15 @@ export interface ParsedComponentData {
  * @param message - Message to check.
  * @param command - Command to check.
  */
-export declare type IgnoreCheckPredicate = (
-	message: Message | AkairoMessage,
-	command: Command
-) => boolean;
+export declare type IgnoreCheckPredicate = (message: Message | AkairoMessage, command: Command) => boolean;
 /**
  * A function that returns whether mentions can be used as a prefix.
  * @param message - Message to option for.
  */
-export declare type MentionPrefixPredicate = (
-	message: Message
-) => boolean | Promise<boolean>;
+export declare type MentionPrefixPredicate = (message: Message) => boolean | Promise<boolean>;
 /**
  * A function that returns the prefix(es) to use.
  * @param message - Message to get prefix for.
  */
-export declare type PrefixSupplier = (
-	message: Message
-) => string | string[] | Promise<string | string[]>;
+export declare type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
 //# sourceMappingURL=CommandHandler.d.ts.map

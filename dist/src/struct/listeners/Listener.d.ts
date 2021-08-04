@@ -43,7 +43,7 @@ export default abstract class Listener extends AkairoModule {
      * Executes the listener.
      * @param args - Arguments.
      */
-    abstract exec(...args: any[]): any;
+    exec(...args: any[]): any;
     /**
      * Reloads the listener.
      */
@@ -57,18 +57,18 @@ export default abstract class Listener extends AkairoModule {
  * Options to use for listener execution behavior.
  */
 export interface ListenerOptions extends AkairoModuleOptions {
-	/**
-	 * The event emitter, either a key from `ListenerHandler#emitters` or an EventEmitter.
-	 */
-	emitter: string | EventEmitter;
-	/**
-	 * Event name to listen to.
-	 */
-	event: string;
-	/**
-	 * Type of listener, either 'on' or 'once'.
-	 * Defaults to `on`
-	 */
-	type?: string;
+    /**
+     * The event emitter, either a key from `ListenerHandler#emitters` or an EventEmitter.
+     */
+    emitter: string | EventEmitter;
+    /**
+     * Event name to listen to.
+     */
+    event: string;
+    /**
+     * Type of listener, either 'on' or 'once'.
+     * Defaults to `on`
+     */
+    type?: string;
 }
 //# sourceMappingURL=Listener.d.ts.map

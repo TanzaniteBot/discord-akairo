@@ -37,7 +37,7 @@ export default abstract class Task extends AkairoModule {
      * Executes the task.
      * @param args - Arguments.
      */
-    abstract exec(...args: any[]): any;
+    exec(...args: any[]): any;
     /**
      * Reloads the task.
      */
@@ -55,13 +55,13 @@ export default abstract class Task extends AkairoModule {
  * Options to use for task execution behavior.
  */
 export interface TaskOptions extends AkairoModuleOptions {
-	/**
-	 * The amount of time between the task being executed.
-	 */
-	delay?: number;
-	/**
-	 * Whether or not the task runs on start.
-	 */
-	runOnStart?: boolean;
+    /**
+     * The amount of time between the task being executed.
+     */
+    delay?: number;
+    /**
+     * Whether or not the task runs on start.
+     */
+    runOnStart?: boolean;
 }
 //# sourceMappingURL=Task.d.ts.map

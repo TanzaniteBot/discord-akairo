@@ -1,9 +1,9 @@
 import {
+	BaseGuildVoiceChannel,
 	BufferResolvable,
 	Collection,
 	Emoji,
 	Guild,
-	GuildChannel,
 	GuildMember,
 	MessageAttachment,
 	MessageEmbed,
@@ -11,10 +11,10 @@ import {
 	Permissions,
 	Role,
 	Snowflake,
-	ThreadChannel,
 	User
 } from "discord.js";
 import { Stream } from "stream";
+import { GuildTextBasedChannels } from "../typings/guildTextBasedChannels";
 import AkairoClient from "./AkairoClient";
 
 /**
@@ -52,7 +52,7 @@ export default class ClientUtil {
 	 */
 	public checkChannel(
 		text: string,
-		channel: GuildChannel | ThreadChannel,
+		channel: GuildTextBasedChannels | BaseGuildVoiceChannel,
 		caseSensitive = false,
 		wholeWord = false
 	): boolean {
@@ -314,10 +314,13 @@ export default class ClientUtil {
 	 */
 	public resolveChannel(
 		text: string,
-		channels: Collection<Snowflake, GuildChannel | ThreadChannel>,
+		channels: Collection<
+			Snowflake,
+			GuildTextBasedChannels | BaseGuildVoiceChannel
+		>,
 		caseSensitive = false,
 		wholeWord = false
-	): GuildChannel | ThreadChannel {
+	): GuildTextBasedChannels | BaseGuildVoiceChannel {
 		return (
 			channels.get(text as Snowflake) ||
 			channels.find(channel =>
@@ -335,10 +338,13 @@ export default class ClientUtil {
 	 */
 	public resolveChannels(
 		text: string,
-		channels: Collection<Snowflake, GuildChannel | ThreadChannel>,
+		channels: Collection<
+			Snowflake,
+			GuildTextBasedChannels | BaseGuildVoiceChannel
+		>,
 		caseSensitive = false,
 		wholeWord = false
-	): Collection<Snowflake, GuildChannel | ThreadChannel> {
+	): Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel> {
 		return channels.filter(channel =>
 			this.checkChannel(text, channel, caseSensitive, wholeWord)
 		);

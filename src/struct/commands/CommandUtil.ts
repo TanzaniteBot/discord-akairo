@@ -246,10 +246,11 @@ export default class CommandUtil {
 			| MessageEditOptions
 			| MessagePayload
 			| WebhookEditMessageOptions
-	): Promise<Message> {
+	): Promise<Message | APIMessage> {
 		if (this.isSlash) {
-			// @ts-expect-error
-			return this.lastResponse.interaction.editReply(options);
+			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
+				options
+			);
 		} else {
 			return this.lastResponse.edit(options);
 		}
@@ -260,8 +261,7 @@ export default class CommandUtil {
 	 */
 	public async delete(): Promise<Message | void> {
 		if (this.isSlash) {
-			// @ts-expect-error
-			return this.message.interaction.deleteReply();
+			return (this.message as AkairoMessage).interaction.deleteReply();
 		} else {
 			return this.lastResponse?.delete();
 		}
