@@ -44,15 +44,17 @@ export * as Constants from "./util/Constants";
 export * from "./util/Util";
 export { default as Util } from "./util/Util";
 export declare const version: string;
-export declare module discord.js {
-    interface Message {
-        /**
-         * Extra properties applied to the Discord.js message object.
-         * Utilities for command responding.
-         * Available on all messages after 'all' inhibitors and built-in inhibitors (bot, client).
-         * Not all properties of the util are available, depending on the input.
-         * */
-        util?: CommandUtil;
+export declare module discordAkairo {
+    module discord.js {
+        interface Message {
+            /**
+             * Extra properties applied to the Discord.js message object.
+             * Utilities for command responding.
+             * Available on all messages after 'all' inhibitors and built-in inhibitors (bot, client).
+             * Not all properties of the util are available, depending on the input.
+             * */
+            util?: CommandUtil;
+        }
     }
 }
 //# sourceMappingURL=index.d.ts.map
