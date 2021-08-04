@@ -104,8 +104,8 @@ export default class AkairoMessage {
 	 */
 	public id: Snowflake;
 
-	/** 
-	 * The command interaction. 
+	/**
+	 * The command interaction.
 	 */
 	public interaction: CommandInteraction;
 
@@ -115,13 +115,13 @@ export default class AkairoMessage {
 	 */
 	public member: GuildMember | APIInteractionGuildMember;
 
-	/** 
-	 * Whether or not the interaction has been replied to. 
+	/**
+	 * Whether or not the interaction has been replied to.
 	 */
 	public replied: boolean;
 
-	/** 
-	 * Utilities for command responding. 
+	/**
+	 * Utilities for command responding.
 	 */
 	public util: CommandUtil;
 
