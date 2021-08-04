@@ -1,4 +1,5 @@
 import { ArgumentMatches } from "../../util/Constants";
+import { ArgumentOptions } from "./arguments/Argument";
 
 /*
  * Grammar:
@@ -54,10 +55,14 @@ import { ArgumentMatches } from "../../util/Constants";
  */
 
 class Tokenizer {
-	constructor(
-		content,
-		// @ts-expect-error
-		{ flagWords = [], optionFlagWords = [], quoted = true, separator } = {}
+	public constructor(
+		content: string,
+		{
+			flagWords = [],
+			optionFlagWords = [],
+			quoted = true,
+			separator
+		}: ContentParserOptions = {}
 	) {
 		this.content = content;
 		this.flagWords = flagWords;
@@ -79,7 +84,7 @@ class Tokenizer {
 	public state: number;
 	public tokens: any[];
 
-	startsWith(str) {
+	public startsWith(str: string) {
 		return (
 			this.content
 				.slice(this.position, this.position + str.length)
@@ -87,23 +92,23 @@ class Tokenizer {
 		);
 	}
 
-	match(regex) {
+	public match(regex: RegExp) {
 		return this.content.slice(this.position).match(regex);
 	}
 
-	slice(from, to) {
+	public slice(from, to) {
 		return this.content.slice(this.position + from, this.position + to);
 	}
 
-	addToken(type, value) {
+	public addToken(type, value) {
 		this.tokens.push({ type, value });
 	}
 
-	advance(n) {
+	public advance(n) {
 		this.position += n;
 	}
 
-	choice(...actions) {
+	public choice(...actions) {
 		for (const action of actions) {
 			if (action.call(this)) {
 				return;
@@ -111,7 +116,7 @@ class Tokenizer {
 		}
 	}
 
-	tokenize() {
+	public tokenize() {
 		while (this.position < this.content.length) {
 			this.runOne();
 		}
@@ -120,7 +125,7 @@ class Tokenizer {
 		return this.tokens;
 	}
 
-	runOne() {
+	public runOne() {
 		this.choice(
 			this.runWhitespace,
 			this.runFlags,
@@ -133,7 +138,7 @@ class Tokenizer {
 		);
 	}
 
-	runFlags() {
+	public runFlags() {
 		if (this.state === 0) {
 			for (const word of this.flagWords) {
 				if (this.startsWith(word)) {
@@ -147,7 +152,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runOptionFlags() {
+	public runOptionFlags() {
 		if (this.state === 0) {
 			for (const word of this.optionFlagWords) {
 				if (this.startsWith(word)) {
@@ -161,7 +166,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runQuote() {
+	public runQuote() {
 		if (this.separator == null && this.quoted && this.startsWith('"')) {
 			if (this.state === 1) {
 				this.state = 0;
@@ -177,7 +182,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runOpenQuote() {
+	public runOpenQuote() {
 		if (this.separator == null && this.quoted && this.startsWith('"')) {
 			if (this.state === 0) {
 				this.state = 2;
@@ -191,7 +196,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runEndQuote() {
+	public runEndQuote() {
 		if (this.separator == null && this.quoted && this.startsWith("”")) {
 			if (this.state === 2) {
 				this.state = 0;
@@ -205,7 +210,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runSeparator() {
+	public runSeparator() {
 		if (this.separator != null && this.startsWith(this.separator)) {
 			this.addToken("Separator", this.slice(0, this.separator.length));
 			this.advance(this.separator.length);
@@ -215,7 +220,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runWord() {
+	public runWord() {
 		const wordRegex =
 			this.state === 0 ? /^\S+/ : this.state === 1 ? /^[^\s"]+/ : /^[^\s”]+/;
 
@@ -247,7 +252,7 @@ class Tokenizer {
 		return false;
 	}
 
-	runWhitespace() {
+	public runWhitespace() {
 		const wsMatch = this.match(/^\s+/);
 		if (wsMatch) {
 			this.addToken("WS", wsMatch[0]);
@@ -260,20 +265,11 @@ class Tokenizer {
 }
 
 class Parser {
-	tokens: any;
-	separated: any;
-	position: number;
-	results: { all: any[]; phrases: any[]; flags: any[]; optionFlags: any[] };
-	constructor(tokens, { separated }) {
+	public constructor(tokens, { separated }) {
 		this.tokens = tokens;
 		this.separated = separated;
 		this.position = 0;
-		/*
-		 * Phrases are `{ type: 'Phrase', value, raw }`.
-		 * Flags are `{ type: 'Flag', key, raw }`.
-		 * Option flags are `{ type: 'OptionFlag', key, value, raw }`.
-		 * The `all` property is partitioned into `phrases`, `flags`, and `optionFlags`.
-		 */
+
 		this.results = {
 			all: [],
 			phrases: [],
@@ -282,22 +278,39 @@ class Parser {
 		};
 	}
 
-	next() {
+	public tokens: any;
+	public separated: any;
+	public position: number;
+
+	/**
+	 * Phrases are `{ type: 'Phrase', value, raw }`.
+	 * Flags are `{ type: 'Flag', key, raw }`.
+	 * Option flags are `{ type: 'OptionFlag', key, value, raw }`.
+	 * The `all` property is partitioned into `phrases`, `flags`, and `optionFlags`.
+	 */
+	public results: {
+		all: any[];
+		phrases: any[];
+		flags: any[];
+		optionFlags: any[];
+	};
+
+	public next() {
 		this.position++;
 	}
 
-	lookaheadN(n, ...types) {
+	public lookaheadN(n, ...types) {
 		return (
 			this.tokens[this.position + n] != null &&
 			types.includes(this.tokens[this.position + n].type)
 		);
 	}
 
-	lookahead(...types) {
+	public lookahead(...types) {
 		return this.lookaheadN(0, ...types);
 	}
 
-	match(...types) {
+	public match(...types) {
 		if (this.lookahead(...types)) {
 			this.next();
 			return this.tokens[this.position - 1];
@@ -310,7 +323,7 @@ class Parser {
 		);
 	}
 
-	parse() {
+	public parse() {
 		// -1 for EOF.
 		while (this.position < this.tokens.length - 1) {
 			this.runArgument();
@@ -320,7 +333,7 @@ class Parser {
 		return this.results;
 	}
 
-	runArgument() {
+	public runArgument() {
 		const leading = this.lookahead("WS") ? this.match("WS").value : "";
 		if (this.lookahead("FlagWord", "OptionFlagWord")) {
 			const parsed = this.parseFlag();
@@ -349,7 +362,7 @@ class Parser {
 		this.results.phrases.push(parsed);
 	}
 
-	parseFlag() {
+	public parseFlag() {
 		if (this.lookahead("FlagWord")) {
 			const flag = this.match("FlagWord");
 			const parsed = { type: "Flag", key: flag.value, raw: flag.value };
@@ -381,7 +394,7 @@ class Parser {
 		return parsed;
 	}
 
-	parsePhrase() {
+	public parsePhrase() {
 		if (!this.separated) {
 			if (this.lookahead("Quote")) {
 				const parsed = { type: "Phrase", value: "", raw: "" };
@@ -457,21 +470,15 @@ class Parser {
 
 /**
  * Parses content.
- * @param {ContentParserOptions} options - Options.
- * @private
+ * @param options - Options.
  */
 export default class ContentParser {
-	flagWords: any[];
-	optionFlagWords: any[];
-	quoted: boolean;
-	separator: any;
-	constructor({
+	public constructor({
 		flagWords = [],
 		optionFlagWords = [],
 		quoted = true,
-		// @ts-expect-error
 		separator
-	} = {}) {
+	}: ContentParserOptions = {}) {
 		this.flagWords = flagWords;
 		this.flagWords.sort((a, b) => b.length - a.length);
 
@@ -483,11 +490,30 @@ export default class ContentParser {
 	}
 
 	/**
-	 * Parses content.
-	 * @param {string} content - Content to parse.
-	 * @returns {ContentParserResult}
+	 * Words considered flags.
 	 */
-	parse(content) {
+	public flagWords: string[];
+
+	/**
+	 * Words considered option flags.
+	 */
+	public optionFlagWords: string[];
+
+	/**
+	 * Whether to parse quotes. Defaults to `true`.
+	 */
+	public quoted: boolean;
+
+	/**
+	 * Whether to parse a separator.
+	 */
+	public separator: string;
+
+	/**
+	 * Parses content.
+	 * @param content - Content to parse.
+	 */
+	public parse(content: string): ContentParserResult {
 		const tokens = new Tokenizer(content, {
 			flagWords: this.flagWords,
 			optionFlagWords: this.optionFlagWords,
@@ -500,10 +526,9 @@ export default class ContentParser {
 
 	/**
 	 * Extracts the flags from argument options.
-	 * @param {ArgumentOptions[]} args - Argument options.
-	 * @returns {ExtractedFlags}
+	 * @param args - Argument options.
 	 */
-	static getFlags(args) {
+	public static getFlags(args: ArgumentOptions[]): ExtractedFlags {
 		const res = {
 			flagWords: [],
 			optionFlagWords: []
@@ -532,15 +557,23 @@ export default class ContentParser {
 
 /**
  * Options for the content parser.
- * @param flagWords - Words considered flags.
- * @param optionFlagWords - Words considered option flags.
- * @param quoted - Whether to parse quotes. Defaults to `true`.
- * @param separator - Whether to parse a separator.
  */
 export interface ContentParserOptions {
+	/**
+	 * Words considered flags.
+	 */
 	flagWords?: string[];
+	/**
+	 * Words considered option flags.
+	 */
 	optionFlagWords?: string[];
+	/**
+	 * Whether to parse quotes. Defaults to `true`.
+	 */
 	quoted?: boolean;
+	/**
+	 * Whether to parse a separator.
+	 */
 	separator?: string;
 }
 
@@ -548,16 +581,24 @@ export interface ContentParserOptions {
  * Result of parsing.
  */
 export interface ContentParserResult {
-	/** All phrases and flags. */
+	/**
+	 * All phrases and flags.
+	 */
 	all: StringData[];
 
-	/** Phrases. */
+	/**
+	 * Phrases.
+	 */
 	phrases: StringData[];
 
-	/** Flags. */
+	/**
+	 * Flags.
+	 */
 	flags: StringData[];
 
-	/** Option flags. */
+	/**
+	 * Option flags.
+	 */
 	optionFlags: StringData[];
 }
 
@@ -566,43 +607,69 @@ export interface ContentParserResult {
  */
 export type StringData =
 	| {
-			/** One of 'Phrase', 'Flag', 'OptionFlag'. */
+			/**
+			 * One of 'Phrase', 'Flag', 'OptionFlag'.
+			 */
 			type: "Phrase";
 
-			/** The value of a 'Phrase' or 'OptionFlag'. */
+			/**
+			 * The value of a 'Phrase' or 'OptionFlag'.
+			 */
 			value: string;
 
-			/** The raw string with whitespace and/or separator. */
+			/**
+			 * The raw string with whitespace and/or separator.
+			 */
 			raw: string;
 	  }
 	| {
-			/** One of 'Phrase', 'Flag', 'OptionFlag'. */
+			/**
+			 * One of 'Phrase', 'Flag', 'OptionFlag'.
+			 */
 			type: "Flag";
 
-			/** The key of a 'Flag' or 'OptionFlag'. */
+			/**
+			 * The key of a 'Flag' or 'OptionFlag'.
+			 */
 			key: string;
 
-			/** The raw string with whitespace and/or separator. */
+			/**
+			 * The raw string with whitespace and/or separator.
+			 */
 			raw: string;
 	  }
 	| {
-			/** One of 'Phrase', 'Flag', 'OptionFlag'. */
+			/**
+			 * One of 'Phrase', 'Flag', 'OptionFlag'.
+			 */
 			type: "OptionFlag";
 
-			/** The key of a 'Flag' or 'OptionFlag'. */
+			/**
+			 * The key of a 'Flag' or 'OptionFlag'.
+			 */
 			key: string;
 
-			/** The value of a 'Phrase' or 'OptionFlag'. */
+			/**
+			 * The value of a 'Phrase' or 'OptionFlag'.
+			 */
 			value: string;
 
-			/** The raw string with whitespace and/or separator. */
+			/**
+			 * The raw string with whitespace and/or separator.
+			 */
 			raw: string;
 	  };
 
 /**
  * Flags extracted from an argument list.
- * @typedef {Object} ExtractedFlags
- * @prop {string[]} [flagWords=[]] - Words considered flags.
- * @prop {string[]} [optionFlagWords=[]] - Words considered option flags.
- * @private
  */
+export interface ExtractedFlags {
+	/**
+	 * Words considered flags.
+	 */
+	flagWords?: string[];
+	/**
+	 * Words considered option flags.
+	 */
+	optionFlagWords?: string[];
+}

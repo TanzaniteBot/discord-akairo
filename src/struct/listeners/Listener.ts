@@ -63,9 +63,8 @@ export default abstract class Listener extends AkairoModule {
 	 * Executes the listener.
 	 * @param args - Arguments.
 	 */
-	// @ts-expect-error
 	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
-	public abstract exec(...args: any[]): any {
+	public exec(...args: any[]): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
 

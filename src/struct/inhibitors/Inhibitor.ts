@@ -78,20 +78,15 @@ export default abstract class Inhibitor extends AkairoModule {
 	 * @param message - Message being handled.
 	 * @param command - Command to check.
 	 */
-	public abstract exec(
-		message: Message,
-		command?: Command
-	): boolean | Promise<boolean>;
-	// @ts-expect-error
-	// eslint-disable-next-line func-names
-	public abstract exec(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
+	public exec(message: Message, command?: Command): boolean | Promise<boolean>;
+	public exec(
 		message: Message | AkairoMessage,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		command?: Command
 	): boolean | Promise<boolean> {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
+	/* eslint-enable func-names, @typescript-eslint/no-unused-vars */
 
 	/**
 	 * Reloads the inhibitor.

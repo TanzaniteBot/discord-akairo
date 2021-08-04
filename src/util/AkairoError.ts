@@ -33,12 +33,6 @@ const Messages = {
  * @param args - Arguments.
  */
 export default class AkairoError extends Error {
-	public code: string;
-
-	public override get name() {
-		return `AkairoError [${this.code}]`;
-	}
-
 	public constructor(key: string, ...args: (string | boolean)[]) {
 		if (Messages[key] == null)
 			throw new TypeError(`Error key '${key}' does not exist`);
@@ -49,5 +43,17 @@ export default class AkairoError extends Error {
 
 		super(message);
 		this.code = key;
+	}
+
+	/**
+	 * The error code.
+	 */
+	public code: string;
+
+	/**
+	 * The error name.
+	 */
+	public override get name() {
+		return `AkairoError [${this.code}]`;
 	}
 }

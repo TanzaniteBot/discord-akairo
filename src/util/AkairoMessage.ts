@@ -28,11 +28,7 @@ export default class AkairoMessage {
 	public constructor(
 		client: AkairoClient,
 		interaction: CommandInteraction,
-		{
-			slash,
-			replied,
-			command
-		}: { slash: boolean; replied: boolean; command: Command }
+		{ replied, command }: { replied: boolean; command: Command }
 	) {
 		this.author = interaction.user;
 
@@ -56,8 +52,6 @@ export default class AkairoMessage {
 
 		this.replied = replied;
 
-		// @ts-expect-error
-		this.util = { parsed: { slash } };
 		for (const option of command.slashOptions) {
 			this.content += ` ${option.name}: ${
 				interaction.options.get(option.name, option.required || false)?.value
@@ -110,7 +104,9 @@ export default class AkairoMessage {
 	 */
 	public id: Snowflake;
 
-	/** The command interaction. */
+	/** 
+	 * The command interaction. 
+	 */
 	public interaction: CommandInteraction;
 
 	/**
@@ -119,16 +115,18 @@ export default class AkairoMessage {
 	 */
 	public member: GuildMember | APIInteractionGuildMember;
 
-	/** Whether or not the interaction has been replied to. */
+	/** 
+	 * Whether or not the interaction has been replied to. 
+	 */
 	public replied: boolean;
 
-	/** Utilities for command responding. */
+	/** 
+	 * Utilities for command responding. 
+	 */
 	public util: CommandUtil;
 
 	/**
 	 * The url to jump to this message
-	 * @type {string|null}
-	 * @readonly
 	 */
 	public get url() {
 		return this.interaction.ephemeral
@@ -144,6 +142,7 @@ export default class AkairoMessage {
 	public delete(): Promise<void> {
 		return this.interaction.deleteReply();
 	}
+
 	/**
 	 * Replies or edits the reply of the slash command.
 	 * @param options The options to edit the reply.

@@ -601,7 +601,6 @@ export default class CommandHandler extends AkairoHandler {
 		}
 
 		const message = new AkairoMessage(this.client, interaction, {
-			slash: true,
 			replied: this.autoDefer || command.slashEphemeral,
 			command
 		});
