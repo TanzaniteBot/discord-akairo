@@ -1,17 +1,17 @@
 import { Message } from "discord.js";
-
-const { Command } = require("../../src");
+import { Command } from "../../src/index";
 
 export default class ConditionalCommand extends Command {
 	constructor() {
+		// @ts-expect-error
 		super("condition");
 	}
 
-	condition(message: Message) {
+	override condition(message: Message) {
 		return message.content === "make me condition";
 	}
 
-	exec(message) {
+	override exec(message) {
 		return message.util.reply("made you condition");
 	}
 }

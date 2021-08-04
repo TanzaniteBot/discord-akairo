@@ -29,12 +29,14 @@
         "eslint-config-prettier": "^8.3.0",
         "jsdoc": "^3.6.4",
         "prettier": "^2.3.0",
+        "rimraf": "^3.0.2",
         "typescript": "^4.3.5"
     },
     "scripts": {
         "test": "yarn run lint",
         "lint": "yarn eslint ./src",
-        "format": "yarn prettier --write ."
+        "format": "yarn prettier --write .",
+        "build": "yarn rimraf dist && yarn tsc"
     },
     "repository": {
         "type": "git",
@@ -55,6 +57,9 @@
             "eslint:recommended",
             "plugin:@typescript-eslint/recommended",
             "prettier"
+        ],
+        "ignorePatterns": [
+            "dist"
         ],
         "parserOptions": {
             "ecmaVersion": 12,
@@ -82,7 +87,7 @@
                 "smart"
             ],
             "no-console": "warn",
-            "no-empty-function": "error",
+            "no-empty-function": "off",
             "no-implied-eval": "error",
             "no-lone-blocks": "error",
             "no-new-func": "error",
@@ -110,13 +115,6 @@
             "no-mixed-requires": "error",
             "no-new-require": "error",
             "no-path-concat": "error",
-            "capitalized-comments": [
-                "error",
-                "always",
-                {
-                    "ignoreConsecutiveComments": true
-                }
-            ],
             "consistent-this": [
                 "error",
                 "$this"
@@ -172,7 +170,9 @@
             "no-shadow": "off",
             "@typescript-eslint/no-shadow": "error",
             "@typescript-eslint/prefer-namespace-keyword": "off",
-            "@typescript-eslint/no-namespace": "off"
+            "@typescript-eslint/no-namespace": "off",
+            "@typescript-eslint/no-inferrable-types": "off",
+            "@typescript-eslint/no-empty-function": "off"
         }
     }
 }

@@ -1,5 +1,8 @@
 import AkairoError from "../../util/AkairoError";
-import AkairoHandler, { AkairoHandlerOptions } from "../AkairoHandler";
+import AkairoHandler, {
+	AkairoHandlerOptions,
+	LoadPredicate
+} from "../AkairoHandler";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants";
 import {
 	Channel,
@@ -28,103 +31,6 @@ import Util from "../../util/Util";
  * @param options - Options.
  */
 export default class CommandHandler extends AkairoHandler {
-	/** Collection of command aliases. */
-	public aliases: Collection<string, string>;
-
-	/** Regular expression to automatically make command aliases for. */
-	public aliasReplacement?: RegExp;
-
-	/** Whether or not mentions are allowed for prefixing. */
-	public allowMention: boolean | MentionPrefixPredicate;
-
-	/** Default argument options. */
-	public argumentDefaults: DefaultArgumentOptions;
-
-	/** Automatically defer messages "BotName is thinking". */
-	public autoDefer: boolean;
-
-	/**  Specify whether to register all slash commands when starting the client */
-	public autoRegisterSlashCommands: boolean;
-
-	/** Whether or not to block bots. */
-	public blockBots: boolean;
-
-	/** Whether or not to block self. */
-	public blockClient: boolean;
-
-	/** Categories, mapped by ID to Category. */
-	public declare categories: Collection<string, Category<string, Command>>;
-
-	/** Class to handle */
-	public declare classToHandle: typeof Command;
-
-	/** The Akairo client. */
-	public declare client: AkairoClient;
-
-	/** Whether or not `message.util` is assigned. */
-	public commandUtil: boolean;
-
-	/** Milliseconds a message should exist for before its command util instance is marked for removal. */
-	public commandUtilLifetime: number;
-
-	/** Collection of CommandUtils. */
-	public commandUtils: Collection<string, CommandUtil>;
-
-	/** Time interval in milliseconds for sweeping command util instances. */
-	public commandUtilSweepInterval: number;
-
-	/**
-	 * Collection of cooldowns.
-	 * <info>The elements in the collection are objects with user IDs as keys
-	 * and {@link CooldownData} objects as values</info>
-	 */
-	public cooldowns: Collection<string, { [id: string]: CooldownData }>;
-
-	/** Default cooldown for commands. */
-	public defaultCooldown: number;
-
-	/** Directory to commands. */
-	public declare directory: string;
-
-	/** Whether or not to use execSlash for slash commands. */
-	public execSlash: boolean;
-
-	/** Whether or not members are fetched on each message author from a guild. */
-	public fetchMembers: boolean;
-
-	/** Whether or not edits are handled. */
-	public handleEdits: boolean;
-
-	/** ID of user(s) to ignore cooldown or a function to ignore. */
-	public ignoreCooldown: Snowflake | Snowflake[] | IgnoreCheckPredicate;
-
-	/** ID of user(s) to ignore `userPermissions` checks or a function to ignore. */
-	public ignorePermissions: Snowflake | Snowflake[] | IgnoreCheckPredicate;
-
-	/** Inhibitor handler to use. */
-	public inhibitorHandler?: InhibitorHandler;
-
-	/** Commands loaded, mapped by ID to Command. */
-	public declare modules: Collection<string, Command>;
-
-	/** The prefix(es) for command parsing. */
-	public prefix: string | string[] | PrefixSupplier;
-
-	/** Collection of prefix overwrites to commands. */
-	public prefixes: Collection<string | PrefixSupplier, Set<string>>;
-
-	/** Collection of sets of ongoing argument prompts. */
-	public prompts: Collection<string, Set<string>>;
-
-	/** The type resolver. */
-	public resolver: TypeResolver;
-
-	/** Whether or not to store messages in CommandUtil. */
-	public storeMessages: boolean;
-
-	/** Show "BotName is typing" information message on the text channels when a command is running. */
-	public typing: boolean;
-
 	constructor(
 		client: AkairoClient,
 		{
@@ -171,96 +77,38 @@ export default class CommandHandler extends AkairoHandler {
 			automateCategories,
 			loadFilter
 		});
-		/**
-		 * Specify whether to register all slash commands when starting the client.
-		 * Defaults to false.
-		 */
+
 		this.autoRegisterSlashCommands = autoRegisterSlashCommands;
 
-		/**
-		 * Show "BotName is typing" information message on the text channels when a command is running.
-		 * Defaults to false.
-		 */
 		this.typing = typing;
 
-		/**
-		 * Automatically defer messages "BotName is thinking"
-		 * Defaults to true.
-		 */
 		this.autoDefer = autoDefer;
-		/**
-		 * The type resolver.
-		 * @type {TypeResolver}
-		 */
+
 		this.resolver = new TypeResolver(this);
 
-		/**
-		 * Collection of command aliases.
-		 * @type {Collection<string, string>}
-		 */
 		this.aliases = new Collection();
 
-		/**
-		 * Regular expression to automatically make command aliases for.
-		 * @type {?RegExp}
-		 */
 		this.aliasReplacement = aliasReplacement;
 
-		/**
-		 * Collection of prefix overwrites to commands.
-		 * @type {Collection<string|PrefixSupplier, Set<string>>}
-		 */
 		this.prefixes = new Collection();
 
-		/**
-		 * Whether or not to block self.
-		 * @type {boolean}
-		 */
 		this.blockClient = Boolean(blockClient);
 
-		/**
-		 * Whether or not to block bots.
-		 * @type {boolean}
-		 */
 		this.blockBots = Boolean(blockBots);
 
-		/**
-		 * Whether or not members are fetched on each message author from a guild.
-		 * @type {boolean}
-		 */
 		this.fetchMembers = Boolean(fetchMembers);
 
-		/**
-		 * Whether or not edits are handled.
-		 * @type {boolean}
-		 */
 		this.handleEdits = Boolean(handleEdits);
 
-		/**
-		 * Whether or not to store messages in CommandUtil.
-		 * @type {boolean}
-		 */
 		this.storeMessages = Boolean(storeMessages);
 
-		/**
-		 * Whether or not `message.util` is assigned.
-		 * @type {boolean}
-		 */
 		this.commandUtil = Boolean(commandUtil);
 		if ((this.handleEdits || this.storeMessages) && !this.commandUtil) {
 			throw new AkairoError("COMMAND_UTIL_EXPLICIT");
 		}
 
-		/**
-		 * Milliseconds a message should exist for before its command util instance is marked for removal.
-		 * @type {number}
-		 */
 		this.commandUtilLifetime = commandUtilLifetime;
 
-		/**
-		 * Time interval in milliseconds for sweeping command util instances.
-		 * @type {number}
-		 */
 		this.commandUtilSweepInterval = commandUtilSweepInterval;
 		if (this.commandUtilSweepInterval > 0) {
 			setInterval(
@@ -269,54 +117,24 @@ export default class CommandHandler extends AkairoHandler {
 			).unref();
 		}
 
-		/**
-		 * Collection of CommandUtils.
-		 * @type {Collection<string, CommandUtil>}
-		 */
 		this.commandUtils = new Collection();
 
-		/**
-		 * Collection of cooldowns.
-		 * <info>The elements in the collection are objects with user IDs as keys
-		 * and {@link CooldownData} objects as values</info>
-		 * @type {Collection<string, Object>}
-		 */
 		this.cooldowns = new Collection();
 
-		/**
-		 * Default cooldown for commands.
-		 * @type {number}
-		 */
 		this.defaultCooldown = defaultCooldown;
 
-		/**
-		 * ID of user(s) to ignore cooldown or a function to ignore.
-		 * @type {Snowflake|Snowflake[]|IgnoreCheckPredicate}
-		 */
 		this.ignoreCooldown =
 			typeof ignoreCooldown === "function"
 				? ignoreCooldown.bind(this)
 				: ignoreCooldown;
 
-		/**
-		 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
-		 * @type {Snowflake|Snowflake[]|IgnoreCheckPredicate}
-		 */
 		this.ignorePermissions =
 			typeof ignorePermissions === "function"
 				? ignorePermissions.bind(this)
 				: ignorePermissions;
 
-		/**
-		 * Collection of sets of ongoing argument prompts.
-		 * @type {Collection<string, Set<string>>}
-		 */
 		this.prompts = new Collection();
 
-		/**
-		 * Default argument options.
-		 * @type {DefaultArgumentOptions}
-		 */
 		this.argumentDefaults = Util.deepAssign(
 			{
 				prompt: {
@@ -338,48 +156,180 @@ export default class CommandHandler extends AkairoHandler {
 			argumentDefaults
 		);
 
-		/**
-		 * The prefix(es) for command parsing.
-		 * @type {string|string[]|PrefixSupplier}
-		 */
-
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
 
-		/**
-		 * Whether or not mentions are allowed for prefixing.
-		 * @type {boolean|MentionPrefixPredicate}
-		 */
 		this.allowMention =
 			typeof allowMention === "function"
 				? allowMention.bind(this)
 				: Boolean(allowMention);
 
-		/**
-		 * Inhibitor handler to use.
-		 * @type {?InhibitorHandler}
-		 */
 		this.inhibitorHandler = null;
 
 		this.autoDefer = Boolean(autoDefer);
 
 		this.execSlash = Boolean(execSlash);
 
-		/**
-		 * Directory to commands.
-		 * @name CommandHandler#directory
-		 * @type {string}
-		 */
-
-		/**
-		 * Commands loaded, mapped by ID to Command.
-		 * @name CommandHandler#modules
-		 * @type {Collection<string, Command>}
-		 */
-
 		this.setup();
 	}
 
-	setup() {
+	/**
+	 * Collection of command aliases.
+	 */
+	public aliases: Collection<string, string>;
+
+	/**
+	 * Regular expression to automatically make command aliases for.
+	 */
+	public aliasReplacement?: RegExp;
+
+	/**
+	 * Whether or not mentions are allowed for prefixing.
+	 */
+	public allowMention: boolean | MentionPrefixPredicate;
+
+	/**
+	 * Default argument options.
+	 */
+	public argumentDefaults: DefaultArgumentOptions;
+
+	/**
+	 * Automatically defer messages "BotName is thinking".
+	 */
+	public autoDefer: boolean;
+
+	/**
+	 * Specify whether to register all slash commands when starting the client
+	 */
+	public autoRegisterSlashCommands: boolean;
+
+	/**
+	 * Whether or not to block bots.
+	 */
+	public blockBots: boolean;
+
+	/**
+	 * Whether or not to block self.
+	 */
+	public blockClient: boolean;
+
+	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public declare categories: Collection<string, Category<string, Command>>;
+
+	/**
+	 * Class to handle
+	 */
+	public declare classToHandle: typeof Command;
+
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * Whether or not `message.util` is assigned.
+	 */
+	public commandUtil: boolean;
+
+	/**
+	 * Milliseconds a message should exist for before its command util instance is marked for removal.
+	 */
+	public commandUtilLifetime: number;
+
+	/**
+	 * Collection of CommandUtils.
+	 */
+	public commandUtils: Collection<string, CommandUtil>;
+
+	/**
+	 * Time interval in milliseconds for sweeping command util instances.
+	 */
+	public commandUtilSweepInterval: number;
+
+	/**
+	 * Collection of cooldowns.
+	 * <info>The elements in the collection are objects with user IDs as keys
+	 * and {@link CooldownData} objects as values</info>
+	 */
+	public cooldowns: Collection<string, { [id: string]: CooldownData }>;
+
+	/**
+	 * Default cooldown for commands.
+	 */
+	public defaultCooldown: number;
+
+	/**
+	 * Directory to commands.
+	 */
+	public declare directory: string;
+
+	/**
+	 * Whether or not to use execSlash for slash commands.
+	 */
+	public execSlash: boolean;
+
+	/**
+	 * Whether or not members are fetched on each message author from a guild.
+	 */
+	public fetchMembers: boolean;
+
+	/**
+	 * Whether or not edits are handled.
+	 */
+	public handleEdits: boolean;
+
+	/**
+	 * ID of user(s) to ignore cooldown or a function to ignore.
+	 */
+	public ignoreCooldown: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
+	 */
+	public ignorePermissions: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * Inhibitor handler to use.
+	 */
+	public inhibitorHandler?: InhibitorHandler;
+
+	/**
+	 * Commands loaded, mapped by ID to Command.
+	 */
+	public declare modules: Collection<string, Command>;
+
+	/**
+	 * The prefix(es) for command parsing.
+	 */
+	public prefix: string | string[] | PrefixSupplier;
+
+	/**
+	 * Collection of prefix overwrites to commands.
+	 */
+	public prefixes: Collection<string | PrefixSupplier, Set<string>>;
+
+	/**
+	 * Collection of sets of ongoing argument prompts.
+	 */
+	public prompts: Collection<string, Set<string>>;
+
+	/**
+	 * The type resolver.
+	 */
+	public resolver: TypeResolver;
+
+	/**
+	 * Whether or not to store messages in CommandUtil.
+	 */
+	public storeMessages: boolean;
+
+	/**
+	 * Show "BotName is typing" information message on the text channels when a command is running.
+	 */
+	public typing: boolean;
+
+	private setup() {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands) this.registerSlashCommands();
 
@@ -405,7 +355,7 @@ export default class CommandHandler extends AkairoHandler {
 		});
 	}
 
-	registerSlashCommands() {
+	private registerSlashCommands() {
 		const slashCommandsParsed = [];
 		for (const [, data] of this.modules) {
 			if (data.slash) {
@@ -460,7 +410,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param {string} [filepath] - Filepath of module.
 	 * @returns {void}
 	 */
-	override register(command: Command, filepath: string): void {
+	public override register(command: Command, filepath: string): void {
 		super.register(command, filepath);
 
 		for (let alias of command.aliases) {
@@ -523,7 +473,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param {Command} command - Module to use.
 	 * @returns {void}
 	 */
-	override deregister(command: Command): void {
+	public override deregister(command: Command): void {
 		for (let alias of command.aliases) {
 			alias = alias.toLowerCase();
 			this.aliases.delete(alias);
@@ -563,7 +513,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param {Message} message - Message to handle.
 	 * @returns {Promise<?boolean>}
 	 */
-	async handle(message: Message): Promise<boolean | null> {
+	public async handle(message: Message): Promise<boolean | null> {
 		try {
 			if (
 				this.fetchMembers &&
@@ -637,11 +587,12 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Handles a slash command.
-	 * @param {CommandInteraction} interaction - Interaction to handle.
-	 * @returns {Promise<?boolean>}
+	 * @param interaction - Interaction to handle.
 	 */
 	// eslint-disable-next-line complexity
-	async handleSlash(interaction: CommandInteraction): Promise<boolean | null> {
+	public async handleSlash(
+		interaction: CommandInteraction
+	): Promise<boolean | null> {
 		const command = this.findCommand(interaction.commandName);
 
 		if (!command) {
@@ -734,10 +685,10 @@ export default class CommandHandler extends AkairoHandler {
 					command,
 					convertedOptions
 				);
-				const ret = // @ts-expect-error
-					command.execSlash || this.execSlash // @ts-expect-error
+				const ret =
+					Reflect.ownKeys(command).includes("execSlash") || this.execSlash
 						? await command.execSlash(message, convertedOptions)
-						: await command.exec(message, convertedOptions);
+						: await command.exec(message as any, convertedOptions);
 				this.emit(
 					CommandHandlerEvents.SLASH_FINISHED,
 					message,
@@ -758,17 +709,16 @@ export default class CommandHandler extends AkairoHandler {
 	}
 	/**
 	 * Handles normal commands.
-	 * @param {Message} message - Message to handle.
-	 * @param {string} content - Content of message without command.
-	 * @param {Command} command - Command instance.
-	 * @param {boolean} [ignore=false] - Ignore inhibitors and other checks.
-	 * @returns {Promise<?boolean>}
+	 * @param message - Message to handle.
+	 * @param content - Content of message without command.
+	 * @param command - Command instance.
+	 * @param ignore - Ignore inhibitors and other checks.
 	 */
-	async handleDirectCommand(
+	public async handleDirectCommand(
 		message: Message,
 		content: string,
 		command: Command,
-		ignore = false
+		ignore: boolean = false
 	): Promise<boolean | null> {
 		let key;
 		try {
@@ -828,10 +778,11 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Handles regex and conditional commands.
-	 * @param {Message} message - Message to handle.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message to handle.
 	 */
-	async handleRegexAndConditionalCommands(message: Message): Promise<boolean> {
+	public async handleRegexAndConditionalCommands(
+		message: Message
+	): Promise<boolean> {
 		const ran1 = await this.handleRegexCommands(message);
 		const ran2 = await this.handleConditionalCommands(message);
 		return ran1 || ran2;
@@ -839,10 +790,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Handles regex commands.
-	 * @param {Message} message - Message to handle.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message to handle.
 	 */
-	async handleRegexCommands(message: Message): Promise<boolean> {
+	public async handleRegexCommands(message: Message): Promise<boolean> {
 		const hasRegexCommands = [];
 		for (const command of this.modules.values()) {
 			if (message.editedTimestamp ? command.editable : true) {
@@ -900,10 +850,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Handles conditional commands.
-	 * @param {Message} message - Message to handle.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message to handle.
 	 */
-	async handleConditionalCommands(message: Message): Promise<boolean> {
+	public async handleConditionalCommands(message: Message): Promise<boolean> {
 		const trueCommands = [];
 
 		const filterPromises = [];
@@ -946,13 +895,12 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs inhibitors with the all type.
-	 * @param {Message|AkairoMessage} message - Message to handle.
-	 * @param {boolean} slash - Whether or not the command should is a slash command.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message to handle.
+	 * @param slash - Whether or not the command should is a slash command.
 	 */
-	async runAllTypeInhibitors(
+	public async runAllTypeInhibitors(
 		message: Message | AkairoMessage,
-		slash = false
+		slash: boolean = false
 	): Promise<boolean> {
 		const reason = this.inhibitorHandler
 			? await this.inhibitorHandler.test("all", message)
@@ -989,10 +937,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs inhibitors with the pre type.
-	 * @param {Message|AkairoMessage} message - Message to handle.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message to handle.
 	 */
-	async runPreTypeInhibitors(
+	public async runPreTypeInhibitors(
 		message: Message | AkairoMessage
 	): Promise<boolean> {
 		const reason = this.inhibitorHandler
@@ -1010,15 +957,14 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs inhibitors with the post type.
-	 * @param {Message|AkairoMessage} message - Message to handle.
-	 * @param {Command} command - Command to handle.
-	 * @param {boolean} slash - Whether or not the command should is a slash command.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message to handle.
+	 * @param command - Command to handle.
+	 * @param slash - Whether or not the command should is a slash command.
 	 */
-	async runPostTypeInhibitors(
+	public async runPostTypeInhibitors(
 		message: Message | AkairoMessage,
 		command: Command,
-		slash = false
+		slash: boolean = false
 	): Promise<boolean> {
 		const event = slash
 			? CommandHandlerEvents.SLASH_BLOCKED
@@ -1078,15 +1024,14 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs permission checks.
-	 * @param {Message|AkairoMessage} message - Message that called the command.
-	 * @param {Command} command - Command to cooldown.
-	 * @param {boolean} slash - Whether or not the command is a slash command.
-	 * @returns {Promise<boolean>}
+	 * @param message - Message that called the command.
+	 * @param command - Command to cooldown.
+	 * @param slash - Whether or not the command is a slash command.
 	 */
-	async runPermissionChecks(
+	public async runPermissionChecks(
 		message: Message | AkairoMessage,
 		command: Command,
-		slash = false
+		slash: boolean = false
 	): Promise<boolean> {
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
@@ -1179,11 +1124,13 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs cooldowns and checks if a user is under cooldown.
-	 * @param {Message|AkairoMessage} message - Message that called the command.
-	 * @param {Command} command - Command to cooldown.
-	 * @returns {boolean}
+	 * @param message - Message that called the command.
+	 * @param command - Command to cooldown.
 	 */
-	runCooldowns(message: Message | AkairoMessage, command: Command): boolean {
+	public runCooldowns(
+		message: Message | AkairoMessage,
+		command: Command
+	): boolean {
 		const id = message.author?.id;
 		const ignorer = command.ignoreCooldown || this.ignoreCooldown;
 		const isIgnored = Array.isArray(ignorer)
@@ -1235,12 +1182,11 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs a command.
-	 * @param {Message} message - Message to handle.
-	 * @param {Command} command - Command to handle.
-	 * @param {any} args - Arguments to use.
-	 * @returns {Promise<void>}
+	 * @param message - Message to handle.
+	 * @param command - Command to handle.
+	 * @param args - Arguments to use.
 	 */
-	async runCommand(
+	public async runCommand(
 		message: Message,
 		command: Command,
 		args: any
@@ -1266,10 +1212,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Parses the command and its argument list.
-	 * @param {Message|AkairoMessage} message - Message that called the command.
-	 * @returns {Promise<ParsedComponentData>}
+	 * @param message - Message that called the command.
 	 */
-	async parseCommand(
+	public async parseCommand(
 		message: Message | AkairoMessage
 	): Promise<ParsedComponentData> {
 		const allowMention = await Util.intoCallable(this.prefix)(message);
@@ -1291,10 +1236,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Parses the command and its argument list using prefix overwrites.
-	 * @param {Message|AkairoMessage} message - Message that called the command.
-	 * @returns {Promise<ParsedComponentData>}
+	 * @param message - Message that called the command.
 	 */
-	async parseCommandOverwrittenPrefixes(
+	public async parseCommandOverwrittenPrefixes(
 		message: Message | AkairoMessage
 	): Promise<ParsedComponentData> {
 		if (!this.prefixes.size) {
@@ -1315,14 +1259,12 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Runs parseWithPrefix on multiple prefixes and returns the best parse.
-	 * @param {Message|AkairoMessage} message - Message to parse.
-	 * @param {any[]} pairs - Pairs of prefix to associated commands.
-	 * That is, `[string, Set<string> | null][]`.
-	 * @returns {ParsedComponentData}
+	 * @param message - Message to parse.
+	 * @param pairs - Pairs of prefix to associated commands. That is, `[string, Set<string> | null][]`.
 	 */
-	parseMultiplePrefixes(
+	public parseMultiplePrefixes(
 		message: Message | AkairoMessage,
-		pairs: any[]
+		pairs: [string, Set<string> | null][]
 	): ParsedComponentData {
 		const parses = pairs.map(([prefix, cmds]) =>
 			this.parseWithPrefix(message, prefix, cmds)
@@ -1343,12 +1285,11 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * Tries to parse a message with the given prefix and associated commands.
 	 * Associated commands refer to when a prefix is used in prefix overrides.
-	 * @param {Message|AkairoMessage} message - Message to parse.
-	 * @param {string} prefix - Prefix to use.
-	 * @param {Set<string>|null} [associatedCommands=null] - Associated commands.
-	 * @returns {ParsedComponentData}
+	 * @param message - Message to parse.
+	 * @param prefix - Prefix to use.
+	 * @param associatedCommands - Associated commands.
 	 */
-	parseWithPrefix(
+	public parseWithPrefix(
 		message: Message | AkairoMessage,
 		prefix: string,
 		associatedCommands: Set<string> | null = null
@@ -1386,12 +1327,11 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Handles errors from the handling.
-	 * @param {Error} err - The error.
-	 * @param {Message|AkairoMessage} message - Message that called the command.
-	 * @param {Command|AkairoModule} [command] - Command that errored.
-	 * @returns {void}
+	 * @param err - The error.
+	 * @param message - Message that called the command.
+	 * @param command - Command that errored.
 	 */
-	emitError(
+	public emitError(
 		err: Error,
 		message: Message | AkairoMessage,
 		command: Command | AkairoModule
@@ -1406,11 +1346,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Sweep command util instances from cache and returns amount sweeped.
-	 * @param {number} lifetime - Messages older than this will have their command util instance sweeped.
-	 * This is in milliseconds and defaults to the `commandUtilLifetime` option.
-	 * @returns {number}
+	 * @param lifetime - Messages older than this will have their command util instance sweeped. This is in milliseconds and defaults to the `commandUtilLifetime` option.
 	 */
-	sweepCommandUtil(lifetime: number = this.commandUtilLifetime): number {
+	public sweepCommandUtil(lifetime: number = this.commandUtilLifetime): number {
 		let count = 0;
 		for (const commandUtil of this.commandUtils.values()) {
 			const now = Date.now();
@@ -1430,11 +1368,10 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Adds an ongoing prompt in order to prevent command usage in the channel.
-	 * @param {Channel} channel - Channel to add to.
-	 * @param {User} user - User to add.
-	 * @returns {void}
+	 * @param channel - Channel to add to.
+	 * @param user - User to add.
 	 */
-	addPrompt(channel: Channel, user: User): void {
+	public addPrompt(channel: Channel, user: User): void {
 		let users = this.prompts.get(channel.id);
 		if (!users) this.prompts.set(channel.id, new Set());
 		users = this.prompts.get(channel.id);
@@ -1443,11 +1380,10 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Removes an ongoing prompt.
-	 * @param {Channel} channel - Channel to remove from.
-	 * @param {User} user - User to remove.
-	 * @returns {void}
+	 * @param channel - Channel to remove from.
+	 * @param user - User to remove.
 	 */
-	removePrompt(channel: Channel, user: User): void {
+	public removePrompt(channel: Channel, user: User): void {
 		const users = this.prompts.get(channel.id);
 		if (!users) return;
 		users.delete(user.id);
@@ -1456,11 +1392,10 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Checks if there is an ongoing prompt.
-	 * @param {Channel} channel - Channel to check.
-	 * @param {User} user - User to check.
-	 * @returns {boolean}
+	 * @param channel - Channel to check.
+	 * @param user - User to check.
 	 */
-	hasPrompt(channel: Channel, user: User): boolean {
+	public hasPrompt(channel: Channel, user: User): boolean {
 		const users = this.prompts.get(channel.id);
 		if (!users) return false;
 		return users.has(user.id);
@@ -1468,19 +1403,19 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Finds a command by alias.
-	 * @param {string} name - Alias to find with.
-	 * @returns {Command}
+	 * @param name - Alias to find with.
 	 */
-	findCommand(name: string): Command {
+	public findCommand(name: string): Command {
 		return this.modules.get(this.aliases.get(name.toLowerCase()));
 	}
 
 	/**
 	 * Set the inhibitor handler to use.
-	 * @param {InhibitorHandler} inhibitorHandler - The inhibitor handler.
-	 * @returns {CommandHandler}
+	 * @param inhibitorHandler - The inhibitor handler.
 	 */
-	useInhibitorHandler(inhibitorHandler: InhibitorHandler): CommandHandler {
+	public useInhibitorHandler(
+		inhibitorHandler: InhibitorHandler
+	): CommandHandler {
 		this.inhibitorHandler = inhibitorHandler;
 		this.resolver.inhibitorHandler = inhibitorHandler;
 
@@ -1489,10 +1424,9 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Set the listener handler to use.
-	 * @param {ListenerHandler} listenerHandler - The listener handler.
-	 * @returns {CommandHandler}
+	 * @param listenerHandler - The listener handler.
 	 */
-	useListenerHandler(listenerHandler: ListenerHandler): CommandHandler {
+	public useListenerHandler(listenerHandler: ListenerHandler): CommandHandler {
 		this.resolver.listenerHandler = listenerHandler;
 
 		return this;
@@ -1500,51 +1434,53 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Loads a command.
-	 * @method
-	 * @name CommandHandler#load
-	 * @param {string|Command} thing - Module or path to module.
-	 * @returns {Command}
+	 * @param thing - Module or path to module.
 	 */
+	public override load(thing: string | Command): Command {
+		return super.load(thing) as Command;
+	}
 
 	/**
 	 * Reads all commands from the directory and loads them.
-	 * @method
-	 * @name CommandHandler#loadAll
-	 * @param {string} [directory] - Directory to load from.
-	 * Defaults to the directory passed in the constructor.
-	 * @param {LoadPredicate} [filter] - Filter for files, where true means it should be loaded.
-	 * @returns {CommandHandler}
+	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
+	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
+	public override loadAll(
+		directory?: string,
+		filter?: LoadPredicate
+	): CommandHandler {
+		return super.loadAll(directory, filter) as CommandHandler;
+	}
 
 	/**
 	 * Removes a command.
-	 * @method
-	 * @name CommandHandler#remove
-	 * @param {string} id - ID of the command.
-	 * @returns {Command}
+	 * @param id - ID of the command.
 	 */
+	public override remove(id: string): Command {
+		return super.remove(id) as Command;
+	}
 
 	/**
 	 * Removes all commands.
-	 * @method
-	 * @name CommandHandler#removeAll
-	 * @returns {CommandHandler}
 	 */
+	public override removeAll(): CommandHandler {
+		return super.removeAll() as CommandHandler;
+	}
 
 	/**
 	 * Reloads a command.
-	 * @method
-	 * @name CommandHandler#reload
-	 * @param {string} id - ID of the command.
-	 * @returns {Command}
+	 * @param id - ID of the command.
 	 */
+	public override reload(id: string): Command {
+		return super.reload(id) as Command;
+	}
 
 	/**
 	 * Reloads all commands.
-	 * @method
-	 * @name CommandHandler#reloadAll
-	 * @returns {CommandHandler}
 	 */
+	public override reloadAll(): CommandHandler {
+		return super.reloadAll() as CommandHandler;
+	}
 }
 
 export interface CommandHandlerOptions extends AkairoHandlerOptions {
@@ -1555,25 +1491,39 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	 */
 	aliasReplacement?: RegExp;
 
-	/** Whether or not to allow mentions to the client user as a prefix. */
+	/**
+	 * Whether or not to allow mentions to the client user as a prefix.
+	 */
 	allowMention?: boolean | MentionPrefixPredicate;
 
-	/**  Default argument options. */
+	/**
+	 * Default argument options.
+	 */
 	argumentDefaults?: DefaultArgumentOptions;
 
-	/** Automatically defer messages "BotName is thinking" */
+	/**
+	 * Automatically defer messages "BotName is thinking"
+	 */
 	autoDefer?: boolean;
 
-	/** Specify whether to register all slash commands when starting the client. */
+	/**
+	 * Specify whether to register all slash commands when starting the client.
+	 */
 	autoRegisterSlashCommands?: boolean;
 
-	/** Whether or not to block bots. */
+	/**
+	 * Whether or not to block bots.
+	 */
 	blockBots?: boolean;
 
-	/**  Whether or not to block self. */
+	/**
+	 * Whether or not to block self.
+	 */
 	blockClient?: boolean;
 
-	/** Whether or not to assign `message.util`. */
+	/**
+	 * Whether or not to assign `message.util`.
+	 */
 	commandUtil?: boolean;
 
 	/**
@@ -1588,31 +1538,49 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	 */
 	commandUtilSweepInterval?: number;
 
-	/** Default cooldown for commands. */
+	/**
+	 * Default cooldown for commands.
+	 */
 	defaultCooldown?: number;
 
-	/** Whether or not members are fetched on each message author from a guild. */
+	/**
+	 * Whether or not members are fetched on each message author from a guild.
+	 */
 	fetchMembers?: boolean;
 
-	/** Whether or not to handle edited messages using CommandUtil. */
+	/**
+	 * Whether or not to handle edited messages using CommandUtil.
+	 */
 	handleEdits?: boolean;
 
-	/** ID of user(s) to ignore cooldown or a function to ignore. Defaults to the client owner(s). */
+	/**
+	 * ID of user(s) to ignore cooldown or a function to ignore. Defaults to the client owner(s).
+	 */
 	ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
 
-	/** ID of user(s) to ignore `userPermissions` checks or a function to ignore. */
+	/**
+	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
+	 */
 	ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
 
-	/** The prefix(es) for command parsing. */
+	/**
+	 * The prefix(es) for command parsing.
+	 */
 	prefix?: string | string[] | PrefixSupplier;
 
-	/** Whether or not to store messages in CommandUtil. */
+	/**
+	 * Whether or not to store messages in CommandUtil.
+	 */
 	storeMessages?: boolean;
 
-	/** Show "BotName is typing" information message on the text channels when a command is running. */
+	/**
+	 * Show "BotName is typing" information message on the text channels when a command is running.
+	 */
 	typing?: boolean;
 
-	/** Whether or not to use execSlash for slash commands. */
+	/**
+	 * Whether or not to use execSlash for slash commands.
+	 */
 	execSlash?: boolean;
 }
 
@@ -1620,13 +1588,19 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
  * Data for managing cooldowns.
  */
 export interface CooldownData {
-	/** When the cooldown ends. */
+	/**
+	 * When the cooldown ends.
+	 */
 	end: number;
 
-	/** Timeout object. */
+	/**
+	 * Timeout object.
+	 */
 	timer: NodeJS.Timer;
 
-	/** Number of times the command has been used. */
+	/**
+	 * Number of times the command has been used.
+	 */
 	uses: number;
 }
 
@@ -1634,19 +1608,29 @@ export interface CooldownData {
  * Various parsed components of the message.
  */
 export interface ParsedComponentData {
-	/** The content to the right of the prefix. */
+	/**
+	 * The content to the right of the prefix.
+	 */
 	afterPrefix?: string;
 
-	/** The alias used. */
+	/**
+	 * The alias used.
+	 */
 	alias?: string;
 
-	/** The command used. */
+	/**
+	 * The command used.
+	 */
 	command?: Command;
 
-	/** The content to the right of the alias. */
+	/**
+	 * The content to the right of the alias.
+	 */
 	content?: string;
 
-	/** The prefix used. */
+	/**
+	 * The prefix used.
+	 */
 	prefix?: string;
 }
 

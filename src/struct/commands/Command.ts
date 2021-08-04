@@ -29,6 +29,136 @@ import Flag from "./Flag";
  * @param options - Options for the command.
  */
 export default abstract class Command extends AkairoModule {
+	constructor(id: string, options: CommandOptions) {
+		super(id, { category: options.category });
+
+		const {
+			onlyNsfw = false,
+			aliases = [],
+			args = this._args || [],
+			quoted = true,
+			separator,
+			channel = null,
+			ownerOnly = false,
+			superUserOnly = false,
+			editable = true,
+			typing = false,
+			cooldown = null,
+			ratelimit = 1,
+			argumentDefaults = {},
+			description = "",
+			prefix = this.prefix,
+			clientPermissions = this.clientPermissions,
+			userPermissions = this.userPermissions,
+			regex = this.regex,
+			// @ts-expect-error
+			condition = this.condition || (() => false),
+			before = this.before || (() => undefined),
+			lock,
+			ignoreCooldown,
+			ignorePermissions,
+			flags = [],
+			optionFlags = [],
+			slash = false,
+			slashOptions,
+			slashEphemeral = false,
+			slashGuilds = []
+		}: CommandOptions = options;
+
+		this.aliases = aliases;
+
+		const { flagWords, optionFlagWords } = Array.isArray(args)
+			? ContentParser.getFlags(args)
+			: { flagWords: flags, optionFlagWords: optionFlags };
+
+		this.contentParser = new ContentParser({
+			flagWords,
+			optionFlagWords,
+			quoted,
+			separator
+		});
+
+		this.argumentRunner = new ArgumentRunner(this);
+		this.argumentGenerator = Array.isArray(args)
+			? ArgumentRunner.fromArguments(
+					// @ts-expect-error
+					args.map(arg => [arg.id, new Argument(this, arg)])
+			  )
+			: args.bind(this);
+
+		this.onlyNsfw = Boolean(onlyNsfw);
+
+		this.channel = channel;
+
+		this.ownerOnly = Boolean(ownerOnly);
+
+		this.superUserOnly = Boolean(superUserOnly);
+
+		this.editable = Boolean(editable);
+
+		this.typing = Boolean(typing);
+
+		this.cooldown = cooldown;
+
+		this.ratelimit = ratelimit;
+
+		this.argumentDefaults = argumentDefaults;
+
+		this.description = Array.isArray(description)
+			? description.join("\n")
+			: description;
+
+		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
+
+		this.clientPermissions =
+			typeof clientPermissions === "function"
+				? clientPermissions.bind(this)
+				: clientPermissions;
+
+		this.userPermissions =
+			typeof userPermissions === "function"
+				? userPermissions.bind(this)
+				: userPermissions;
+
+		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
+
+		this.condition = condition.bind(this);
+
+		this.before = before.bind(this);
+
+		this.lock = lock;
+
+		if (typeof lock === "string") {
+			this.lock = {
+				guild: (message: Message) => message.guild && message.guild.id,
+				channel: (message: Message) => message.channel.id,
+				user: (message: Message) => message.author.id
+			}[lock];
+		}
+
+		if (this.lock) {
+			this.locker = new Set();
+		}
+
+		this.ignoreCooldown =
+			typeof ignoreCooldown === "function"
+				? ignoreCooldown.bind(this)
+				: ignoreCooldown;
+
+		this.ignorePermissions =
+			typeof ignorePermissions === "function"
+				? ignorePermissions.bind(this)
+				: ignorePermissions;
+
+		this.slashOptions = slashOptions;
+
+		this.slashEphemeral = slashEphemeral;
+
+		this.slash = slash;
+
+		this.slashGuilds = slashGuilds;
+	}
+
 	/**
 	 * Command names.
 	 */
@@ -183,214 +313,89 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Argument options or generator.
 	 */
-	 public args: ArgumentOptions[] | ArgumentGenerator;
-
-	/**
-	 * Checks if the command should be ran by using an arbitrary condition.
-	 */
-	 public condition: ExecutionPredicate;
-
-	/**
-	 * Runs before argument parsing and execution.
-	 */
-	 public before: BeforeAction;
+	public _args: ArgumentOptions[] | ArgumentGenerator;
 
 	/**
 	 * The content parser.
 	 */
-	 public contentParser: ContentParser;
+	public contentParser: ContentParser;
 
 	/**
 	 * The argument runner.
 	 */
-	 public argumentRunner: ArgumentRunner;
+	public argumentRunner: ArgumentRunner;
 
 	/**
 	 * Generator for arguments.
 	 */
-	 public argumentGenerator: ArgumentGenerator;
-
-	constructor(id: string, options: CommandOptions) {
-		super(id, { category: options.category });
-
-		const {
-			onlyNsfw = false,
-			aliases = [],
-			args = this.args || [],
-			quoted = true,
-			separator,
-			channel = null,
-			ownerOnly = false,
-			superUserOnly = false,
-			editable = true,
-			typing = false,
-			cooldown = null,
-			ratelimit = 1,
-			argumentDefaults = {},
-			description = "",
-			prefix = this.prefix,
-			clientPermissions = this.clientPermissions,
-			userPermissions = this.userPermissions,
-			regex = this.regex,
-			condition = this.condition || (() => false),
-			before = this.before || (() => undefined),
-			lock,
-			ignoreCooldown,
-			ignorePermissions,
-			flags = [],
-			optionFlags = [],
-			slash = false,
-			slashOptions,
-			slashEphemeral = false,
-			slashGuilds = []
-		}: CommandOptions = options;
-
-		this.aliases = aliases;
-
-		const { flagWords, optionFlagWords } = Array.isArray(args)
-			? ContentParser.getFlags(args)
-			: { flagWords: flags, optionFlagWords: optionFlags };
-
-		this.contentParser = new ContentParser({
-			flagWords,
-			optionFlagWords,
-			quoted,
-			separator
-		});
-
-		this.argumentRunner = new ArgumentRunner(this);
-		this.argumentGenerator = Array.isArray(args)
-			? ArgumentRunner.fromArguments(
-					// @ts-expect-error
-					args.map(arg => [arg.id, new Argument(this, arg)])
-			  )
-			: args.bind(this);
-
-		this.onlyNsfw = Boolean(onlyNsfw);
-
-		this.channel = channel;
-
-		this.ownerOnly = Boolean(ownerOnly);
-
-		this.superUserOnly = Boolean(superUserOnly);
-
-		this.editable = Boolean(editable);
-
-		this.typing = Boolean(typing);
-
-		this.cooldown = cooldown;
-
-		this.ratelimit = ratelimit;
-
-		this.argumentDefaults = argumentDefaults;
-
-		this.description = Array.isArray(description)
-			? description.join("\n")
-			: description;
-
-		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
-
-		this.clientPermissions =
-			typeof clientPermissions === "function"
-				? clientPermissions.bind(this)
-				: clientPermissions;
-
-		this.userPermissions =
-			typeof userPermissions === "function"
-				? userPermissions.bind(this)
-				: userPermissions;
-
-		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
-
-		this.condition = condition.bind(this);
-
-		this.before = before.bind(this);
-
-		this.lock = lock;
-
-		if (typeof lock === "string") {
-			this.lock = {
-				guild: (message: Message) => message.guild && message.guild.id,
-				channel: (message: Message) => message.channel.id,
-				user: (message: Message) => message.author.id
-			}[lock];
-		}
-
-		if (this.lock) {
-			this.locker = new Set();
-		}
-
-		this.ignoreCooldown =
-			typeof ignoreCooldown === "function"
-				? ignoreCooldown.bind(this)
-				: ignoreCooldown;
-
-		this.ignorePermissions =
-			typeof ignorePermissions === "function"
-				? ignorePermissions.bind(this)
-				: ignorePermissions;
-
-		this.slashOptions = slashOptions;
-
-		this.slashEphemeral = slashEphemeral;
-
-		this.slash = slash;
-
-		this.slashGuilds = slashGuilds;
-	}
+	public argumentGenerator: ArgumentGenerator;
 
 	/**
 	 * Executes the command.
 	 * @param message - Message that triggered the command.
 	 * @param args - Evaluated arguments.
 	 */
-	// @ts-expect-error
 	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
-	public abstract exec(message: Message | AkairoMessage, args: any): any {
+	public exec(message: Message, args: any): any;
+	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
+	public exec(message: Message | AkairoMessage, args: any): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
 
 	/**
-	 * Execute the slash command
-	 * @param {AkairoMessage} message - Message for slash command
-	 * @param {any} args - Slash command options
-	 * @returns {any}
+	 * Runs before argument parsing and execution.
+	 * @param message - Message being handled.
 	 */
-	/* Disabled cause it wouldn't work with the current design */
-	// execSlash() {
-	// 	if (this.slash) {
-	// 		throw new AkairoError(
-	// 			"NOT_IMPLEMENTED",
-	// 			this.constructor.name,
-	// 			"execSlash"
-	// 		);
-	// 	}
-	// }
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public before(message: Message): any {}
+
+	/**
+	 * Checks if the command should be ran by using an arbitrary condition.
+	 * @param message - Message being handled.
+	 */
+	// @ts-ignore
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public condition(message: Message): boolean | Promise<boolean> {}
+
+	/**
+	 * Execute the slash command
+	 * @param message - Message for slash command
+	 * @param args - Slash command options
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars,  func-names
+	public execSlash(message: AkairoMessage, ...args: any[]): any {
+		if (this.slash) {
+			throw new AkairoError(
+				"NOT_IMPLEMENTED",
+				this.constructor.name,
+				"execSlash"
+			);
+		}
+	}
 
 	/**
 	 * Parses content using the command's arguments.
-	 * @param {Message} message - Message to use.
-	 * @param {string} content - String to parse.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message to use.
+	 * @param content - String to parse.
 	 */
-	parse(message: Message, content: string): Promise<Flag | any> {
+	public parse(message: Message, content: string): Promise<Flag | any> {
 		const parsed = this.contentParser.parse(content);
 		return this.argumentRunner.run(message, parsed, this.argumentGenerator);
 	}
 
 	/**
 	 * Reloads the command.
-	 * @method
-	 * @name Command#reload
-	 * @returns {Command}
 	 */
+	public override reload(): Command {
+		return super.reload() as Command;
+	}
 
 	/**
 	 * Removes the command.
-	 * @method
-	 * @name Command#remove
-	 * @returns {Command}
 	 */
+	public override remove(): Command {
+		return super.remove() as Command;
+	}
 }
 
 /**

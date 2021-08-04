@@ -11,6 +11,19 @@ import ListenerHandler from "./ListenerHandler";
  * @param options - Options for the listener.
  */
 export default abstract class Listener extends AkairoModule {
+	public constructor(
+		id: string,
+		{ category, emitter, event, type = "on" }: ListenerOptions
+	) {
+		super(id, { category });
+
+		this.emitter = emitter;
+
+		this.event = event;
+
+		this.type = type;
+	}
+
 	/**
 	 * The category of this listener.
 	 */
@@ -45,19 +58,6 @@ export default abstract class Listener extends AkairoModule {
 	 * Type of listener.
 	 */
 	public type: string;
-
-	public constructor(
-		id: string,
-		{ category, emitter, event, type = "on" }: ListenerOptions
-	) {
-		super(id, { category });
-
-		this.emitter = emitter;
-
-		this.event = event;
-
-		this.type = type;
-	}
 
 	/**
 	 * Executes the listener.

@@ -21,21 +21,6 @@ import ListenerHandler from "../../listeners/ListenerHandler";
  * @param handler - The command handler.
  */
 export default class TypeResolver {
-	/** The Akairo client. */
-	public client: AkairoClient;
-
-	/** The command handler. */
-	public commandHandler: CommandHandler;
-
-	/** The inhibitor handler. */
-	public inhibitorHandler?: InhibitorHandler | null;
-
-	/** The listener handler. */
-	public listenerHandler?: ListenerHandler | null;
-
-	/** Collection of types. */
-	public types: Collection<string, ArgumentTypeCaster>;
-
 	public constructor(handler: CommandHandler) {
 		this.client = handler.client;
 
@@ -51,10 +36,34 @@ export default class TypeResolver {
 	}
 
 	/**
-	 * Adds built-in types.
-	 * @returns {void}
+	 * The Akairo client.
 	 */
-	addBuiltInTypes(): void {
+	public client: AkairoClient;
+
+	/**
+	 * The command handler.
+	 */
+	public commandHandler: CommandHandler;
+
+	/**
+	 * The inhibitor handler.
+	 */
+	public inhibitorHandler?: InhibitorHandler | null;
+
+	/**
+	 * The listener handler.
+	 */
+	public listenerHandler?: ListenerHandler | null;
+
+	/**
+	 * Collection of types.
+	 */
+	public types: Collection<string, ArgumentTypeCaster>;
+
+	/**
+	 * Adds built-in types.
+	 */
+	public addBuiltInTypes(): void {
 		const builtins = {
 			[ArgumentTypes.STRING]: (_message: Message, phrase: string) => {
 				return phrase || null;
@@ -625,20 +634,18 @@ export default class TypeResolver {
 
 	/**
 	 * Gets the resolver function for a type.
-	 * @param {string} name - Name of type.
-	 * @returns {ArgumentTypeCaster|undefined}
+	 * @param name - Name of type.
 	 */
-	type(name: string): ArgumentTypeCaster | undefined {
+	public type(name: string): ArgumentTypeCaster | undefined {
 		return this.types.get(name);
 	}
 
 	/**
 	 * Adds a new type.
-	 * @param {string} name - Name of the type.
-	 * @param {ArgumentTypeCaster} fn - Function that casts the type.
-	 * @returns {TypeResolver}
+	 * @param name - Name of the type.
+	 * @param fn - Function that casts the type.
 	 */
-	addType(name: string, fn: ArgumentTypeCaster): TypeResolver {
+	public addType(name: string, fn: ArgumentTypeCaster): TypeResolver {
 		this.types.set(name, fn);
 		return this;
 	}
@@ -647,7 +654,7 @@ export default class TypeResolver {
 	 * Adds multiple new types.
 	 * @param types  - Object with keys as the type name and values as the cast function.
 	 */
-	addTypes(types: any): TypeResolver {
+	public addTypes(types: any): TypeResolver {
 		for (const [key, value] of Object.entries(types)) {
 			this.addType(key, value as any);
 		}

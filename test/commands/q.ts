@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Command } from "../..";
+import { Command } from "../../src/index";
 
 export default class QCommand extends Command {
 	constructor() {
@@ -9,7 +9,7 @@ export default class QCommand extends Command {
 		});
 	}
 
-	exec(message) {
+	override exec(message) {
 		const command = this.handler.modules.get("p");
 		return this.handler.handleDirectCommand(message, "", command);
 	}

@@ -15,8 +15,8 @@ import {
 } from "discord.js";
 import AkairoClient from "../struct/AkairoClient";
 import Command from "../struct/commands/Command";
-import CommandUtil from "../struct/commands/CommandUtil";
 import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
+import CommandUtil from "../struct/commands/CommandUtil";
 
 /**
  * A command interaction represented as a message.

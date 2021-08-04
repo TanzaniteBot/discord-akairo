@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Command } from "../..";
+import { Command } from "../../src/index";
 import util from "util";
 
 export default class PCommand extends Command {
@@ -24,11 +24,11 @@ export default class PCommand extends Command {
 		});
 	}
 
-	before() {
+	override before() {
 		console.log(1);
 	}
 
-	exec(message, args) {
+	override exec(message, args) {
 		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
 	}
 }

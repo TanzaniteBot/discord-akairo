@@ -54,15 +54,6 @@ import { ArgumentMatches } from "../../util/Constants";
  */
 
 class Tokenizer {
-	public content: string;
-	public flagWords: string[];
-	public optionFlagWords: string[];
-	public quoted: boolean;
-	public separator: string;
-	public position: number;
-	public state: number;
-	public tokens: any[];
-
 	constructor(
 		content,
 		// @ts-expect-error
@@ -78,6 +69,15 @@ class Tokenizer {
 		this.state = 0;
 		this.tokens = [];
 	}
+
+	public content: string;
+	public flagWords: string[];
+	public optionFlagWords: string[];
+	public quoted: boolean;
+	public separator: string;
+	public position: number;
+	public state: number;
+	public tokens: any[];
 
 	startsWith(str) {
 		return (
@@ -274,14 +274,6 @@ class Parser {
 		 * Option flags are `{ type: 'OptionFlag', key, value, raw }`.
 		 * The `all` property is partitioned into `phrases`, `flags`, and `optionFlags`.
 		 */
-		/**
-		 * @typedef {Object} results
-		 * @prop {any[]} all
-		 * @prop {any[]} phrases
-		 * @prop {any[]} flags
-		 * @prop {any[]} optionFlags
-		 */
-		/** @type {results} */
 		this.results = {
 			all: [],
 			phrases: [],

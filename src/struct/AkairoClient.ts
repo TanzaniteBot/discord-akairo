@@ -7,21 +7,6 @@ import ClientUtil from "./ClientUtil";
  * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
  */
 export default class AkairoClient extends Client {
-	/**
-	 * The ID of the owner(s).
-	 */
-	public ownerID: Snowflake | Snowflake[];
-
-	/**
-	 * The ID of the superUser(s).
-	 */
-	public superUserID: Snowflake | Snowflake[];
-
-	/**
-	 * Utility methods.
-	 */
-	public util: ClientUtil;
-
 	public constructor(
 		options?: AkairoOptions & ClientOptions,
 		clientOptions?: ClientOptions
@@ -38,6 +23,21 @@ export default class AkairoClient extends Client {
 
 		this.util = new ClientUtil(this);
 	}
+
+	/**
+	 * The ID of the owner(s).
+	 */
+	public ownerID: Snowflake | Snowflake[];
+
+	/**
+	 * The ID of the superUser(s).
+	 */
+	public superUserID: Snowflake | Snowflake[];
+
+	/**
+	 * Utility methods.
+	 */
+	public util: ClientUtil;
 
 	/**
 	 * Checks if a user is the owner of this bot.

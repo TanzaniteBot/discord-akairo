@@ -13,6 +13,24 @@ import InhibitorHandler from "./InhibitorHandler";
  * @param options - Options for the inhibitor.
  */
 export default abstract class Inhibitor extends AkairoModule {
+	public constructor(
+		id: string,
+		{
+			category,
+			reason = "",
+			type = "post",
+			priority = 0
+		}: InhibitorOptions = {}
+	) {
+		super(id, { category });
+
+		this.reason = reason;
+
+		this.type = type;
+
+		this.priority = priority;
+	}
+
 	/**
 	 * The priority of the inhibitor.
 	 */
@@ -52,24 +70,6 @@ export default abstract class Inhibitor extends AkairoModule {
 	 * The type of the inhibitor for when it should run.
 	 */
 	public type: string;
-
-	public constructor(
-		id: string,
-		{
-			category,
-			reason = "",
-			type = "post",
-			priority = 0
-		}: InhibitorOptions = {}
-	) {
-		super(id, { category });
-
-		this.reason = reason;
-
-		this.type = type;
-
-		this.priority = priority;
-	}
 
 	/**
 	 * Checks if message should be blocked.

@@ -17,37 +17,6 @@ import { ListenerHandlerEvents } from "../../typings/events";
  * @param options - Options.
  */
 export default class ListenerHandler extends AkairoHandler {
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, Listener>>;
-
-	/**
-	 * Class to handle.
-	 */
-	public declare classToHandle: typeof Listener;
-
-	/**
-	 * The Akairo client
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Directory to listeners.
-	 */
-	public declare directory: string;
-
-	/**
-	 * EventEmitters for use, mapped by name to EventEmitter.
-	 * By default, 'client' is set to the given client.
-	 */
-	public emitters: Collection<string, EventEmitter>;
-
-	/**
-	 * Listeners loaded, mapped by ID to Listener.
-	 */
-	public declare modules: Collection<string, Listener>;
-
 	public constructor(
 		client: AkairoClient,
 		{
@@ -82,6 +51,37 @@ export default class ListenerHandler extends AkairoHandler {
 		this.emitters = new Collection();
 		this.emitters.set("client", this.client);
 	}
+
+	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public declare categories: Collection<string, Category<string, Listener>>;
+
+	/**
+	 * Class to handle.
+	 */
+	public declare classToHandle: typeof Listener;
+
+	/**
+	 * The Akairo client
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * Directory to listeners.
+	 */
+	public declare directory: string;
+
+	/**
+	 * EventEmitters for use, mapped by name to EventEmitter.
+	 * By default, 'client' is set to the given client.
+	 */
+	public emitters: Collection<string, EventEmitter>;
+
+	/**
+	 * Listeners loaded, mapped by ID to Listener.
+	 */
+	public declare modules: Collection<string, Listener>;
 
 	/**
 	 * Adds a listener to the EventEmitter.
@@ -132,8 +132,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	public override load(thing: string | Function, isReload?: boolean): Listener {
+	public override load(thing: string | Listener, isReload?: boolean): Listener {
 		return super.load(thing, isReload) as Listener;
 	}
 
@@ -217,7 +216,7 @@ export default class ListenerHandler extends AkairoHandler {
 		for (const [key, value] of Object.entries(emitters)) {
 			if (!Util.isEventEmitter(value))
 				throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
-			this.emitters.set(key, value as  any);
+			this.emitters.set(key, value as any);
 		}
 
 		return this;

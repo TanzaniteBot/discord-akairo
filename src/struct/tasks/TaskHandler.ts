@@ -15,31 +15,6 @@ import Task from "./Task";
  * @param options - Options.
  */
 export default class TaskHandler extends AkairoHandler {
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, Task>>;
-
-	/**
-	 * Class to handle.
-	 */
-	public declare classToHandle: typeof Task;
-
-	/**
-	 * The Akairo client
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Directory to tasks.
-	 */
-	public declare directory: string;
-
-	/**
-	 * Tasks loaded, mapped by ID to task.
-	 */
-	public declare modules: Collection<string, Task>;
-
 	public constructor(
 		client: AkairoClient,
 		{
@@ -68,6 +43,31 @@ export default class TaskHandler extends AkairoHandler {
 	}
 
 	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public declare categories: Collection<string, Category<string, Task>>;
+
+	/**
+	 * Class to handle.
+	 */
+	public declare classToHandle: typeof Task;
+
+	/**
+	 * The Akairo client
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * Directory to tasks.
+	 */
+	public declare directory: string;
+
+	/**
+	 * Tasks loaded, mapped by ID to task.
+	 */
+	public declare modules: Collection<string, Task>;
+
+	/**
 	 * Deregisters a module.
 	 * @param task - Module to use.
 	 */
@@ -87,8 +87,7 @@ export default class TaskHandler extends AkairoHandler {
 	 * Loads a task.
 	 * @param thing - Module or path to module.
 	 */
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	public override load(thing: string | Function, isReload?: boolean): Task {
+	public override load(thing: string | Task, isReload?: boolean): Task {
 		return super.load(thing, isReload) as Task;
 	}
 
@@ -97,7 +96,10 @@ export default class TaskHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): TaskHandler {
+	public override loadAll(
+		directory?: string,
+		filter?: LoadPredicate
+	): TaskHandler {
 		return super.loadAll(directory, filter) as TaskHandler;
 	}
 

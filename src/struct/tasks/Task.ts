@@ -10,6 +10,17 @@ import TaskHandler from "./TaskHandler";
  * @param options - Options for the task.
  */
 export default abstract class Task extends AkairoModule {
+	public constructor(
+		id: string,
+		{ category, delay, runOnStart = false }: TaskOptions
+	) {
+		super(id, { category });
+
+		this.delay = delay;
+
+		this.runOnStart = runOnStart;
+	}
+
 	/**
 	 * The category of this task.
 	 */
@@ -40,17 +51,6 @@ export default abstract class Task extends AkairoModule {
 	 */
 	public runOnStart: boolean;
 
-	public constructor(
-		id: string,
-		{ category, delay, runOnStart = false }: TaskOptions
-	) {
-		super(id, { category });
-
-		this.delay = delay;
-
-		this.runOnStart = runOnStart;
-	}
-
 	/**
 	 * Executes the task.
 	 * @param args - Arguments.
@@ -72,11 +72,11 @@ export default abstract class Task extends AkairoModule {
 	 * Removes the task.
 	 */
 	public override remove(): Task {
-		return super.remove() as Task; 
+		return super.remove() as Task;
 	}
 
-	/** 
-	 * Returns the ID. 
+	/**
+	 * Returns the ID.
 	 */
 	public override toString(): string {
 		return super.toString();

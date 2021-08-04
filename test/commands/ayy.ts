@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import { Command } from "../../src";
+import { Command } from "../../src/index";
 
 export default class AyyCommand extends Command {
 	constructor() {
@@ -8,7 +8,7 @@ export default class AyyCommand extends Command {
 		});
 	}
 
-	exec(message: Message) {
+	override exec(message: Message) {
 		return message.reply("lmao");
 	}
 }

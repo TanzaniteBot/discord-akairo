@@ -1,4 +1,4 @@
-import { Command } from "../..";
+import { Command } from "../../src/index";
 
 export default class EmbedCommand extends Command {
 	constructor() {
@@ -23,7 +23,7 @@ export default class EmbedCommand extends Command {
 		});
 	}
 
-	exec(message, args) {
+	override exec(message, args) {
 		if (args.emptyContent) {
 			return message.util.send(null, { embed: { description: args.phrase } });
 		}

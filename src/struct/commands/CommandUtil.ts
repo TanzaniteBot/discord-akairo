@@ -1,3 +1,4 @@
+/* eslint-disable require-await */
 import { APIMessage } from "discord-api-types";
 import {
 	Collection,
@@ -20,82 +21,69 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
  * @param message - Message that triggered the command.
  */
 export default class CommandUtil {
-	/**  The command handler. */
-	public handler: CommandHandler;
-
-	/** Whether or not the command is a slash command. */
-	public isSlash: boolean;
-
-	/** The last response sent. */
-	public lastResponse?: Message;
-
-	/** Message that triggered the command. */
-	public message: Message | AkairoMessage;
-
-	/** Messages stored from prompts and prompt replies. */
-	public messages?: Collection<Snowflake, Message>;
-
-	/** The parsed components. */
-	public parsed?: ParsedComponentData;
-
-	/** Whether or not the last response should be edited. */
-	public shouldEdit: boolean;
-
 	public constructor(
 		handler: CommandHandler,
 		message: Message | AkairoMessage
 	) {
-		/**
-		 * The command handler.
-		 * @type {CommandHandler}
-		 */
 		this.handler = handler;
 
-		/**
-		 * Message that triggered the command.
-		 * @type {Message | AkairoMessage}
-		 */
 		this.message = message;
 
-		/**
-		 * The parsed components.
-		 * @type {?ParsedComponentData}
-		 */
 		this.parsed = null;
 
-		/**
-		 * Whether or not the last response should be edited.
-		 * @type {boolean}
-		 */
 		this.shouldEdit = false;
 
-		/**
-		 * The last response sent.
-		 * @type {?Message | ?}
-		 */
 		this.lastResponse = null;
 
 		if (this.handler.storeMessages) {
-			/**
-			 * Messages stored from prompts and prompt replies.
-			 * @type {Collection<Snowflake, Message>?}
-			 */
 			this.messages = new Collection();
 		} else {
 			this.messages = null;
 		}
 
-		/**
-		 * Whether or not the command is a slash command.
-		 * @type {boolean}
-		 */
-		this.isSlash = !!message.interaction;
+		this.isSlash = !!(this.message instanceof Message);
 	}
 
 	/**
-	 * Sets the last response.
+	 * The command handler.
 	 */
-	setLastResponse(message: Message): Message {
+	public handler: CommandHandler;
+
+	/**
+	 * Whether or not the command is a slash command.
+	 */
+	public isSlash: true | false;
+
+	/**
+	 * The last response sent.
+	 */
+	public lastResponse?: Message;
+
+	/**
+	 * Message that triggered the command.
+	 */
+	public message: Message | AkairoMessage;
+
+	/**
+	 * Messages stored from prompts and prompt replies.
+	 */
+	public messages?: Collection<Snowflake, Message>;
+
+	/**
+	 * The parsed components.
+	 */
+	public parsed?: ParsedComponentData;
+
+	/**
+	 * Whether or not the last response should be edited.
+	 */
+	public shouldEdit: boolean;
+
+	/**
+	 * Sets the last response.
+	 * @param message - The last response.
+	 */
+	public setLastResponse(message: Message): Message {
 		if (Array.isArray(message)) {
 			this.lastResponse = message.slice(-1)[0];
 		} else {
@@ -106,10 +94,9 @@ export default class CommandUtil {
 
 	/**
 	 * Adds client prompt or user reply to messages.
-	 * @param {Message | Message[]} message - Message to add.
-	 * @returns {Message | Message[]}
+	 * @param message - Message to add.
 	 */
-	addMessage(message: Message | Message[]): Message | Message[] {
+	public addMessage(message: Message | Message[]): Message | Message[] {
 		if (this.handler.storeMessages) {
 			if (Array.isArray(message)) {
 				for (const msg of message) {
@@ -125,21 +112,19 @@ export default class CommandUtil {
 
 	/**
 	 * Changes if the message should be edited.
-	 * @param {boolean} state - Change to editable or not.
-	 * @returns {CommandUtil}
+	 * @param state - Change to editable or not.
 	 */
-	setEditable(state: boolean): CommandUtil {
+	public setEditable(state: boolean): CommandUtil {
 		this.shouldEdit = Boolean(state);
 		return this;
 	}
 
 	/**
 	 * Sends a response or edits an old response if available.
-	 * @param {string | MessagePayload | MessageOptions | InteractionReplyOptions} options - Options to use.
-	 * @returns {Promise<Message | APIMessage | undefined>}
+	 * @param options - Options to use.
 	 */
 	// eslint-disable-next-line consistent-return
-	async send(
+	public async send(
 		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage | void> {
 		const hasFiles =
@@ -196,10 +181,9 @@ export default class CommandUtil {
 
 	/**
 	 * Sends a response, overwriting the last response.
-	 * @param {string | MessagePayload | MessageOptions} options - Options to use.
-	 * @returns {Promise<Message | APIMessage>}
+	 * @param options - Options to use.
 	 */
-	async sendNew(
+	public async sendNew(
 		options: string | MessagePayload | MessageOptions
 	): Promise<Message | APIMessage> {
 		if (!(this.message.interaction instanceof CommandInteraction)) {
@@ -218,10 +202,9 @@ export default class CommandUtil {
 
 	/**
 	 * Send an inline reply or respond to a slash command.
-	 * @param {string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions} options - Options to use.
-	 * @returns {Promise<Message|APIMessage>}
+	 * @param options - Options to use.
 	 */
-	reply(
+	public async reply(
 		options:
 			| string
 			| MessagePayload
@@ -255,10 +238,9 @@ export default class CommandUtil {
 	/**
 	 * Edits the last response.
 	 * If the message is a slash command, edits the slash response.
-	 * @param {string | MessageEditOptions | MessagePayload | WebhookEditMessageOptions} options - Options to use.
-	 * @returns {Promise<Message>}
+	 * @param options - Options to use.
 	 */
-	edit(
+	public async edit(
 		options:
 			| string
 			| MessageEditOptions
@@ -275,9 +257,8 @@ export default class CommandUtil {
 
 	/**
 	 * Deletes the last response.
-	 * @returns {Promise<Message | void>}
 	 */
-	delete(): Promise<Message | void> {
+	public async delete(): Promise<Message | void> {
 		if (this.isSlash) {
 			// @ts-expect-error
 			return this.message.interaction.deleteReply();

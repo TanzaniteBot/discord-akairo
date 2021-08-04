@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Command } from "../..";
+import { Command } from "../../src/index";
 import { promisify } from "util";
 import { Message } from "discord.js";
 
@@ -14,7 +14,7 @@ export default class LockCommand extends Command {
 		});
 	}
 
-	exec(message: Message) {
+	override exec(message: Message) {
 		return [0, 1, 2, 3, 4].reduce(
 			(promise, num) =>
 				// @ts-expect-error

@@ -1,2 +1,4 @@
 .git
 .github/workflows/*
+dist
+typings

@@ -8,10 +8,13 @@ import { ContentParserResult } from "../ContentParser";
 
 /**
  * Runs arguments.
- * @param {Command} command - Command to run for.
- * @private
+ * @param command - Command to run for.
  */
 export default class ArgumentRunner {
+	public constructor(command: Command) {
+		this.command = command;
+	}
+
 	/**
 	 * The command the arguments are being run for
 	 */
@@ -31,16 +34,11 @@ export default class ArgumentRunner {
 		return this.command.handler;
 	}
 
-	public constructor(command: Command) {
-		this.command = command;
-	}
-
 	/**
 	 * Runs the arguments.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentGenerator} generator - Argument generator.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param generator - Argument generator.
 	 */
 	public async run(
 		message: Message,
@@ -91,11 +89,10 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs one argument.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
 	public runOne(
 		message: Message,
@@ -125,13 +122,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `phrase` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	async runPhrase(
+	public async runPhrase(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -179,13 +175,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `rest` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	async runRest(
+	public async runRest(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -207,13 +202,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `separate` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	async runSeparate(
+	public async runSeparate(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -251,13 +245,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `flag` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	runFlag(
+	public runFlag(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -285,13 +278,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `option` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	async runOption(
+	public async runOption(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -327,13 +319,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `text` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	runText(
+	public runText(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -350,13 +341,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `content` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	runContent(
+	public runContent(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -373,13 +363,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `restContent` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	async runRestContent(
+	public async runRestContent(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -401,13 +390,12 @@ export default class ArgumentRunner {
 
 	/**
 	 * Runs `none` match.
-	 * @param {Message} message - Message that triggered the command.
-	 * @param {ContentParserResult} parsed - Parsed data from ContentParser.
-	 * @param {ArgumentRunnerState} state - Argument handling state.
-	 * @param {Argument} arg - Current argument.
-	 * @returns {Promise<Flag|any>}
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed data from ContentParser.
+	 * @param state - Argument handling state.
+	 * @param arg - Current argument.
 	 */
-	runNone(
+	public runNone(
 		message: Message,
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
@@ -422,7 +410,7 @@ export default class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param n - Number of indices to increase by.
 	 */
-	static increaseIndex(
+	public static increaseIndex(
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState,
 		n = 1
@@ -441,10 +429,9 @@ export default class ArgumentRunner {
 
 	/**
 	 * Checks if something is a flag that short circuits.
-	 * @param {any} value - A value.
-	 * @returns {boolean}
+	 * @param value - A value.
 	 */
-	static isShortCircuit(value: any): boolean {
+	public static isShortCircuit(value: any): boolean {
 		return (
 			Flag.is(value, "cancel") ||
 			Flag.is(value, "retry") ||
@@ -454,10 +441,9 @@ export default class ArgumentRunner {
 
 	/**
 	 * Creates an argument generator from argument options.
-	 * @param {ArgumentOptions[]} args - Argument options.
-	 * @returns {GeneratorFunction}
+	 * @param args - Argument options.
 	 */
-	static fromArguments(args: ArgumentOptions[]): GeneratorFunction {
+	public static fromArguments(args: ArgumentOptions[]): GeneratorFunction {
 		// @ts-expect-error
 		return function* generate() {
 			const res = {};

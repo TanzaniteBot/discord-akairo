@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 
-import { Message } from "discord.js";
-import { Listener } from "../..";
+import { Listener } from "../../src/index";
 
 export default class InvalidMessageListener extends Listener {
 	constructor() {
@@ -12,8 +11,7 @@ export default class InvalidMessageListener extends Listener {
 		});
 	}
 
-	exec(msg: Message): void {
-		// @ts-expect-error
+	exec(msg): void {
 		console.log(msg.util.parsed);
 	}
 }

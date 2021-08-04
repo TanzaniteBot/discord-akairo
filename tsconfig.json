@@ -23,12 +23,9 @@
 		"alwaysStrict": true,
 		"noEmitHelpers": true,
 		"declarationMap": true,
-		"declaration": true, 
-		"declarationDir": "typings"
+		"declaration": true,
+		"declarationDir": "dist"
 	},
-	"include": [
-		"src/**/*.ts", "index.d.ts"
-		// "test/**/*.ts"
-	],
-	"exclude": ["node_modules"]
+	"include": ["src/**/*.ts", "test/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
 }

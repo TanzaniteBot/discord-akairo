@@ -8,6 +8,23 @@ import AkairoHandler from "./AkairoHandler";
  * @param options - Options.
  */
 export default abstract class AkairoModule {
+	public constructor(
+		id: string,
+		{ category = "default" }: AkairoModuleOptions = {}
+	) {
+		this.id = id;
+
+		this.categoryID = category;
+
+		this.category = null;
+
+		this.filepath = null;
+
+		this.client = null;
+
+		this.handler = null;
+	}
+
 	/**
 	 * Category this belongs to.
 	 */
@@ -32,23 +49,6 @@ export default abstract class AkairoModule {
 	 * The handler.
 	 */
 	public handler: AkairoHandler;
-
-	public constructor(
-		id: string,
-		{ category = "default" }: AkairoModuleOptions = {}
-	) {
-		this.id = id;
-
-		this.categoryID = category;
-
-		this.category = null;
-
-		this.filepath = null;
-
-		this.client = null;
-
-		this.handler = null;
-	}
 
 	/**
 	 * ID of the module.

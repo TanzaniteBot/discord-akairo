@@ -3,7 +3,7 @@ import {
 	CommandHandler,
 	InhibitorHandler,
 	ListenerHandler
-} from "../../src";
+} from "../../src/index";
 
 export default class TestClient extends AkairoClient {
 	commandHandler: CommandHandler;

@@ -18,31 +18,6 @@ import { InhibitorHandlerEvents } from "../../typings/events";
  * @param options - Options.
  */
 export default class InhibitorHandler extends AkairoHandler {
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, Inhibitor>>;
-
-	/**
-	 * Class to handle.
-	 */
-	public declare classToHandle: typeof Inhibitor;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Directory to inhibitors.
-	 */
-	public declare directory: string;
-
-	/**
-	 * Inhibitors loaded, mapped by ID to Inhibitor.
-	 */
-	public declare modules: Collection<string, Inhibitor>;
-
 	public constructor(
 		client: AkairoClient,
 		{
@@ -76,6 +51,31 @@ export default class InhibitorHandler extends AkairoHandler {
 	}
 
 	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public declare categories: Collection<string, Category<string, Inhibitor>>;
+
+	/**
+	 * Class to handle.
+	 */
+	public declare classToHandle: typeof Inhibitor;
+
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * Directory to inhibitors.
+	 */
+	public declare directory: string;
+
+	/**
+	 * Inhibitors loaded, mapped by ID to Inhibitor.
+	 */
+	public declare modules: Collection<string, Inhibitor>;
+
+	/**
 	 * Deregisters a module.
 	 * @param inhibitor - Module to use.
 	 */
@@ -95,8 +95,7 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * Loads an inhibitor.
 	 * @param thing - Module or path to module.
 	 */
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	public override load(thing: string | Function): Inhibitor {
+	public override load(thing: string | Inhibitor): Inhibitor {
 		return super.load(thing) as Inhibitor;
 	}
 
@@ -194,7 +193,7 @@ export default class InhibitorHandler extends AkairoHandler {
 	public override on<K extends keyof InhibitorHandlerEvents>(
 		event: K,
 		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
-	): this{
+	): this {
 		return super.on(event, listener);
 	}
 }

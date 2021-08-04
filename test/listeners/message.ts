@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
-import { Listener } from "../..";
+import { Listener } from "../../src/index";
 
-class MessageListener extends Listener {
+export default class MessageListener extends Listener {
 	constructor() {
 		super("message", {
 			emitter: "client",

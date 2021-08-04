@@ -1,4 +1,4 @@
-import { Command } from "../..";
+import { Command } from "../../src/index";
 import util from "util";
 
 export default class EvalCommand extends Command {
@@ -17,7 +17,7 @@ export default class EvalCommand extends Command {
 		});
 	}
 
-	async exec(message, { code }) {
+	override async exec(message, { code }) {
 		if (!code) return message.util.reply("No code provided!");
 
 		const evaled: any = {};
@@ -28,7 +28,7 @@ export default class EvalCommand extends Command {
 		const tokenRegex = new RegExp(`${token}|${rev}`, "g");
 		const cb = "```";
 
-		// eslint-disable-next-line no-unused-vars
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const print = (...a) => {
 			const cleaned = a.map(obj => {
 				// @ts-expect-error

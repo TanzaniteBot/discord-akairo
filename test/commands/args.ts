@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Command } from "../..";
+import { Command } from "../../src/index";
 import util from "util";
 
 export default class ArgsCommand extends Command {
@@ -47,7 +47,7 @@ export default class ArgsCommand extends Command {
 		});
 	}
 
-	exec(message, args) {
+	override exec(message, args) {
 		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
 	}
 }

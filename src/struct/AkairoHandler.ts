@@ -16,46 +16,6 @@ export type Static<M> = { (): M };
  * @param options - Options for module loading and handling.
  */
 export default class AkairoHandler extends EventEmitter {
-	/**
-	 * Whether or not to automate category names.
-	 */
-	public automateCategories: boolean;
-
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public categories: Collection<string, Category<string, AkairoModule>>;
-
-	/**
-	 * Class to handle.
-	 */	
-	public classToHandle: typeof AkairoModule;
-
-	/**
-	 * The Akairo client.
-	 */
-	public client: AkairoClient;
-
-	/**
-	 * The main directory to modules.
-	 */
-	public directory: string;
-
-	/**
-	 * File extensions to load.
-	 */
-	public extensions: Set<string>;
-
-	/**
-	 * Function that filters files when loading.
-	 */
-	public loadFilter: LoadPredicate;
-
-	/**
-	 * Modules loaded, mapped by ID to AkairoModule.
-	 */
-	public modules: Collection<string, AkairoModule>;
-
 	public constructor(
 		client: AkairoClient,
 		{
@@ -86,6 +46,46 @@ export default class AkairoHandler extends EventEmitter {
 	}
 
 	/**
+	 * Whether or not to automate category names.
+	 */
+	public automateCategories: boolean;
+
+	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public categories: Collection<string, Category<string, AkairoModule>>;
+
+	/**
+	 * Class to handle.
+	 */
+	public classToHandle: typeof AkairoModule;
+
+	/**
+	 * The Akairo client.
+	 */
+	public client: AkairoClient;
+
+	/**
+	 * The main directory to modules.
+	 */
+	public directory: string;
+
+	/**
+	 * File extensions to load.
+	 */
+	public extensions: Set<string>;
+
+	/**
+	 * Function that filters files when loading.
+	 */
+	public loadFilter: LoadPredicate;
+
+	/**
+	 * Modules loaded, mapped by ID to AkairoModule.
+	 */
+	public modules: Collection<string, AkairoModule>;
+
+	/**
 	 * Deregisters a module.
 	 * @param mod - Module to use.
 	 */
@@ -110,11 +110,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	public load(
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		thing: string | Function,
-		isReload = false
-	): AkairoModule {
+	public load(thing: string | AkairoModule, isReload = false): AkairoModule {
 		const isClass = typeof thing === "function";
 		if (!isClass && !this.extensions.has(path.extname(thing as string)))
 			return undefined;
@@ -125,7 +121,7 @@ export default class AkairoHandler extends EventEmitter {
 					if (!m) return null;
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
-			  // eslint-disable-next-line @typescript-eslint/no-var-requires
+					// eslint-disable-next-line @typescript-eslint/no-var-requires
 			  }.call(this, require(thing as string));
 
 		if (mod && mod.prototype instanceof this.classToHandle) {

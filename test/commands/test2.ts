@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Argument, Command } from "../..";
+import { Argument, Command } from "../../src/index";
 import util from "util";
 
 export default class Test2Command extends Command {
@@ -22,7 +22,7 @@ export default class Test2Command extends Command {
 		});
 	}
 
-	exec(message, args) {
+	override exec(message, args) {
 		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
 	}
 }

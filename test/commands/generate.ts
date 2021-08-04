@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Command, Flag } from "../..";
+import { Command, Flag } from "../../src/index";
 import util from "util";
 
 export default class GenerateCommand extends Command {
@@ -23,7 +23,7 @@ export default class GenerateCommand extends Command {
 		return { x };
 	}
 
-	exec(message, args) {
+	override exec(message, args) {
 		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
 	}
 }

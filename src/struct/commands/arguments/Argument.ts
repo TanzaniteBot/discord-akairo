@@ -5,6 +5,8 @@ import Command from "../Command";
 import { MessageOptions } from "child_process";
 import { Message, MessagePayload } from "discord.js";
 import TypeResolver from "./TypeResolver";
+import CommandHandler from "../CommandHandler";
+import AkairoClient from "../../AkairoClient";
 
 /**
  * Represents an argument for a command.
@@ -12,10 +14,55 @@ import TypeResolver from "./TypeResolver";
  * @param options - Options for the argument.
  */
 export default class Argument {
+	public constructor(
+		command: Command,
+		{
+			match = ArgumentMatches.PHRASE,
+			type = ArgumentTypes.STRING,
+			flag = null,
+			multipleFlags = false,
+			index = null,
+			unordered = false,
+			limit = Infinity,
+			prompt = null,
+			default: defaultValue = null,
+			otherwise = null,
+			modifyOtherwise = null
+		}: ArgumentOptions = {}
+	) {
+		this.command = command;
+
+		this.match = match;
+
+		this.type = typeof type === "function" ? type.bind(this) : type;
+
+		this.flag = flag;
+
+		this.multipleFlags = multipleFlags;
+
+		this.index = index;
+
+		this.unordered = unordered;
+
+		this.limit = limit;
+
+		this.prompt = prompt;
+
+		this.default =
+			typeof defaultValue === "function"
+				? defaultValue.bind(this)
+				: defaultValue;
+
+		this.otherwise =
+			typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
+
+		this.modifyOtherwise = modifyOtherwise;
+	}
+
 	/**
 	 * The client.
 	 */
-	get client() {
+	get client(): AkairoClient {
 		return this.command.client;
 	}
 
@@ -29,6 +76,9 @@ export default class Argument {
 	 */
 	public default: DefaultValueSupplier | any;
 
+	/**
+	 *  Description of the command.
+	 */
 	public description: string | any;
 
 	/**
@@ -39,7 +89,7 @@ export default class Argument {
 	/**
 	 * The command handler.
 	 */
-	get handler() {
+	get handler(): CommandHandler {
 		return this.command.handler;
 	}
 
@@ -92,51 +142,6 @@ export default class Argument {
 	 */
 	public unordered: boolean | number | number[];
 
-	public constructor(
-		command: Command,
-		{
-			match = ArgumentMatches.PHRASE,
-			type = ArgumentTypes.STRING,
-			flag = null,
-			multipleFlags = false,
-			index = null,
-			unordered = false,
-			limit = Infinity,
-			prompt = null,
-			default: defaultValue = null,
-			otherwise = null,
-			modifyOtherwise = null
-		}: ArgumentOptions = {}
-	) {
-		this.command = command;
-
-		this.match = match;
-
-		this.type = typeof type === "function" ? type.bind(this) : type;
-
-		this.flag = flag;
-
-		this.multipleFlags = multipleFlags;
-
-		this.index = index;
-
-		this.unordered = unordered;
-
-		this.limit = limit;
-
-		this.prompt = prompt;
-
-		this.default =
-			typeof defaultValue === "function"
-				? defaultValue.bind(this)
-				: defaultValue;
-
-		this.otherwise =
-			typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
-
-		this.modifyOtherwise = modifyOtherwise;
-	}
-
 	/**
 	 * Casts a phrase to this argument's type.
 	 * @param message - Message that called the command.
@@ -154,7 +159,7 @@ export default class Argument {
 	 */
 	public async collect(
 		message: Message,
-		commandInput = "",
+		commandInput: string = "",
 		parsedInput: any = null
 	): Promise<Flag | any> {
 		const promptOptions: any = {};

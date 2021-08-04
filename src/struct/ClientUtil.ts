@@ -22,14 +22,14 @@ import AkairoClient from "./AkairoClient";
  * @param {AkairoClient} client - The client.
  */
 export default class ClientUtil {
+	public constructor(client: AkairoClient) {
+		this.client = client;
+	}
+
 	/**
 	 * The Akairo client.
 	 */
 	public readonly client: AkairoClient;
-
-	public constructor(client: AkairoClient) {
-		this.client = client;
-	}
 
 	/**
 	 * Makes a MessageAttachment.

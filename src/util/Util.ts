@@ -108,10 +108,8 @@ export default class Util {
 	 * @param bKey - Second prefix.
 	 */
 	public static prefixCompare(
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		aKey: string | Function,
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		bKey: string | Function
+		aKey: string | ((...args: any[]) => any),
+		bKey: string | ((...args: any[]) => any)
 	): number {
 		if (aKey === "" && bKey === "") return 0;
 		if (aKey === "") return 1;
