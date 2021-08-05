@@ -152,7 +152,7 @@ export default abstract class Command extends AkairoModule {
      * @param message - Message that triggered the command.
      * @param args - Evaluated arguments.
      */
-    exec(message: Message, args: any): any;
+    exec(message: Message | AkairoMessage, args: any): any;
     /**
      * Runs before argument parsing and execution.
      * @param message - Message being handled.
