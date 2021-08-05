@@ -79,7 +79,7 @@ export default abstract class Inhibitor extends AkairoModule {
 	 * @param command - Command to check.
 	 */
 	/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-	public exec(message: Message, command?: Command): boolean | Promise<boolean>;
+	/* public exec(message: Message, command?: Command): boolean | Promise<boolean>; */
 	public exec(
 		message: Message | AkairoMessage,
 		command?: Command

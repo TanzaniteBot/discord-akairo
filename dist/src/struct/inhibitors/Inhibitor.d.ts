@@ -1,4 +1,5 @@
 import { Message } from "discord.js";
+import AkairoMessage from "../../util/AkairoMessage";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
 import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
@@ -50,7 +51,7 @@ export default abstract class Inhibitor extends AkairoModule {
      * @param message - Message being handled.
      * @param command - Command to check.
      */
-    exec(message: Message, command?: Command): boolean | Promise<boolean>;
+    exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean>;
     /**
      * Reloads the inhibitor.
      */

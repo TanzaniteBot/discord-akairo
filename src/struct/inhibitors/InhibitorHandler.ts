@@ -172,7 +172,6 @@ export default class InhibitorHandler extends AkairoHandler {
 		for (const inhibitor of inhibitors.values()) {
 			promises.push(
 				(async () => {
-					// @ts-expect-error
 					let inhibited = inhibitor.exec(message, command);
 					if (Util.isPromise(inhibited)) inhibited = await inhibited;
 					if (inhibited) return inhibitor;
