@@ -98,7 +98,7 @@ export default class TypeResolver {
 
 			[ArgumentTypes.BIGINT]: (_message: Message, phrase: string) => {
 				if (!phrase || isNaN(+phrase)) return null;
-				return BigInt(phrase); // eslint-disable-line no-undef, new-cap
+				return BigInt(phrase);
 			},
 
 			// Just for fun.

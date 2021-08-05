@@ -1,3 +1,4 @@
+/*  eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import {
 	Message,
 	PermissionResolvable,
@@ -335,9 +336,7 @@ export default abstract class Command extends AkairoModule {
 	 * @param message - Message that triggered the command.
 	 * @param args - Evaluated arguments.
 	 */
-	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
 	public exec(message: Message, args: any): any;
-	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
 	public exec(message: Message | AkairoMessage, args: any): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
@@ -346,15 +345,13 @@ export default abstract class Command extends AkairoModule {
 	 * Runs before argument parsing and execution.
 	 * @param message - Message being handled.
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public before(message: Message): any {}
 
 	/**
 	 * Checks if the command should be ran by using an arbitrary condition.
 	 * @param message - Message being handled.
 	 */
-	// @ts-ignore
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// @ts-expect-error
 	public condition(message: Message): boolean | Promise<boolean> {}
 
 	/**
@@ -362,7 +359,6 @@ export default abstract class Command extends AkairoModule {
 	 * @param message - Message for slash command
 	 * @param args - Slash command options
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars,  func-names
 	public execSlash(message: AkairoMessage, ...args: any[]): any {
 		if (this.slash) {
 			throw new AkairoError(

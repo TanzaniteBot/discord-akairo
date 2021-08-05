@@ -1,5 +1,4 @@
-import { APIMessage } from "discord-api-types";
-import { Collection, MessagePayload, InteractionReplyOptions, Message, MessageEditOptions, MessageOptions, ReplyMessageOptions, WebhookEditMessageOptions, Snowflake } from "discord.js";
+import { Collection, MessagePayload, Message, MessageEditOptions, MessageOptions, ReplyMessageOptions, Snowflake } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage";
 import CommandHandler, { ParsedComponentData } from "./CommandHandler";
 /**
@@ -16,7 +15,7 @@ export default class CommandUtil {
     /**
      * Whether or not the command is a slash command.
      */
-    isSlash: true | false;
+    isSlash: boolean;
     /**
      * The last response sent.
      */
@@ -38,41 +37,42 @@ export default class CommandUtil {
      */
     shouldEdit: boolean;
     /**
-     * Sets the last response.
-     * @param message - The last response.
-     */
-    setLastResponse(message: Message): Message;
-    /**
      * Adds client prompt or user reply to messages.
      * @param message - Message to add.
      */
     addMessage(message: Message | Message[]): Message | Message[];
+    /**
+     * Edits the last response.
+     * If the message is a slash command, edits the slash response.
+     * @param options - Options to use.
+     */
+    edit(options: string | MessageEditOptions | MessagePayload): Promise<Message>;
+    /**
+     * Send an inline reply or respond to a slash command.
+     * If the message is a slash command, it replies or edits the last reply.
+     * @param options - Options to use.
+     */
+    reply(options: string | MessagePayload | ReplyMessageOptions): Promise<Message>;
+    /**
+     * Sends a response or edits an old response if available.
+     * @param options - Options to use.
+     */
+    send(options: string | MessagePayload | MessageOptions): Promise<Message>;
+    /**
+     * Sends a response, overwriting the last response.
+     * @param options - Options to use.
+     */
+    sendNew(options: string | MessagePayload | MessageOptions): Promise<Message>;
     /**
      * Changes if the message should be edited.
      * @param state - Change to editable or not.
      */
     setEditable(state: boolean): CommandUtil;
     /**
-     * Sends a response or edits an old response if available.
-     * @param options - Options to use.
+     * Sets the last response.
+     * @param message - The last response.
      */
-    send(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message | APIMessage | void>;
-    /**
-     * Sends a response, overwriting the last response.
-     * @param options - Options to use.
-     */
-    sendNew(options: string | MessagePayload | MessageOptions): Promise<Message | APIMessage>;
-    /**
-     * Send an inline reply or respond to a slash command.
-     * @param options - Options to use.
-     */
-    reply(options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions): Promise<Message | APIMessage>;
-    /**
-     * Edits the last response.
-     * If the message is a slash command, edits the slash response.
-     * @param options - Options to use.
-     */
-    edit(options: string | MessageEditOptions | MessagePayload | WebhookEditMessageOptions): Promise<Message | APIMessage>;
+    setLastResponse(message: Message): Message;
     /**
      * Deletes the last response.
      */

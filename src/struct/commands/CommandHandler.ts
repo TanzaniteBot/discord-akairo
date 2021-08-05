@@ -534,8 +534,7 @@ export default class CommandHandler extends AkairoHandler {
 					message.util = this.commandUtils.get(message.id);
 				} else {
 					// @ts-expect-error
-					message.util = new CommandUtil(this, message);
-					// @ts-expect-error
+					message.util = new CommandUtil(this, message); // @ts-expect-error
 					this.commandUtils.set(message.id, message.util);
 				}
 			}

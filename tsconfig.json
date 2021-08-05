@@ -24,7 +24,8 @@
 		"noEmitHelpers": true,
 		"declarationMap": true,
 		"declaration": true,
-		"declarationDir": "dist"
+		"declarationDir": "dist",
+		"noErrorTruncation": true
 	},
 	"include": ["src/**/*.ts", "test/**/*.ts"],
 	"exclude": ["node_modules", "dist"]

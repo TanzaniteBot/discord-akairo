@@ -475,8 +475,6 @@ export default class ClientUtil {
 		const resolved = [];
 
 		for (const key of Object.keys(Permissions.FLAGS)) {
-			// If anyone knows how to fix this without disabling eslint please do
-			// eslint-disable-next-line
 			if (BigInt(number) & Permissions.FLAGS[key]) resolved.push(key);
 		}
 

@@ -2,8 +2,7 @@ import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants";
 import Flag from "../Flag";
 import Util from "../../../util/Util";
 import Command from "../Command";
-import { MessageOptions } from "child_process";
-import { Message, MessagePayload } from "discord.js";
+import { Message, MessagePayload, MessageOptions } from "discord.js";
 import TypeResolver from "./TypeResolver";
 import CommandHandler from "../CommandHandler";
 import AkairoClient from "../../AkairoClient";
@@ -591,10 +590,7 @@ export default class Argument {
 		inclusive = false
 	): ArgumentTypeCaster {
 		return Argument.validate(type, (msg, p, x) => {
-			/* eslint-disable-next-line valid-typeof */
 			const o =
-				// See src/struct/ClientUtil.js:345:4
-				// eslint-disable-next-line
 				typeof x === "number" || typeof x === "bigint"
 					? x
 					: x.length != null

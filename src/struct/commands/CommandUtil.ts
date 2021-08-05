@@ -52,7 +52,7 @@ export default class CommandUtil {
 	/**
 	 * Whether or not the command is a slash command.
 	 */
-	public isSlash: true | false;
+	public isSlash: boolean;
 
 	/**
 	 * The last response sent.
@@ -80,19 +80,6 @@ export default class CommandUtil {
 	public shouldEdit: boolean;
 
 	/**
-	 * Sets the last response.
-	 * @param message - The last response.
-	 */
-	public setLastResponse(message: Message): Message {
-		if (Array.isArray(message)) {
-			this.lastResponse = message.slice(-1)[0];
-		} else {
-			this.lastResponse = message;
-		}
-		return this.lastResponse as Message;
-	}
-
-	/**
 	 * Adds client prompt or user reply to messages.
 	 * @param message - Message to add.
 	 */
@@ -111,22 +98,70 @@ export default class CommandUtil {
 	}
 
 	/**
-	 * Changes if the message should be edited.
-	 * @param state - Change to editable or not.
+	 * Edits the last response.
+	 * If the message is a slash command, edits the slash response.
+	 * @param options - Options to use.
 	 */
-	public setEditable(state: boolean): CommandUtil {
-		this.shouldEdit = Boolean(state);
-		return this;
+	public async edit(
+		options: string | MessageEditOptions | MessagePayload
+	): Promise<Message>;
+	public async edit(
+		options: string | MessagePayload | WebhookEditMessageOptions
+	): Promise<Message | APIMessage> {
+		if (this.isSlash) {
+			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
+				options
+			);
+		} else {
+			return this.lastResponse.edit(options);
+		}
+	}
+
+	/**
+	 * Send an inline reply or respond to a slash command.
+	 * If the message is a slash command, it replies or edits the last reply.
+	 * @param options - Options to use.
+	 */
+	public async reply(
+		options: string | MessagePayload | ReplyMessageOptions
+	): Promise<Message>;
+	public async reply(
+		options: string | MessagePayload | InteractionReplyOptions
+	): Promise<Message | APIMessage> {
+		let newOptions: ReplyMessageOptions | InteractionReplyOptions = {};
+		if (typeof options == "string") {
+			newOptions.content = options;
+		} else {
+			// @ts-expect-error
+			newOptions = options;
+		}
+
+		if (
+			!this.isSlash &&
+			!this.shouldEdit &&
+			!(newOptions instanceof MessagePayload) &&
+			!Reflect.has(this.message, "deleted")
+		) {
+			// @ts-expect-error
+			newOptions.reply = {
+				messageReference: this.message, // @ts-expect-error
+				failIfNotExists: newOptions.failIfNotExists ?? true
+			};
+		}
+		return this.send(newOptions);
 	}
 
 	/**
 	 * Sends a response or edits an old response if available.
 	 * @param options - Options to use.
 	 */
+	public async send(
+		options: string | MessagePayload | MessageOptions
+	): Promise<Message>;
 	// eslint-disable-next-line consistent-return
 	public async send(
-		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
-	): Promise<Message | APIMessage | void> {
+		options: string | MessagePayload | InteractionReplyOptions
+	): Promise<Message | APIMessage> {
 		const hasFiles =
 			typeof options === "string" || !options.files?.length
 				? false
@@ -185,6 +220,9 @@ export default class CommandUtil {
 	 */
 	public async sendNew(
 		options: string | MessagePayload | MessageOptions
+	): Promise<Message>;
+	public async sendNew(
+		options: string | MessagePayload | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		if (!(this.message.interaction instanceof CommandInteraction)) {
 			const sent = await this.message.channel?.send(options);
@@ -201,59 +239,25 @@ export default class CommandUtil {
 	}
 
 	/**
-	 * Send an inline reply or respond to a slash command.
-	 * @param options - Options to use.
+	 * Changes if the message should be edited.
+	 * @param state - Change to editable or not.
 	 */
-	public async reply(
-		options:
-			| string
-			| MessagePayload
-			| ReplyMessageOptions
-			| InteractionReplyOptions
-	): Promise<Message | APIMessage> {
-		let newOptions: ReplyMessageOptions | InteractionReplyOptions = {};
-		if (typeof options == "string") {
-			newOptions.content = options;
-		} else {
-			// @ts-expect-error
-			newOptions = options;
-		}
-
-		if (
-			!this.isSlash &&
-			!this.shouldEdit &&
-			!(newOptions instanceof MessagePayload) &&
-			// @ts-expect-error
-			!this.message.deleted
-		) {
-			// @ts-expect-error
-			newOptions.reply = {
-				messageReference: this.message, // @ts-expect-error
-				failIfNotExists: newOptions.failIfNotExists ?? true
-			};
-		} // @ts-expect-error
-		return this.send(newOptions);
+	public setEditable(state: boolean): CommandUtil {
+		this.shouldEdit = Boolean(state);
+		return this;
 	}
 
 	/**
-	 * Edits the last response.
-	 * If the message is a slash command, edits the slash response.
-	 * @param options - Options to use.
+	 * Sets the last response.
+	 * @param message - The last response.
 	 */
-	public async edit(
-		options:
-			| string
-			| MessageEditOptions
-			| MessagePayload
-			| WebhookEditMessageOptions
-	): Promise<Message | APIMessage> {
-		if (this.isSlash) {
-			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
-				options
-			);
+	public setLastResponse(message: Message): Message {
+		if (Array.isArray(message)) {
+			this.lastResponse = message.slice(-1)[0];
 		} else {
-			return this.lastResponse.edit(options);
+			this.lastResponse = message;
 		}
+		return this.lastResponse as Message;
 	}
 
 	/**

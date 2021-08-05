@@ -1,13 +1,13 @@
-import { CommandInteraction, MessagePayload, InteractionReplyOptions, Message, DMChannel, Guild, GuildMember, NewsChannel, PartialDMChannel, Snowflake, TextChannel, ThreadChannel, User } from "discord.js";
+import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
+import { CommandInteraction, Guild, GuildMember, InteractionReplyOptions, Message, MessagePayload, Snowflake, TextBasedChannels, User } from "discord.js";
 import AkairoClient from "../struct/AkairoClient";
 import Command from "../struct/commands/Command";
-import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import CommandUtil from "../struct/commands/CommandUtil";
 /**
  * A command interaction represented as a message.
  * @param client - AkairoClient
  * @param interaction - CommandInteraction
- * @param additionalInfo - Other information
+ * @param command - The command of the interaction
  */
 export default class AkairoMessage {
     constructor(client: AkairoClient, interaction: CommandInteraction, command: Command);
@@ -18,7 +18,7 @@ export default class AkairoMessage {
     /**
      * The channel that the interaction was sent in.
      */
-    channel?: TextChannel | DMChannel | NewsChannel | ThreadChannel | PartialDMChannel;
+    channel?: TextBasedChannels;
     /**
      * The Akairo client.
      */
@@ -59,7 +59,7 @@ export default class AkairoMessage {
     /**
      * The url to jump to this message
      */
-    get url(): string;
+    get url(): string | null;
     /**
      * Deletes the reply to the command.
      */

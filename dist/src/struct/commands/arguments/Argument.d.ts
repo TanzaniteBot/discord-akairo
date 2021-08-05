@@ -1,8 +1,6 @@
-/// <reference types="node" />
 import Flag from "../Flag";
 import Command from "../Command";
-import { MessageOptions } from "child_process";
-import { Message, MessagePayload } from "discord.js";
+import { Message, MessagePayload, MessageOptions } from "discord.js";
 import TypeResolver from "./TypeResolver";
 import CommandHandler from "../CommandHandler";
 import AkairoClient from "../../AkairoClient";

@@ -1,28 +1,24 @@
+import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
 	CommandInteraction,
-	MessagePayload,
-	InteractionReplyOptions,
-	Message,
-	DMChannel,
 	Guild,
 	GuildMember,
-	NewsChannel,
-	PartialDMChannel,
+	InteractionReplyOptions,
+	Message,
+	MessagePayload,
 	Snowflake,
-	TextChannel,
-	ThreadChannel,
+	TextBasedChannels,
 	User
 } from "discord.js";
 import AkairoClient from "../struct/AkairoClient";
 import Command from "../struct/commands/Command";
-import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import CommandUtil from "../struct/commands/CommandUtil";
 
 /**
  * A command interaction represented as a message.
  * @param client - AkairoClient
  * @param interaction - CommandInteraction
- * @param additionalInfo - Other information
+ * @param command - The command of the interaction
  */
 export default class AkairoMessage {
 	public constructor(
@@ -65,12 +61,7 @@ export default class AkairoMessage {
 	/**
 	 * The channel that the interaction was sent in.
 	 */
-	public channel?:
-		| TextChannel
-		| DMChannel
-		| NewsChannel
-		| ThreadChannel
-		| PartialDMChannel;
+	public channel?: TextBasedChannels;
 
 	/**
 	 * The Akairo client.
@@ -121,7 +112,7 @@ export default class AkairoMessage {
 	/**
 	 * The url to jump to this message
 	 */
-	public get url() {
+	public get url(): string | null {
 		return this.interaction.ephemeral
 			? null
 			: `https://discord.com/channels/${this.guild ? this.guild.id : "@me"}/${

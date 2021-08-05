@@ -5,6 +5,7 @@ declare module "discord-akairo" {
 		ApplicationCommandOptionData,
 		ApplicationCommandOptionType,
 		Awaited,
+		BaseGuildVoiceChannel,
 		BufferResolvable,
 		Channel,
 		Client,
@@ -30,6 +31,7 @@ declare module "discord-akairo" {
 		ReplyMessageOptions,
 		Role,
 		Snowflake,
+		TextBasedChannels,
 		TextChannel,
 		ThreadChannel,
 		User,
@@ -578,7 +580,7 @@ declare module "discord-akairo" {
 		public compareStreaming(
 			oldMember: GuildMember,
 			newMember: GuildMember
-		): number;
+		): 0 | 1 | 2;
 
 		/**
 		 * Makes a MessageEmbed.
@@ -612,10 +614,13 @@ declare module "discord-akairo" {
 		 */
 		public resolveChannel(
 			text: string,
-			channels: Collection<Snowflake, GuildChannel | ThreadChannel>,
+			channels: Collection<
+				Snowflake,
+				GuildTextBasedChannels | BaseGuildVoiceChannel
+			>,
 			caseSensitive?: boolean,
 			wholeWord?: boolean
-		): GuildChannel | ThreadChannel;
+		): GuildTextBasedChannels | BaseGuildVoiceChannel;
 
 		/**
 		 * Resolves multiple channels from a string, such as an ID, a name, or a mention.
@@ -626,10 +631,13 @@ declare module "discord-akairo" {
 		 */
 		public resolveChannels(
 			text: string,
-			channels: Collection<Snowflake, GuildChannel>,
+			channels: Collection<
+				Snowflake,
+				GuildTextBasedChannels | BaseGuildVoiceChannel
+			>,
 			caseSensitive?: boolean,
 			wholeWord?: boolean
-		): Collection<Snowflake, GuildChannel>;
+		): Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>;
 
 		/**
 		 * Resolves a custom emoji from a string, such as a name or a mention.
@@ -782,25 +790,20 @@ declare module "discord-akairo" {
 	 * A command interaction represented as a message.
 	 * @param client - AkairoClient
 	 * @param interaction - CommandInteraction
-	 * @param additionalInfo - Other information
+	 * @param command - The command of the interaction
 	 */
 	export class AkairoMessage {
 		public constructor(
 			client: AkairoClient,
 			interaction: CommandInteraction,
-			{ slash, replied }: { slash?: boolean; replied?: boolean }
+			command: Command
 		);
 
 		/** The author of the interaction. */
 		public author: User;
 
 		/** The channel that the interaction was sent in. */
-		public channel?:
-			| TextChannel
-			| DMChannel
-			| NewsChannel
-			| ThreadChannel
-			| PartialDMChannel;
+		public channel?: TextBasedChannels;
 
 		/** The Akairo client. */
 		public client: AkairoClient;
@@ -829,14 +832,11 @@ declare module "discord-akairo" {
 		 */
 		public member: GuildMember | APIInteractionGuildMember;
 
-		/** Whether or not the interaction has been replied to. */
-		public replied: boolean;
-
 		/** Utilities for command responding. */
 		public util: CommandUtil;
 
 		/** The url to jump to this message */
-		public readonly url: string | null;
+		public get url(): string | null;
 
 		/**
 		 * Deletes the reply to the command.
@@ -952,6 +952,26 @@ declare module "discord-akairo" {
 			| PermissionResolvable
 			| PermissionResolvable[]
 			| MissingPermissionSupplier;
+
+		/**
+		 * Argument options or generator.
+		 */
+		public _args: ArgumentOptions[] | ArgumentGenerator;
+
+		/**
+		 * The content parser.
+		 */
+		public contentParser: any;
+
+		/**
+		 * The argument runner.
+		 */
+		public argumentRunner: any;
+
+		/**
+		 * Generator for arguments.
+		 */
+		public argumentGenerator: ArgumentGenerator;
 
 		/**
 		 * Runs before argument parsing and execution.
@@ -2911,7 +2931,7 @@ declare module "discord-akairo" {
 	 * @param command - Command to check.
 	 */
 	export type IgnoreCheckPredicate = (
-		message: Message,
+		message: Message | AkairoMessage,
 		command: Command
 	) => boolean;
 
@@ -3031,6 +3051,11 @@ declare module "discord-akairo" {
 	 * @param message - Message to get regex for.
 	 */
 	export type RegexSupplier = (message: Message) => RegExp;
+
+	export type GuildTextBasedChannels = Exclude<
+		TextBasedChannels,
+		PartialDMChannel | DMChannel
+	>;
 
 	export interface AkairoHandlerEvents {
 		/**

@@ -1,3 +1,4 @@
+/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import AkairoError from "../../util/AkairoError";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
@@ -55,7 +56,6 @@ export default abstract class Task extends AkairoModule {
 	 * Executes the task.
 	 * @param args - Arguments.
 	 */
-	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
 	public exec(...args: any[]): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
