@@ -21,7 +21,6 @@
 		"resolveJsonModule": true,
 		"noImplicitOverride": true,
 		"alwaysStrict": true,
-		"noEmitHelpers": true,
 		"declarationMap": true,
 		"declaration": true,
 		"declarationDir": "dist",
