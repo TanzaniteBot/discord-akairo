@@ -102,11 +102,18 @@ export default class CommandUtil {
 	 * If the message is a slash command, edits the slash response.
 	 * @param options - Options to use.
 	 */
-	public async edit(
+	/* public async edit(
 		options: string | MessageEditOptions | MessagePayload
 	): Promise<Message>;
 	public async edit(
 		options: string | MessagePayload | WebhookEditMessageOptions
+	): Promise<Message | APIMessage> */
+	public async edit(
+		options:
+			| string
+			| MessageEditOptions
+			| MessagePayload
+			| WebhookEditMessageOptions
 	): Promise<Message | APIMessage> {
 		if (this.isSlash) {
 			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
@@ -122,11 +129,18 @@ export default class CommandUtil {
 	 * If the message is a slash command, it replies or edits the last reply.
 	 * @param options - Options to use.
 	 */
-	public async reply(
+	/* public async reply(
 		options: string | MessagePayload | ReplyMessageOptions
 	): Promise<Message>;
 	public async reply(
 		options: string | MessagePayload | InteractionReplyOptions
+	): Promise<Message | APIMessage> */
+	public async reply(
+		options:
+			| string
+			| MessagePayload
+			| ReplyMessageOptions
+			| InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		let newOptions: ReplyMessageOptions | InteractionReplyOptions = {};
 		if (typeof options == "string") {
@@ -155,12 +169,15 @@ export default class CommandUtil {
 	 * Sends a response or edits an old response if available.
 	 * @param options - Options to use.
 	 */
-	public async send(
+	/* public async send(
 		options: string | MessagePayload | MessageOptions
 	): Promise<Message>;
-	// eslint-disable-next-line consistent-return
 	public async send(
 		options: string | MessagePayload | InteractionReplyOptions
+		): Promise<Message | APIMessage> */
+	// eslint-disable-next-line consistent-return
+	public async send(
+		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		const hasFiles =
 			typeof options === "string" || !options.files?.length
@@ -218,11 +235,14 @@ export default class CommandUtil {
 	 * Sends a response, overwriting the last response.
 	 * @param options - Options to use.
 	 */
-	public async sendNew(
+	/* public async sendNew(
 		options: string | MessagePayload | MessageOptions
 	): Promise<Message>;
 	public async sendNew(
 		options: string | MessagePayload | InteractionReplyOptions
+	): Promise<Message | APIMessage> */
+	public async sendNew(
+		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		if (!(this.message.interaction instanceof CommandInteraction)) {
 			const sent = await this.message.channel?.send(options);
