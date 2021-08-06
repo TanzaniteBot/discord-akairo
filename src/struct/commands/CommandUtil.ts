@@ -41,7 +41,7 @@ export default class CommandUtil {
 			this.messages = null;
 		}
 
-		this.isSlash = !!(this.message instanceof Message);
+		this.isSlash = this.message instanceof AkairoMessage;
 	}
 
 	/**
