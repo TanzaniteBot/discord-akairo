@@ -670,7 +670,7 @@ export default class CommandHandler extends AkairoHandler {
 			}
 
 			if (this.autoDefer || command.slashEphemeral) {
-				await interaction.defer({ ephemeral: command.slashEphemeral });
+				await interaction.deferReply({ ephemeral: command.slashEphemeral });
 			}
 
 			try {
