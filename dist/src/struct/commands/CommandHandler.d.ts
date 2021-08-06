@@ -146,25 +146,22 @@ export default class CommandHandler extends AkairoHandler {
      * Show "BotName is typing" information message on the text channels when a command is running.
      */
     typing: boolean;
-    private setup;
-    private registerSlashCommands;
+    protected setup(): void;
+    protected registerSlashCommands(): void;
     /**
      * Registers a module.
-     * @param {Command} command - Module to use.
-     * @param {string} [filepath] - Filepath of module.
-     * @returns {void}
+     * @param command - Module to use.
+     * @param filepath - Filepath of module.
      */
-    register(command: Command, filepath: string): void;
+    register(command: Command, filepath?: string): void;
     /**
      * Deregisters a module.
-     * @param {Command} command - Module to use.
-     * @returns {void}
+     * @param command - Module to use.
      */
     deregister(command: Command): void;
     /**
      * Handles a message.
-     * @param {Message} message - Message to handle.
-     * @returns {Promise<?boolean>}
+     * @param message - Message to handle.
      */
     handle(message: Message): Promise<boolean | null>;
     /**
