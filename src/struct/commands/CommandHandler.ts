@@ -329,7 +329,7 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public typing: boolean;
 
-	private setup() {
+	protected setup() {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands) this.registerSlashCommands();
 
@@ -355,7 +355,7 @@ export default class CommandHandler extends AkairoHandler {
 		});
 	}
 
-	private registerSlashCommands() {
+	protected registerSlashCommands() {
 		const slashCommandsParsed = [];
 		for (const [, data] of this.modules) {
 			if (data.slash) {
@@ -372,11 +372,8 @@ export default class CommandHandler extends AkairoHandler {
 
 				slashCommandsParsed.push({
 					name: data.aliases[0],
-
 					description: parseDescriptionCommand(data.description),
-
 					options: data.slashOptions,
-
 					guilds: data.slashGuilds
 				});
 			}
@@ -406,11 +403,10 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Registers a module.
-	 * @param {Command} command - Module to use.
-	 * @param {string} [filepath] - Filepath of module.
-	 * @returns {void}
+	 * @param command - Module to use.
+	 * @param filepath - Filepath of module.
 	 */
-	public override register(command: Command, filepath: string): void {
+	public override register(command: Command, filepath?: string): void {
 		super.register(command, filepath);
 
 		for (let alias of command.aliases) {
@@ -470,8 +466,7 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Deregisters a module.
-	 * @param {Command} command - Module to use.
-	 * @returns {void}
+	 * @param command - Module to use.
 	 */
 	public override deregister(command: Command): void {
 		for (let alias of command.aliases) {
@@ -510,8 +505,7 @@ export default class CommandHandler extends AkairoHandler {
 
 	/**
 	 * Handles a message.
-	 * @param {Message} message - Message to handle.
-	 * @returns {Promise<?boolean>}
+	 * @param message - Message to handle.
 	 */
 	public async handle(message: Message): Promise<boolean | null> {
 		try {
