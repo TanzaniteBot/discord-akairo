@@ -1,4 +1,5 @@
 import "discord-akairo-message-util";
+import "source-map-support/register";
 import AkairoClient, { AkairoOptions } from "./struct/AkairoClient";
 import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "./struct/AkairoHandler";
 import AkairoModule, { AkairoModuleOptions } from "./struct/AkairoModule";

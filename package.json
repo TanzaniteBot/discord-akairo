@@ -20,6 +20,7 @@
 	"devDependencies": {
 		"@discordjs/voice": "^0.5.0",
 		"@types/node": "^10.14.4",
+		"@types/source-map-support": "^0.5.4",
 		"@typescript-eslint/eslint-plugin": "^4.29.0",
 		"@typescript-eslint/parser": "^4.29.0",
 		"discord-api-types": "^0.22.0",
@@ -176,6 +177,7 @@
 		}
 	},
 	"dependencies": {
-		"discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util"
+		"discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
+		"source-map-support": "^0.5.19"
 	}
 }
