@@ -1,16 +1,17 @@
 import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
-import { CommandInteraction, Guild, GuildMember, InteractionReplyOptions, Message, MessagePayload, Snowflake, TextBasedChannels, User } from "discord.js";
+import { Base, CommandInteraction, Guild, GuildMember, InteractionReplyOptions, Message, MessagePayload, Snowflake, TextBasedChannels, User } from "discord.js";
 import AkairoClient from "../struct/AkairoClient";
 import Command from "../struct/commands/Command";
 import CommandUtil from "../struct/commands/CommandUtil";
+import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
 /**
  * A command interaction represented as a message.
  * @param client - AkairoClient
  * @param interaction - CommandInteraction
  * @param command - The command of the interaction
  */
-export default class AkairoMessage {
-    constructor(client: AkairoClient, interaction: CommandInteraction, command: Command);
+export default class AkairoMessage extends Base {
+    constructor(client: AkairoClient, interaction: CommandInteraction, command: Command | ContextMenuCommand);
     /**
      * The author of the interaction.
      */
@@ -18,19 +19,20 @@ export default class AkairoMessage {
     /**
      * The channel that the interaction was sent in.
      */
-    channel?: TextBasedChannels;
+    get channel(): TextBasedChannels | null;
     /**
-     * The Akairo client.
+     * The message contents with all mentions replaced by the equivalent text.
+     * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
      */
-    client: AkairoClient;
+    get cleanContent(): string | null;
     /**
      * The command name and arguments represented as a string.
      */
     content: string;
     /**
-     * The time the interaction was sent.
+     * The time the message was sent at
      */
-    createdAt: Date;
+    get createdAt(): Date;
     /**
      * The timestamp the interaction was sent at.
      */
@@ -38,7 +40,7 @@ export default class AkairoMessage {
     /**
      * The guild the interaction was sent in (if in a guild channel).
      */
-    guild?: Guild | null;
+    get guild(): Guild | null;
     /**
      * The ID of the interaction.
      */
@@ -52,6 +54,10 @@ export default class AkairoMessage {
      * Only available if the interaction comes from a guild where the author is still a member.
      */
     member: GuildMember | APIInteractionGuildMember;
+    /**
+     * Whether or not this message is a partial
+     */
+    readonly partial: false;
     /**
      * Utilities for command responding.
      */

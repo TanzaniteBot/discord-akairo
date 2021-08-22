@@ -1,23 +1,23 @@
 /// <reference types="node" />
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import { Collection, CommandInteraction, Message, Snowflake, TextBasedChannels, User } from "discord.js";
-import Command from "./Command";
-import CommandUtil from "./CommandUtil";
 import AkairoMessage from "../../util/AkairoMessage";
-import TypeResolver from "./arguments/TypeResolver";
+import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ListenerHandler from "../listeners/ListenerHandler";
-import Category from "../../util/Category";
 import { DefaultArgumentOptions } from "./arguments/Argument";
+import TypeResolver from "./arguments/TypeResolver";
+import Command from "./Command";
+import CommandUtil from "./CommandUtil";
 /**
  * Loads commands and handles messages.
  * @param client - The Akairo client.
  * @param options - Options.
  */
 export default class CommandHandler extends AkairoHandler {
-    constructor(client: AkairoClient, { directory, classToHandle, extensions, automateCategories, loadFilter, blockClient, blockBots, fetchMembers, handleEdits, storeMessages, commandUtil, commandUtilLifetime, commandUtilSweepInterval, defaultCooldown, ignoreCooldown, ignorePermissions, argumentDefaults, prefix, allowMention, aliasReplacement, autoDefer, typing, autoRegisterSlashCommands, execSlash }?: CommandHandlerOptions);
+    constructor(client: AkairoClient, { directory, classToHandle, extensions, automateCategories, loadFilter, blockClient, blockBots, fetchMembers, handleEdits, storeMessages, commandUtil, commandUtilLifetime, commandUtilSweepInterval, defaultCooldown, ignoreCooldown, ignorePermissions, argumentDefaults, prefix, allowMention, aliasReplacement, autoDefer, typing, autoRegisterSlashCommands, execSlash, skipBuiltInPostInhibitors }?: CommandHandlerOptions);
     /**
      * Collection of command aliases.
      */
@@ -146,8 +146,12 @@ export default class CommandHandler extends AkairoHandler {
      * Show "BotName is typing" information message on the text channels when a command is running.
      */
     typing: boolean;
+    /**
+     * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
+     */
+    skipBuiltInPostInhibitors?: boolean;
     protected setup(): void;
-    protected registerSlashCommands(): void;
+    protected registerInteractionCommands(): Promise<void>;
     /**
      * Registers a module.
      * @param command - Module to use.
@@ -260,7 +264,7 @@ export default class CommandHandler extends AkairoHandler {
      * @param message - Message that called the command.
      * @param command - Command that errored.
      */
-    emitError(err: Error, message: Message | AkairoMessage, command: Command | AkairoModule): void;
+    emitError(err: Error, message: Message | AkairoMessage, command?: Command | AkairoModule): void;
     /**
      * Sweep command util instances from cache and returns amount sweeped.
      * @param lifetime - Messages older than this will have their command util instance sweeped. This is in milliseconds and defaults to the `commandUtilLifetime` option.
@@ -410,6 +414,10 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
      * Whether or not to use execSlash for slash commands.
      */
     execSlash?: boolean;
+    /**
+     * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
+     */
+    skipBuiltInPostInhibitors?: boolean;
 }
 /**
  * Data for managing cooldowns.

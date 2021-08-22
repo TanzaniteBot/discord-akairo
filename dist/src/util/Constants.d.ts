@@ -88,6 +88,12 @@ export declare enum CommandHandlerEvents {
     SLASH_NOT_FOUND = "slashNotFound",
     SLASH_STARTED = "slashStarted"
 }
+export declare enum ContextCommandHandlerEvents {
+    ERROR = "error",
+    FINISHED = "finished",
+    NOT_FOUND = "notFound",
+    STARTED = "started"
+}
 export declare enum BuiltInReasons {
     CLIENT = "client",
     BOT = "bot",

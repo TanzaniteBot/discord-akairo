@@ -911,7 +911,7 @@ export default class CommandHandler extends AkairoHandler {
 			if (command.superUserOnly) {
 				const isSuperUser = this.client.isSuperUser(message.author);
 				if (!isSuperUser) {
-					this.emit(event, message, command, BuiltInReasons.OWNER);
+					this.emit(event, message, command, BuiltInReasons.SUPER_USER);
 					return true;
 				}
 			}

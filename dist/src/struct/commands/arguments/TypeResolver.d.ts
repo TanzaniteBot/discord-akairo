@@ -1,9 +1,9 @@
 import { Collection } from "discord.js";
-import CommandHandler from "../CommandHandler";
-import { ArgumentTypeCaster } from "./Argument";
 import AkairoClient from "../../AkairoClient";
 import InhibitorHandler from "../../inhibitors/InhibitorHandler";
 import ListenerHandler from "../../listeners/ListenerHandler";
+import CommandHandler from "../CommandHandler";
+import { ArgumentTypeCaster } from "./Argument";
 /**
  * Type resolver for command arguments.
  * The types are documented under ArgumentType.

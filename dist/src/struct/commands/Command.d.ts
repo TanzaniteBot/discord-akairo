@@ -1,4 +1,4 @@
-import { Message, PermissionResolvable, Snowflake, ApplicationCommandOptionData } from "discord.js";
+import { ApplicationCommandOptionData, Message, PermissionResolvable, Snowflake } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
@@ -112,9 +112,9 @@ export default abstract class Command extends AkairoModule {
      */
     slashEphemeral?: boolean;
     /**
-     * Assign slash commands to Specific guilds. This option will make the commands do not register globally, but only to the chosen servers.
+     * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
      */
-    slashGuilds?: string[];
+    slashGuilds?: Snowflake[];
     /**
      * Options for using the slash command.
      */

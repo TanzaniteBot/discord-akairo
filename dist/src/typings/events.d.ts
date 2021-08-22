@@ -1,6 +1,7 @@
-import { Message } from "discord.js";
+import { CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
 import AkairoModule from "../struct/AkairoModule";
 import Command from "../struct/commands/Command";
+import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
 import Inhibitor from "../struct/inhibitors/Inhibitor";
 import Listener from "../struct/listeners/Listener";
 import Task from "../struct/tasks/Task";
@@ -180,7 +181,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
      * Emitted when a an incoming interaction command cannot be matched with a command.
      * @param interaction - The incoming interaction.
      */
-    slashNotFound: [interaction: AkairoMessage];
+    slashNotFound: [interaction: CommandInteraction];
     /**
      * Emitted when a slash command starts execution.
      * @param message - The slash message.
@@ -227,5 +228,52 @@ export interface TaskHandlerEvents extends AkairoHandlerEvents {
      * @param isReload - Whether or not this was a reload.
      */
     load: [task: Task, isReload: boolean];
+}
+export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
+    /**
+     * Emitted when a context menu command is removed.
+     * @param contextMenu - Context menu command removed.
+     */
+    remove: [contextMenu: ContextMenuCommand];
+    /**
+     * Emitted when a context menu command is loaded.
+     * @param contextMenu - Context menu command loaded.
+     * @param isReload - Whether or not this was a reload.
+     */
+    load: [contextMenu: ContextMenuCommand, isReload: boolean];
+    /**
+     * Emitted when a context menu command errors.
+     * @param error - The error.
+     * @param interaction - The interaction.
+     * @param command - Command executed.
+     */
+    error: [
+        error: Error,
+        interaction: ContextMenuInteraction,
+        command: ContextMenuCommand
+    ];
+    /**
+     * Emitted when a context menu command finishes execution.
+     * @param interaction - The interaction.
+     * @param command - Command executed.
+     * @param returnValue - The command's return value.
+     */
+    finished: [
+        interaction: ContextMenuInteraction,
+        command: ContextMenuCommand,
+        returnValue: any
+    ];
+    /**
+     * Emitted when a an incoming interaction command cannot be matched with a command.
+     * @param interaction - The incoming interaction.
+     */
+    notFound: [interaction: ContextMenuInteraction];
+    /**
+     * Emitted when a command starts execution.
+     * @param interaction - The interaction.
+     * @param command - Command executed.
+     * @param args - The args passed to the command.
+     */
+    started: [interaction: ContextMenuInteraction, command: ContextMenuCommand];
 }
 //# sourceMappingURL=events.d.ts.map

@@ -1,6 +1,7 @@
 import { APIMessage } from "discord-api-types";
-import { Collection, MessagePayload, InteractionReplyOptions, Message, MessageEditOptions, MessageOptions, ReplyMessageOptions, WebhookEditMessageOptions, Snowflake } from "discord.js";
+import { Collection, InteractionReplyOptions, Message, MessageEditOptions, MessageOptions, MessagePayload, ReplyMessageOptions, Snowflake, WebhookEditMessageOptions } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage";
+import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler";
 import CommandHandler, { ParsedComponentData } from "./CommandHandler";
 /**
  * Command utilities.
@@ -8,11 +9,11 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
  * @param message - Message that triggered the command.
  */
 export default class CommandUtil {
-    constructor(handler: CommandHandler, message: Message | AkairoMessage);
+    constructor(handler: CommandHandler | ContextMenuCommandHandler, message: Message | AkairoMessage);
     /**
      * The command handler.
      */
-    handler: CommandHandler;
+    handler: CommandHandler | ContextMenuCommandHandler;
     /**
      * Whether or not the command is a slash command.
      */

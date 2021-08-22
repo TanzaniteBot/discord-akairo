@@ -3,7 +3,7 @@
 	"version": "8.2.2",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
-	"types": "./src/index.ts",
+	"types": "./dist/src/index.ts",
 	"author": "1Computer",
 	"license": "MIT",
 	"keywords": [
