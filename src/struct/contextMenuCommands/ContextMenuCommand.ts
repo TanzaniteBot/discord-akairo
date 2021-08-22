@@ -1,5 +1,4 @@
-import { AkairoMessage } from "discord-akairo";
-import { Snowflake } from "discord.js";
+import { ContextMenuInteraction, Snowflake } from "discord.js";
 import AkairoError from "../../util/AkairoError";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
@@ -18,16 +17,16 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 			category,
 			guilds,
 			name,
-			ownerOnly,
-			superUserOnly,
+			// ownerOnly,
+			// superUserOnly,
 			type
 		}: ContextMenuOptions
 	) {
 		super(id, { category });
 		this.guilds = guilds;
 		this.name = name;
-		this.ownerOnly = ownerOnly;
-		this.superUserOnly = superUserOnly;
+		// this.ownerOnly = ownerOnly;
+		// this.superUserOnly = superUserOnly;
 		this.type = type;
 	}
 
@@ -78,10 +77,10 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 
 	/**
 	 * Executes the context menu command.
-	 * @param message - The context menu command interaction.
+	 * @param interaction - The context menu command interaction.
 	 */
 	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
-	public exec(message: AkairoMessage): any {
+	public exec(interaction: ContextMenuInteraction): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
 
@@ -117,12 +116,12 @@ export interface ContextMenuOptions extends AkairoModuleOptions {
 	/**
 	 * Usable only by the client owner.
 	 */
-	ownerOnly?: boolean;
+	// ownerOnly?: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
 	 */
-	superUserOnly?: boolean;
+	// superUserOnly?: boolean;
 
 	/**
 	 * The type of the context menu command.

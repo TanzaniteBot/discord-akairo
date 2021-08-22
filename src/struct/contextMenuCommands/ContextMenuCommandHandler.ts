@@ -1,26 +1,14 @@
-import { Category, Command } from "discord-akairo";
-import {
-	Awaited,
-	Collection,
-	CommandInteraction,
-	ContextMenuInteraction,
-	Message
-} from "discord.js";
+import { Category } from "discord-akairo";
+import { Awaited, Collection, ContextMenuInteraction } from "discord.js";
 import { ContextMenuCommandHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
-import AkairoMessage from "../../util/AkairoMessage";
-import {
-	BuiltInReasons,
-	CommandHandlerEvents,
-	ContextCommandHandlerEvents
-} from "../../util/Constants";
+import { ContextCommandHandlerEvents } from "../../util/Constants";
 import AkairoClient from "../AkairoClient";
 import AkairoHandler, {
 	AkairoHandlerOptions,
 	LoadPredicate
 } from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
-import CommandUtil from "../commands/CommandUtil";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ContextMenuCommand from "./ContextMenuCommand";
 
@@ -107,93 +95,32 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 		});
 	}
 
-	public async handle(interaction: CommandInteraction) {
+	public async handle(
+		interaction: ContextMenuInteraction
+	): Promise<boolean | null> {
 		const command = this.modules.find(
 			module => module.name === interaction.commandName
 		);
 
 		if (!command) {
-			this.emit(CommandHandlerEvents.CONTEXT_NOT_FOUND, interaction);
+			this.emit(ContextCommandHandlerEvents.NOT_FOUND, interaction);
 			return false;
 		}
 
-		const message = new AkairoMessage(this.client, interaction, command);
-
 		try {
-			message.util = new CommandUtil<ContextMenuInteraction>(this, message);
-
-			if (await this.runAllTypeInhibitors(message, true)) {
-				return false;
-			}
+			this.emit(ContextCommandHandlerEvents.STARTED, interaction, command);
+			const ret = await command.exec(interaction);
+			this.emit(
+				ContextCommandHandlerEvents.FINISHED,
+				interaction,
+				command,
+				ret
+			);
+			return true;
 		} catch (err) {
 			this.emitError(err, interaction, command);
-			return null;
+			return false;
 		}
-	}
-
-	/**
-	 * Runs inhibitors with the post type.
-	 * @param message - Message to handle.
-	 * @param command - Command to handle.
-	 * @param slash - Whether or not the command should is a slash command.
-	 */
-	public async runPostTypeInhibitors(
-		message: Message | AkairoMessage<CommandInteraction>,
-		command: Command,
-		slash: boolean = false
-	): Promise<boolean> {
-		const event = ContextCommandHandlerEvents.CONTEXT_COMMAND_BLOCKED;
-
-		if (command.ownerOnly) {
-			const isOwner = this.client.isOwner(message.author);
-			if (!isOwner) {
-				this.emit(event, message, command, BuiltInReasons.OWNER);
-				return true;
-			}
-		}
-
-		if (command.superUserOnly) {
-			const isSuperUser = this.client.isSuperUser(message.author);
-			if (!isSuperUser) {
-				this.emit(event, message, command, BuiltInReasons.OWNER);
-				return true;
-			}
-		}
-
-		if (command.channel === "guild" && !message.guild) {
-			this.emit(event, message, command, BuiltInReasons.GUILD);
-			return true;
-		}
-
-		if (command.channel === "dm" && message.guild) {
-			this.emit(event, message, command, BuiltInReasons.DM);
-			return true;
-		}
-
-		// @ts-expect-error
-		if (command.onlyNsfw && !message.channel.nsfw) {
-			this.emit(event, message, command, BuiltInReasons.NOT_NSFW);
-			return true;
-		}
-
-		if (await this.runPermissionChecks(message, command, slash)) {
-			return true;
-		}
-
-		const reason = this.inhibitorHandler
-			? await this.inhibitorHandler.test("post", message, command)
-			: null;
-
-		if (reason != null) {
-			this.emit(event, message, command, reason);
-			return true;
-		}
-
-		if (this.runCooldowns(message, command)) {
-			return true;
-		}
-
-		return false;
 	}
 
 	/**
@@ -204,16 +131,11 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 */
 	public emitError(
 		err: Error,
-		interaction: CommandInteraction,
+		interaction: ContextMenuInteraction,
 		command: ContextMenuCommand | AkairoModule
 	): void {
-		if (this.listenerCount(ContextCommandHandlerEvents.CONTEXT_COMMAND_ERROR)) {
-			this.emit(
-				ContextCommandHandlerEvents.CONTEXT_COMMAND_ERROR,
-				err,
-				interaction,
-				command
-			);
+		if (this.listenerCount(ContextCommandHandlerEvents.ERROR)) {
+			this.emit(ContextCommandHandlerEvents.ERROR, err, interaction, command);
 			return;
 		}
 

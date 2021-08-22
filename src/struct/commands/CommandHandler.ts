@@ -243,7 +243,7 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * Collection of CommandUtils.
 	 */
-	public commandUtils: Collection<string, CommandUtil<CommandInteraction>>;
+	public commandUtils: Collection<string, CommandUtil>;
 
 	/**
 	 * Time interval in milliseconds for sweeping command util instances.
@@ -975,7 +975,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
 	public async runAllTypeInhibitors(
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		slash: boolean = false
 	): Promise<boolean> {
 		const reason = this.inhibitorHandler
@@ -1016,7 +1016,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message to handle.
 	 */
 	public async runPreTypeInhibitors(
-		message: Message | AkairoMessage<CommandInteraction>
+		message: Message | AkairoMessage
 	): Promise<boolean> {
 		const reason = this.inhibitorHandler
 			? await this.inhibitorHandler.test("pre", message)
@@ -1038,7 +1038,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
 	public async runPostTypeInhibitors(
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		command: Command,
 		slash: boolean = false
 	): Promise<boolean> {
@@ -1105,7 +1105,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param slash - Whether or not the command is a slash command.
 	 */
 	public async runPermissionChecks(
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		command: Command,
 		slash: boolean = false
 	): Promise<boolean> {
@@ -1204,7 +1204,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param command - Command to cooldown.
 	 */
 	public runCooldowns(
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		command: Command
 	): boolean {
 		const id = message.author?.id;
@@ -1291,7 +1291,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 */
 	public async parseCommand(
-		message: Message | AkairoMessage<CommandInteraction>
+		message: Message | AkairoMessage
 	): Promise<ParsedComponentData> {
 		const allowMention = await Util.intoCallable(this.prefix)(message);
 		let prefixes = Util.intoArray(allowMention);
@@ -1315,7 +1315,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 */
 	public async parseCommandOverwrittenPrefixes(
-		message: Message | AkairoMessage<CommandInteraction>
+		message: Message | AkairoMessage
 	): Promise<ParsedComponentData> {
 		if (!this.prefixes.size) {
 			return {};
@@ -1339,7 +1339,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param pairs - Pairs of prefix to associated commands. That is, `[string, Set<string> | null][]`.
 	 */
 	public parseMultiplePrefixes(
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		pairs: [string, Set<string> | null][]
 	): ParsedComponentData {
 		const parses = pairs.map(([prefix, cmds]) =>
@@ -1366,7 +1366,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param associatedCommands - Associated commands.
 	 */
 	public parseWithPrefix(
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		prefix: string,
 		associatedCommands: Set<string> | null = null
 	): ParsedComponentData {
@@ -1409,7 +1409,7 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public emitError(
 		err: Error,
-		message: Message | AkairoMessage<CommandInteraction>,
+		message: Message | AkairoMessage,
 		command: Command | AkairoModule
 	): void {
 		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
@@ -1716,7 +1716,7 @@ export interface ParsedComponentData {
  * @param command - Command to check.
  */
 export type IgnoreCheckPredicate = (
-	message: Message | AkairoMessage<CommandInteraction>,
+	message: Message | AkairoMessage,
 	command: Command
 ) => boolean;
 

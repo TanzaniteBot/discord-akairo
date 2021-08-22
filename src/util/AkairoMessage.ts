@@ -2,7 +2,6 @@ import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
 	Base,
 	CommandInteraction,
-	ContextMenuInteraction,
 	Guild,
 	GuildMember,
 	InteractionReplyOptions,
@@ -24,12 +23,10 @@ import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand
  * @param interaction - CommandInteraction
  * @param command - The command of the interaction
  */
-export default class AkairoMessage<
-	InteractionType extends CommandInteraction | ContextMenuInteraction
-> extends Base {
+export default class AkairoMessage extends Base {
 	public constructor(
 		client: AkairoClient,
-		interaction: InteractionType,
+		interaction: CommandInteraction,
 		command: Command | ContextMenuCommand
 	) {
 		super(client);
@@ -119,7 +116,7 @@ export default class AkairoMessage<
 	/**
 	 * The command interaction.
 	 */
-	public interaction: InteractionType;
+	public interaction: CommandInteraction;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
@@ -135,7 +132,7 @@ export default class AkairoMessage<
 	/**
 	 * Utilities for command responding.
 	 */
-	public util: CommandUtil<InteractionType>;
+	public util: CommandUtil;
 
 	/**
 	 * The url to jump to this message

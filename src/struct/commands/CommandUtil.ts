@@ -3,7 +3,6 @@ import { APIMessage } from "discord-api-types";
 import {
 	Collection,
 	CommandInteraction,
-	ContextMenuInteraction,
 	InteractionReplyOptions,
 	Message,
 	MessageEditOptions,
@@ -22,12 +21,10 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
  * @param handler - The command handler.
  * @param message - Message that triggered the command.
  */
-export default class CommandUtil<
-	InteractionType extends CommandInteraction | ContextMenuInteraction
-> {
+export default class CommandUtil {
 	public constructor(
 		handler: CommandHandler | ContextMenuCommandHandler,
-		message: Message | AkairoMessage<InteractionType>
+		message: Message | AkairoMessage
 	) {
 		this.handler = handler;
 
@@ -66,7 +63,7 @@ export default class CommandUtil<
 	/**
 	 * Message that triggered the command.
 	 */
-	public message: Message | AkairoMessage<InteractionType>;
+	public message: Message | AkairoMessage;
 
 	/**
 	 * Messages stored from prompts and prompt replies.
@@ -120,9 +117,9 @@ export default class CommandUtil<
 			| WebhookEditMessageOptions
 	): Promise<Message | APIMessage> {
 		if (this.isSlash) {
-			return (
-				this.lastResponse as any as AkairoMessage<InteractionType>
-			).interaction.editReply(options);
+			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
+				options
+			);
 		} else {
 			return this.lastResponse.edit(options);
 		}
@@ -266,7 +263,7 @@ export default class CommandUtil<
 	 * Changes if the message should be edited.
 	 * @param state - Change to editable or not.
 	 */
-	public setEditable(state: boolean): CommandUtil<InteractionType> {
+	public setEditable(state: boolean): CommandUtil {
 		this.shouldEdit = Boolean(state);
 		return this;
 	}
@@ -289,9 +286,7 @@ export default class CommandUtil<
 	 */
 	public async delete(): Promise<Message | void> {
 		if (this.isSlash) {
-			return (
-				this.message as AkairoMessage<InteractionType>
-			).interaction.deleteReply();
+			return (this.message as AkairoMessage).interaction.deleteReply();
 		} else {
 			return this.lastResponse?.delete();
 		}
