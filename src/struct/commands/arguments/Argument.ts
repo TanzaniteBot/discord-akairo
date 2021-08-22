@@ -47,13 +47,9 @@ export default class Argument {
 
 		this.prompt = prompt;
 
-		this.default =
-			typeof defaultValue === "function"
-				? defaultValue.bind(this)
-				: defaultValue;
+		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue;
 
-		this.otherwise =
-			typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
+		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
 
 		this.modifyOtherwise = modifyOtherwise;
 	}
@@ -120,11 +116,7 @@ export default class Argument {
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public otherwise?:
-		| string
-		| MessagePayload
-		| MessageOptions
-		| OtherwiseContentSupplier;
+	public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 	/**
 	 * The prompt options.
@@ -156,30 +148,17 @@ export default class Argument {
 	 * @param commandInput - Previous input from command if there was one.
 	 * @param parsedInput - Previous parsed input from command if there was one.
 	 */
-	public async collect(
-		message: Message,
-		commandInput: string = "",
-		parsedInput: any = null
-	): Promise<Flag | any> {
+	public async collect(message: Message, commandInput: string = "", parsedInput: any = null): Promise<Flag | any> {
 		const promptOptions: any = {};
 		Object.assign(promptOptions, this.handler.argumentDefaults.prompt);
 		Object.assign(promptOptions, this.command.argumentDefaults.prompt);
 		Object.assign(promptOptions, this.prompt || {});
 
-		const isInfinite =
-			promptOptions.infinite ||
-			(this.match === ArgumentMatches.SEPARATE && !commandInput);
+		const isInfinite = promptOptions.infinite || (this.match === ArgumentMatches.SEPARATE && !commandInput);
 		const additionalRetry = Number(Boolean(commandInput));
 		const values = isInfinite ? [] : null;
 
-		const getText = async (
-			promptType,
-			prompter,
-			retryCount,
-			inputMessage,
-			inputPhrase,
-			inputParsed
-		) => {
+		const getText = async (promptType, prompter, retryCount, inputMessage, inputPhrase, inputParsed) => {
 			let text = await Util.intoCallable(prompter).call(this, message, {
 				retries: retryCount,
 				infinite: isInfinite,
@@ -218,26 +197,13 @@ export default class Argument {
 		};
 
 		// eslint-disable-next-line complexity
-		const promptOne = async (
-			prevMessage,
-			prevInput,
-			prevParsed,
-			retryCount
-		) => {
+		const promptOne = async (prevMessage, prevInput, prevParsed, retryCount) => {
 			let sentStart;
 			// This is either a retry prompt, the start of a non-infinite, or the start of an infinite.
 			if (retryCount !== 1 || !isInfinite || !values?.length) {
 				const promptType = retryCount === 1 ? "start" : "retry";
-				const prompter =
-					retryCount === 1 ? promptOptions.start : promptOptions.retry;
-				const startText = await getText(
-					promptType,
-					prompter,
-					retryCount,
-					prevMessage,
-					prevInput,
-					prevParsed
-				);
+				const prompter = retryCount === 1 ? promptOptions.start : promptOptions.retry;
+				const startText = await getText(promptType, prompter, retryCount, prevMessage, prevInput, prevParsed);
 
 				if (startText) {
 					sentStart = await (message.util || message.channel).send(startText);
@@ -261,14 +227,7 @@ export default class Argument {
 				).first();
 				if (message.util) message.util.addMessage(input);
 			} catch (err) {
-				const timeoutText = await getText(
-					"timeout",
-					promptOptions.timeout,
-					retryCount,
-					prevMessage,
-					prevInput,
-					""
-				);
+				const timeoutText = await getText("timeout", promptOptions.timeout, retryCount, prevMessage, prevInput, "");
 				if (timeoutText) {
 					const sentTimeout = await message.channel.send(timeoutText);
 					if (message.util) message.util.addMessage(sentTimeout);
@@ -282,17 +241,8 @@ export default class Argument {
 				if (looksLike && looksLike.command) return Flag.retry(input);
 			}
 
-			if (
-				input?.content.toLowerCase() === promptOptions.cancelWord.toLowerCase()
-			) {
-				const cancelText = await getText(
-					"cancel",
-					promptOptions.cancel,
-					retryCount,
-					input,
-					input?.content,
-					"cancel"
-				);
+			if (input?.content.toLowerCase() === promptOptions.cancelWord.toLowerCase()) {
+				const cancelText = await getText("cancel", promptOptions.cancel, retryCount, input, input?.content, "cancel");
 				if (cancelText) {
 					const sentCancel = await message.channel.send(cancelText);
 					if (message.util) message.util.addMessage(sentCancel);
@@ -301,12 +251,8 @@ export default class Argument {
 				return Flag.cancel();
 			}
 
-			if (
-				isInfinite &&
-				input?.content.toLowerCase() === promptOptions.stopWord.toLowerCase()
-			) {
-				if (!values?.length)
-					return promptOne(input, input?.content, null, retryCount + 1);
+			if (isInfinite && input?.content.toLowerCase() === promptOptions.stopWord.toLowerCase()) {
+				if (!values?.length) return promptOne(input, input?.content, null, retryCount + 1);
 				return values;
 			}
 
@@ -316,14 +262,7 @@ export default class Argument {
 					return promptOne(input, input?.content, parsedValue, retryCount + 1);
 				}
 
-				const endedText = await getText(
-					"ended",
-					promptOptions.ended,
-					retryCount,
-					input,
-					input?.content,
-					"stop"
-				);
+				const endedText = await getText("ended", promptOptions.ended, retryCount, input, input?.content, "stop");
 				if (endedText) {
 					const sentEnded = await message.channel.send(endedText);
 					if (message.util) message.util.addMessage(sentEnded);
@@ -335,8 +274,7 @@ export default class Argument {
 			if (isInfinite) {
 				values.push(parsedValue);
 				const limit = promptOptions.limit;
-				if (values.length < limit)
-					return promptOne(message, input.content, parsedValue, 1);
+				if (values.length < limit) return promptOne(message, input.content, parsedValue, 1);
 
 				return values;
 			}
@@ -345,12 +283,7 @@ export default class Argument {
 		};
 
 		this.handler.addPrompt(message.channel, message.author);
-		const returnValue = await promptOne(
-			message,
-			commandInput,
-			parsedInput,
-			1 + additionalRetry
-		);
+		const returnValue = await promptOne(message, commandInput, parsedInput, 1 + additionalRetry);
 		if (this.handler.commandUtil && message.util) {
 			message.util.setEditable(false);
 		}
@@ -375,11 +308,7 @@ export default class Argument {
 		);
 
 		const doOtherwise = async failure => {
-			const otherwise = Util.choice(
-				this.otherwise,
-				commandDefs.otherwise,
-				handlerDefs.otherwise
-			);
+			const otherwise = Util.choice(this.otherwise, commandDefs.otherwise, handlerDefs.otherwise);
 
 			const modifyOtherwise = Util.choice(
 				this.modifyOtherwise,
@@ -434,9 +363,7 @@ export default class Argument {
 				return this.collect(message, phrase, res);
 			}
 
-			return this.default == null
-				? res
-				: Util.intoCallable(this.default)(message, { phrase, failure: res });
+			return this.default == null ? res : Util.intoCallable(this.default)(message, { phrase, failure: res });
 		}
 
 		return res;
@@ -506,9 +433,7 @@ export default class Argument {
 	 * If any of the types fails, the entire composition fails.
 	 * @param types - Types to use.
 	 */
-	public static compose(
-		...types: (ArgumentType | ArgumentTypeCaster)[]
-	): ArgumentTypeCaster {
+	public static compose(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			let acc = phrase;
 			for (let entry of types) {
@@ -526,9 +451,7 @@ export default class Argument {
 	 * If any of the types fails, the composition still continues with the failure passed on.
 	 * @param types - Types to use.
 	 */
-	public static composeWithFailure(
-		...types: (ArgumentType | ArgumentTypeCaster)[]
-	): ArgumentTypeCaster {
+	public static composeWithFailure(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			let acc = phrase;
 			for (let entry of types) {
@@ -544,9 +467,7 @@ export default class Argument {
 	 * Checks if something is null, undefined, or a fail flag.
 	 * @param value - Value to check.
 	 */
-	public static isFailure(
-		value: any
-	): value is null | undefined | (Flag & { value: any }) {
+	public static isFailure(value: any): value is null | undefined | (Flag & { value: any }) {
 		return value == null || Flag.is(value, "fail");
 	}
 
@@ -555,19 +476,12 @@ export default class Argument {
 	 * Only inputs where each type resolves with a non-void value are valid.
 	 * @param types - Types to use.
 	 */
-	public static product(
-		...types: (ArgumentType | ArgumentTypeCaster)[]
-	): ArgumentTypeCaster {
+	public static product(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			const results = [];
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				const res = await Argument.cast(
-					entry,
-					this.handler.resolver,
-					message,
-					phrase
-				);
+				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (Argument.isFailure(res)) return res;
 				results.push(res);
 			}
@@ -591,13 +505,7 @@ export default class Argument {
 	): ArgumentTypeCaster {
 		return Argument.validate(type, (msg, p, x) => {
 			const o =
-				typeof x === "number" || typeof x === "bigint"
-					? x
-					: x.length != null
-					? x.length
-					: x.size != null
-					? x.size
-					: x;
+				typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
 
 			return o >= min && (inclusive ? o <= max : o < max);
 		});
@@ -609,18 +517,10 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
-	public static tagged(
-		type: ArgumentType | ArgumentTypeCaster,
-		tag: any = type
-	): ArgumentTypeCaster {
+	public static tagged(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(
-				type,
-				this.handler.resolver,
-				message,
-				phrase
-			);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ tag, value: res });
 			}
@@ -635,18 +535,11 @@ export default class Argument {
 	 * Each type will also be tagged using `tagged` with themselves.
 	 * @param types - Types to use.
 	 */
-	public static taggedUnion(
-		...types: (ArgumentType | ArgumentTypeCaster)[]
-	): ArgumentTypeCaster {
+	public static taggedUnion(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			for (let entry of types) {
 				entry = Argument.tagged(entry);
-				const res = await Argument.cast(
-					entry,
-					this.handler.resolver,
-					message,
-					phrase
-				);
+				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (!Argument.isFailure(res)) return res;
 			}
 
@@ -660,18 +553,10 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
-	public static taggedWithInput(
-		type: ArgumentType | ArgumentTypeCaster,
-		tag: any = type
-	): ArgumentTypeCaster {
+	public static taggedWithInput(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(
-				type,
-				this.handler.resolver,
-				message,
-				phrase
-			);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ tag, input: phrase, value: res });
 			}
@@ -685,18 +570,11 @@ export default class Argument {
 	 * The first type that resolves to a non-void value is used.
 	 * @param types - Types to use.
 	 */
-	public static union(
-		...types: (ArgumentType | ArgumentTypeCaster)[]
-	): ArgumentTypeCaster {
+	public static union(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				const res = await Argument.cast(
-					entry,
-					this.handler.resolver,
-					message,
-					phrase
-				);
+				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (!Argument.isFailure(res)) return res;
 			}
 
@@ -710,18 +588,10 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param predicate - The predicate function.
 	 */
-	public static validate(
-		type: ArgumentType | ArgumentTypeCaster,
-		predicate: ParsedValuePredicate
-	): ArgumentTypeCaster {
+	public static validate(type: ArgumentType | ArgumentTypeCaster, predicate: ParsedValuePredicate): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(
-				type,
-				this.handler.resolver,
-				message,
-				phrase
-			);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) return res;
 			if (!predicate.call(this, message, phrase, res)) return null;
 			return res;
@@ -733,17 +603,10 @@ export default class Argument {
 	 * Result is in an object `{ input, value }` and wrapped in `Flag.fail` when failed.
 	 * @param type - The type to use.
 	 */
-	public static withInput(
-		type: ArgumentType | ArgumentTypeCaster
-	): ArgumentTypeCaster {
+	public static withInput(type: ArgumentType | ArgumentTypeCaster): ArgumentTypeCaster {
 		return async function typeFn(message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(
-				type,
-				this.handler.resolver,
-				message,
-				phrase
-			);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ input: phrase, value: res });
 			}
@@ -799,11 +662,7 @@ export interface ArgumentOptions {
 	multipleFlags?: boolean;
 
 	/** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
-	otherwise?:
-		| string
-		| MessagePayload
-		| MessageOptions
-		| OtherwiseContentSupplier;
+	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 	/** Prompt options for when user does not provide input. */
 	prompt?: ArgumentPromptOptions | boolean;
@@ -1088,11 +947,7 @@ export interface DefaultArgumentOptions {
 	prompt?: ArgumentPromptOptions;
 
 	/** Default text sent if argument parsing fails. */
-	otherwise?:
-		| string
-		| MessagePayload
-		| MessageOptions
-		| OtherwiseContentSupplier;
+	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 	/** Function to modify otherwise content. */
 	modifyOtherwise?: OtherwiseContentModifier;
@@ -1111,11 +966,7 @@ export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
  * @param phrase - The user input.
  * @param value - The parsed value.
  */
-export type ParsedValuePredicate = (
-	message: Message,
-	phrase: string,
-	value: any
-) => boolean;
+export type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
 
 /**
  * A function modifying a prompt text.
@@ -1127,11 +978,7 @@ export type OtherwiseContentModifier = (
 	message: Message,
 	text: string,
 	data: FailureData
-) =>
-	| string
-	| MessagePayload
-	| MessageOptions
-	| Promise<string | MessagePayload | MessageOptions>;
+) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 /**
  * A function returning the content if argument parsing fails.
@@ -1141,11 +988,7 @@ export type OtherwiseContentModifier = (
 export type OtherwiseContentSupplier = (
 	message: Message,
 	data: FailureData
-) =>
-	| string
-	| MessagePayload
-	| MessageOptions
-	| Promise<string | MessagePayload | MessageOptions>;
+) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 /**
  * A function modifying a prompt text.
@@ -1157,11 +1000,7 @@ export type PromptContentModifier = (
 	message: Message,
 	text: string,
 	data: ArgumentPromptData
-) =>
-	| string
-	| MessagePayload
-	| MessageOptions
-	| Promise<string | MessagePayload | MessageOptions>;
+) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 /**
  * A function returning text for the prompt.
@@ -1171,8 +1010,4 @@ export type PromptContentModifier = (
 export type PromptContentSupplier = (
 	message: Message,
 	data: ArgumentPromptData
-) =>
-	| string
-	| MessagePayload
-	| MessageOptions
-	| Promise<string | MessagePayload | MessageOptions>;
+) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;

@@ -71,10 +71,7 @@ declare module "discord-akairo" {
 	 * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
 	 */
 	export class AkairoClient extends Client {
-		public constructor(
-			options?: AkairoOptions & ClientOptions,
-			clientOptions?: ClientOptions
-		);
+		public constructor(options?: AkairoOptions & ClientOptions, clientOptions?: ClientOptions);
 
 		/** The ID of the owner(s). */
 		public ownerID: Snowflake | Snowflake[];
@@ -273,11 +270,7 @@ declare module "discord-akairo" {
 		public multipleFlags: boolean;
 
 		/** The content or function supplying the content sent when argument parsing fails. */
-		public otherwise?:
-			| string
-			| MessagePayload
-			| MessageOptions
-			| OtherwiseContentSupplier;
+		public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 		/** The prompt options. */
 		public prompt?: ArgumentPromptOptions | boolean;
@@ -301,10 +294,7 @@ declare module "discord-akairo" {
 		 * @param commandInput - Previous input from command if there was one.
 		 * @param parsedInput - Previous parsed input from command if there was one.
 		 */
-		public collect(
-			message: Message,
-			commandInput?: string
-		): Promise<Flag | any>;
+		public collect(message: Message, commandInput?: string): Promise<Flag | any>;
 
 		/**
 		 * Processes the type casting and prompting of the argument for a phrase.
@@ -332,35 +322,27 @@ declare module "discord-akairo" {
 		 * If any of the types fails, the entire composition fails.
 		 * @param types - Types to use.
 		 */
-		public static compose(
-			...types: (ArgumentType | ArgumentTypeCaster)[]
-		): ArgumentTypeCaster;
+		public static compose(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster;
 
 		/**
 		 * Creates a type that is the left-to-right composition of the given types.
 		 * If any of the types fails, the composition still continues with the failure passed on.
 		 * @param types - Types to use.
 		 */
-		public static composeWithFailure(
-			...types: (ArgumentType | ArgumentTypeCaster)[]
-		): ArgumentTypeCaster;
+		public static composeWithFailure(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster;
 
 		/**
 		 * Checks if something is null, undefined, or a fail flag.
 		 * @param value - Value to check.
 		 */
-		public static isFailure(
-			value: any
-		): value is null | undefined | (Flag & { value: any });
+		public static isFailure(value: any): value is null | undefined | (Flag & { value: any });
 
 		/**
 		 * Creates a type from multiple types (product type).
 		 * Only inputs where each type resolves with a non-void value are valid.
 		 * @param types - Types to use.
 		 */
-		public static product(
-			...types: (ArgumentType | ArgumentTypeCaster)[]
-		): ArgumentTypeCaster;
+		public static product(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster;
 
 		/**
 		 * Creates a type where the parsed value must be within a range.
@@ -382,10 +364,7 @@ declare module "discord-akairo" {
 		 * @param type - The type to use.
 		 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 		 */
-		public static tagged(
-			type: ArgumentType | ArgumentTypeCaster,
-			tag?: any
-		): ArgumentTypeCaster;
+		public static tagged(type: ArgumentType | ArgumentTypeCaster, tag?: any): ArgumentTypeCaster;
 
 		/**
 		 * Creates a type from multiple types (union type).
@@ -393,9 +372,7 @@ declare module "discord-akairo" {
 		 * Each type will also be tagged using `tagged` with themselves.
 		 * @param types - Types to use.
 		 */
-		public static taggedUnion(
-			...types: (ArgumentType | ArgumentTypeCaster)[]
-		): ArgumentTypeCaster;
+		public static taggedUnion(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster;
 
 		/**
 		 * Creates a type that parses as normal but also tags it with some data and carries the original input.
@@ -403,19 +380,14 @@ declare module "discord-akairo" {
 		 * @param type - The type to use.
 		 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 		 */
-		public static taggedWithInput(
-			type: ArgumentType | ArgumentTypeCaster,
-			tag?: any
-		): ArgumentTypeCaster;
+		public static taggedWithInput(type: ArgumentType | ArgumentTypeCaster, tag?: any): ArgumentTypeCaster;
 
 		/**
 		 * Creates a type from multiple types (union type).
 		 * The first type that resolves to a non-void value is used.
 		 * @param types - Types to use.
 		 */
-		public static union(
-			...types: (ArgumentType | ArgumentTypeCaster)[]
-		): ArgumentTypeCaster;
+		public static union(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster;
 
 		/**
 		 * Creates a type with extra validation.
@@ -433,9 +405,7 @@ declare module "discord-akairo" {
 		 * Result is in an object `{ input, value }` and wrapped in `Flag.fail` when failed.
 		 * @param type - The type to use.
 		 */
-		public static withInput(
-			type: ArgumentType | ArgumentTypeCaster
-		): ArgumentTypeCaster;
+		public static withInput(type: ArgumentType | ArgumentTypeCaster): ArgumentTypeCaster;
 	}
 
 	/**
@@ -474,10 +444,7 @@ declare module "discord-akairo" {
 		 * @param file - The file.
 		 * @param name - The filename.
 		 */
-		public attachment(
-			file: BufferResolvable | Stream,
-			name?: string
-		): MessageAttachment;
+		public attachment(file: BufferResolvable | Stream, name?: string): MessageAttachment;
 
 		/**
 		 * Checks if a string could be referring to a channel.
@@ -500,12 +467,7 @@ declare module "discord-akairo" {
 		 * @param caseSensitive - Makes checking by name case sensitive.
 		 * @param wholeWord - Makes checking by name match full word only.
 		 */
-		public checkEmoji(
-			text: string,
-			emoji: Emoji,
-			caseSensitive?: boolean,
-			wholeWord?: boolean
-		): boolean;
+		public checkEmoji(text: string, emoji: Emoji, caseSensitive?: boolean, wholeWord?: boolean): boolean;
 
 		/**
 		 * Checks if a string could be referring to a guild.
@@ -514,12 +476,7 @@ declare module "discord-akairo" {
 		 * @param caseSensitive - Makes checking by name case sensitive.
 		 * @param wholeWord - Makes checking by name match full word only.
 		 */
-		public checkGuild(
-			text: string,
-			guild: Guild,
-			caseSensitive?: boolean,
-			wholeWord?: boolean
-		): boolean;
+		public checkGuild(text: string, guild: Guild, caseSensitive?: boolean, wholeWord?: boolean): boolean;
 
 		/**
 		 * Checks if a string could be referring to a member.
@@ -528,12 +485,7 @@ declare module "discord-akairo" {
 		 * @param caseSensitive - Makes checking by name case sensitive.
 		 * @param wholeWord - Makes checking by name match full word only.
 		 */
-		public checkMember(
-			text: string,
-			member: GuildMember,
-			caseSensitive?: boolean,
-			wholeWord?: boolean
-		): boolean;
+		public checkMember(text: string, member: GuildMember, caseSensitive?: boolean, wholeWord?: boolean): boolean;
 
 		/**
 		 * Checks if a string could be referring to a role.
@@ -542,12 +494,7 @@ declare module "discord-akairo" {
 		 * @param caseSensitive - Makes checking by name case sensitive.
 		 * @param wholeWord - Makes checking by name match full word only.
 		 */
-		public checkRole(
-			text: string,
-			role: Role,
-			caseSensitive?: boolean,
-			wholeWord?: boolean
-		): boolean;
+		public checkRole(text: string, role: Role, caseSensitive?: boolean, wholeWord?: boolean): boolean;
 
 		/**
 		 * Resolves a user from a string, such as an ID, a name, or a mention.
@@ -556,20 +503,13 @@ declare module "discord-akairo" {
 		 * @param caseSensitive - Makes finding by name case sensitive.
 		 * @param wholeWord - Makes finding by name match full word only.
 		 */
-		public checkUser(
-			text: string,
-			user: User,
-			caseSensitive?: boolean,
-			wholeWord?: boolean
-		): boolean;
+		public checkUser(text: string, user: User, caseSensitive?: boolean, wholeWord?: boolean): boolean;
 
 		/**
 		 * Makes a Collection.
 		 * @param iterable - Entries to fill with.
 		 */
-		public collection<K, V>(
-			iterable?: ReadonlyArray<readonly [K, V]> | null
-		): Collection<K, V>;
+		public collection<K, V>(iterable?: ReadonlyArray<readonly [K, V]> | null): Collection<K, V>;
 
 		/**
 		 * Compares two member objects presences and checks if they stopped or started a stream or not.
@@ -577,10 +517,7 @@ declare module "discord-akairo" {
 		 * @param oldMember - The old member.
 		 * @param newMember - The new member.
 		 */
-		public compareStreaming(
-			oldMember: GuildMember,
-			newMember: GuildMember
-		): 0 | 1 | 2;
+		public compareStreaming(oldMember: GuildMember, newMember: GuildMember): 0 | 1 | 2;
 
 		/**
 		 * Makes a MessageEmbed.
@@ -594,11 +531,7 @@ declare module "discord-akairo" {
 		 * @param id - ID of the user.
 		 * @param cache - Whether or not to add to cache.
 		 */
-		public fetchMember(
-			guild: Guild,
-			id: Snowflake,
-			cache?: boolean
-		): Promise<GuildMember>;
+		public fetchMember(guild: Guild, id: Snowflake, cache?: boolean): Promise<GuildMember>;
 
 		/**
 		 * Array of permission names.
@@ -614,10 +547,7 @@ declare module "discord-akairo" {
 		 */
 		public resolveChannel(
 			text: string,
-			channels: Collection<
-				Snowflake,
-				GuildTextBasedChannels | BaseGuildVoiceChannel
-			>,
+			channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
 			caseSensitive?: boolean,
 			wholeWord?: boolean
 		): GuildTextBasedChannels | BaseGuildVoiceChannel;
@@ -631,10 +561,7 @@ declare module "discord-akairo" {
 		 */
 		public resolveChannels(
 			text: string,
-			channels: Collection<
-				Snowflake,
-				GuildTextBasedChannels | BaseGuildVoiceChannel
-			>,
+			channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
 			caseSensitive?: boolean,
 			wholeWord?: boolean
 		): Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>;
@@ -793,11 +720,7 @@ declare module "discord-akairo" {
 	 * @param command - The command of the interaction
 	 */
 	export class AkairoMessage {
-		public constructor(
-			client: AkairoClient,
-			interaction: CommandInteraction,
-			command: Command
-		);
+		public constructor(client: AkairoClient, interaction: CommandInteraction, command: Command);
 
 		/** The author of the interaction. */
 		public author: User;
@@ -847,9 +770,7 @@ declare module "discord-akairo" {
 		 * Replies or edits the reply of the slash command.
 		 * @param options The options to edit the reply.
 		 */
-		public reply(
-			options: string | MessagePayload | InteractionReplyOptions
-		): Promise<Message | APIMessage>;
+		public reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
 	}
 
 	/**
@@ -876,10 +797,7 @@ declare module "discord-akairo" {
 		public client: AkairoClient;
 
 		/** Permissions required to run command by the client. */
-		public clientPermissions:
-			| PermissionResolvable
-			| PermissionResolvable[]
-			| MissingPermissionSupplier;
+		public clientPermissions: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 		/** Cooldown in milliseconds. */
 		public cooldown?: number;
@@ -948,10 +866,7 @@ declare module "discord-akairo" {
 		public typing: boolean;
 
 		/** Permissions required to run command by the user. */
-		public userPermissions:
-			| PermissionResolvable
-			| PermissionResolvable[]
-			| MissingPermissionSupplier;
+		public userPermissions: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 		/**
 		 * Argument options or generator.
@@ -1138,11 +1053,7 @@ declare module "discord-akairo" {
 		 * @param message - Message that called the command.
 		 * @param command - Command that errored.
 		 */
-		public emitError(
-			err: Error,
-			message: Message | AkairoMessage,
-			command?: Command
-		): void;
+		public emitError(err: Error, message: Message | AkairoMessage, command?: Command): void;
 
 		/**
 		 * Finds a category by name.
@@ -1186,9 +1097,7 @@ declare module "discord-akairo" {
 		 * Handles regex and conditional commands.
 		 * @param message - Message to handle.
 		 */
-		public handleRegexAndConditionalCommands(
-			message: Message
-		): Promise<boolean>;
+		public handleRegexAndConditionalCommands(message: Message): Promise<boolean>;
 
 		/**
 		 * Handles regex commands.
@@ -1200,9 +1109,7 @@ declare module "discord-akairo" {
 		 * Handles a slash command.
 		 * @param interaction - Interaction to handle.
 		 */
-		public handleSlash(
-			interaction: CommandInteraction
-		): Promise<boolean | null>;
+		public handleSlash(interaction: CommandInteraction): Promise<boolean | null>;
 
 		/**
 		 * Checks if there is an ongoing prompt.
@@ -1234,19 +1141,14 @@ declare module "discord-akairo" {
 		 * Parses the command and its argument list using prefix overwrites.
 		 * @param message - Message that called the command.
 		 */
-		public parseCommandOverwrittenPrefixes(
-			message: Message
-		): Promise<ParsedComponentData>;
+		public parseCommandOverwrittenPrefixes(message: Message): Promise<ParsedComponentData>;
 
 		/**
 		 * Runs parseWithPrefix on multiple prefixes and returns the best parse.
 		 * @param message - Message to parse.
 		 * @param pairs - Pairs of prefix to associated commands.
 		 */
-		public parseMultiplePrefixes(
-			message: Message,
-			prefixes: [string, Set<string> | null]
-		): ParsedComponentData;
+		public parseMultiplePrefixes(message: Message, prefixes: [string, Set<string> | null]): ParsedComponentData;
 
 		/**
 		 * Tries to parse a message with the given prefix and associated commands.
@@ -1255,11 +1157,7 @@ declare module "discord-akairo" {
 		 * @param prefix - Prefix to use.
 		 * @param associatedCommands - Associated commands.
 		 */
-		public parseWithPrefix(
-			message: Message,
-			prefix: string,
-			associatedCommands?: Set<string>
-		): ParsedComponentData;
+		public parseWithPrefix(message: Message, prefix: string, associatedCommands?: Set<string>): ParsedComponentData;
 
 		/**
 		 * Registers a module.
@@ -1307,14 +1205,8 @@ declare module "discord-akairo" {
 		 * @param message - Message to handle.
 		 * @param slash - Whether or not the command should is a slash command.
 		 */
-		public runAllTypeInhibitors(
-			message: Message,
-			slash?: boolean
-		): Promise<boolean>;
-		public runAllTypeInhibitors(
-			message: Message | AkairoMessage,
-			slash?: boolean
-		): Promise<boolean>;
+		public runAllTypeInhibitors(message: Message, slash?: boolean): Promise<boolean>;
+		public runAllTypeInhibitors(message: Message | AkairoMessage, slash?: boolean): Promise<boolean>;
 
 		/**
 		 * Runs a command.
@@ -1322,11 +1214,7 @@ declare module "discord-akairo" {
 		 * @param command - Command to handle.
 		 * @param args - Arguments to use.
 		 */
-		public runCommand(
-			message: Message,
-			command: Command,
-			args: any
-		): Promise<void>;
+		public runCommand(message: Message, command: Command, args: any): Promise<void>;
 
 		/**
 		 * Runs cooldowns and checks if a user is under cooldown.
@@ -1334,10 +1222,7 @@ declare module "discord-akairo" {
 		 * @param command - Command to cooldown.
 		 */
 		public runCooldowns(message: Message, command: Command): boolean;
-		public runCooldowns(
-			message: Message | AkairoMessage,
-			command: Command
-		): boolean;
+		public runCooldowns(message: Message | AkairoMessage, command: Command): boolean;
 
 		/**
 		 * Runs permission checks.
@@ -1345,16 +1230,8 @@ declare module "discord-akairo" {
 		 * @param command - Command to cooldown.
 		 * @param slash - Whether or not the command is a slash command.
 		 */
-		public runPermissionChecks(
-			message: Message,
-			command: Command,
-			slash?: boolean
-		): Promise<boolean>;
-		public runPermissionChecks(
-			message: Message | AkairoMessage,
-			command: Command,
-			slash?: boolean
-		): Promise<boolean>;
+		public runPermissionChecks(message: Message, command: Command, slash?: boolean): Promise<boolean>;
+		public runPermissionChecks(message: Message | AkairoMessage, command: Command, slash?: boolean): Promise<boolean>;
 
 		/**
 		 * Runs inhibitors with the post type.
@@ -1362,23 +1239,15 @@ declare module "discord-akairo" {
 		 * @param command - Command to handle.
 		 * @param slash - Whether or not the command should is a slash command.
 		 */
-		public runPostTypeInhibitors(
-			message: Message,
-			command: Command
-		): Promise<boolean>;
-		public runPostTypeInhibitors(
-			message: Message | AkairoMessage,
-			command: Command
-		): Promise<boolean>;
+		public runPostTypeInhibitors(message: Message, command: Command): Promise<boolean>;
+		public runPostTypeInhibitors(message: Message | AkairoMessage, command: Command): Promise<boolean>;
 
 		/**
 		 * Runs inhibitors with the pre type.
 		 * @param message - Message to handle.
 		 */
 		public runPreTypeInhibitors(message: Message): Promise<boolean>;
-		public runPreTypeInhibitors(
-			message: Message | AkairoMessage
-		): Promise<boolean>;
+		public runPreTypeInhibitors(message: Message | AkairoMessage): Promise<boolean>;
 
 		/**
 		 * Set up the command handler
@@ -1412,10 +1281,7 @@ declare module "discord-akairo" {
 		 * Emitted when a an incoming interaction command cannot be matched with a command.
 		 * @param interaction - The incoming interaction.
 		 */
-		public on(
-			event: "slashNotFound",
-			listener: (interaction: AkairoMessage) => any
-		): this;
+		public on(event: "slashNotFound", listener: (interaction: AkairoMessage) => any): this;
 
 		/**
 		 * Emitted when a slash command starts execution.
@@ -1423,10 +1289,7 @@ declare module "discord-akairo" {
 		 * @param command - Command executed.
 		 * @param args - The args passed to the command.
 		 */
-		public on(
-			event: "slashStarted",
-			listener: (message: AkairoMessage, command: Command, args: any) => any
-		): this;
+		public on(event: "slashStarted", listener: (message: AkairoMessage, command: Command, args: any) => any): this;
 	}
 
 	/**
@@ -1435,10 +1298,7 @@ declare module "discord-akairo" {
 	 * @param message - Message that triggered the command.
 	 */
 	export class CommandUtil {
-		public constructor(
-			handler: CommandHandler,
-			message: Message | AkairoMessage
-		);
+		public constructor(handler: CommandHandler, message: Message | AkairoMessage);
 
 		/**  The command handler. */
 		public handler: CommandHandler;
@@ -1472,63 +1332,45 @@ declare module "discord-akairo" {
 		 * If the message is a slash command, edits the slash response.
 		 * @param options - Options to use.
 		 */
-		public edit(
-			content:
-				| string
-				| MessageEditOptions
-				| WebhookEditMessageOptions
-				| MessagePayload
-		): Promise<Message>;
+		public edit(content: string | MessageEditOptions | WebhookEditMessageOptions | MessagePayload): Promise<Message>;
 
 		/**
 		 * Send an inline reply or respond to a slash command.
 		 * If the message is a slash command, it replies or edits the last reply.
 		 * @param options - Options to use.
 		 */
-		public reply(
-			options: string | MessagePayload | ReplyMessageOptions
-		): Promise<Message>;
+		public reply(options: string | MessagePayload | ReplyMessageOptions): Promise<Message>;
 
 		/**
 		 * Send an inline reply or respond to a slash command.
 		 * If the message is a slash command, it replies or edits the last reply.
 		 * @param options - Options to use.
 		 */
-		public reply(
-			options: string | MessagePayload | InteractionReplyOptions
-		): Promise<Message | APIMessage>;
+		public reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
 
 		/**
 		 * Sends a response or edits an old response if available.
 		 * @param options - Options to use.
 		 */
-		public send(
-			options: string | MessagePayload | MessageOptions
-		): Promise<Message>;
+		public send(options: string | MessagePayload | MessageOptions): Promise<Message>;
 
 		/**
 		 * Sends a response or edits an old response if available.
 		 * @param options - Options to use.
 		 */
-		public send(
-			options: string | MessagePayload | InteractionReplyOptions
-		): Promise<Message | APIMessage>;
+		public send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
 
 		/**
 		 * Sends a response, overwriting the last response.
 		 * @param options - Options to use.
 		 */
-		public sendNew(
-			options: string | MessagePayload | MessageOptions
-		): Promise<Message>;
+		public sendNew(options: string | MessagePayload | MessageOptions): Promise<Message>;
 
 		/**
 		 * Sends a response, overwriting the last response.
 		 * @param options - Options to use.
 		 */
-		public sendNew(
-			options: string | MessagePayload | InteractionReplyOptions
-		): Promise<Message | APIMessage>;
+		public sendNew(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
 
 		/**
 		 * Changes if the message should be edited.
@@ -1594,15 +1436,9 @@ declare module "discord-akairo" {
 		 * @param type - Type of flag.
 		 */
 		public static is(value: any, type: "cancel"): value is Flag;
-		public static is(
-			value: any,
-			type: "continue"
-		): value is Flag & { command: string; ignore: boolean; rest: string };
+		public static is(value: any, type: "continue"): value is Flag & { command: string; ignore: boolean; rest: string };
 		public static is(value: any, type: "fail"): value is Flag & { value: any };
-		public static is(
-			value: any,
-			type: "retry"
-		): value is Flag & { message: Message };
+		public static is(value: any, type: "retry"): value is Flag & { message: Message };
 		public static is(value: any, type: string): value is Flag;
 	}
 
@@ -1642,14 +1478,8 @@ declare module "discord-akairo" {
 		 * @param message - Message being handled.
 		 * @param command - Command to check.
 		 */
-		public exec(
-			message: Message,
-			command?: Command
-		): boolean | Promise<boolean>;
-		public exec(
-			message: Message | AkairoMessage,
-			command?: Command
-		): boolean | Promise<boolean>;
+		public exec(message: Message, command?: Command): boolean | Promise<boolean>;
+		public exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean>;
 
 		/**
 		 * Reloads the inhibitor.
@@ -2198,11 +2028,7 @@ declare module "discord-akairo" {
 		prompt?: ArgumentPromptOptions;
 
 		/** Default text sent if argument parsing fails. */
-		otherwise?:
-			| string
-			| MessagePayload
-			| MessageOptions
-			| OtherwiseContentSupplier;
+		otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 		/** Function to modify otherwise content. */
 		modifyOtherwise?: OtherwiseContentModifier;
@@ -2254,11 +2080,7 @@ declare module "discord-akairo" {
 		multipleFlags?: boolean;
 
 		/** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
-		otherwise?:
-			| string
-			| MessagePayload
-			| MessageOptions
-			| OtherwiseContentSupplier;
+		otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 		/** Prompt options for when user does not provide input. */
 		prompt?: ArgumentPromptOptions | boolean;
@@ -2435,10 +2257,7 @@ declare module "discord-akairo" {
 		channel?: "guild" | "dm";
 
 		/** Permissions required by the client to run this command. */
-		clientPermissions?:
-			| PermissionResolvable
-			| PermissionResolvable[]
-			| MissingPermissionSupplier;
+		clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 		/** Whether or not to run on messages that are not directly commands. */
 		condition?: ExecutionPredicate;
@@ -2507,10 +2326,7 @@ declare module "discord-akairo" {
 		typing?: boolean;
 
 		/** Permissions required by the user to run this command. */
-		userPermissions?:
-			| PermissionResolvable
-			| PermissionResolvable[]
-			| MissingPermissionSupplier;
+		userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 	}
 
 	export interface CommandHandlerOptions extends AkairoHandlerOptions {
@@ -2914,10 +2730,7 @@ declare module "discord-akairo" {
 	 * @param message - Message that triggered the command.
 	 * @param data - Miscellaneous data.
 	 */
-	export type DefaultValueSupplier = (
-		message: Message,
-		data: FailureData
-	) => any;
+	export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
 
 	/**
 	 * A function used to check if the command should run arbitrarily.
@@ -2930,10 +2743,7 @@ declare module "discord-akairo" {
 	 * @param message - Message to check.
 	 * @param command - Command to check.
 	 */
-	export type IgnoreCheckPredicate = (
-		message: Message | AkairoMessage,
-		command: Command
-	) => boolean;
+	export type IgnoreCheckPredicate = (message: Message | AkairoMessage, command: Command) => boolean;
 
 	/**
 	 * A function used to supply the key for the locker.
@@ -2953,18 +2763,14 @@ declare module "discord-akairo" {
 	 * A function that returns whether mentions can be used as a prefix.
 	 * @param message - Message to option for.
 	 */
-	export type MentionPrefixPredicate = (
-		message: Message
-	) => boolean | Promise<boolean>;
+	export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boolean>;
 
 	/**
 	 * A function used to check if a message has permissions for the command.
 	 * A non-null return value signifies the reason for missing permissions.
 	 * @param message - Message that triggered the command.
 	 */
-	export type MissingPermissionSupplier = (
-		message: Message
-	) => Promise<any> | any;
+	export type MissingPermissionSupplier = (message: Message) => Promise<any> | any;
 
 	/**
 	 * A function modifying a prompt text.
@@ -2976,11 +2782,7 @@ declare module "discord-akairo" {
 		message: Message,
 		text: string,
 		data: FailureData
-	) =>
-		| string
-		| MessagePayload
-		| MessageOptions
-		| Promise<string | MessagePayload | MessageOptions>;
+	) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 	/**
 	 * A function returning the content if argument parsing fails.
@@ -2990,11 +2792,7 @@ declare module "discord-akairo" {
 	export type OtherwiseContentSupplier = (
 		message: Message,
 		data: FailureData
-	) =>
-		| string
-		| MessagePayload
-		| MessageOptions
-		| Promise<string | MessagePayload | MessageOptions>;
+	) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 	/**
 	 * A function for validating parsed arguments.
@@ -3002,19 +2800,13 @@ declare module "discord-akairo" {
 	 * @param phrase - The user input.
 	 * @param value - The parsed value.
 	 */
-	export type ParsedValuePredicate = (
-		message: Message,
-		phrase: string,
-		value: any
-	) => boolean;
+	export type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
 
 	/**
 	 * A function that returns the prefix(es) to use.
 	 * @param message - Message to get prefix for.
 	 */
-	export type PrefixSupplier = (
-		message: Message
-	) => string | string[] | Promise<string | string[]>;
+	export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
 
 	/**
 	 * A function modifying a prompt text.
@@ -3026,11 +2818,7 @@ declare module "discord-akairo" {
 		message: Message,
 		text: string,
 		data: ArgumentPromptData
-	) =>
-		| string
-		| MessagePayload
-		| MessageOptions
-		| Promise<string | MessagePayload | MessageOptions>;
+	) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 	/**
 	 * A function returning text for the prompt.
@@ -3040,11 +2828,7 @@ declare module "discord-akairo" {
 	export type PromptContentSupplier = (
 		message: Message,
 		data: ArgumentPromptData
-	) =>
-		| string
-		| MessagePayload
-		| MessageOptions
-		| Promise<string | MessagePayload | MessageOptions>;
+	) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
 	/**
 	 * A function used to return a regular expression.
@@ -3052,10 +2836,7 @@ declare module "discord-akairo" {
 	 */
 	export type RegexSupplier = (message: Message) => RegExp;
 
-	export type GuildTextBasedChannels = Exclude<
-		TextBasedChannels,
-		PartialDMChannel | DMChannel
-	>;
+	export type GuildTextBasedChannels = Exclude<TextBasedChannels, PartialDMChannel | DMChannel>;
 
 	export interface AkairoHandlerEvents {
 		/**
@@ -3078,11 +2859,7 @@ declare module "discord-akairo" {
 		 * @param command - Command blocked.
 		 * @param reason - Reason for the block.
 		 */
-		commandBlocked: [
-			message: Message,
-			command: Command,
-			reason: typeof Constants["BuiltInReasons"] | string
-		];
+		commandBlocked: [message: Message, command: Command, reason: typeof Constants["BuiltInReasons"] | string];
 
 		/**
 		 * Emitted when a command breaks out with a retry prompt.
@@ -3090,11 +2867,7 @@ declare module "discord-akairo" {
 		 * @param command - Command being broken out.
 		 * @param breakMessage - Breakout message.
 		 */
-		commandBreakout: [
-			message: Message,
-			command: Command,
-			breakMessage: Message
-		];
+		commandBreakout: [message: Message, command: Command, breakMessage: Message];
 
 		/**
 		 * Emitted when a command is cancelled via prompt or argument cancel.
@@ -3102,11 +2875,7 @@ declare module "discord-akairo" {
 		 * @param command - Command executed.
 		 * @param retryMessage - Message to retry with. This is passed when a prompt was broken out of with a message that looks like a command.
 		 */
-		commandCancelled: [
-			message: Message,
-			command: Command,
-			retryMessage?: Message
-		];
+		commandCancelled: [message: Message, command: Command, retryMessage?: Message];
 
 		/**
 		 * Emitted when a command finishes execution.
@@ -3115,12 +2884,7 @@ declare module "discord-akairo" {
 		 * @param args - The args passed to the command.
 		 * @param returnValue - The command's return value.
 		 */
-		commandFinished: [
-			message: Message,
-			command: Command,
-			args: any,
-			returnValue: any
-		];
+		commandFinished: [message: Message, command: Command, args: any, returnValue: any];
 
 		/**
 		 * Emitted when a command is invalid
@@ -3194,12 +2958,7 @@ declare module "discord-akairo" {
 		 * @param type - Either 'client' or 'user'.
 		 * @param missing - The missing permissions.
 		 */
-		missingPermissions: [
-			message: Message,
-			command: Command,
-			type: "client" | "user",
-			missing?: any
-		];
+		missingPermissions: [message: Message, command: Command, type: "client" | "user", missing?: any];
 
 		/**
 		 * Emitted when a command is removed.
@@ -3230,12 +2989,7 @@ declare module "discord-akairo" {
 		 * @param args - The args passed to the command.
 		 * @param returnValue - The command's return value.
 		 */
-		slashFinished: [
-			message: AkairoMessage,
-			command: Command,
-			args: any,
-			returnValue: any
-		];
+		slashFinished: [message: AkairoMessage, command: Command, args: any, returnValue: any];
 
 		/**
 		 * Emitted when a slash command permissions check is failed.
@@ -3244,12 +2998,7 @@ declare module "discord-akairo" {
 		 * @param type - Either 'client' or 'user'.
 		 * @param missing - The missing permissions.
 		 */
-		slashMissingPermissions: [
-			message: AkairoMessage,
-			command: Command,
-			type: "user" | "client",
-			missing?: any
-		];
+		slashMissingPermissions: [message: AkairoMessage, command: Command, type: "user" | "client", missing?: any];
 
 		/**
 		 * Emitted when a an incoming interaction command cannot be matched with a command.

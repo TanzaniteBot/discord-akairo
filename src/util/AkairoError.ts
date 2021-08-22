@@ -1,18 +1,13 @@
 const Messages = {
 	// Module-related
 	FILE_NOT_FOUND: (filename: any) => `File '${filename}' not found`,
-	MODULE_NOT_FOUND: (constructor: any, id: any) =>
-		`${constructor} '${id}' does not exist`,
-	ALREADY_LOADED: (constructor: any, id: any) =>
-		`${constructor} '${id}' is already loaded`,
-	NOT_RELOADABLE: (constructor: any, id: any) =>
-		`${constructor} '${id}' is not reloadable`,
-	INVALID_CLASS_TO_HANDLE: (given: any, expected: any) =>
-		`Class to handle ${given} is not a subclass of ${expected}`,
+	MODULE_NOT_FOUND: (constructor: any, id: any) => `${constructor} '${id}' does not exist`,
+	ALREADY_LOADED: (constructor: any, id: any) => `${constructor} '${id}' is already loaded`,
+	NOT_RELOADABLE: (constructor: any, id: any) => `${constructor} '${id}' is not reloadable`,
+	INVALID_CLASS_TO_HANDLE: (given: any, expected: any) => `Class to handle ${given} is not a subclass of ${expected}`,
 
 	// Command-related
-	ALIAS_CONFLICT: (alias: any, id: any, conflict: any) =>
-		`Alias '${alias}' of '${id}' already exists on '${conflict}'`,
+	ALIAS_CONFLICT: (alias: any, id: any, conflict: any) => `Alias '${alias}' of '${id}' already exists on '${conflict}'`,
 
 	// Options-related
 	COMMAND_UTIL_EXPLICIT:
@@ -21,8 +16,7 @@ const Messages = {
 
 	// Generic errors
 	NOT_INSTANTIABLE: (constructor: any) => `${constructor} is not instantiable`,
-	NOT_IMPLEMENTED: (constructor: any, method: any) =>
-		`${constructor}#${method} has not been implemented`,
+	NOT_IMPLEMENTED: (constructor: any, method: any) => `${constructor}#${method} has not been implemented`,
 	INVALID_TYPE: (name: any, expected: any, vowel = false) =>
 		`Value of '${name}' was not ${vowel ? "an" : "a"} ${expected}`
 };
@@ -34,12 +28,8 @@ const Messages = {
  */
 export default class AkairoError extends Error {
 	public constructor(key: string, ...args: (string | boolean)[]) {
-		if (Messages[key] == null)
-			throw new TypeError(`Error key '${key}' does not exist`);
-		const message =
-			typeof Messages[key] === "function"
-				? Messages[key](...args)
-				: Messages[key];
+		if (Messages[key] == null) throw new TypeError(`Error key '${key}' does not exist`);
+		const message = typeof Messages[key] === "function" ? Messages[key](...args) : Messages[key];
 
 		super(message);
 		this.code = key;

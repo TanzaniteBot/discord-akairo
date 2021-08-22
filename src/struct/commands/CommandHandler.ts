@@ -14,10 +14,7 @@ import Category from "../../util/Category";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants";
 import Util from "../../util/Util";
 import AkairoClient from "../AkairoClient";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ListenerHandler from "../listeners/ListenerHandler";
@@ -63,14 +60,8 @@ export default class CommandHandler extends AkairoHandler {
 			skipBuiltInPostInhibitors = false
 		}: CommandHandlerOptions = {}
 	) {
-		if (
-			!(classToHandle.prototype instanceof Command || classToHandle === Command)
-		) {
-			throw new AkairoError(
-				"INVALID_CLASS_TO_HANDLE",
-				classToHandle.name,
-				Command.name
-			);
+		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Command.name);
 		}
 
 		super(client, {
@@ -114,10 +105,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		this.commandUtilSweepInterval = commandUtilSweepInterval;
 		if (this.commandUtilSweepInterval > 0) {
-			setInterval(
-				() => this.sweepCommandUtil(),
-				this.commandUtilSweepInterval
-			).unref();
+			setInterval(() => this.sweepCommandUtil(), this.commandUtilSweepInterval).unref();
 		}
 
 		this.commandUtils = new Collection();
@@ -126,15 +114,9 @@ export default class CommandHandler extends AkairoHandler {
 
 		this.defaultCooldown = defaultCooldown;
 
-		this.ignoreCooldown =
-			typeof ignoreCooldown === "function"
-				? ignoreCooldown.bind(this)
-				: ignoreCooldown;
+		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
 
-		this.ignorePermissions =
-			typeof ignorePermissions === "function"
-				? ignorePermissions.bind(this)
-				: ignorePermissions;
+		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
 
 		this.prompts = new Collection();
 
@@ -161,10 +143,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
 
-		this.allowMention =
-			typeof allowMention === "function"
-				? allowMention.bind(this)
-				: !!allowMention;
+		this.allowMention = typeof allowMention === "function" ? allowMention.bind(this) : !!allowMention;
 
 		this.inhibitorHandler = null;
 
@@ -384,8 +363,7 @@ export default class CommandHandler extends AkairoHandler {
 		> = new Collection();
 		const parseDescriptionCommand = description => {
 			if (typeof description === "object") {
-				if (typeof description.content === "function")
-					return description.content();
+				if (typeof description.content === "function") return description.content();
 				if (typeof description.content === "string") return description.content;
 			}
 			return description;
@@ -401,13 +379,7 @@ export default class CommandHandler extends AkairoHandler {
 			});
 		}
 
-		for (const {
-			name,
-			description,
-			options,
-			guilds,
-			defaultPermission
-		} of globalSlashCommandsParsed) {
+		for (const { name, description, options, guilds, defaultPermission } of globalSlashCommandsParsed) {
 			for (const guildId of guilds) {
 				guildSlashCommandsParsed.set(guildId, [
 					...(guildSlashCommandsParsed.get(guildId) ?? []),
@@ -438,9 +410,7 @@ export default class CommandHandler extends AkairoHandler {
 			.map(({ name, description, options, defaultPermission }) => {
 				return { name, description, options, defaultPermission };
 			});
-		const currentCommands = (
-			await this.client.application?.commands.fetch()
-		).map(value1 => ({
+		const currentCommands = (await this.client.application?.commands.fetch()).map(value1 => ({
 			name: value1.name,
 			description: value1.description,
 			options: value1.options,
@@ -462,8 +432,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		for (let alias of command.aliases) {
 			const conflict = this.aliases.get(alias.toLowerCase());
-			if (conflict)
-				throw new AkairoError("ALIAS_CONFLICT", alias, command.id, conflict);
+			if (conflict) throw new AkairoError("ALIAS_CONFLICT", alias, command.id, conflict);
 
 			alias = alias.toLowerCase();
 			this.aliases.set(alias, command.id);
@@ -473,12 +442,7 @@ export default class CommandHandler extends AkairoHandler {
 				if (replacement !== alias) {
 					const replacementConflict = this.aliases.get(replacement);
 					if (replacementConflict)
-						throw new AkairoError(
-							"ALIAS_CONFLICT",
-							replacement,
-							command.id,
-							replacementConflict
-						);
+						throw new AkairoError("ALIAS_CONFLICT", replacement, command.id, replacementConflict);
 					this.aliases.set(replacement, command.id);
 				}
 			}
@@ -508,9 +472,7 @@ export default class CommandHandler extends AkairoHandler {
 			}
 
 			if (newEntry) {
-				this.prefixes = this.prefixes.sort((aVal, bVal, aKey, bKey) =>
-					Util.prefixCompare(aKey, bKey)
-				);
+				this.prefixes = this.prefixes.sort((aVal, bVal, aKey, bKey) => Util.prefixCompare(aKey, bKey));
 			}
 		}
 	}
@@ -560,12 +522,7 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public async handle(message: Message): Promise<boolean | null> {
 		try {
-			if (
-				this.fetchMembers &&
-				message.guild &&
-				!message.member &&
-				!message.webhookId
-			) {
+			if (this.fetchMembers && message.guild && !message.member && !message.webhookId) {
 				await message.guild.members.fetch(message.author);
 			}
 
@@ -591,10 +548,7 @@ export default class CommandHandler extends AkairoHandler {
 			let parsed = await this.parseCommand(message);
 			if (!parsed.command) {
 				const overParsed = await this.parseCommandOverwrittenPrefixes(message);
-				if (
-					overParsed.command ||
-					(parsed.prefix == null && overParsed.prefix != null)
-				) {
+				if (overParsed.command || (parsed.prefix == null && overParsed.prefix != null)) {
 					parsed = overParsed;
 				}
 			}
@@ -608,11 +562,7 @@ export default class CommandHandler extends AkairoHandler {
 			if (!parsed.command) {
 				ran = await this.handleRegexAndConditionalCommands(message);
 			} else {
-				ran = await this.handleDirectCommand(
-					message,
-					parsed.content,
-					parsed.command
-				);
+				ran = await this.handleDirectCommand(message, parsed.content, parsed.command);
 			}
 
 			if (ran === false) {
@@ -632,9 +582,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param interaction - Interaction to handle.
 	 */
 	// eslint-disable-next-line complexity
-	public async handleSlash(
-		interaction: CommandInteraction
-	): Promise<boolean | null> {
+	public async handleSlash(interaction: CommandInteraction): Promise<boolean | null> {
 		const command = this.findCommand(interaction.commandName);
 
 		if (!command) {
@@ -669,10 +617,7 @@ export default class CommandHandler extends AkairoHandler {
 			let parsed = await this.parseCommand(message);
 			if (!parsed.command) {
 				const overParsed = await this.parseCommandOverwrittenPrefixes(message);
-				if (
-					overParsed.command ||
-					(parsed.prefix == null && overParsed.prefix != null)
-				) {
+				if (overParsed.command || (parsed.prefix == null && overParsed.prefix != null)) {
 					parsed = overParsed;
 				}
 			}
@@ -687,10 +632,7 @@ export default class CommandHandler extends AkairoHandler {
 
 			const convertedOptions = {};
 			for (const option of command.slashOptions) {
-				convertedOptions[option.name] = interaction.options.get(
-					option.name,
-					option.required || false
-				)?.value;
+				convertedOptions[option.name] = interaction.options.get(option.name, option.required || false)?.value;
 			}
 
 			let key;
@@ -717,23 +659,12 @@ export default class CommandHandler extends AkairoHandler {
 			}
 
 			try {
-				this.emit(
-					CommandHandlerEvents.SLASH_STARTED,
-					message,
-					command,
-					convertedOptions
-				);
+				this.emit(CommandHandlerEvents.SLASH_STARTED, message, command, convertedOptions);
 				const ret =
 					Reflect.ownKeys(command).includes("execSlash") || this.execSlash
 						? await command.execSlash(message, convertedOptions)
 						: await command.exec(message as any, convertedOptions);
-				this.emit(
-					CommandHandlerEvents.SLASH_FINISHED,
-					message,
-					command,
-					convertedOptions,
-					ret
-				);
+				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, command, convertedOptions, ret);
 				return true;
 			} catch (err) {
 				this.emit(CommandHandlerEvents.SLASH_ERROR, err, message, command);
@@ -771,21 +702,11 @@ export default class CommandHandler extends AkairoHandler {
 				this.emit(CommandHandlerEvents.COMMAND_CANCELLED, message, command);
 				return true;
 			} else if (Flag.is(args, "retry")) {
-				this.emit(
-					CommandHandlerEvents.COMMAND_BREAKOUT,
-					message,
-					command,
-					args.message
-				);
+				this.emit(CommandHandlerEvents.COMMAND_BREAKOUT, message, command, args.message);
 				return this.handle(args.message);
 			} else if (Flag.is(args, "continue")) {
 				const continueCommand = this.modules.get(args.command);
-				return this.handleDirectCommand(
-					message,
-					args.rest,
-					continueCommand,
-					args.ignore
-				);
+				return this.handleDirectCommand(message, args.rest, continueCommand, args.ignore);
 			}
 
 			if (!ignore) {
@@ -816,9 +737,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * Handles regex and conditional commands.
 	 * @param message - Message to handle.
 	 */
-	public async handleRegexAndConditionalCommands(
-		message: Message
-	): Promise<boolean> {
+	public async handleRegexAndConditionalCommands(message: Message): Promise<boolean> {
 		const ran1 = await this.handleRegexCommands(message);
 		const ran2 = await this.handleConditionalCommands(message);
 		return ran1 || ran2;
@@ -832,10 +751,7 @@ export default class CommandHandler extends AkairoHandler {
 		const hasRegexCommands = [];
 		for (const command of this.modules.values()) {
 			if (message.editedTimestamp ? command.editable : true) {
-				const regex =
-					typeof command.regex === "function"
-						? command.regex(message)
-						: command.regex;
+				const regex = typeof command.regex === "function" ? command.regex(message) : command.regex;
 				if (regex) hasRegexCommands.push({ command, regex });
 			}
 		}
@@ -934,34 +850,17 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message to handle.
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
-	public async runAllTypeInhibitors(
-		message: Message | AkairoMessage,
-		slash: boolean = false
-	): Promise<boolean> {
-		const reason = this.inhibitorHandler
-			? await this.inhibitorHandler.test("all", message)
-			: null;
+	public async runAllTypeInhibitors(message: Message | AkairoMessage, slash: boolean = false): Promise<boolean> {
+		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("all", message) : null;
 
 		if (reason != null) {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, reason);
 		} else if (!message.author) {
-			this.emit(
-				CommandHandlerEvents.MESSAGE_BLOCKED,
-				message,
-				BuiltInReasons.AUTHOR_NOT_FOUND
-			);
+			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.AUTHOR_NOT_FOUND);
 		} else if (this.blockClient && message.author.id === this.client.user?.id) {
-			this.emit(
-				CommandHandlerEvents.MESSAGE_BLOCKED,
-				message,
-				BuiltInReasons.CLIENT
-			);
+			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.CLIENT);
 		} else if (this.blockBots && message.author.bot) {
-			this.emit(
-				CommandHandlerEvents.MESSAGE_BLOCKED,
-				message,
-				BuiltInReasons.BOT
-			);
+			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.BOT);
 		} else if (!slash && this.hasPrompt(message.channel, message.author)) {
 			this.emit(CommandHandlerEvents.IN_PROMPT, message);
 		} else {
@@ -975,12 +874,8 @@ export default class CommandHandler extends AkairoHandler {
 	 * Runs inhibitors with the pre type.
 	 * @param message - Message to handle.
 	 */
-	public async runPreTypeInhibitors(
-		message: Message | AkairoMessage
-	): Promise<boolean> {
-		const reason = this.inhibitorHandler
-			? await this.inhibitorHandler.test("pre", message)
-			: null;
+	public async runPreTypeInhibitors(message: Message | AkairoMessage): Promise<boolean> {
+		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("pre", message) : null;
 
 		if (reason != null) {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, reason);
@@ -1002,9 +897,7 @@ export default class CommandHandler extends AkairoHandler {
 		command: Command,
 		slash: boolean = false
 	): Promise<boolean> {
-		const event = slash
-			? CommandHandlerEvents.SLASH_BLOCKED
-			: CommandHandlerEvents.COMMAND_BLOCKED;
+		const event = slash ? CommandHandlerEvents.SLASH_BLOCKED : CommandHandlerEvents.COMMAND_BLOCKED;
 
 		if (!this.skipBuiltInPostInhibitors) {
 			if (command.ownerOnly) {
@@ -1045,9 +938,7 @@ export default class CommandHandler extends AkairoHandler {
 			}
 		}
 
-		const reason = this.inhibitorHandler
-			? await this.inhibitorHandler.test("post", message, command)
-			: null;
+		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("post", message, command) : null;
 
 		if (this.skipBuiltInPostInhibitors) {
 			if (await this.runPermissionChecks(message, command, slash)) {
@@ -1086,9 +977,7 @@ export default class CommandHandler extends AkairoHandler {
 
 				if (missing != null) {
 					this.emit(
-						slash
-							? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS
-							: CommandHandlerEvents.MISSING_PERMISSIONS,
+						slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
 						message,
 						command,
 						"client",
@@ -1098,15 +987,10 @@ export default class CommandHandler extends AkairoHandler {
 				}
 			} else if (message.guild) {
 				if (message.channel?.type === "DM") return false;
-				const missing = message.channel
-
-					?.permissionsFor(message.guild.me)
-					?.missing(command.clientPermissions);
+				const missing = message.channel?.permissionsFor(message.guild.me)?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(
-						slash
-							? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS
-							: CommandHandlerEvents.MISSING_PERMISSIONS,
+						slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
 						message,
 						command,
 						"client",
@@ -1133,9 +1017,7 @@ export default class CommandHandler extends AkairoHandler {
 
 					if (missing != null) {
 						this.emit(
-							slash
-								? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS
-								: CommandHandlerEvents.MISSING_PERMISSIONS,
+							slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
 							message,
 							command,
 							"user",
@@ -1145,14 +1027,10 @@ export default class CommandHandler extends AkairoHandler {
 					}
 				} else if (message.guild) {
 					if (message.channel?.type === "DM") return false;
-					const missing = message.channel
-						?.permissionsFor(message.author)
-						?.missing(command.userPermissions);
+					const missing = message.channel?.permissionsFor(message.author)?.missing(command.userPermissions);
 					if (missing?.length) {
 						this.emit(
-							slash
-								? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS
-								: CommandHandlerEvents.MISSING_PERMISSIONS,
+							slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
 							message,
 							command,
 							"user",
@@ -1172,10 +1050,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 * @param command - Command to cooldown.
 	 */
-	public runCooldowns(
-		message: Message | AkairoMessage,
-		command: Command
-	): boolean {
+	public runCooldowns(message: Message | AkairoMessage, command: Command): boolean {
 		const id = message.author?.id;
 		const ignorer = command.ignoreCooldown || this.ignoreCooldown;
 		const isIgnored = Array.isArray(ignorer)
@@ -1186,8 +1061,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		if (isIgnored) return false;
 
-		const time =
-			command.cooldown != null ? command.cooldown : this.defaultCooldown;
+		const time = command.cooldown != null ? command.cooldown : this.defaultCooldown;
 		if (!time) return false;
 
 		const endTime = message.createdTimestamp + time;
@@ -1231,11 +1105,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param command - Command to handle.
 	 * @param args - Arguments to use.
 	 */
-	public async runCommand(
-		message: Message,
-		command: Command,
-		args: any
-	): Promise<void> {
+	public async runCommand(message: Message, command: Command, args: any): Promise<void> {
 		if (!command || !message) {
 			this.emit(CommandHandlerEvents.COMMAND_INVALID, message, command);
 			return;
@@ -1246,29 +1116,18 @@ export default class CommandHandler extends AkairoHandler {
 
 		this.emit(CommandHandlerEvents.COMMAND_STARTED, message, command, args);
 		const ret = await command.exec(message, args);
-		this.emit(
-			CommandHandlerEvents.COMMAND_FINISHED,
-			message,
-			command,
-			args,
-			ret
-		);
+		this.emit(CommandHandlerEvents.COMMAND_FINISHED, message, command, args, ret);
 	}
 
 	/**
 	 * Parses the command and its argument list.
 	 * @param message - Message that called the command.
 	 */
-	public async parseCommand(
-		message: Message | AkairoMessage
-	): Promise<ParsedComponentData> {
+	public async parseCommand(message: Message | AkairoMessage): Promise<ParsedComponentData> {
 		const allowMention = await Util.intoCallable(this.prefix)(message);
 		let prefixes = Util.intoArray(allowMention);
 		if (allowMention) {
-			const mentions = [
-				`<@${this.client.user?.id}>`,
-				`<@!${this.client.user?.id}>`
-			];
+			const mentions = [`<@${this.client.user?.id}>`, `<@!${this.client.user?.id}>`];
 			prefixes = [...mentions, ...prefixes];
 		}
 
@@ -1283,17 +1142,13 @@ export default class CommandHandler extends AkairoHandler {
 	 * Parses the command and its argument list using prefix overwrites.
 	 * @param message - Message that called the command.
 	 */
-	public async parseCommandOverwrittenPrefixes(
-		message: Message | AkairoMessage
-	): Promise<ParsedComponentData> {
+	public async parseCommandOverwrittenPrefixes(message: Message | AkairoMessage): Promise<ParsedComponentData> {
 		if (!this.prefixes.size) {
 			return {};
 		}
 
 		const promises = this.prefixes.map(async (cmds, provider) => {
-			const prefixes = Util.intoArray(
-				await Util.intoCallable(provider)(message)
-			);
+			const prefixes = Util.intoArray(await Util.intoCallable(provider)(message));
 			return prefixes.map(p => [p, cmds]);
 		});
 
@@ -1311,9 +1166,7 @@ export default class CommandHandler extends AkairoHandler {
 		message: Message | AkairoMessage,
 		pairs: [string, Set<string> | null][]
 	): ParsedComponentData {
-		const parses = pairs.map(([prefix, cmds]) =>
-			this.parseWithPrefix(message, prefix, cmds)
-		);
+		const parses = pairs.map(([prefix, cmds]) => this.parseWithPrefix(message, prefix, cmds));
 		const result = parses.find(parsed => parsed.command);
 		if (result) {
 			return result;
@@ -1344,15 +1197,11 @@ export default class CommandHandler extends AkairoHandler {
 			return {};
 		}
 
-		const endOfPrefix =
-			lowerContent.indexOf(prefix.toLowerCase()) + prefix.length;
-		const startOfArgs =
-			message.content.slice(endOfPrefix).search(/\S/) + prefix.length;
+		const endOfPrefix = lowerContent.indexOf(prefix.toLowerCase()) + prefix.length;
+		const startOfArgs = message.content.slice(endOfPrefix).search(/\S/) + prefix.length;
 		const alias = message.content.slice(startOfArgs).split(/\s{1,}|\n{1,}/)[0];
 		const command = this.findCommand(alias);
-		const content = message.content
-			.slice(startOfArgs + alias.length + 1)
-			.trim();
+		const content = message.content.slice(startOfArgs + alias.length + 1).trim();
 		const afterPrefix = message.content.slice(prefix.length).trim();
 
 		if (!command) {
@@ -1376,11 +1225,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 * @param command - Command that errored.
 	 */
-	public emitError(
-		err: Error,
-		message: Message | AkairoMessage,
-		command?: Command | AkairoModule
-	): void {
+	public emitError(err: Error, message: Message | AkairoMessage, command?: Command | AkairoModule): void {
 		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
 			this.emit(CommandHandlerEvents.ERROR, err, message, command);
 			return;
@@ -1398,11 +1243,7 @@ export default class CommandHandler extends AkairoHandler {
 		for (const commandUtil of this.commandUtils.values()) {
 			const now = Date.now();
 			const message = commandUtil.message;
-			if (
-				now -
-					((message as Message).editedTimestamp || message.createdTimestamp) >
-				lifetime
-			) {
+			if (now - ((message as Message).editedTimestamp || message.createdTimestamp) > lifetime) {
 				count++;
 				this.commandUtils.delete(message.id);
 			}
@@ -1458,9 +1299,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * Set the inhibitor handler to use.
 	 * @param inhibitorHandler - The inhibitor handler.
 	 */
-	public useInhibitorHandler(
-		inhibitorHandler: InhibitorHandler
-	): CommandHandler {
+	public useInhibitorHandler(inhibitorHandler: InhibitorHandler): CommandHandler {
 		this.inhibitorHandler = inhibitorHandler;
 		this.resolver.inhibitorHandler = inhibitorHandler;
 
@@ -1490,10 +1329,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(
-		directory?: string,
-		filter?: LoadPredicate
-	): CommandHandler {
+	public override loadAll(directory?: string, filter?: LoadPredicate): CommandHandler {
 		return super.loadAll(directory, filter) as CommandHandler;
 	}
 
@@ -1689,23 +1525,16 @@ export interface ParsedComponentData {
  * @param message - Message to check.
  * @param command - Command to check.
  */
-export type IgnoreCheckPredicate = (
-	message: Message | AkairoMessage,
-	command: Command
-) => boolean;
+export type IgnoreCheckPredicate = (message: Message | AkairoMessage, command: Command) => boolean;
 
 /**
  * A function that returns whether mentions can be used as a prefix.
  * @param message - Message to option for.
  */
-export type MentionPrefixPredicate = (
-	message: Message
-) => boolean | Promise<boolean>;
+export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boolean>;
 
 /**
  * A function that returns the prefix(es) to use.
  * @param message - Message to get prefix for.
  */
-export type PrefixSupplier = (
-	message: Message
-) => string | string[] | Promise<string | string[]>;
+export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;

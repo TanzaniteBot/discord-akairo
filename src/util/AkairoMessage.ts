@@ -24,18 +24,12 @@ import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand
  * @param command - The command of the interaction
  */
 export default class AkairoMessage extends Base {
-	public constructor(
-		client: AkairoClient,
-		interaction: CommandInteraction,
-		command: Command | ContextMenuCommand
-	) {
+	public constructor(client: AkairoClient, interaction: CommandInteraction, command: Command | ContextMenuCommand) {
 		super(client);
 
 		this.author = interaction.user;
 
-		this.content = `${interaction.command.type === "CHAT_INPUT" ? "/" : ""}${
-			interaction.commandName
-		}`;
+		this.content = `${interaction.command.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
 
 		this.createdTimestamp = interaction.createdTimestamp;
 
@@ -49,14 +43,10 @@ export default class AkairoMessage extends Base {
 
 		if (command instanceof Command) {
 			for (const option of command.slashOptions) {
-				this.content += ` ${option.name}: ${
-					interaction.options.get(option.name, option.required || false)?.value
-				}`;
+				this.content += ` ${option.name}: ${interaction.options.get(option.name, option.required || false)?.value}`;
 			}
 		} else if (interaction.command.type === "MESSAGE") {
-			this.content += ` message: ${
-				interaction.options.getMessage("message").id
-			}`;
+			this.content += ` message: ${interaction.options.getMessage("message").id}`;
 		} else if (interaction.command.type === "USER") {
 			this.content += ` message: ${interaction.options.getUser("user").id}`;
 		}
@@ -79,9 +69,7 @@ export default class AkairoMessage extends Base {
 	 * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
 	 */
 	public get cleanContent(): string | null {
-		return this.content != null
-			? Util.cleanContent(this.content, this.channel)
-			: null;
+		return this.content != null ? Util.cleanContent(this.content, this.channel) : null;
 	}
 
 	/**
@@ -140,9 +128,7 @@ export default class AkairoMessage extends Base {
 	public get url(): string | null {
 		return this.interaction.ephemeral
 			? null
-			: `https://discord.com/channels/${this.guild ? this.guild.id : "@me"}/${
-					this.channel?.id
-			  }/${this.id}`;
+			: `https://discord.com/channels/${this.guild ? this.guild.id : "@me"}/${this.channel?.id}/${this.id}`;
 	}
 
 	/**
@@ -156,9 +142,7 @@ export default class AkairoMessage extends Base {
 	 * Replies or edits the reply of the slash command.
 	 * @param options The options to edit the reply.
 	 */
-	public reply(
-		options: string | MessagePayload | InteractionReplyOptions
-	): Promise<Message | APIMessage> {
+	public reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage> {
 		return this.util.reply(options);
 	}
 }

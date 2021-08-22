@@ -13,15 +13,7 @@ import InhibitorHandler from "./InhibitorHandler";
  * @param options - Options for the inhibitor.
  */
 export default abstract class Inhibitor extends AkairoModule {
-	public constructor(
-		id: string,
-		{
-			category,
-			reason = "",
-			type = "post",
-			priority = 0
-		}: InhibitorOptions = {}
-	) {
+	public constructor(id: string, { category, reason = "", type = "post", priority = 0 }: InhibitorOptions = {}) {
 		super(id, { category });
 
 		this.reason = reason;
@@ -80,10 +72,7 @@ export default abstract class Inhibitor extends AkairoModule {
 	 */
 	/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 	/* public exec(message: Message, command?: Command): boolean | Promise<boolean>; */
-	public exec(
-		message: Message | AkairoMessage,
-		command?: Command
-	): boolean | Promise<boolean> {
+	public exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean> {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
 	/* eslint-enable func-names, @typescript-eslint/no-unused-vars */

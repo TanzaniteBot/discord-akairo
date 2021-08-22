@@ -1,26 +1,13 @@
 /*  eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import {
-	ApplicationCommandOptionData,
-	Message,
-	PermissionResolvable,
-	Snowflake
-} from "discord.js";
+import { ApplicationCommandOptionData, Message, PermissionResolvable, Snowflake } from "discord.js";
 import AkairoError from "../../util/AkairoError";
 import AkairoMessage from "../../util/AkairoMessage";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
 import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
-import Argument, {
-	ArgumentOptions,
-	DefaultArgumentOptions
-} from "./arguments/Argument";
-import ArgumentRunner, {
-	ArgumentRunnerState
-} from "./arguments/ArgumentRunner";
-import CommandHandler, {
-	IgnoreCheckPredicate,
-	PrefixSupplier
-} from "./CommandHandler";
+import Argument, { ArgumentOptions, DefaultArgumentOptions } from "./arguments/Argument";
+import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner";
+import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier } from "./CommandHandler";
 import ContentParser, { ContentParserResult } from "./ContentParser";
 import Flag from "./Flag";
 
@@ -105,21 +92,13 @@ export default abstract class Command extends AkairoModule {
 
 		this.argumentDefaults = argumentDefaults;
 
-		this.description = Array.isArray(description)
-			? description.join("\n")
-			: description;
+		this.description = Array.isArray(description) ? description.join("\n") : description;
 
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
 
-		this.clientPermissions =
-			typeof clientPermissions === "function"
-				? clientPermissions.bind(this)
-				: clientPermissions;
+		this.clientPermissions = typeof clientPermissions === "function" ? clientPermissions.bind(this) : clientPermissions;
 
-		this.userPermissions =
-			typeof userPermissions === "function"
-				? userPermissions.bind(this)
-				: userPermissions;
+		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
 
 		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
 
@@ -141,15 +120,9 @@ export default abstract class Command extends AkairoModule {
 			this.locker = new Set();
 		}
 
-		this.ignoreCooldown =
-			typeof ignoreCooldown === "function"
-				? ignoreCooldown.bind(this)
-				: ignoreCooldown;
+		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
 
-		this.ignorePermissions =
-			typeof ignorePermissions === "function"
-				? ignorePermissions.bind(this)
-				: ignorePermissions;
+		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
 
 		this.slashOptions = slashOptions;
 
@@ -188,10 +161,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Permissions required to run command by the client.
 	 */
-	public clientPermissions:
-		| PermissionResolvable
-		| PermissionResolvable[]
-		| MissingPermissionSupplier;
+	public clientPermissions: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
 	 * Cooldown in milliseconds.
@@ -306,10 +276,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Permissions required to run command by the user.
 	 */
-	public userPermissions:
-		| PermissionResolvable
-		| PermissionResolvable[]
-		| MissingPermissionSupplier;
+	public userPermissions: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
 	 * Argument options or generator.
@@ -361,11 +328,7 @@ export default abstract class Command extends AkairoModule {
 	 */
 	public execSlash(message: AkairoMessage, ...args: any[]): any {
 		if (this.slash) {
-			throw new AkairoError(
-				"NOT_IMPLEMENTED",
-				this.constructor.name,
-				"execSlash"
-			);
+			throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "execSlash");
 		}
 	}
 
@@ -426,10 +389,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * Permissions required by the client to run this command.
 	 */
-	clientPermissions?:
-		| PermissionResolvable
-		| PermissionResolvable[]
-		| MissingPermissionSupplier;
+	clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
 	 * Whether or not to run on messages that are not directly commands.
@@ -544,10 +504,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * Permissions required by the user to run this command.
 	 */
-	userPermissions?:
-		| PermissionResolvable
-		| PermissionResolvable[]
-		| MissingPermissionSupplier;
+	userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 }
 
 /**
@@ -574,9 +531,7 @@ export type ExecutionPredicate = (message: Message) => boolean;
  * A non-null return value signifies the reason for missing permissions.
  * @param message - Message that triggered the command.
  */
-export type MissingPermissionSupplier = (
-	message: Message
-) => Promise<any> | any;
+export type MissingPermissionSupplier = (message: Message) => Promise<any> | any;
 
 /**
  * A function used to return a regular expression.

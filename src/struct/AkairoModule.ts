@@ -8,10 +8,7 @@ import AkairoHandler from "./AkairoHandler";
  * @param options - Options.
  */
 export default abstract class AkairoModule {
-	public constructor(
-		id: string,
-		{ category = "default" }: AkairoModuleOptions = {}
-	) {
+	public constructor(id: string, { category = "default" }: AkairoModuleOptions = {}) {
 		this.id = id;
 
 		this.categoryID = category;

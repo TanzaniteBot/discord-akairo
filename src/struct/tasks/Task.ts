@@ -11,10 +11,7 @@ import TaskHandler from "./TaskHandler";
  * @param options - Options for the task.
  */
 export default abstract class Task extends AkairoModule {
-	public constructor(
-		id: string,
-		{ category, delay, runOnStart = false }: TaskOptions
-	) {
+	public constructor(id: string, { category, delay, runOnStart = false }: TaskOptions) {
 		super(id, { category });
 
 		this.delay = delay;

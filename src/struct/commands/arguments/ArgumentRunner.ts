@@ -40,11 +40,7 @@ export default class ArgumentRunner {
 	 * @param parsed - Parsed data from ContentParser.
 	 * @param generator - Argument generator.
 	 */
-	public async run(
-		message: Message,
-		parsed: ContentParserResult,
-		generator: ArgumentGenerator
-	): Promise<Flag | any> {
+	public async run(message: Message, parsed: ContentParserResult, generator: ArgumentGenerator): Promise<Flag | any> {
 		const state = {
 			usedIndices: new Set<number>(),
 			phraseIndex: 0,
@@ -69,12 +65,7 @@ export default class ArgumentRunner {
 				return value;
 			}
 
-			const res = await this.runOne(
-				message,
-				parsed,
-				state,
-				new Argument(this.command, value)
-			);
+			const res = await this.runOne(message, parsed, state, new Argument(this.command, value));
 			if (ArgumentRunner.isShortCircuit(res)) {
 				augmentRest(res);
 				return res;
@@ -410,19 +401,12 @@ export default class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param n - Number of indices to increase by.
 	 */
-	public static increaseIndex(
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState,
-		n = 1
-	): void {
+	public static increaseIndex(parsed: ContentParserResult, state: ArgumentRunnerState, n = 1): void {
 		state.phraseIndex += n;
 		while (n > 0) {
 			do {
 				state.index++;
-			} while (
-				parsed.all[state.index] &&
-				parsed.all[state.index].type !== "Phrase"
-			);
+			} while (parsed.all[state.index] && parsed.all[state.index].type !== "Phrase");
 			n--;
 		}
 	}
@@ -432,11 +416,7 @@ export default class ArgumentRunner {
 	 * @param value - A value.
 	 */
 	public static isShortCircuit(value: any): boolean {
-		return (
-			Flag.is(value, "cancel") ||
-			Flag.is(value, "retry") ||
-			Flag.is(value, "continue")
-		);
+		return Flag.is(value, "cancel") || Flag.is(value, "retry") || Flag.is(value, "continue");
 	}
 
 	/**

@@ -2,10 +2,7 @@ import "discord-akairo-message-util";
 import "source-map-support/register";
 import packageJSON from "../package.json";
 import AkairoClient, { AkairoOptions } from "./struct/AkairoClient";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "./struct/AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "./struct/AkairoHandler";
 import AkairoModule, { AkairoModuleOptions } from "./struct/AkairoModule";
 import ClientUtil from "./struct/ClientUtil";
 import Argument, {

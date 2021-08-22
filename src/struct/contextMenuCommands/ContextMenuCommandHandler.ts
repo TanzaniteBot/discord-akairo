@@ -4,10 +4,7 @@ import { ContextMenuCommandHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
 import { ContextCommandHandlerEvents } from "../../util/Constants";
 import AkairoClient from "../AkairoClient";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ContextMenuCommand from "./ContextMenuCommand";
@@ -28,17 +25,8 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 			loadFilter
 		}: AkairoHandlerOptions = {}
 	) {
-		if (
-			!(
-				classToHandle.prototype instanceof ContextMenuCommand ||
-				classToHandle === ContextMenuCommand
-			)
-		) {
-			throw new AkairoError(
-				"INVALID_CLASS_TO_HANDLE",
-				classToHandle.name,
-				ContextMenuCommand.name
-			);
+		if (!(classToHandle.prototype instanceof ContextMenuCommand || classToHandle === ContextMenuCommand)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, ContextMenuCommand.name);
 		}
 
 		super(client, {
@@ -55,10 +43,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
-	public declare categories: Collection<
-		string,
-		Category<string, ContextMenuCommand>
-	>;
+	public declare categories: Collection<string, Category<string, ContextMenuCommand>>;
 
 	/**
 	 * Class to handle.
@@ -95,12 +80,8 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 		});
 	}
 
-	public async handle(
-		interaction: ContextMenuInteraction
-	): Promise<boolean | null> {
-		const command = this.modules.find(
-			module => module.name === interaction.commandName
-		);
+	public async handle(interaction: ContextMenuInteraction): Promise<boolean | null> {
+		const command = this.modules.find(module => module.name === interaction.commandName);
 
 		if (!command) {
 			this.emit(ContextCommandHandlerEvents.NOT_FOUND, interaction);
@@ -110,12 +91,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 		try {
 			this.emit(ContextCommandHandlerEvents.STARTED, interaction, command);
 			const ret = await command.exec(interaction);
-			this.emit(
-				ContextCommandHandlerEvents.FINISHED,
-				interaction,
-				command,
-				ret
-			);
+			this.emit(ContextCommandHandlerEvents.FINISHED, interaction, command, ret);
 			return true;
 		} catch (err) {
 			this.emitError(err, interaction, command);
@@ -129,11 +105,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param interaction - Interaction that called the command.
 	 * @param command - Command that errored.
 	 */
-	public emitError(
-		err: Error,
-		interaction: ContextMenuInteraction,
-		command: ContextMenuCommand | AkairoModule
-	): void {
+	public emitError(err: Error, interaction: ContextMenuInteraction, command: ContextMenuCommand | AkairoModule): void {
 		if (this.listenerCount(ContextCommandHandlerEvents.ERROR)) {
 			this.emit(ContextCommandHandlerEvents.ERROR, err, interaction, command);
 			return;
@@ -154,9 +126,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * Finds a category by name.
 	 * @param name - Name to find with.
 	 */
-	public override findCategory(
-		name: string
-	): Category<string, ContextMenuCommand> {
+	public override findCategory(name: string): Category<string, ContextMenuCommand> {
 		return super.findCategory(name) as Category<string, ContextMenuCommand>;
 	}
 
@@ -173,10 +143,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(
-		directory?: string,
-		filter?: LoadPredicate
-	): ContextMenuCommandHandler {
+	public override loadAll(directory?: string, filter?: LoadPredicate): ContextMenuCommandHandler {
 		return super.loadAll(directory, filter) as ContextMenuCommandHandler;
 	}
 
@@ -185,10 +152,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param contextMenuCommand - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public override register(
-		contextMenuCommand: ContextMenuCommand,
-		filepath?: string
-	): void {
+	public override register(contextMenuCommand: ContextMenuCommand, filepath?: string): void {
 		return super.register(contextMenuCommand, filepath);
 	}
 

@@ -1,8 +1,5 @@
 import AkairoError from "../../util/AkairoError";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import { Awaited, Collection } from "discord.js";
 import Util from "../../util/Util";
 import Listener from "./Listener";
@@ -27,17 +24,8 @@ export default class ListenerHandler extends AkairoHandler {
 			loadFilter
 		}: AkairoHandlerOptions = {}
 	) {
-		if (
-			!(
-				classToHandle.prototype instanceof Listener ||
-				classToHandle === Listener
-			)
-		) {
-			throw new AkairoError(
-				"INVALID_CLASS_TO_HANDLE",
-				classToHandle.name,
-				Listener.name
-			);
+		if (!(classToHandle.prototype instanceof Listener || classToHandle === Listener)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Listener.name);
 		}
 
 		super(client, {
@@ -89,8 +77,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 */
 	public addToEmitter(id: string): Listener {
 		const listener: Listener = this.modules.get(id.toString());
-		if (!listener)
-			throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
+		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
 		/**
 		 * @type {AkairoHandler}
@@ -98,8 +85,7 @@ export default class ListenerHandler extends AkairoHandler {
 		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
 			? (listener.emitter as EventEmitter)
 			: this.emitters.get(listener.emitter as string);
-		if (!Util.isEventEmitter(emitter))
-			throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
+		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		if (listener.type === "once") {
 			emitter.once(listener.event, listener.exec);
@@ -141,10 +127,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(
-		directory?: string,
-		filter?: LoadPredicate
-	): ListenerHandler {
+	public override loadAll(directory?: string, filter?: LoadPredicate): ListenerHandler {
 		return super.loadAll(directory, filter) as ListenerHandler;
 	}
 
@@ -195,14 +178,12 @@ export default class ListenerHandler extends AkairoHandler {
 	 */
 	public removeFromEmitter(id: string): Listener {
 		const listener: Listener = this.modules.get(id.toString());
-		if (!listener)
-			throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
+		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
 		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
 			? (listener.emitter as EventEmitter)
 			: this.emitters.get(listener.emitter as string);
-		if (!Util.isEventEmitter(emitter))
-			throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
+		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		emitter.removeListener(listener.event, listener.exec);
 		return listener;
@@ -214,8 +195,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 */
 	setEmitters(emitters: any): ListenerHandler {
 		for (const [key, value] of Object.entries(emitters)) {
-			if (!Util.isEventEmitter(value))
-				throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
+			if (!Util.isEventEmitter(value)) throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
 			this.emitters.set(key, value as any);
 		}
 

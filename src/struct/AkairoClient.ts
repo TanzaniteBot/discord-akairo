@@ -6,13 +6,8 @@ import ClientUtil from "./ClientUtil";
  * @param options - Options for the client.
  * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
  */
-export default class AkairoClient<
-	Ready extends boolean = boolean
-> extends Client<Ready> {
-	public constructor(
-		options?: AkairoOptions & ClientOptions,
-		clientOptions?: ClientOptions
-	) {
+export default class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
+	public constructor(options?: AkairoOptions & ClientOptions, clientOptions?: ClientOptions) {
 		super(clientOptions || options);
 
 		const { ownerID = "" } = options;
@@ -48,9 +43,7 @@ export default class AkairoClient<
 	public isOwner(user: UserResolvable): boolean {
 		const id = this.users.resolveId(user);
 		if (!id) return false;
-		return Array.isArray(this.ownerID)
-			? this.ownerID.includes(id)
-			: id === this.ownerID;
+		return Array.isArray(this.ownerID) ? this.ownerID.includes(id) : id === this.ownerID;
 	}
 
 	/**

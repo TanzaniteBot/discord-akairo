@@ -3,10 +3,7 @@ import { TaskHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import Task from "./Task";
 
 /**
@@ -26,11 +23,7 @@ export default class TaskHandler extends AkairoHandler {
 		}: AkairoHandlerOptions
 	) {
 		if (!(classToHandle.prototype instanceof Task || classToHandle === Task)) {
-			throw new AkairoError(
-				"INVALID_CLASS_TO_HANDLE",
-				classToHandle.name,
-				Task.name
-			);
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Task.name);
 		}
 
 		super(client, {
@@ -96,10 +89,7 @@ export default class TaskHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(
-		directory?: string,
-		filter?: LoadPredicate
-	): TaskHandler {
+	public override loadAll(directory?: string, filter?: LoadPredicate): TaskHandler {
 		return super.loadAll(directory, filter) as TaskHandler;
 	}
 

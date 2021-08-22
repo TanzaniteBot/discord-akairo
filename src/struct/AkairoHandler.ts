@@ -112,8 +112,7 @@ export default class AkairoHandler extends EventEmitter {
 	 */
 	public load(thing: string | AkairoModule, isReload = false): AkairoModule {
 		const isClass = typeof thing === "function";
-		if (!isClass && !this.extensions.has(path.extname(thing as string)))
-			return undefined;
+		if (!isClass && !this.extensions.has(path.extname(thing as string))) return undefined;
 
 		let mod = isClass
 			? thing
@@ -131,8 +130,7 @@ export default class AkairoHandler extends EventEmitter {
 			return undefined;
 		}
 
-		if (this.modules.has(mod.id))
-			throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
+		if (this.modules.has(mod.id)) throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
 		this.register(mod, isClass ? null : (thing as string));
 		this.emit(AkairoHandlerEvents.LOAD, mod, isReload);
 		return mod;
@@ -190,10 +188,8 @@ export default class AkairoHandler extends EventEmitter {
 	 */
 	public reload(id: string): AkairoModule {
 		const mod = this.modules.get(id.toString());
-		if (!mod)
-			throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
-		if (!mod.filepath)
-			throw new AkairoError("NOT_RELOADABLE", this.classToHandle.name, id);
+		if (!mod) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
+		if (!mod.filepath) throw new AkairoError("NOT_RELOADABLE", this.classToHandle.name, id);
 
 		this.deregister(mod);
 
@@ -219,8 +215,7 @@ export default class AkairoHandler extends EventEmitter {
 	 */
 	public remove(id: string): AkairoModule {
 		const mod = this.modules.get(id.toString());
-		if (!mod)
-			throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
+		if (!mod) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
 		this.deregister(mod);
 

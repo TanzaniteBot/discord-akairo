@@ -45,11 +45,7 @@ export default class Flag {
 	 * @param ignore - Whether or not to ignore permission checks.
 	 * @param rest - The rest of the arguments. If this is not set, the argument handler will automatically use the rest of the content.
 	 */
-	public static continue(
-		command: string,
-		ignore: boolean = false,
-		rest: string | null = null
-	): Flag {
+	public static continue(command: string, ignore: boolean = false, rest: string | null = null): Flag {
 		return new Flag("continue", { command, ignore, rest });
 	}
 

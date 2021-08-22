@@ -14,8 +14,7 @@ export default class SeparateCommand extends Command {
 					type: "integer",
 					prompt: {
 						start: "Give me some integers!",
-						retry: (msg, { phrase }) =>
-							`"${phrase}" is not an integer, try again!`
+						retry: (msg, { phrase }) => `"${phrase}" is not an integer, try again!`
 					}
 				}
 			]

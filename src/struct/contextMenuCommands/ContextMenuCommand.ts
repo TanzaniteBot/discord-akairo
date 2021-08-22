@@ -12,10 +12,7 @@ import ContextMenuCommandHandler from "./ContextMenuCommandHandler";
  * @param options - Options for the context menu command.
  */
 export default abstract class ContextMenuCommand extends AkairoModule {
-	public constructor(
-		id: string,
-		{ category, guilds, name, type }: ContextMenuOptions
-	) {
+	public constructor(id: string, { category, guilds, name, type }: ContextMenuOptions) {
 		super(id, { category });
 		this.guilds = guilds;
 		this.name = name;

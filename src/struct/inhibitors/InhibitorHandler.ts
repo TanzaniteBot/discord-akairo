@@ -1,8 +1,5 @@
 import AkairoError from "../../util/AkairoError";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import Inhibitor from "./Inhibitor";
 import Util from "../../util/Util";
 import { Awaited, Collection, Message } from "discord.js";
@@ -28,17 +25,8 @@ export default class InhibitorHandler extends AkairoHandler {
 			loadFilter
 		}: AkairoHandlerOptions = {}
 	) {
-		if (
-			!(
-				classToHandle.prototype instanceof Inhibitor ||
-				classToHandle === Inhibitor
-			)
-		) {
-			throw new AkairoError(
-				"INVALID_CLASS_TO_HANDLE",
-				classToHandle.name,
-				Inhibitor.name
-			);
+		if (!(classToHandle.prototype instanceof Inhibitor || classToHandle === Inhibitor)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Inhibitor.name);
 		}
 
 		super(client, {
@@ -104,10 +92,7 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(
-		directory?: string,
-		filter?: LoadPredicate
-	): InhibitorHandler {
+	public override loadAll(directory?: string, filter?: LoadPredicate): InhibitorHandler {
 		return super.loadAll(directory, filter) as InhibitorHandler;
 	}
 
@@ -180,9 +165,7 @@ export default class InhibitorHandler extends AkairoHandler {
 			);
 		}
 
-		const inhibitedInhibitors: Inhibitor[] = (
-			await Promise.all(promises)
-		).filter(r => r);
+		const inhibitedInhibitors: Inhibitor[] = (await Promise.all(promises)).filter(r => r);
 		if (!inhibitedInhibitors.length) return null;
 
 		inhibitedInhibitors.sort((a, b) => b.priority - a.priority);

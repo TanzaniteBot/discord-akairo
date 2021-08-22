@@ -10,12 +10,7 @@ Let's add some listeners.
 You have to setup a `ListenerHandler` just like with commands and inhibitors.
 
 ```js
-const {
-	AkairoClient,
-	CommandHandler,
-	InhibitorHandler,
-	ListenerHandler
-} = require("discord-akairo");
+const { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } = require("discord-akairo");
 
 class MyClient extends AkairoClient {
 	constructor() {
@@ -121,9 +116,7 @@ class CommandBlockedListener extends Listener {
 	}
 
 	exec(message, command, reason) {
-		console.log(
-			`${message.author.username} was blocked from using ${command.id} because of ${reason}!`
-		);
+		console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`);
 	}
 }
 

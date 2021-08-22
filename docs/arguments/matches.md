@@ -189,9 +189,7 @@ class PickCommand extends Command {
 
 	exec(message, args) {
 		const picked = args.items[Math.floor(Math.random() * args.items.length)];
-		return message.reply(
-			`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`
-		);
+		return message.reply(`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`);
 	}
 }
 

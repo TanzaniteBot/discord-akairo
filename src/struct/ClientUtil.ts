@@ -36,10 +36,7 @@ export default class ClientUtil {
 	 * @param file - The file.
 	 * @param name - The filename.
 	 */
-	public attachment(
-		file: BufferResolvable | Stream,
-		name?: string
-	): MessageAttachment {
+	public attachment(file: BufferResolvable | Stream, name?: string): MessageAttachment {
 		return new MessageAttachment(file, name);
 	}
 
@@ -80,12 +77,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes checking by name case sensitive.
 	 * @param wholeWord - Makes checking by name match full word only.
 	 */
-	public checkEmoji(
-		text: string,
-		emoji: Emoji,
-		caseSensitive = false,
-		wholeWord = false
-	): boolean {
+	public checkEmoji(text: string, emoji: Emoji, caseSensitive = false, wholeWord = false): boolean {
 		if (emoji.id === text) return true;
 
 		const reg = /<a?:[a-zA-Z0-9_]+:(\d{17,19})>/;
@@ -110,12 +102,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes checking by name case sensitive.
 	 * @param wholeWord - Makes checking by name match full word only.
 	 */
-	public checkGuild(
-		text: string,
-		guild: Guild,
-		caseSensitive = false,
-		wholeWord = false
-	): boolean {
+	public checkGuild(text: string, guild: Guild, caseSensitive = false, wholeWord = false): boolean {
 		if (guild.id === text) return true;
 
 		text = caseSensitive ? text : text.toLowerCase();
@@ -132,12 +119,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes checking by name case sensitive.
 	 * @param wholeWord - Makes checking by name match full word only.
 	 */
-	public checkMember(
-		text: string,
-		member: GuildMember,
-		caseSensitive = false,
-		wholeWord = false
-	): boolean {
+	public checkMember(text: string, member: GuildMember, caseSensitive = false, wholeWord = false): boolean {
 		if (member.id === text) return true;
 
 		const reg = /<@!?(\d{17,19})>/;
@@ -146,20 +128,15 @@ export default class ClientUtil {
 		if (match && member.id === match[1]) return true;
 
 		text = caseSensitive ? text : text.toLowerCase();
-		const username = caseSensitive
-			? member.user.username
-			: member.user.username.toLowerCase();
-		const displayName = caseSensitive
-			? member.displayName
-			: member.displayName.toLowerCase();
+		const username = caseSensitive ? member.user.username : member.user.username.toLowerCase();
+		const displayName = caseSensitive ? member.displayName : member.displayName.toLowerCase();
 		const discrim = member.user.discriminator;
 
 		if (!wholeWord) {
 			return (
 				displayName.includes(text) ||
 				username.includes(text) ||
-				((username.includes(text.split("#")[0]) ||
-					displayName.includes(text.split("#")[0])) &&
+				((username.includes(text.split("#")[0]) || displayName.includes(text.split("#")[0])) &&
 					discrim.includes(text.split("#")[1]))
 			);
 		}
@@ -167,9 +144,7 @@ export default class ClientUtil {
 		return (
 			displayName === text ||
 			username === text ||
-			((username === text.split("#")[0] ||
-				displayName === text.split("#")[0]) &&
-				discrim === text.split("#")[1])
+			((username === text.split("#")[0] || displayName === text.split("#")[0]) && discrim === text.split("#")[1])
 		);
 	}
 
@@ -180,12 +155,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes checking by name case sensitive.
 	 * @param wholeWord - Makes checking by name match full word only.
 	 */
-	public checkRole(
-		text: string,
-		role: Role,
-		caseSensitive = false,
-		wholeWord = false
-	): boolean {
+	public checkRole(text: string, role: Role, caseSensitive = false, wholeWord = false): boolean {
 		if (role.id === text) return true;
 
 		const reg = /<@&(\d{17,19})>/;
@@ -210,12 +180,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public checkUser(
-		text: string,
-		user: User,
-		caseSensitive = false,
-		wholeWord = false
-	): boolean {
+	public checkUser(text: string, user: User, caseSensitive = false, wholeWord = false): boolean {
 		if (user.id === text) return true;
 
 		const reg = /<@!?(\d{17,19})>/;
@@ -224,32 +189,21 @@ export default class ClientUtil {
 		if (match && user.id === match[1]) return true;
 
 		text = caseSensitive ? text : text.toLowerCase();
-		const username = caseSensitive
-			? user.username
-			: user.username.toLowerCase();
+		const username = caseSensitive ? user.username : user.username.toLowerCase();
 		const discrim = user.discriminator;
 
 		if (!wholeWord) {
-			return (
-				username.includes(text) ||
-				(username.includes(text.split("#")[0]) &&
-					discrim.includes(text.split("#")[1]))
-			);
+			return username.includes(text) || (username.includes(text.split("#")[0]) && discrim.includes(text.split("#")[1]));
 		}
 
-		return (
-			username === text ||
-			(username === text.split("#")[0] && discrim === text.split("#")[1])
-		);
+		return username === text || (username === text.split("#")[0] && discrim === text.split("#")[1]);
 	}
 
 	/**
 	 * Makes a Collection.
 	 * @param iterable - Entries to fill with.
 	 */
-	public collection<K, V>(
-		iterable?: ReadonlyArray<readonly [K, V]> | null
-	): Collection<K, V> {
+	public collection<K, V>(iterable?: ReadonlyArray<readonly [K, V]> | null): Collection<K, V> {
 		return new Collection(iterable);
 	}
 
@@ -259,10 +213,7 @@ export default class ClientUtil {
 	 * @param oldMember - The old member.
 	 * @param newMember - The new member.
 	 */
-	public compareStreaming(
-		oldMember: GuildMember,
-		newMember: GuildMember
-	): 0 | 1 | 2 {
+	public compareStreaming(oldMember: GuildMember, newMember: GuildMember): 0 | 1 | 2 {
 		const s1 = oldMember.presence?.activities.find(c => c.type === "STREAMING");
 		const s2 = newMember.presence?.activities.find(c => c.type === "STREAMING");
 		if (s1 === s2) return 0;
@@ -285,11 +236,7 @@ export default class ClientUtil {
 	 * @param id - ID of the user.
 	 * @param cache - Whether or not to add to cache.
 	 */
-	public async fetchMember(
-		guild: Guild,
-		id: Snowflake,
-		cache: boolean
-	): Promise<GuildMember> {
+	public async fetchMember(guild: Guild, id: Snowflake, cache: boolean): Promise<GuildMember> {
 		const user = await this.client.users.fetch(id, { cache });
 		return guild.members.fetch({ user, cache });
 	}
@@ -310,18 +257,13 @@ export default class ClientUtil {
 	 */
 	public resolveChannel(
 		text: string,
-		channels: Collection<
-			Snowflake,
-			GuildTextBasedChannels | BaseGuildVoiceChannel
-		>,
+		channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
 		caseSensitive = false,
 		wholeWord = false
 	): GuildTextBasedChannels | BaseGuildVoiceChannel {
 		return (
 			channels.get(text as Snowflake) ||
-			channels.find(channel =>
-				this.checkChannel(text, channel, caseSensitive, wholeWord)
-			)
+			channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord))
 		);
 	}
 
@@ -334,16 +276,11 @@ export default class ClientUtil {
 	 */
 	public resolveChannels(
 		text: string,
-		channels: Collection<
-			Snowflake,
-			GuildTextBasedChannels | BaseGuildVoiceChannel
-		>,
+		channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
 		caseSensitive = false,
 		wholeWord = false
 	): Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel> {
-		return channels.filter(channel =>
-			this.checkChannel(text, channel, caseSensitive, wholeWord)
-		);
+		return channels.filter(channel => this.checkChannel(text, channel, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -360,10 +297,7 @@ export default class ClientUtil {
 		wholeWord = false
 	): Emoji {
 		return (
-			emojis.get(text as Snowflake) ||
-			emojis.find(emoji =>
-				this.checkEmoji(text, emoji, caseSensitive, wholeWord)
-			)
+			emojis.get(text as Snowflake) || emojis.find(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord))
 		);
 	}
 
@@ -380,9 +314,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): Collection<Snowflake, Emoji> {
-		return emojis.filter(emoji =>
-			this.checkEmoji(text, emoji, caseSensitive, wholeWord)
-		);
+		return emojis.filter(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -399,10 +331,7 @@ export default class ClientUtil {
 		wholeWord = false
 	): Guild {
 		return (
-			guilds.get(text as Snowflake) ||
-			guilds.find(guild =>
-				this.checkGuild(text, guild, caseSensitive, wholeWord)
-			)
+			guilds.get(text as Snowflake) || guilds.find(guild => this.checkGuild(text, guild, caseSensitive, wholeWord))
 		);
 	}
 
@@ -419,9 +348,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): Collection<Snowflake, Guild> {
-		return guilds.filter(guild =>
-			this.checkGuild(text, guild, caseSensitive, wholeWord)
-		);
+		return guilds.filter(guild => this.checkGuild(text, guild, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -438,10 +365,7 @@ export default class ClientUtil {
 		wholeWord = false
 	): GuildMember {
 		return (
-			members.get(text as Snowflake) ||
-			members.find(member =>
-				this.checkMember(text, member, caseSensitive, wholeWord)
-			)
+			members.get(text as Snowflake) || members.find(member => this.checkMember(text, member, caseSensitive, wholeWord))
 		);
 	}
 
@@ -458,9 +382,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): Collection<Snowflake, GuildMember> {
-		return members.filter(member =>
-			this.checkMember(text, member, caseSensitive, wholeWord)
-		);
+		return members.filter(member => this.checkMember(text, member, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -484,16 +406,8 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveRole(
-		text: string,
-		roles: Collection<Snowflake, Role>,
-		caseSensitive = false,
-		wholeWord = false
-	): Role {
-		return (
-			roles.get(text as Snowflake) ||
-			roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord))
-		);
+	public resolveRole(text: string, roles: Collection<Snowflake, Role>, caseSensitive = false, wholeWord = false): Role {
+		return roles.get(text as Snowflake) || roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -509,9 +423,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): Collection<Snowflake, Role> {
-		return roles.filter(role =>
-			this.checkRole(text, role, caseSensitive, wholeWord)
-		);
+		return roles.filter(role => this.checkRole(text, role, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -527,10 +439,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): User {
-		return (
-			users.get(text as Snowflake) ||
-			users.find(user => this.checkUser(text, user, caseSensitive, wholeWord))
-		);
+		return users.get(text as Snowflake) || users.find(user => this.checkUser(text, user, caseSensitive, wholeWord));
 	}
 
 	/**
@@ -546,8 +455,6 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): Collection<Snowflake, User> {
-		return users.filter(user =>
-			this.checkUser(text, user, caseSensitive, wholeWord)
-		);
+		return users.filter(user => this.checkUser(text, user, caseSensitive, wholeWord));
 	}
 }

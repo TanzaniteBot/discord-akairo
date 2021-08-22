@@ -52,7 +52,7 @@
 		"useTabs": true,
 		"trailingComma": "none",
 		"arrowParens": "avoid",
-		"printWidth": 80
+		"printWidth": 120
 	},
 	"eslintConfig": {
 		"extends": [

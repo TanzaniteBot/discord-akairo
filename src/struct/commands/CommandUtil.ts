@@ -22,10 +22,7 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
  * @param message - Message that triggered the command.
  */
 export default class CommandUtil {
-	public constructor(
-		handler: CommandHandler | ContextMenuCommandHandler,
-		message: Message | AkairoMessage
-	) {
+	public constructor(handler: CommandHandler | ContextMenuCommandHandler, message: Message | AkairoMessage) {
 		this.handler = handler;
 
 		this.message = message;
@@ -110,16 +107,10 @@ export default class CommandUtil {
 		options: string | MessagePayload | WebhookEditMessageOptions
 	): Promise<Message | APIMessage> */
 	public async edit(
-		options:
-			| string
-			| MessageEditOptions
-			| MessagePayload
-			| WebhookEditMessageOptions
+		options: string | MessageEditOptions | MessagePayload | WebhookEditMessageOptions
 	): Promise<Message | APIMessage> {
 		if (this.isSlash) {
-			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
-				options
-			);
+			return (this.lastResponse as any as AkairoMessage).interaction.editReply(options);
 		} else {
 			return this.lastResponse.edit(options);
 		}
@@ -137,11 +128,7 @@ export default class CommandUtil {
 		options: string | MessagePayload | InteractionReplyOptions
 	): Promise<Message | APIMessage> */
 	public async reply(
-		options:
-			| string
-			| MessagePayload
-			| ReplyMessageOptions
-			| InteractionReplyOptions
+		options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		let newOptions: ReplyMessageOptions | InteractionReplyOptions = {};
 		if (typeof options == "string") {
@@ -180,10 +167,7 @@ export default class CommandUtil {
 	public async send(
 		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
-		const hasFiles =
-			typeof options === "string" || !options.files?.length
-				? false
-				: options.files?.length > 0;
+		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files?.length > 0;
 
 		let newOptions: MessageOptions | InteractionReplyOptions = {};
 		if (typeof options === "string") {
@@ -192,14 +176,8 @@ export default class CommandUtil {
 			newOptions = options as MessageOptions | InteractionReplyOptions;
 		}
 		if (!(this.message.interaction instanceof CommandInteraction)) {
-			if (typeof options !== "string")
-				delete (options as InteractionReplyOptions).ephemeral;
-			if (
-				this.shouldEdit &&
-				!hasFiles &&
-				!this.lastResponse.deleted &&
-				!this.lastResponse.attachments.size
-			) {
+			if (typeof options !== "string") delete (options as InteractionReplyOptions).ephemeral;
+			if (this.shouldEdit && !hasFiles && !this.lastResponse.deleted && !this.lastResponse.attachments.size) {
 				return this.lastResponse.edit(options);
 			}
 			const sent = await this.message.channel?.send(options);
@@ -210,21 +188,13 @@ export default class CommandUtil {
 			return sent;
 		} else {
 			if (typeof options !== "string") delete (options as MessageOptions).reply;
-			if (
-				this.lastResponse ||
-				this.message.interaction.deferred ||
-				this.message.interaction.replied
-			) {
-				this.lastResponse = (await this.message.interaction.editReply(
-					options
-				)) as Message;
+			if (this.lastResponse || this.message.interaction.deferred || this.message.interaction.replied) {
+				this.lastResponse = (await this.message.interaction.editReply(options)) as Message;
 				return this.lastResponse;
 			} else {
 				if (!(newOptions as InteractionReplyOptions).ephemeral) {
 					(newOptions as InteractionReplyOptions).fetchReply = true;
-					this.lastResponse = (await this.message.interaction.reply(
-						newOptions
-					)) as unknown as Message;
+					this.lastResponse = (await this.message.interaction.reply(newOptions)) as unknown as Message;
 					return this.lastResponse;
 				}
 				await this.message.interaction.reply(newOptions);
@@ -251,9 +221,7 @@ export default class CommandUtil {
 			this.setEditable(!lastSent.attachments.size);
 			return sent;
 		} else {
-			const sent = (await this.message.interaction.followUp(
-				options
-			)) as Message;
+			const sent = (await this.message.interaction.followUp(options)) as Message;
 			this.setLastResponse(sent);
 			return sent;
 		}

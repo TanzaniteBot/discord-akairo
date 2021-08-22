@@ -1,9 +1,4 @@
-import {
-	AkairoClient,
-	CommandHandler,
-	InhibitorHandler,
-	ListenerHandler
-} from "../../src/index";
+import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from "../../src/index";
 
 export default class TestClient extends AkairoClient {
 	commandHandler: CommandHandler;
@@ -30,11 +25,9 @@ export default class TestClient extends AkairoClient {
 			argumentDefaults: {
 				prompt: {
 					start: "What is thing?",
-					modifyStart: (msg, text) =>
-						`${msg.author}, ${text}\nType \`cancel\` to cancel this command.`,
+					modifyStart: (msg, text) => `${msg.author}, ${text}\nType \`cancel\` to cancel this command.`,
 					retry: "What is thing, again?",
-					modifyRetry: (msg, text) =>
-						`${msg.author}, ${text}\nType \`cancel\` to cancel this command.`,
+					modifyRetry: (msg, text) => `${msg.author}, ${text}\nType \`cancel\` to cancel this command.`,
 					timeout: "Out of time.",
 					ended: "No more tries.",
 					cancel: "Cancelled.",
