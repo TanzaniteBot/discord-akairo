@@ -263,12 +263,8 @@ export default class ClientUtil {
 		oldMember: GuildMember,
 		newMember: GuildMember
 	): 0 | 1 | 2 {
-		const s1 = oldMember.presence?.activities?.some(
-			activity => activity?.type === "STREAMING"
-		);
-		const s2 = newMember.presence?.activities?.some(
-			activity => activity?.type === "STREAMING"
-		);
+		const s1 = oldMember.presence?.activities.find(c => c.type === 'STREAMING');
+		const s2 = newMember.presence?.activities.find(c => c.type === 'STREAMING');
 		if (s1 === s2) return 0;
 		if (s1) return 1;
 		if (s2) return 2;

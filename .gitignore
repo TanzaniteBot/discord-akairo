@@ -1,7 +1,8 @@
 node_modules
 
 .git
-.vscode
+.vscode/*
+!.vscode/settings.json
 
 test/auth.json
 dist/test/auth.json

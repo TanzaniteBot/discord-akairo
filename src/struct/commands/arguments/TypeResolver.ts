@@ -1,4 +1,3 @@
-import { ArgumentTypes } from "../../../util/Constants";
 import {
 	BaseGuildVoiceChannel,
 	Collection,
@@ -10,12 +9,13 @@ import {
 	ThreadChannel
 } from "discord.js";
 import { URL } from "url";
-import CommandHandler from "../CommandHandler";
-import { ArgumentTypeCaster } from "./Argument";
+import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels";
+import { ArgumentTypes } from "../../../util/Constants";
 import AkairoClient from "../../AkairoClient";
 import InhibitorHandler from "../../inhibitors/InhibitorHandler";
 import ListenerHandler from "../../listeners/ListenerHandler";
-import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels";
+import CommandHandler from "../CommandHandler";
+import { ArgumentTypeCaster } from "./Argument";
 
 /**
  * Type resolver for command arguments.
@@ -198,7 +198,7 @@ export default class TypeResolver {
 				if (!phrase) return null;
 				if (!message.guild) return null;
 
-				const person = message.channel.type.startsWith("GUILD")
+				const person = message.guild
 					? this.client.util.resolveMember(phrase, message.guild.members.cache)
 					: message.channel.type === "DM"
 					? this.client.util.resolveUser(
@@ -218,19 +218,16 @@ export default class TypeResolver {
 					  );
 
 				if (!person) return null;
-
-				if (message.guild) return (person as GuildMember).user;
-				return person;
+				return message.guild ? (person as GuildMember).user : person;
 			},
 
 			[ArgumentTypes.RELEVANTS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				const persons = message.channel.type.startsWith("GUILD")
+				const persons = message.guild
 					? this.client.util.resolveMembers(phrase, message.guild.members.cache)
 					: message.channel.type === "DM"
 					? this.client.util.resolveUsers(
 							phrase,
-
 							new Collection([
 								[message.channel.recipient.id, message.channel.recipient],
 								[this.client.user?.id, this.client.user]
@@ -246,14 +243,11 @@ export default class TypeResolver {
 					  );
 
 				if (!persons.size) return null;
-
-				if (message.channel.type.startsWith("GUILD")) {
-					return (persons as Collection<string, GuildMember>).map(
-						(member: GuildMember) => member.user
-					);
-				}
-
-				return persons;
+				return message.guild
+					? (persons as Collection<string, GuildMember>).map(
+							member => member.user
+					  )
+					: persons;
 			},
 
 			[ArgumentTypes.CHANNEL]: (message: Message, phrase: string) => {
@@ -322,8 +316,7 @@ export default class TypeResolver {
 						GuildTextBasedChannels | BaseGuildVoiceChannel
 					>
 				);
-				if (!channel || channel.type !== "GUILD_VOICE") return null;
-
+				if (!channel || !channel.isVoice()) return null;
 				return channel;
 			},
 

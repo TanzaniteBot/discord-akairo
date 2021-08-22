@@ -1,0 +1,20 @@
+{
+	"search.exclude": {
+		"**/dist": true
+	},
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true,
+		"source.fixAll.eslint": true,
+		"source.format": true
+	},
+	"editor.formatOnSave": true,
+	"diffEditor.wordWrap": "on",
+	"editor.insertSpaces": false,
+	"editor.wordWrap": "on",
+	"editor.tabSize": 2,
+	"prettier.configPath": "package.json",
+	"prettier.prettierPath": "node_modules/prettier",
+	"prettier.withNodeModules": true,
+	"prettier.useEditorConfig": false,
+	"compile-hero.disable-compile-files-on-did-save-code": true
+}
