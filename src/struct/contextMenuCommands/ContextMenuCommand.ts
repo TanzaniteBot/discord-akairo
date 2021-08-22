@@ -1,3 +1,4 @@
+/* eslint-disable spaced-comment */
 import { ContextMenuInteraction, Snowflake } from "discord.js";
 import AkairoError from "../../util/AkairoError";
 import Category from "../../util/Category";
@@ -13,20 +14,11 @@ import ContextMenuCommandHandler from "./ContextMenuCommandHandler";
 export default abstract class ContextMenuCommand extends AkairoModule {
 	public constructor(
 		id: string,
-		{
-			category,
-			guilds,
-			name,
-			// ownerOnly,
-			// superUserOnly,
-			type
-		}: ContextMenuOptions
+		{ category, guilds, name, type }: ContextMenuOptions
 	) {
 		super(id, { category });
 		this.guilds = guilds;
 		this.name = name;
-		// this.ownerOnly = ownerOnly;
-		// this.superUserOnly = superUserOnly;
 		this.type = type;
 	}
 
@@ -39,16 +31,6 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	 * The name of the context menu command.
 	 */
 	public name: string;
-
-	/**
-	 * Usable only by the client owner.
-	 */
-	public ownerOnly: boolean;
-
-	/**
-	 * Whether or not to allow client superUsers(s) only.
-	 */
-	public superUserOnly: boolean;
 
 	/**
 	 * The type of the context menu command.
@@ -112,16 +94,6 @@ export interface ContextMenuOptions extends AkairoModuleOptions {
 	 * The name of the context menu command.
 	 */
 	name: string;
-
-	/**
-	 * Usable only by the client owner.
-	 */
-	// ownerOnly?: boolean;
-
-	/**
-	 * Whether or not to allow client superUsers(s) only.
-	 */
-	// superUserOnly?: boolean;
 
 	/**
 	 * The type of the context menu command.

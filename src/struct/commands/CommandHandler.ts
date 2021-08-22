@@ -1,5 +1,4 @@
 import {
-	ApplicationCommand,
 	ApplicationCommandOptionData,
 	Collection,
 	CommandInteraction,
@@ -60,7 +59,8 @@ export default class CommandHandler extends AkairoHandler {
 			autoDefer = false,
 			typing = false,
 			autoRegisterSlashCommands = false,
-			execSlash = false
+			execSlash = false,
+			skipBuiltInPostInhibitors = false
 		}: CommandHandlerOptions = {}
 	) {
 		if (
@@ -95,17 +95,17 @@ export default class CommandHandler extends AkairoHandler {
 
 		this.prefixes = new Collection();
 
-		this.blockClient = Boolean(blockClient);
+		this.blockClient = !!blockClient;
 
-		this.blockBots = Boolean(blockBots);
+		this.blockBots = !!blockBots;
 
-		this.fetchMembers = Boolean(fetchMembers);
+		this.fetchMembers = !!fetchMembers;
 
-		this.handleEdits = Boolean(handleEdits);
+		this.handleEdits = !!handleEdits;
 
-		this.storeMessages = Boolean(storeMessages);
+		this.storeMessages = !!storeMessages;
 
-		this.commandUtil = Boolean(commandUtil);
+		this.commandUtil = !!commandUtil;
 		if ((this.handleEdits || this.storeMessages) && !this.commandUtil) {
 			throw new AkairoError("COMMAND_UTIL_EXPLICIT");
 		}
@@ -164,13 +164,15 @@ export default class CommandHandler extends AkairoHandler {
 		this.allowMention =
 			typeof allowMention === "function"
 				? allowMention.bind(this)
-				: Boolean(allowMention);
+				: !!allowMention;
 
 		this.inhibitorHandler = null;
 
-		this.autoDefer = Boolean(autoDefer);
+		this.autoDefer = !!autoDefer;
 
-		this.execSlash = Boolean(execSlash);
+		this.execSlash = !!execSlash;
+
+		this.skipBuiltInPostInhibitors = !!skipBuiltInPostInhibitors;
 
 		this.setup();
 	}
@@ -332,17 +334,14 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public typing: boolean;
 
-	protected _slashCommands: Collection<string, ApplicationCommand>[] = [];
+	/**
+	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
+	 */
+	public skipBuiltInPostInhibitors?: boolean;
 
 	protected setup() {
 		this.client.once("ready", () => {
-			if (this.autoRegisterSlashCommands)
-				this.registerInteractionCommands(); /* .then(() =>
-					this.updateInteractionPermissions(
-						this.client.ownerID,
-						this.client.superUserID
-					)
-				); */
+			if (this.autoRegisterSlashCommands) this.registerInteractionCommands();
 
 			this.client.on("messageCreate", async m => {
 				if (m.partial) await m.fetch();
@@ -429,7 +428,7 @@ export default class CommandHandler extends AkairoHandler {
 				}));
 
 				if (!_.isEqual(currentCommands, value)) {
-					this._slashCommands.push(await guild.commands.set(value));
+					await guild.commands.set(value);
 				}
 			});
 		}
@@ -449,45 +448,9 @@ export default class CommandHandler extends AkairoHandler {
 		}));
 
 		if (!_.isEqual(currentCommands, slashCommandsApp)) {
-			this._slashCommands.push(
-				await this.client.application?.commands.set(slashCommandsApp)
-			);
+			await this.client.application?.commands.set(slashCommandsApp);
 		}
 	}
-
-	/* 	protected async updateInteractionPermissions(
-		owners: Snowflake | Snowflake[],
-		superUsers: Snowflake | Snowflake[]
-	) {
-		const globalCommands = await this.client.application?.commands.fetch();
-		const fullPermissions: GuildApplicationCommandPermissionData[] =
-			globalCommands
-				.filter(value => !value.defaultPermission)
-				.filter(value => value.type === "CHAT_INPUT")
-				.map(value => {
-					const command = this.modules.find(
-						mod => mod.aliases[0] === value.name
-					);
-					let allowedUsers = [];
-					if (command.superUserOnly)
-						allowedUsers.push(...Util.intoArray(superUsers));
-					if (command.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
-					allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
-
-					return {
-						id: value.id,
-						permissions: allowedUsers.map(u => ({
-							id: u,
-							type: "USER",
-							permission: true
-						}))
-					};
-				});
-
-		await this.client.application?.commands.permissions.set({
-			fullPermissions
-		});
-	} */
 
 	/**
 	 * Registers a module.
@@ -647,7 +610,6 @@ export default class CommandHandler extends AkairoHandler {
 			} else {
 				ran = await this.handleDirectCommand(
 					message,
-
 					parsed.content,
 					parsed.command
 				);
@@ -660,7 +622,6 @@ export default class CommandHandler extends AkairoHandler {
 
 			return ran;
 		} catch (err) {
-			// @ts-expect-error
 			this.emitError(err, message);
 			return null;
 		}
@@ -822,7 +783,6 @@ export default class CommandHandler extends AkairoHandler {
 				return this.handleDirectCommand(
 					message,
 					args.rest,
-
 					continueCommand,
 					args.ignore
 				);
@@ -1046,45 +1006,54 @@ export default class CommandHandler extends AkairoHandler {
 			? CommandHandlerEvents.SLASH_BLOCKED
 			: CommandHandlerEvents.COMMAND_BLOCKED;
 
-		if (command.ownerOnly) {
-			const isOwner = this.client.isOwner(message.author);
-			if (!isOwner) {
-				this.emit(event, message, command, BuiltInReasons.OWNER);
+		if (!this.skipBuiltInPostInhibitors) {
+			if (command.ownerOnly) {
+				const isOwner = this.client.isOwner(message.author);
+				if (!isOwner) {
+					this.emit(event, message, command, BuiltInReasons.OWNER);
+					return true;
+				}
+			}
+
+			if (command.superUserOnly) {
+				const isSuperUser = this.client.isSuperUser(message.author);
+				if (!isSuperUser) {
+					this.emit(event, message, command, BuiltInReasons.OWNER);
+					return true;
+				}
+			}
+
+			if (command.channel === "guild" && !message.guild) {
+				this.emit(event, message, command, BuiltInReasons.GUILD);
+				return true;
+			}
+
+			if (command.channel === "dm" && message.guild) {
+				this.emit(event, message, command, BuiltInReasons.DM);
+				return true;
+			}
+
+			if (command.onlyNsfw && !message.channel["nsfw"]) {
+				this.emit(event, message, command, BuiltInReasons.NOT_NSFW);
 				return true;
 			}
 		}
 
-		if (command.superUserOnly) {
-			const isSuperUser = this.client.isSuperUser(message.author);
-			if (!isSuperUser) {
-				this.emit(event, message, command, BuiltInReasons.OWNER);
+		if (!this.skipBuiltInPostInhibitors) {
+			if (await this.runPermissionChecks(message, command, slash)) {
 				return true;
 			}
-		}
-
-		if (command.channel === "guild" && !message.guild) {
-			this.emit(event, message, command, BuiltInReasons.GUILD);
-			return true;
-		}
-
-		if (command.channel === "dm" && message.guild) {
-			this.emit(event, message, command, BuiltInReasons.DM);
-			return true;
-		}
-
-		// @ts-expect-error
-		if (command.onlyNsfw && !message.channel.nsfw) {
-			this.emit(event, message, command, BuiltInReasons.NOT_NSFW);
-			return true;
-		}
-
-		if (await this.runPermissionChecks(message, command, slash)) {
-			return true;
 		}
 
 		const reason = this.inhibitorHandler
 			? await this.inhibitorHandler.test("post", message, command)
 			: null;
+
+		if (this.skipBuiltInPostInhibitors) {
+			if (await this.runPermissionChecks(message, command, slash)) {
+				return true;
+			}
+		}
 
 		if (reason != null) {
 			this.emit(event, message, command, reason);
@@ -1410,7 +1379,7 @@ export default class CommandHandler extends AkairoHandler {
 	public emitError(
 		err: Error,
 		message: Message | AkairoMessage,
-		command: Command | AkairoModule
+		command?: Command | AkairoModule
 	): void {
 		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
 			this.emit(CommandHandlerEvents.ERROR, err, message, command);
@@ -1658,6 +1627,11 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	 * Whether or not to use execSlash for slash commands.
 	 */
 	execSlash?: boolean;
+
+	/**
+	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
+	 */
+	skipBuiltInPostInhibitors?: boolean;
 }
 
 /**

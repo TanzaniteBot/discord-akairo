@@ -83,7 +83,6 @@
 				25
 			],
 			"consistent-return": "error",
-			"dot-notation": "error",
 			"eqeqeq": [
 				"error",
 				"smart"

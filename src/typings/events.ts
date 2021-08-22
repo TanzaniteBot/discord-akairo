@@ -1,4 +1,4 @@
-import { ContextMenuInteraction, Message } from "discord.js";
+import { CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
 import AkairoModule from "../struct/AkairoModule";
 import Command from "../struct/commands/Command";
 import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
@@ -202,7 +202,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
 	 * @param interaction - The incoming interaction.
 	 */
-	slashNotFound: [interaction: AkairoMessage];
+	slashNotFound: [interaction: CommandInteraction];
 
 	/**
 	 * Emitted when a slash command starts execution.
