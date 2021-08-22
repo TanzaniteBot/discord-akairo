@@ -1,6 +1,7 @@
-import { Message } from "discord.js";
+import { CommandInteraction, Message } from "discord.js";
 import AkairoModule from "../struct/AkairoModule";
 import Command from "../struct/commands/Command";
+import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
 import Inhibitor from "../struct/inhibitors/Inhibitor";
 import Listener from "../struct/listeners/Listener";
 import Task from "../struct/tasks/Task";
@@ -125,7 +126,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param message - Message sent.
 	 * @param reason - Reason for the block.
 	 */
-	messageBlocked: [message: Message | AkairoMessage, reason: string];
+	messageBlocked: [message: Message | AkairoMessage<CommandInteraction>, reason: string];
 
 	/**
 	 * Emitted when a message does not start with the prefix or match a command.
@@ -159,7 +160,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command blocked.
 	 * @param reason - Reason for the block.
 	 */
-	slashBlocked: [message: AkairoMessage, command: Command, reason: string];
+	slashBlocked: [message: AkairoMessage<CommandInteraction>, command: Command, reason: string];
 
 	/**
 	 * Emitted when a slash command errors.
@@ -167,7 +168,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param message - The slash message.
 	 * @param command - Command executed.
 	 */
-	slashError: [error: Error, message: AkairoMessage, command: Command];
+	slashError: [error: Error, message: AkairoMessage<CommandInteraction>, command: Command];
 
 	/**
 	 * Emitted when a slash command finishes execution.
@@ -177,7 +178,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param returnValue - The command's return value.
 	 */
 	slashFinished: [
-		message: AkairoMessage,
+		message: AkairoMessage<CommandInteraction>,
 		command: Command,
 		args: any,
 		returnValue: any
@@ -191,7 +192,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param missing - The missing permissions.
 	 */
 	slashMissingPermissions: [
-		message: AkairoMessage,
+		message: AkairoMessage<CommandInteraction>,
 		command: Command,
 		type: "user" | "client",
 		missing?: any
@@ -201,7 +202,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
 	 * @param interaction - The incoming interaction.
 	 */
-	slashNotFound: [interaction: AkairoMessage];
+	slashNotFound: [interaction: AkairoMessage<CommandInteraction>];
 
 	/**
 	 * Emitted when a slash command starts execution.
@@ -209,7 +210,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command executed.
 	 * @param args - The args passed to the command.
 	 */
-	slashStarted: [message: AkairoMessage, command: Command, args: any];
+	slashStarted: [message: AkairoMessage<CommandInteraction>, command: Command, args: any];
 }
 
 export interface InhibitorHandlerEvents extends AkairoHandlerEvents {
@@ -255,4 +256,19 @@ export interface TaskHandlerEvents extends AkairoHandlerEvents {
 	 * @param isReload - Whether or not this was a reload.
 	 */
 	load: [task: Task, isReload: boolean];
+}
+
+export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
+	/**
+	 * Emitted when a context menu command is removed.
+	 * @param contextMenu - Context menu command removed.
+	 */
+	remove: [contextMenu: ContextMenuCommand];
+
+	/**
+	 * Emitted when a context menu command is loaded.
+	 * @param contextMenu - Context menu command loaded.
+	 * @param isReload - Whether or not this was a reload.
+	 */
+	load: [contextMenu: ContextMenuCommand, isReload: boolean];
 }

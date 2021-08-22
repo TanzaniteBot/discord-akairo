@@ -1,10 +1,6 @@
-import AkairoError from "../../util/AkairoError";
-import AkairoHandler, {
-	AkairoHandlerOptions,
-	LoadPredicate
-} from "../AkairoHandler";
-import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants";
 import {
+	ApplicationCommand,
+	ApplicationCommandOptionData,
 	Collection,
 	CommandInteraction,
 	Message,
@@ -12,18 +8,25 @@ import {
 	TextBasedChannels,
 	User
 } from "discord.js";
-import Command, { KeySupplier } from "./Command";
-import CommandUtil from "./CommandUtil";
-import Flag from "./Flag";
+import _ from "lodash";
+import AkairoError from "../../util/AkairoError";
 import AkairoMessage from "../../util/AkairoMessage";
-import TypeResolver from "./arguments/TypeResolver";
+import Category from "../../util/Category";
+import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants";
+import Util from "../../util/Util";
 import AkairoClient from "../AkairoClient";
+import AkairoHandler, {
+	AkairoHandlerOptions,
+	LoadPredicate
+} from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ListenerHandler from "../listeners/ListenerHandler";
-import Category from "../../util/Category";
 import { DefaultArgumentOptions } from "./arguments/Argument";
-import Util from "../../util/Util";
+import TypeResolver from "./arguments/TypeResolver";
+import Command, { KeySupplier } from "./Command";
+import CommandUtil from "./CommandUtil";
+import Flag from "./Flag";
 
 /**
  * Loads commands and handles messages.
@@ -240,7 +243,7 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * Collection of CommandUtils.
 	 */
-	public commandUtils: Collection<string, CommandUtil>;
+	public commandUtils: Collection<string, CommandUtil<CommandInteraction>>;
 
 	/**
 	 * Time interval in milliseconds for sweeping command util instances.
@@ -329,9 +332,17 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public typing: boolean;
 
+	protected _slashCommands: Collection<string, ApplicationCommand>[] = [];
+
 	protected setup() {
 		this.client.once("ready", () => {
-			if (this.autoRegisterSlashCommands) this.registerSlashCommands();
+			if (this.autoRegisterSlashCommands)
+				this.registerInteractionCommands(); /* .then(() =>
+					this.updateInteractionPermissions(
+						this.client.ownerID,
+						this.client.superUserID
+					)
+				); */
 
 			this.client.on("messageCreate", async m => {
 				if (m.partial) await m.fetch();
@@ -355,51 +366,128 @@ export default class CommandHandler extends AkairoHandler {
 		});
 	}
 
-	protected registerSlashCommands() {
-		const slashCommandsParsed = [];
+	protected async registerInteractionCommands() {
+		const globalSlashCommandsParsed: {
+			name: string;
+			description: string;
+			options: ApplicationCommandOptionData[];
+			guilds: Snowflake[];
+			defaultPermission: boolean;
+		}[] = [];
+		const guildSlashCommandsParsed: Collection<
+			Snowflake,
+			{
+				name: string;
+				description: string;
+				options: ApplicationCommandOptionData[];
+				defaultPermission: boolean;
+			}[]
+		> = new Collection();
+		const parseDescriptionCommand = description => {
+			if (typeof description === "object") {
+				if (typeof description.content === "function")
+					return description.content();
+				if (typeof description.content === "string") return description.content;
+			}
+			return description;
+		};
 		for (const [, data] of this.modules) {
-			if (data.slash) {
-				const parseDescriptionCommand = description => {
-					if (typeof description === "object") {
-						if (typeof description.content === "function")
-							return description.content();
-						if (typeof description.content === "string")
-							return description.content;
-					}
-
-					return description;
-				};
-
-				slashCommandsParsed.push({
-					name: data.aliases[0],
-					description: parseDescriptionCommand(data.description),
-					options: data.slashOptions,
-					guilds: data.slashGuilds
-				});
-			}
-		}
-
-		for (const { name, description, options, guilds } of slashCommandsParsed) {
-			for (const guildId of guilds) {
-				const guild = this.client.guilds.cache.get(guildId);
-				if (!guild) continue;
-
-				guild.commands.create({
-					name,
-					description,
-					options
-				});
-			}
-		}
-
-		const slashCommandsApp = slashCommandsParsed
-			.filter(({ guilds }) => !guilds.length)
-			.map(({ name, description, options }) => {
-				return { name, description, options };
+			if (!data.slash) continue;
+			globalSlashCommandsParsed.push({
+				name: data.aliases[0],
+				description: parseDescriptionCommand(data.description),
+				options: data.slashOptions,
+				guilds: data.slashGuilds,
+				defaultPermission: data.ownerOnly || data.superUserOnly || false
 			});
+		}
 
-		this.client.application?.commands.set(slashCommandsApp);
+		for (const {
+			name,
+			description,
+			options,
+			guilds,
+			defaultPermission
+		} of globalSlashCommandsParsed) {
+			for (const guildId of guilds) {
+				guildSlashCommandsParsed.set(guildId, [
+					...(guildSlashCommandsParsed.get(guildId) ?? []),
+					{ name, description, options, defaultPermission }
+				]);
+			}
+		}
+		if (guildSlashCommandsParsed.size) {
+			guildSlashCommandsParsed.each(async (value, key) => {
+				const guild = this.client.guilds.cache.get(key);
+				if (!guild) return;
+
+				const currentCommands = (await guild.commands.fetch()).map(value1 => ({
+					name: value1.name,
+					description: value1.description,
+					options: value1.options,
+					defaultPermission: value1.defaultPermission
+				}));
+
+				if (!_.isEqual(currentCommands, value)) {
+					this._slashCommands.push(await guild.commands.set(value));
+				}
+			});
+		}
+
+		const slashCommandsApp = globalSlashCommandsParsed
+			.filter(({ guilds }) => !guilds.length)
+			.map(({ name, description, options, defaultPermission }) => {
+				return { name, description, options, defaultPermission };
+			});
+		const currentCommands = (
+			await this.client.application?.commands.fetch()
+		).map(value1 => ({
+			name: value1.name,
+			description: value1.description,
+			options: value1.options,
+			defaultPermission: value1.defaultPermission
+		}));
+
+		if (!_.isEqual(currentCommands, slashCommandsApp)) {
+			this._slashCommands.push(
+				await this.client.application?.commands.set(slashCommandsApp)
+			);
+		}
 	}
+
+	/* 	protected async updateInteractionPermissions(
+		owners: Snowflake | Snowflake[],
+		superUsers: Snowflake | Snowflake[]
+	) {
+		const globalCommands = await this.client.application?.commands.fetch();
+		const fullPermissions: GuildApplicationCommandPermissionData[] =
+			globalCommands
+				.filter(value => !value.defaultPermission)
+				.filter(value => value.type === "CHAT_INPUT")
+				.map(value => {
+					const command = this.modules.find(
+						mod => mod.aliases[0] === value.name
+					);
+					let allowedUsers = [];
+					if (command.superUserOnly)
+						allowedUsers.push(...Util.intoArray(superUsers));
+					if (command.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
+					allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
+
+					return {
+						id: value.id,
+						permissions: allowedUsers.map(u => ({
+							id: u,
+							type: "USER",
+							permission: true
+						}))
+					};
+				});
+
+		await this.client.application?.commands.permissions.set({
+			fullPermissions
+		});
+	} */
 
 	/**
 	 * Registers a module.
@@ -691,8 +779,7 @@ export default class CommandHandler extends AkairoHandler {
 				return false;
 			}
 		} catch (err) {
-			// @ts-expect-error
-			this.emitError(err, message);
+			this.emitError(err, message, command);
 			return null;
 		}
 	}
@@ -888,7 +975,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
 	public async runAllTypeInhibitors(
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		slash: boolean = false
 	): Promise<boolean> {
 		const reason = this.inhibitorHandler
@@ -929,7 +1016,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message to handle.
 	 */
 	public async runPreTypeInhibitors(
-		message: Message | AkairoMessage
+		message: Message | AkairoMessage<CommandInteraction>
 	): Promise<boolean> {
 		const reason = this.inhibitorHandler
 			? await this.inhibitorHandler.test("pre", message)
@@ -951,7 +1038,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
 	public async runPostTypeInhibitors(
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		command: Command,
 		slash: boolean = false
 	): Promise<boolean> {
@@ -1018,7 +1105,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param slash - Whether or not the command is a slash command.
 	 */
 	public async runPermissionChecks(
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		command: Command,
 		slash: boolean = false
 	): Promise<boolean> {
@@ -1117,7 +1204,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param command - Command to cooldown.
 	 */
 	public runCooldowns(
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		command: Command
 	): boolean {
 		const id = message.author?.id;
@@ -1204,7 +1291,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 */
 	public async parseCommand(
-		message: Message | AkairoMessage
+		message: Message | AkairoMessage<CommandInteraction>
 	): Promise<ParsedComponentData> {
 		const allowMention = await Util.intoCallable(this.prefix)(message);
 		let prefixes = Util.intoArray(allowMention);
@@ -1228,7 +1315,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 */
 	public async parseCommandOverwrittenPrefixes(
-		message: Message | AkairoMessage
+		message: Message | AkairoMessage<CommandInteraction>
 	): Promise<ParsedComponentData> {
 		if (!this.prefixes.size) {
 			return {};
@@ -1252,7 +1339,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param pairs - Pairs of prefix to associated commands. That is, `[string, Set<string> | null][]`.
 	 */
 	public parseMultiplePrefixes(
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		pairs: [string, Set<string> | null][]
 	): ParsedComponentData {
 		const parses = pairs.map(([prefix, cmds]) =>
@@ -1279,7 +1366,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param associatedCommands - Associated commands.
 	 */
 	public parseWithPrefix(
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		prefix: string,
 		associatedCommands: Set<string> | null = null
 	): ParsedComponentData {
@@ -1322,7 +1409,7 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public emitError(
 		err: Error,
-		message: Message | AkairoMessage,
+		message: Message | AkairoMessage<CommandInteraction>,
 		command: Command | AkairoModule
 	): void {
 		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
@@ -1629,7 +1716,7 @@ export interface ParsedComponentData {
  * @param command - Command to check.
  */
 export type IgnoreCheckPredicate = (
-	message: Message | AkairoMessage,
+	message: Message | AkairoMessage<CommandInteraction>,
 	command: Command
 ) => boolean;
 

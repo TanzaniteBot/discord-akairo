@@ -1,9 +1,9 @@
 /*  eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import {
+	ApplicationCommandOptionData,
 	Message,
 	PermissionResolvable,
-	Snowflake,
-	ApplicationCommandOptionData
+	Snowflake
 } from "discord.js";
 import AkairoError from "../../util/AkairoError";
 import AkairoMessage from "../../util/AkairoMessage";
@@ -66,7 +66,7 @@ export default abstract class Command extends AkairoModule {
 			slashGuilds = []
 		}: CommandOptions = options;
 
-		this.aliases = aliases;
+		this.aliases = aliases ?? [];
 
 		const { flagWords, optionFlagWords } = Array.isArray(args)
 			? ContentParser.getFlags(args)
@@ -284,9 +284,9 @@ export default abstract class Command extends AkairoModule {
 	public slashEphemeral?: boolean;
 
 	/**
-	 * Assign slash commands to Specific guilds. This option will make the commands do not register globally, but only to the chosen servers.
+	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
-	public slashGuilds?: string[];
+	public slashGuilds?: Snowflake[];
 
 	/**
 	 * Options for using the slash command.

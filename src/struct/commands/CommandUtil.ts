@@ -2,17 +2,19 @@
 import { APIMessage } from "discord-api-types";
 import {
 	Collection,
-	MessagePayload,
 	CommandInteraction,
+	ContextMenuInteraction,
 	InteractionReplyOptions,
 	Message,
 	MessageEditOptions,
 	MessageOptions,
+	MessagePayload,
 	ReplyMessageOptions,
-	WebhookEditMessageOptions,
-	Snowflake
+	Snowflake,
+	WebhookEditMessageOptions
 } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage";
+import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler";
 import CommandHandler, { ParsedComponentData } from "./CommandHandler";
 
 /**
@@ -20,10 +22,12 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
  * @param handler - The command handler.
  * @param message - Message that triggered the command.
  */
-export default class CommandUtil {
+export default class CommandUtil<
+	InteractionType extends CommandInteraction | ContextMenuInteraction
+> {
 	public constructor(
-		handler: CommandHandler,
-		message: Message | AkairoMessage
+		handler: CommandHandler | ContextMenuCommandHandler,
+		message: Message | AkairoMessage<InteractionType>
 	) {
 		this.handler = handler;
 
@@ -35,7 +39,7 @@ export default class CommandUtil {
 
 		this.lastResponse = null;
 
-		if (this.handler.storeMessages) {
+		if (this.handler instanceof CommandHandler && this.handler.storeMessages) {
 			this.messages = new Collection();
 		} else {
 			this.messages = null;
@@ -47,7 +51,7 @@ export default class CommandUtil {
 	/**
 	 * The command handler.
 	 */
-	public handler: CommandHandler;
+	public handler: CommandHandler | ContextMenuCommandHandler;
 
 	/**
 	 * Whether or not the command is a slash command.
@@ -62,7 +66,7 @@ export default class CommandUtil {
 	/**
 	 * Message that triggered the command.
 	 */
-	public message: Message | AkairoMessage;
+	public message: Message | AkairoMessage<InteractionType>;
 
 	/**
 	 * Messages stored from prompts and prompt replies.
@@ -84,7 +88,7 @@ export default class CommandUtil {
 	 * @param message - Message to add.
 	 */
 	public addMessage(message: Message | Message[]): Message | Message[] {
-		if (this.handler.storeMessages) {
+		if (this.handler instanceof CommandHandler && this.handler.storeMessages) {
 			if (Array.isArray(message)) {
 				for (const msg of message) {
 					this.messages?.set(msg.id, msg);
@@ -116,9 +120,9 @@ export default class CommandUtil {
 			| WebhookEditMessageOptions
 	): Promise<Message | APIMessage> {
 		if (this.isSlash) {
-			return (this.lastResponse as any as AkairoMessage).interaction.editReply(
-				options
-			);
+			return (
+				this.lastResponse as any as AkairoMessage<InteractionType>
+			).interaction.editReply(options);
 		} else {
 			return this.lastResponse.edit(options);
 		}
@@ -262,7 +266,7 @@ export default class CommandUtil {
 	 * Changes if the message should be edited.
 	 * @param state - Change to editable or not.
 	 */
-	public setEditable(state: boolean): CommandUtil {
+	public setEditable(state: boolean): CommandUtil<InteractionType> {
 		this.shouldEdit = Boolean(state);
 		return this;
 	}
@@ -285,7 +289,9 @@ export default class CommandUtil {
 	 */
 	public async delete(): Promise<Message | void> {
 		if (this.isSlash) {
-			return (this.message as AkairoMessage).interaction.deleteReply();
+			return (
+				this.message as AkairoMessage<InteractionType>
+			).interaction.deleteReply();
 		} else {
 			return this.lastResponse?.delete();
 		}

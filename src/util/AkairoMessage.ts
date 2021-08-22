@@ -1,6 +1,8 @@
 import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
+	Base,
 	CommandInteraction,
+	ContextMenuInteraction,
 	Guild,
 	GuildMember,
 	InteractionReplyOptions,
@@ -8,11 +10,13 @@ import {
 	MessagePayload,
 	Snowflake,
 	TextBasedChannels,
-	User
+	User,
+	Util
 } from "discord.js";
 import AkairoClient from "../struct/AkairoClient";
 import Command from "../struct/commands/Command";
 import CommandUtil from "../struct/commands/CommandUtil";
+import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
 
 /**
  * A command interaction represented as a message.
@@ -20,25 +24,23 @@ import CommandUtil from "../struct/commands/CommandUtil";
  * @param interaction - CommandInteraction
  * @param command - The command of the interaction
  */
-export default class AkairoMessage {
+export default class AkairoMessage<
+	InteractionType extends CommandInteraction | ContextMenuInteraction
+> extends Base {
 	public constructor(
 		client: AkairoClient,
-		interaction: CommandInteraction,
-		command: Command
+		interaction: InteractionType,
+		command: Command | ContextMenuCommand
 	) {
+		super(client);
+
 		this.author = interaction.user;
 
-		this.channel = interaction.channel;
-
-		this.client = client;
-
-		this.content = `/${interaction.commandName}`;
-
-		this.createdAt = interaction.createdAt;
+		this.content = `${interaction.command.type === "CHAT_INPUT" ? "/" : ""}${
+			interaction.commandName
+		}`;
 
 		this.createdTimestamp = interaction.createdTimestamp;
-
-		this.guild = interaction.guild;
 
 		this.id = interaction.id;
 
@@ -46,10 +48,20 @@ export default class AkairoMessage {
 
 		this.member = interaction.member;
 
-		for (const option of command.slashOptions) {
-			this.content += ` ${option.name}: ${
-				interaction.options.get(option.name, option.required || false)?.value
+		this.partial = false;
+
+		if (command instanceof Command) {
+			for (const option of command.slashOptions) {
+				this.content += ` ${option.name}: ${
+					interaction.options.get(option.name, option.required || false)?.value
+				}`;
+			}
+		} else if (interaction.command.type === "MESSAGE") {
+			this.content += ` message: ${
+				interaction.options.getMessage("message").id
 			}`;
+		} else if (interaction.command.type === "USER") {
+			this.content += ` message: ${interaction.options.getUser("user").id}`;
 		}
 	}
 
@@ -61,12 +73,19 @@ export default class AkairoMessage {
 	/**
 	 * The channel that the interaction was sent in.
 	 */
-	public channel?: TextBasedChannels;
+	public get channel(): TextBasedChannels | null {
+		return this.interaction.channel;
+	}
 
 	/**
-	 * The Akairo client.
+	 * The message contents with all mentions replaced by the equivalent text.
+	 * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
 	 */
-	public client: AkairoClient;
+	public get cleanContent(): string | null {
+		return this.content != null
+			? Util.cleanContent(this.content, this.channel)
+			: null;
+	}
 
 	/**
 	 * The command name and arguments represented as a string.
@@ -74,9 +93,11 @@ export default class AkairoMessage {
 	public content: string;
 
 	/**
-	 * The time the interaction was sent.
+	 * The time the message was sent at
 	 */
-	public createdAt: Date;
+	public get createdAt(): Date {
+		return this.interaction.createdAt;
+	}
 
 	/**
 	 * The timestamp the interaction was sent at.
@@ -86,7 +107,9 @@ export default class AkairoMessage {
 	/**
 	 * The guild the interaction was sent in (if in a guild channel).
 	 */
-	public guild?: Guild | null;
+	public get guild(): Guild | null {
+		return this.interaction.guild;
+	}
 
 	/**
 	 * The ID of the interaction.
@@ -96,7 +119,7 @@ export default class AkairoMessage {
 	/**
 	 * The command interaction.
 	 */
-	public interaction: CommandInteraction;
+	public interaction: InteractionType;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
@@ -105,9 +128,14 @@ export default class AkairoMessage {
 	public member: GuildMember | APIInteractionGuildMember;
 
 	/**
+	 * Whether or not this message is a partial
+	 */
+	public readonly partial: false;
+
+	/**
 	 * Utilities for command responding.
 	 */
-	public util: CommandUtil;
+	public util: CommandUtil<InteractionType>;
 
 	/**
 	 * The url to jump to this message

@@ -75,18 +75,27 @@ export enum CommandHandlerEvents {
 	COMMAND_INVALID = "commandInvalid",
 	COMMAND_LOCKED = "commandLocked",
 	COMMAND_STARTED = "commandStarted",
-	COOLDOWN = "cooldown",
-	ERROR = "error",
-	IN_PROMPT = "inPrompt",
+	COMMAND_COOLDOWN = "commandCooldown",
+	COMMAND_ERROR = "commandError",
+	COMMAND_IN_PROMPT = "commandInPrompt",
 	MESSAGE_BLOCKED = "messageBlocked",
 	MESSAGE_INVALID = "messageInvalid",
 	MISSING_PERMISSIONS = "missingPermissions",
-	SLASH_BLOCKED = "slashBlocked",
-	SLASH_ERROR = "slashError",
-	SLASH_FINISHED = "slashFinished",
-	SLASH_MISSING_PERMISSIONS = "slashMissingPermissions",
-	SLASH_NOT_FOUND = "slashNotFound",
-	SLASH_STARTED = "slashStarted"
+	SLASH_COMMAND_BLOCKED = "slashCommandBlocked",
+	SLASH_COMMAND_ERROR = "slashCommandError",
+	SLASH_COMMAND_FINISHED = "slashCommandFinished",
+	SLASH_COMMAND_MISSING_PERMISSIONS = "slashCommandMissingPermissions",
+	SLASH_COMMAND_NOT_FOUND = "slashCommandNotFound",
+	SLASH_COMMAND_STARTED = "contextCommandStarted",
+	CONTEXT_COMMAND_BLOCKED = "CONTEXT_COMMAND_BLOCKED"
+}
+export enum ContextCommandHandlerEvents {
+	CONTEXT_COMMAND_BLOCKED = "contextCommandBlocked",
+	CONTEXT_COMMAND_ERROR = "contextCommandError",
+	CONTEXT_COMMAND_FINISHED = "contextCommandFinished",
+	CONTEXT_COMMAND_MISSING_PERMISSIONS = "contextCommandMissingPermissions",
+	CONTEXT_COMMAND_NOT_FOUND = "contextCommandNotFound",
+	CONTEXT_COMMAND_STARTED = "contextCommandStarted"
 }
 export enum BuiltInReasons {
 	CLIENT = "client",
