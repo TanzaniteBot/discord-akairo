@@ -134,7 +134,6 @@ export default abstract class Command extends AkairoModule {
     /**
      * Argument options or generator.
      */
-    _args: ArgumentOptions[] | ArgumentGenerator;
     /**
      * The content parser.
      */
