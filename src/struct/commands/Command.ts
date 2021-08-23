@@ -23,7 +23,8 @@ export default abstract class Command extends AkairoModule {
 		const {
 			onlyNsfw = false,
 			aliases = [],
-			args = this._args || [],
+			// @ts-expect-error: otherwise generator functions break
+			args = this.args || [],
 			quoted = true,
 			separator,
 			channel = null,
@@ -281,7 +282,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Argument options or generator.
 	 */
-	public _args: ArgumentOptions[] | ArgumentGenerator;
+	// public args: ArgumentOptions[] | ArgumentGenerator;
 
 	/**
 	 * The content parser.

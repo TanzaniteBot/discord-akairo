@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-import { Command, Flag } from "../../src/index";
 import util from "util";
+import { Command, Flag } from "../../src/index";
 
 export default class GenerateCommand extends Command {
 	constructor() {
