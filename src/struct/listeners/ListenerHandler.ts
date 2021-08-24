@@ -1,12 +1,12 @@
-import AkairoError from "../../util/AkairoError";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import { Awaited, Collection } from "discord.js";
-import Util from "../../util/Util";
-import Listener from "./Listener";
-import AkairoClient from "../AkairoClient";
 import EventEmitter from "events";
-import Category from "../../util/Category";
 import { ListenerHandlerEvents } from "../../typings/events";
+import AkairoError from "../../util/AkairoError";
+import Category from "../../util/Category";
+import Util from "../../util/Util";
+import AkairoClient from "../AkairoClient";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
+import Listener from "./Listener";
 
 /**
  * Loads listeners and registers them with EventEmitters.
@@ -87,12 +87,7 @@ export default class ListenerHandler extends AkairoHandler {
 			: this.emitters.get(listener.emitter as string);
 		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
-		if (listener.type === "once") {
-			emitter.once(listener.event, listener.exec);
-			return listener;
-		}
-
-		emitter.on(listener.event as any, listener.exec);
+		emitter[listener.type](listener.event, listener.exec);
 		return listener;
 	}
 
@@ -207,5 +202,11 @@ export default class ListenerHandler extends AkairoHandler {
 		listener: (...args: ListenerHandlerEvents[K][]) => Awaited<void>
 	): this {
 		return super.on(event, listener);
+	}
+	public override once<K extends keyof ListenerHandlerEvents>(
+		event: K,
+		listener: (...args: ListenerHandlerEvents[K][]) => Awaited<void>
+	): this {
+		return super.once(event, listener);
 	}
 }

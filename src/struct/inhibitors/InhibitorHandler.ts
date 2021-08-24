@@ -1,13 +1,13 @@
-import AkairoError from "../../util/AkairoError";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import Inhibitor from "./Inhibitor";
-import Util from "../../util/Util";
 import { Awaited, Collection, Message } from "discord.js";
-import AkairoMessage from "../../util/AkairoMessage";
-import AkairoClient from "../AkairoClient";
-import Command from "../commands/Command";
 import { Category } from "../..";
 import { InhibitorHandlerEvents } from "../../typings/events";
+import AkairoError from "../../util/AkairoError";
+import AkairoMessage from "../../util/AkairoMessage";
+import Util from "../../util/Util";
+import AkairoClient from "../AkairoClient";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
+import Command from "../commands/Command";
+import Inhibitor from "./Inhibitor";
 
 /**
  * Loads inhibitors and checks messages.
@@ -177,5 +177,11 @@ export default class InhibitorHandler extends AkairoHandler {
 		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
 	): this {
 		return super.on(event, listener);
+	}
+	public override once<K extends keyof InhibitorHandlerEvents>(
+		event: K,
+		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
+	): this {
+		return super.once(event, listener);
 	}
 }

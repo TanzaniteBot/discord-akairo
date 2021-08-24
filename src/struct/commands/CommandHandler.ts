@@ -1,6 +1,7 @@
 import {
 	ApplicationCommand,
 	ApplicationCommandOptionData,
+	Awaited,
 	Collection,
 	CommandInteraction,
 	GuildApplicationCommandPermissionData,
@@ -11,6 +12,7 @@ import {
 	User
 } from "discord.js";
 import _ from "lodash";
+import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
 import AkairoMessage from "../../util/AkairoMessage";
 import Category from "../../util/Category";
@@ -1436,6 +1438,19 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public override reloadAll(): CommandHandler {
 		return super.reloadAll() as CommandHandler;
+	}
+
+	public override on<K extends keyof CommandHandlerEventsType>(
+		event: K,
+		listener: (...args: CommandHandlerEventsType[K][]) => Awaited<void>
+	): this {
+		return super.on(event, listener);
+	}
+	public override once<K extends keyof CommandHandlerEventsType>(
+		event: K,
+		listener: (...args: CommandHandlerEventsType[K][]) => Awaited<void>
+	): this {
+		return super.once(event, listener);
 	}
 }
 

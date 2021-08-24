@@ -135,8 +135,8 @@ export default class TaskHandler extends AkairoHandler {
 	/**
 	 * Start all tasks.
 	 */
-	public startAll?(): void {
-		this.client.on("ready", () => {
+	public startAll(): void {
+		this.client.once("ready", () => {
 			this.modules.forEach(module => {
 				if (!(module instanceof Task)) return;
 				if (module.runOnStart) module.exec();
@@ -154,5 +154,11 @@ export default class TaskHandler extends AkairoHandler {
 		listener: (...args: TaskHandlerEvents[K][]) => Awaited<void>
 	): this {
 		return super.on(event, listener);
+	}
+	public override once<K extends keyof TaskHandlerEvents>(
+		event: K,
+		listener: (...args: TaskHandlerEvents[K][]) => Awaited<void>
+	): this {
+		return super.once(event, listener);
 	}
 }
