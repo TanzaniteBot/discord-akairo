@@ -29,11 +29,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command blocked.
 	 * @param reason - Reason for the block.
 	 */
-	commandBlocked: [
-		message: Message,
-		command: Command,
-		reason: typeof BuiltInReasons | string
-	];
+	commandBlocked: [message: Message, command: Command, reason: typeof BuiltInReasons | string];
 
 	/**
 	 * Emitted when a command breaks out with a retry prompt.
@@ -49,11 +45,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command executed.
 	 * @param retryMessage - Message to retry with. This is passed when a prompt was broken out of with a message that looks like a command.
 	 */
-	commandCancelled: [
-		message: Message,
-		command: Command,
-		retryMessage?: Message
-	];
+	commandCancelled: [message: Message, command: Command, retryMessage?: Message];
 
 	/**
 	 * Emitted when a command finishes execution.
@@ -62,12 +54,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param args - The args passed to the command.
 	 * @param returnValue - The command's return value.
 	 */
-	commandFinished: [
-		message: Message,
-		command: Command,
-		args: any,
-		returnValue: any
-	];
+	commandFinished: [message: Message, command: Command, args: any, returnValue: any];
 
 	/**
 	 * Emitted when a command is invalid
@@ -141,12 +128,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param type - Either 'client' or 'user'.
 	 * @param missing - The missing permissions.
 	 */
-	missingPermissions: [
-		message: Message,
-		command: Command,
-		type: "client" | "user",
-		missing?: any
-	];
+	missingPermissions: [message: Message, command: Command, type: "client" | "user", missing?: any];
 
 	/**
 	 * Emitted when a command is removed.
@@ -177,12 +159,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param args - The args passed to the command.
 	 * @param returnValue - The command's return value.
 	 */
-	slashFinished: [
-		message: AkairoMessage,
-		command: Command,
-		args: any,
-		returnValue: any
-	];
+	slashFinished: [message: AkairoMessage, command: Command, args: any, returnValue: any];
 
 	/**
 	 * Emitted when a slash command permissions check is failed.
@@ -191,12 +168,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param type - Either 'client' or 'user'.
 	 * @param missing - The missing permissions.
 	 */
-	slashMissingPermissions: [
-		message: AkairoMessage,
-		command: Command,
-		type: "user" | "client",
-		missing?: any
-	];
+	slashMissingPermissions: [message: AkairoMessage, command: Command, type: "user" | "client", missing?: any];
 
 	/**
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
@@ -278,11 +250,7 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param interaction - The interaction.
 	 * @param command - Command executed.
 	 */
-	error: [
-		error: Error,
-		interaction: ContextMenuInteraction,
-		command: ContextMenuCommand
-	];
+	error: [error: Error, interaction: ContextMenuInteraction, command: ContextMenuCommand];
 
 	/**
 	 * Emitted when a context menu command finishes execution.
@@ -290,11 +258,7 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command executed.
 	 * @param returnValue - The command's return value.
 	 */
-	finished: [
-		interaction: ContextMenuInteraction,
-		command: ContextMenuCommand,
-		returnValue: any
-	];
+	finished: [interaction: ContextMenuInteraction, command: ContextMenuCommand, returnValue: any];
 
 	/**
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
@@ -309,4 +273,16 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param args - The args passed to the command.
 	 */
 	started: [interaction: ContextMenuInteraction, command: ContextMenuCommand];
+
+	/**
+	 * Emitted when a command is blocked.
+	 * @param interaction - The interaction.
+	 * @param command - Command blocked.
+	 * @param reason - Reason for the block.
+	 */
+	blocked: [
+		interaction: ContextMenuInteraction,
+		command: Command,
+		reason: typeof BuiltInReasons.OWNER | typeof BuiltInReasons.SUPER_USER
+	];
 }

@@ -2,7 +2,7 @@ import { Category } from "discord-akairo";
 import { Awaited, Collection, ContextMenuInteraction } from "discord.js";
 import { ContextMenuCommandHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
-import { ContextCommandHandlerEvents } from "../../util/Constants";
+import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants";
 import AkairoClient from "../AkairoClient";
 import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
@@ -86,6 +86,13 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 		if (!command) {
 			this.emit(ContextCommandHandlerEvents.NOT_FOUND, interaction);
 			return false;
+		}
+
+		if (command.ownerOnly && !this.client.isOwner(interaction.user.id)) {
+			this.emit(ContextCommandHandlerEvents.BLOCKED, interaction, command, BuiltInReasons.OWNER);
+		}
+		if (command.superUserOnly && !this.client.isSuperUser(interaction.user.id)) {
+			this.emit(ContextCommandHandlerEvents.BLOCKED, interaction, command, BuiltInReasons.SUPER_USER);
 		}
 
 		try {

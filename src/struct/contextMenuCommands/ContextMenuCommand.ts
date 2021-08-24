@@ -12,10 +12,15 @@ import ContextMenuCommandHandler from "./ContextMenuCommandHandler";
  * @param options - Options for the context menu command.
  */
 export default abstract class ContextMenuCommand extends AkairoModule {
-	public constructor(id: string, { category, guilds, name, type }: ContextMenuCommandOptions) {
+	public constructor(
+		id: string,
+		{ category, guilds, name, ownerOnly, superUserOnly, type }: ContextMenuCommandOptions
+	) {
 		super(id, { category });
 		this.guilds = guilds;
 		this.name = name;
+		this.ownerOnly = ownerOnly;
+		this.superUserOnly = superUserOnly;
 		this.type = type;
 	}
 
@@ -28,6 +33,16 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	 * The name of the context menu command.
 	 */
 	public name: string;
+
+	/**
+	 * Usable only by the client owner.
+	 */
+	public ownerOnly: boolean;
+
+	/**
+	 * Whether or not to allow client superUsers(s) only.
+	 */
+	public superUserOnly: boolean;
 
 	/**
 	 * The type of the context menu command.
@@ -91,6 +106,16 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	 * The name of the context menu command.
 	 */
 	name: string;
+
+	/**
+	 * Usable only by the client owner.
+	 */
+	ownerOnly?: boolean;
+
+	/**
+	 * Whether or not to allow client superUsers(s) only.
+	 */
+	superUserOnly?: boolean;
 
 	/**
 	 * The type of the context menu command.

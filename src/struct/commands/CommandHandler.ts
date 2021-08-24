@@ -19,6 +19,7 @@ import Util from "../../util/Util";
 import AkairoClient from "../AkairoClient";
 import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import AkairoModule from "../AkairoModule";
+import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ListenerHandler from "../listeners/ListenerHandler";
 import { DefaultArgumentOptions } from "./arguments/Argument";
@@ -353,8 +354,8 @@ export default class CommandHandler extends AkairoHandler {
 	protected async registerInteractionCommands() {
 		const parsedSlashCommands: {
 			name: string;
-			description: string;
-			options: ApplicationCommandOptionData[];
+			description?: string;
+			options?: ApplicationCommandOptionData[];
 			guilds: Snowflake[];
 			defaultPermission: boolean;
 			type: "CHAT_INPUT" | "MESSAGE" | "USER";
@@ -387,6 +388,24 @@ export default class CommandHandler extends AkairoHandler {
 				defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
 				type: "CHAT_INPUT"
 			});
+		}
+
+		let contextCommandHandler: ContextMenuCommandHandler | undefined;
+		for (const key in this.client) {
+			if (this.client[key] instanceof ContextMenuCommandHandler) {
+				contextCommandHandler = this.client[key];
+				break;
+			}
+		}
+		if (contextCommandHandler) {
+			for (const [, data] of contextCommandHandler.modules) {
+				parsedSlashCommands.push({
+					name: data.name,
+					guilds: data.guilds,
+					defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
+					type: data.type
+				});
+			}
 		}
 
 		/* Global */
