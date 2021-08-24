@@ -9,7 +9,7 @@ import ContextMenuCommandHandler from "./ContextMenuCommandHandler";
  * @param options - Options for the context menu command.
  */
 export default abstract class ContextMenuCommand extends AkairoModule {
-    constructor(id: string, { category, guilds, name, type }: ContextMenuOptions);
+    constructor(id: string, { category, guilds, name, ownerOnly, superUserOnly, type }: ContextMenuCommandOptions);
     /**
      * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
      */
@@ -18,6 +18,14 @@ export default abstract class ContextMenuCommand extends AkairoModule {
      * The name of the context menu command.
      */
     name: string;
+    /**
+     * Usable only by the client owner.
+     */
+    ownerOnly: boolean;
+    /**
+     * Whether or not to allow client superUsers(s) only.
+     */
+    superUserOnly: boolean;
     /**
      * The type of the context menu command.
      */
@@ -55,7 +63,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 /**
  * Options to use for context menu command execution behavior.
  */
-export interface ContextMenuOptions extends AkairoModuleOptions {
+export interface ContextMenuCommandOptions extends AkairoModuleOptions {
     /**
      * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
      */
@@ -64,6 +72,14 @@ export interface ContextMenuOptions extends AkairoModuleOptions {
      * The name of the context menu command.
      */
     name: string;
+    /**
+     * Usable only by the client owner.
+     */
+    ownerOnly?: boolean;
+    /**
+     * Whether or not to allow client superUsers(s) only.
+     */
+    superUserOnly?: boolean;
     /**
      * The type of the context menu command.
      */

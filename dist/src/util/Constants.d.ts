@@ -92,7 +92,8 @@ export declare enum ContextCommandHandlerEvents {
     ERROR = "error",
     FINISHED = "finished",
     NOT_FOUND = "notFound",
-    STARTED = "started"
+    STARTED = "started",
+    BLOCKED = "blocked"
 }
 export declare enum BuiltInReasons {
     CLIENT = "client",
