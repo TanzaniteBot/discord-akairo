@@ -387,7 +387,7 @@ export default class CommandHandler extends AkairoHandler {
 				description: parseDescriptionCommand(data.description),
 				options: data.slashOptions,
 				guilds: data.slashGuilds ?? [],
-				defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
+				defaultPermission: !(data.ownerOnly || /* data.superUserOnly || */ false),
 				type: "CHAT_INPUT"
 			});
 		}
@@ -404,7 +404,7 @@ export default class CommandHandler extends AkairoHandler {
 				parsedSlashCommands.push({
 					name: data.name,
 					guilds: data.guilds ?? [],
-					defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
+					defaultPermission: !(data.ownerOnly || /* data.superUserOnly || */ false),
 					type: data.type
 				});
 			}
@@ -465,7 +465,7 @@ export default class CommandHandler extends AkairoHandler {
 		): { id: string; permissions: { id: string; type: "USER"; permission: boolean }[] } => {
 			const command = this.modules.find(mod => mod.aliases[0] === value.name);
 			let allowedUsers: string[] = [];
-			if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers));
+			/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
 			if (command.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
 			allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
 
