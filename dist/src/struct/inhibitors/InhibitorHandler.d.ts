@@ -1,11 +1,11 @@
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import Inhibitor from "./Inhibitor";
 import { Awaited, Collection, Message } from "discord.js";
-import AkairoMessage from "../../util/AkairoMessage";
-import AkairoClient from "../AkairoClient";
-import Command from "../commands/Command";
 import { Category } from "../..";
 import { InhibitorHandlerEvents } from "../../typings/events";
+import AkairoMessage from "../../util/AkairoMessage";
+import AkairoClient from "../AkairoClient";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
+import Command from "../commands/Command";
+import Inhibitor from "./Inhibitor";
 /**
  * Loads inhibitors and checks messages.
  * @param client - The Akairo client.
@@ -87,5 +87,6 @@ export default class InhibitorHandler extends AkairoHandler {
      */
     test(type: "all" | "pre" | "post", message: Message | AkairoMessage, command?: Command): Promise<string | null | void>;
     on<K extends keyof InhibitorHandlerEvents>(event: K, listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>): this;
+    once<K extends keyof InhibitorHandlerEvents>(event: K, listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>): this;
 }
 //# sourceMappingURL=InhibitorHandler.d.ts.map

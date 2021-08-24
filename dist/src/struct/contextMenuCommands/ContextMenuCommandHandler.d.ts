@@ -92,5 +92,6 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
      */
     removeAll(): ContextMenuCommandHandler;
     on<K extends keyof ContextMenuCommandHandlerEvents>(event: K, listener: (...args: ContextMenuCommandHandlerEvents[K]) => Awaited<void>): this;
+    once<K extends keyof ContextMenuCommandHandlerEvents>(event: K, listener: (...args: ContextMenuCommandHandlerEvents[K]) => Awaited<void>): this;
 }
 //# sourceMappingURL=ContextMenuCommandHandler.d.ts.map

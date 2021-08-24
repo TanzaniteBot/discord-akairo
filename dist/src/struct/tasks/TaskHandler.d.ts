@@ -79,7 +79,8 @@ export default class TaskHandler extends AkairoHandler {
     /**
      * Start all tasks.
      */
-    startAll?(): void;
+    startAll(): void;
     on<K extends keyof TaskHandlerEvents>(event: K, listener: (...args: TaskHandlerEvents[K][]) => Awaited<void>): this;
+    once<K extends keyof TaskHandlerEvents>(event: K, listener: (...args: TaskHandlerEvents[K][]) => Awaited<void>): this;
 }
 //# sourceMappingURL=TaskHandler.d.ts.map

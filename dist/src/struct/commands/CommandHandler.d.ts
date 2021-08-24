@@ -1,5 +1,6 @@
 /// <reference types="node" />
-import { Collection, CommandInteraction, Message, Snowflake, TextBasedChannels, User } from "discord.js";
+import { Awaited, Collection, CommandInteraction, Message, Snowflake, TextBasedChannels, User } from "discord.js";
+import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoMessage from "../../util/AkairoMessage";
 import Category from "../../util/Category";
 import AkairoClient from "../AkairoClient";
@@ -333,6 +334,8 @@ export default class CommandHandler extends AkairoHandler {
      * Reloads all commands.
      */
     reloadAll(): CommandHandler;
+    on<K extends keyof CommandHandlerEventsType>(event: K, listener: (...args: CommandHandlerEventsType[K][]) => Awaited<void>): this;
+    once<K extends keyof CommandHandlerEventsType>(event: K, listener: (...args: CommandHandlerEventsType[K][]) => Awaited<void>): this;
 }
 export interface CommandHandlerOptions extends AkairoHandlerOptions {
     /**

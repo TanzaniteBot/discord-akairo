@@ -87,7 +87,7 @@ export default class ListenerHandler extends AkairoHandler {
 			: this.emitters.get(listener.emitter as string);
 		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
-		emitter[listener.type](listener.event, listener.exec);
+		emitter[listener.type ?? "on"](listener.event, listener.exec);
 		return listener;
 	}
 

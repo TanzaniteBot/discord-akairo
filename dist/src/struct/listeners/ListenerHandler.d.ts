@@ -1,11 +1,11 @@
 /// <reference types="node" />
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
 import { Awaited, Collection } from "discord.js";
-import Listener from "./Listener";
-import AkairoClient from "../AkairoClient";
 import EventEmitter from "events";
-import Category from "../../util/Category";
 import { ListenerHandlerEvents } from "../../typings/events";
+import Category from "../../util/Category";
+import AkairoClient from "../AkairoClient";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
+import Listener from "./Listener";
 /**
  * Loads listeners and registers them with EventEmitters.
  * @param client - The Akairo client.
@@ -100,5 +100,6 @@ export default class ListenerHandler extends AkairoHandler {
      */
     setEmitters(emitters: any): ListenerHandler;
     on<K extends keyof ListenerHandlerEvents>(event: K, listener: (...args: ListenerHandlerEvents[K][]) => Awaited<void>): this;
+    once<K extends keyof ListenerHandlerEvents>(event: K, listener: (...args: ListenerHandlerEvents[K][]) => Awaited<void>): this;
 }
 //# sourceMappingURL=ListenerHandler.d.ts.map
