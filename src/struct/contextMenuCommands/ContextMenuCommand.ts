@@ -12,7 +12,7 @@ import ContextMenuCommandHandler from "./ContextMenuCommandHandler";
  * @param options - Options for the context menu command.
  */
 export default abstract class ContextMenuCommand extends AkairoModule {
-	public constructor(id: string, { category, guilds, name, type }: ContextMenuOptions) {
+	public constructor(id: string, { category, guilds, name, type }: ContextMenuCommandOptions) {
 		super(id, { category });
 		this.guilds = guilds;
 		this.name = name;
@@ -81,7 +81,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 /**
  * Options to use for context menu command execution behavior.
  */
-export interface ContextMenuOptions extends AkairoModuleOptions {
+export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */

@@ -42,6 +42,8 @@ import CommandHandler, {
 } from "./struct/commands/CommandHandler";
 import CommandUtil from "./struct/commands/CommandUtil";
 import Flag from "./struct/commands/Flag";
+import ContextMenuCommand, { ContextMenuCommandOptions } from "./struct/contextMenuCommands/ContextMenuCommand";
+import ContextMenuCommandHandler from "./struct/contextMenuCommands/ContextMenuCommandHandler";
 import Inhibitor, { InhibitorOptions } from "./struct/inhibitors/Inhibitor";
 import InhibitorHandler from "./struct/inhibitors/InhibitorHandler";
 import Listener, { ListenerOptions } from "./struct/listeners/Listener";
@@ -93,6 +95,9 @@ export {
 	CommandOptions,
 	CommandUtil,
 	Constants,
+	ContextMenuCommand,
+	ContextMenuCommandHandler,
+	ContextMenuCommandOptions,
 	CooldownData,
 	DefaultArgumentOptions,
 	DefaultValueSupplier,

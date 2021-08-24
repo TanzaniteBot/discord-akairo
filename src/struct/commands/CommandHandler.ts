@@ -1,7 +1,10 @@
 import {
+	ApplicationCommand,
 	ApplicationCommandOptionData,
 	Collection,
 	CommandInteraction,
+	GuildApplicationCommandPermissionData,
+	GuildResolvable,
 	Message,
 	Snowflake,
 	TextBasedChannels,
@@ -320,7 +323,10 @@ export default class CommandHandler extends AkairoHandler {
 
 	protected setup() {
 		this.client.once("ready", () => {
-			if (this.autoRegisterSlashCommands) this.registerInteractionCommands();
+			if (this.autoRegisterSlashCommands)
+				this.registerInteractionCommands().then(() =>
+					this.updateInteractionPermissions(this.client.ownerID, this.client.superUserID)
+				);
 
 			this.client.on("messageCreate", async m => {
 				if (m.partial) await m.fetch();
@@ -345,12 +351,13 @@ export default class CommandHandler extends AkairoHandler {
 	}
 
 	protected async registerInteractionCommands() {
-		const globalSlashCommandsParsed: {
+		const parsedSlashCommands: {
 			name: string;
 			description: string;
 			options: ApplicationCommandOptionData[];
 			guilds: Snowflake[];
 			defaultPermission: boolean;
+			type: "CHAT_INPUT" | "MESSAGE" | "USER";
 		}[] = [];
 		const guildSlashCommandsParsed: Collection<
 			Snowflake,
@@ -359,6 +366,7 @@ export default class CommandHandler extends AkairoHandler {
 				description: string;
 				options: ApplicationCommandOptionData[];
 				defaultPermission: boolean;
+				type: "CHAT_INPUT" | "MESSAGE" | "USER";
 			}[]
 		> = new Collection();
 		const parseDescriptionCommand = description => {
@@ -368,22 +376,43 @@ export default class CommandHandler extends AkairoHandler {
 			}
 			return description;
 		};
+
 		for (const [, data] of this.modules) {
 			if (!data.slash) continue;
-			globalSlashCommandsParsed.push({
+			parsedSlashCommands.push({
 				name: data.aliases[0],
 				description: parseDescriptionCommand(data.description),
 				options: data.slashOptions,
 				guilds: data.slashGuilds,
-				defaultPermission: data.ownerOnly || data.superUserOnly || false
+				defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
+				type: "CHAT_INPUT"
 			});
 		}
 
-		for (const { name, description, options, guilds, defaultPermission } of globalSlashCommandsParsed) {
+		/* Global */
+		const slashCommandsApp = parsedSlashCommands
+			.filter(({ guilds }) => !guilds.length)
+			.map(({ name, description, options, defaultPermission, type }) => {
+				return { name, description, options, defaultPermission, type };
+			});
+		const currentGlobalCommands = (await this.client.application?.commands.fetch()).map(value1 => ({
+			name: value1.name,
+			description: value1.description,
+			options: value1.options,
+			defaultPermission: value1.defaultPermission,
+			type: value1.type
+		}));
+
+		if (!_.isEqual(currentGlobalCommands, slashCommandsApp)) {
+			await this.client.application?.commands.set(slashCommandsApp);
+		}
+
+		/* Guilds */
+		for (const { name, description, options, guilds, defaultPermission, type } of parsedSlashCommands) {
 			for (const guildId of guilds) {
 				guildSlashCommandsParsed.set(guildId, [
 					...(guildSlashCommandsParsed.get(guildId) ?? []),
-					{ name, description, options, defaultPermission }
+					{ name, description, options, defaultPermission, type }
 				]);
 			}
 		}
@@ -392,34 +421,67 @@ export default class CommandHandler extends AkairoHandler {
 				const guild = this.client.guilds.cache.get(key);
 				if (!guild) return;
 
-				const currentCommands = (await guild.commands.fetch()).map(value1 => ({
+				const currentGuildCommands = (await guild.commands.fetch()).map(value1 => ({
 					name: value1.name,
 					description: value1.description,
 					options: value1.options,
-					defaultPermission: value1.defaultPermission
+					defaultPermission: value1.defaultPermission,
+					type: value1.type
 				}));
 
-				if (!_.isEqual(currentCommands, value)) {
+				if (!_.isEqual(currentGuildCommands, value)) {
 					await guild.commands.set(value);
 				}
 			});
 		}
+	}
 
-		const slashCommandsApp = globalSlashCommandsParsed
-			.filter(({ guilds }) => !guilds.length)
-			.map(({ name, description, options, defaultPermission }) => {
-				return { name, description, options, defaultPermission };
-			});
-		const currentCommands = (await this.client.application?.commands.fetch()).map(value1 => ({
-			name: value1.name,
-			description: value1.description,
-			options: value1.options,
-			defaultPermission: value1.defaultPermission
-		}));
+	protected async updateInteractionPermissions(owners: Snowflake | Snowflake[], superUsers: Snowflake | Snowflake[]) {
+		const mapCom = (
+			value: ApplicationCommand<{
+				guild: GuildResolvable;
+			}>
+		): { id: string; permissions: { id: string; type: "USER"; permission: boolean }[] } => {
+			const command = this.modules.find(mod => mod.aliases[0] === value.name);
+			let allowedUsers: string[] = [];
+			if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers));
+			if (command.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
+			allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
 
-		if (!_.isEqual(currentCommands, slashCommandsApp)) {
-			await this.client.application?.commands.set(slashCommandsApp);
-		}
+			return {
+				id: value.id,
+				permissions: allowedUsers.map(u => ({
+					id: u,
+					type: "USER",
+					permission: true
+				}))
+			};
+		};
+
+		const globalCommands = await this.client.application?.commands.fetch();
+		const fullPermissions: GuildApplicationCommandPermissionData[] = globalCommands
+			.filter(value => !value.defaultPermission)
+			.filter(value => value.type === "CHAT_INPUT")
+			.map(value => mapCom(value));
+
+		const promises = this.client.guilds.cache.map(guild => {
+			const perms = fullPermissions;
+			if (guild.commands.cache.size)
+				perms.push(
+					...guild.commands.cache
+						.filter(value => !value.defaultPermission)
+						.filter(value => value.type === "CHAT_INPUT")
+						.map(value => mapCom(value))
+				);
+			if (guild.available)
+				return guild.commands.permissions.set({
+					fullPermissions: perms
+				});
+			// Return empty promise if guild is unavailable
+			return Promise.resolve();
+		});
+		// @ts-expect-error: it still works shush
+		await Promise.all(promises);
 	}
 
 	/**
