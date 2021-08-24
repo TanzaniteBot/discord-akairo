@@ -34,6 +34,11 @@
         "rimraf": "^3.0.2",
         "typescript": "^4.3.5"
     },
+    "dependencies": {
+        "discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
+        "lodash": "^4.17.21",
+        "source-map-support": "^0.5.19"
+    },
     "scripts": {
         "test": "yarn run lint",
         "lint": "yarn eslint ./src",
@@ -175,10 +180,5 @@
             "@typescript-eslint/no-inferrable-types": "off",
             "@typescript-eslint/no-empty-function": "off"
         }
-    },
-    "dependencies": {
-        "discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
-        "lodash": "^4.17.21",
-        "source-map-support": "^0.5.19"
     }
 }
