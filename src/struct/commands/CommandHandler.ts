@@ -384,7 +384,7 @@ export default class CommandHandler extends AkairoHandler {
 				name: data.aliases[0],
 				description: parseDescriptionCommand(data.description),
 				options: data.slashOptions,
-				guilds: data.slashGuilds,
+				guilds: data.slashGuilds ?? [],
 				defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
 				type: "CHAT_INPUT"
 			});
@@ -401,7 +401,7 @@ export default class CommandHandler extends AkairoHandler {
 			for (const [, data] of contextCommandHandler.modules) {
 				parsedSlashCommands.push({
 					name: data.name,
-					guilds: data.guilds,
+					guilds: data.guilds ?? [],
 					defaultPermission: !(data.ownerOnly || data.superUserOnly || false),
 					type: data.type
 				});
@@ -480,18 +480,12 @@ export default class CommandHandler extends AkairoHandler {
 		const globalCommands = await this.client.application?.commands.fetch();
 		const fullPermissions: GuildApplicationCommandPermissionData[] = globalCommands
 			.filter(value => !value.defaultPermission)
-			.filter(value => value.type === "CHAT_INPUT")
 			.map(value => mapCom(value));
 
 		const promises = this.client.guilds.cache.map(guild => {
 			const perms = fullPermissions;
 			if (guild.commands.cache.size)
-				perms.push(
-					...guild.commands.cache
-						.filter(value => !value.defaultPermission)
-						.filter(value => value.type === "CHAT_INPUT")
-						.map(value => mapCom(value))
-				);
+				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value)));
 			if (guild.available)
 				return guild.commands.permissions.set({
 					fullPermissions: perms
