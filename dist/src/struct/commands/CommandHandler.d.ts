@@ -153,7 +153,7 @@ export default class CommandHandler extends AkairoHandler {
     skipBuiltInPostInhibitors?: boolean;
     protected setup(): void;
     protected registerInteractionCommands(): Promise<void>;
-    protected updateInteractionPermissions(owners: Snowflake | Snowflake[], superUsers: Snowflake | Snowflake[]): Promise<void>;
+    protected updateInteractionPermissions(owners: Snowflake | Snowflake[]): Promise<void>;
     /**
      * Registers a module.
      * @param command - Module to use.

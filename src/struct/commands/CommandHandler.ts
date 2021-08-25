@@ -328,7 +328,7 @@ export default class CommandHandler extends AkairoHandler {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands)
 				this.registerInteractionCommands().then(() =>
-					this.updateInteractionPermissions(this.client.ownerID, this.client.superUserID)
+					this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */)
 				);
 
 			this.client.on("messageCreate", async m => {
@@ -457,7 +457,9 @@ export default class CommandHandler extends AkairoHandler {
 		}
 	}
 
-	protected async updateInteractionPermissions(owners: Snowflake | Snowflake[], superUsers: Snowflake | Snowflake[]) {
+	protected async updateInteractionPermissions(
+		owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */
+	) {
 		const mapCom = (
 			value: ApplicationCommand<{
 				guild: GuildResolvable;
