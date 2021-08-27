@@ -487,7 +487,7 @@ export default class CommandHandler extends AkairoHandler {
 			.map(value => mapCom(value));
 
 		const promises = this.client.guilds.cache.map(async guild => {
-			const perms = fullPermissions;
+			const perms = new Array(...fullPermissions);
 			await guild.commands.fetch();
 			if (guild.commands.cache.size)
 				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value)));
