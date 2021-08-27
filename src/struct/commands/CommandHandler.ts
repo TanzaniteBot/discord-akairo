@@ -742,7 +742,9 @@ export default class CommandHandler extends AkairoHandler {
 				convertedOptions[option.name] =
 					interaction.options[
 						_.camelCase(
-							`GET_${convertType(option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes)}`
+							`GET_${convertType(
+								option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes
+							).replace("SUB_COMMAND", "SUBCOMMAND")}`
 						)
 					];
 			}
