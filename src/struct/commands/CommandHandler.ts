@@ -498,7 +498,14 @@ export default class CommandHandler extends AkairoHandler {
 			// Return empty promise if guild is unavailable
 			return Promise.resolve();
 		});
-		await Promise.all(promises);
+		try {
+			await Promise.allSettled(promises);
+		} catch (e) {
+			console.debug(promises);
+			console.debug(globalCommands);
+			console.debug(fullPermissions);
+			throw e;
+		}
 	}
 
 	/**
