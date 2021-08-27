@@ -756,14 +756,13 @@ export default class CommandHandler extends AkairoHandler {
 			};
 			const convertedOptions = {};
 			for (const option of command.slashOptions) {
-				convertedOptions[option.name] =
-					interaction.options[
-						_.camelCase(
-							`GET_${convertType(
-								option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes
-							).replace("SUB_COMMAND", "SUBCOMMAND")}`
-						)
-					]();
+				convertedOptions[option.name] = interaction.options[
+					_.camelCase(
+						`GET_${convertType(
+							option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes
+						).replace("SUB_COMMAND", "SUBCOMMAND")}`
+					)
+				](option.name, option.required ?? false);
 			}
 
 			let key;
