@@ -11,7 +11,6 @@ import {
 	TextBasedChannels,
 	User
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
 import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -709,7 +708,18 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-
+			const enum ApplicationCommandOptionTypes {
+				SUB_COMMAND = 1,
+				SUB_COMMAND_GROUP = 2,
+				STRING = 3,
+				INTEGER = 4,
+				BOOLEAN = 5,
+				USER = 6,
+				CHANNEL = 7,
+				ROLE = 8,
+				MENTIONABLE = 9,
+				NUMBER = 10
+			}
 			const convertType = (val: ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes) => {
 				if (typeof val === "string") return val;
 				switch (val) {
