@@ -486,8 +486,9 @@ export default class CommandHandler extends AkairoHandler {
 			.filter(value => !value.defaultPermission)
 			.map(value => mapCom(value));
 
-		const promises = this.client.guilds.cache.map(guild => {
+		const promises = this.client.guilds.cache.map(async guild => {
 			const perms = fullPermissions;
+			await guild.commands.fetch();
 			if (guild.commands.cache.size)
 				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value)));
 			if (guild.available)
@@ -497,7 +498,6 @@ export default class CommandHandler extends AkairoHandler {
 			// Return empty promise if guild is unavailable
 			return Promise.resolve();
 		});
-		// @ts-expect-error: it still works shush
 		await Promise.all(promises);
 	}
 
