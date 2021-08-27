@@ -17,8 +17,9 @@
 		"declarationMap": true,
 		"declaration": true,
 		"declarationDir": "dist",
-		"noErrorTruncation": true
+		"noErrorTruncation": true,
+		"allowJs": true
 	},
-	"include": ["src/**/*.ts", "test/**/*.ts"],
+	"include": ["src/**/*.ts", "test/**/*.ts", "esm/**/*.mjs"],
 	"exclude": ["node_modules", "dist"]
 }

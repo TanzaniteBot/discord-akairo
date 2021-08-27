@@ -17,6 +17,16 @@
         "commands",
         "arguments"
     ],
+    "exports": {
+        ".": [
+            {
+                "require": "./dist/src/index.js",
+                "import": "./esm/discord.mjs"
+            },
+            "./dist/src/index.js"
+        ],
+        "./esm": "./esm/discord.mjs"
+    },
     "devDependencies": {
         "@discordjs/voice": "^0.5.0",
         "@types/lodash": "^4.14.172",
@@ -71,7 +81,10 @@
         "parserOptions": {
             "ecmaVersion": 12,
             "sourceType": "module",
-            "project": "./tsconfig.json"
+            "project": "./tsconfig.json",
+            "extraFileExtensions": [
+                ".mjs"
+            ]
         },
         "env": {
             "es2021": true,
