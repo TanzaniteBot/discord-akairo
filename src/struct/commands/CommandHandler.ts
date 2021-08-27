@@ -11,6 +11,7 @@ import {
 	TextBasedChannels,
 	User
 } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
 import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -709,15 +710,41 @@ export default class CommandHandler extends AkairoHandler {
 				return false;
 			}
 
+			const convertType = (val: ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes) => {
+				if (typeof val === "string") return val;
+				switch (val) {
+					case ApplicationCommandOptionTypes.SUB_COMMAND:
+						return "SUB_COMMAND";
+					case ApplicationCommandOptionTypes.SUB_COMMAND_GROUP:
+						return "SUB_COMMAND_GROUP";
+					case ApplicationCommandOptionTypes.STRING:
+						return "STRING";
+					case ApplicationCommandOptionTypes.INTEGER:
+						return "INTEGER";
+					case ApplicationCommandOptionTypes.BOOLEAN:
+						return "BOOLEAN";
+					case ApplicationCommandOptionTypes.USER:
+						return "USER";
+					case ApplicationCommandOptionTypes.CHANNEL:
+						return "CHANNEL";
+					case ApplicationCommandOptionTypes.ROLE:
+						return "ROLE";
+					case ApplicationCommandOptionTypes.MENTIONABLE:
+						return "MENTIONABLE";
+					case ApplicationCommandOptionTypes.NUMBER:
+						return "NUMBER";
+					default:
+						return "";
+				}
+			};
 			const convertedOptions = {};
 			for (const option of command.slashOptions) {
-				const rawValue = interaction.options.get(option.name, option.required ?? false);
-				if (rawValue.member) convertedOptions[option.name] = rawValue.member;
-				if (rawValue.user) convertedOptions[option.name] = rawValue.user;
-				else if (rawValue.channel) convertedOptions[option.name] = rawValue.channel;
-				else if (rawValue.role) convertedOptions[option.name] = rawValue.role;
-				else if (rawValue.message) convertedOptions[option.name] = rawValue.message;
-				else convertedOptions[option.name] = rawValue.value;
+				convertedOptions[option.name] =
+					interaction.options[
+						_.camelCase(
+							`GET_${convertType(option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes)}`
+						)
+					];
 			}
 
 			let key;
