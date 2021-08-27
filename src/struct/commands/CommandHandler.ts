@@ -763,7 +763,7 @@ export default class CommandHandler extends AkairoHandler {
 								option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes
 							).replace("SUB_COMMAND", "SUBCOMMAND")}`
 						)
-					];
+					]();
 			}
 
 			let key;
