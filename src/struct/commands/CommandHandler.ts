@@ -499,7 +499,7 @@ export default class CommandHandler extends AkairoHandler {
 			return Promise.resolve();
 		});
 		try {
-			await Promise.allSettled(promises);
+			await Promise.all(promises);
 		} catch (e) {
 			console.debug(promises);
 			console.debug(globalCommands);
