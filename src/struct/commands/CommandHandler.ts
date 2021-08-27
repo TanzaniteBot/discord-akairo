@@ -711,7 +711,13 @@ export default class CommandHandler extends AkairoHandler {
 
 			const convertedOptions = {};
 			for (const option of command.slashOptions) {
-				convertedOptions[option.name] = interaction.options.get(option.name, option.required || false)?.value;
+				const rawValue = interaction.options.get(option.name, option.required ?? false);
+				if (rawValue.member) convertedOptions[option.name] = rawValue.member;
+				if (rawValue.user) convertedOptions[option.name] = rawValue.user;
+				else if (rawValue.channel) convertedOptions[option.name] = rawValue.channel;
+				else if (rawValue.role) convertedOptions[option.name] = rawValue.role;
+				else if (rawValue.message) convertedOptions[option.name] = rawValue.message;
+				else convertedOptions[option.name] = rawValue.value;
 			}
 
 			let key;
