@@ -301,7 +301,7 @@ export default class Argument {
 		const commandDefs = this.command.argumentDefaults;
 		const handlerDefs = this.handler.argumentDefaults;
 		const optional = Util.choice(
-			typeof this.prompt === "object" && this.prompt.optional,
+			typeof this.prompt === "object" && this.prompt && this.prompt.optional,
 			commandDefs.prompt && commandDefs.prompt.optional,
 			handlerDefs.prompt && handlerDefs.prompt.optional
 		);
