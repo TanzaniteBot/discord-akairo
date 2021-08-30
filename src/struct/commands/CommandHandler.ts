@@ -491,7 +491,9 @@ export default class CommandHandler extends AkairoHandler {
 			};
 		};
 
-		const globalCommands = await this.client.application?.commands.fetch();
+		const globalCommands = (await this.client.application?.commands.fetch()).filter(
+			value => !!this.modules.find(mod => mod.aliases[0] === value.name)
+		);
 		const fullPermissions: GuildApplicationCommandPermissionData[] = globalCommands
 			.filter(value => !value.defaultPermission)
 			.filter(value => !!this.modules.find(mod => mod.aliases[0] === value.name))
