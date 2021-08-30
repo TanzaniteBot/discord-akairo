@@ -1,3 +1,4 @@
+import "discord-akairo-message-util";
 import "source-map-support/register";
 import packageJSON from "../package.json";
 import AkairoClient, { AkairoOptions } from "./struct/AkairoClient";
