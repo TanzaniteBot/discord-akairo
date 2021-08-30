@@ -728,7 +728,7 @@ export default class CommandHandler extends AkairoHandler {
 			const convertedOptions = {};
 			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
 			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
-			for (const option of interaction.options.data) {
+			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
 				convertedOptions[option.name] = interaction.options[
 					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`)
