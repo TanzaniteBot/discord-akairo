@@ -726,8 +726,8 @@ export default class CommandHandler extends AkairoHandler {
 				return false;
 			}
 			const convertedOptions = {};
-			if (interaction.options["_group"]) convertedOptions["subCommandGroup"] = interaction.options["_group"];
-			if (interaction.options["_subcommand"]) convertedOptions["subCommand"] = interaction.options["_subcommand"];
+			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
+			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
 			for (const option of interaction.options.data) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
 				convertedOptions[option.name] = interaction.options[
