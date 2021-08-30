@@ -1,10 +1,10 @@
-import AkairoError from "../../../util/AkairoError";
-import Argument, { ArgumentOptions } from "./Argument";
-import { ArgumentMatches } from "../../../util/Constants";
-import Flag from "../Flag";
 import { Message } from "discord.js";
+import AkairoError from "../../../util/AkairoError";
+import { ArgumentMatches } from "../../../util/Constants";
 import Command, { ArgumentGenerator } from "../Command";
 import { ContentParserResult } from "../ContentParser";
+import Flag from "../Flag";
+import Argument, { ArgumentOptions } from "./Argument";
 
 /**
  * Runs arguments.

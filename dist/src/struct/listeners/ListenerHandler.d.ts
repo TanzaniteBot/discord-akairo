@@ -70,7 +70,7 @@ export default class ListenerHandler extends AkairoHandler {
      * @param listener - Module to use.
      * @param filepath - Filepath of module.
      */
-    register(listener: Listener, filepath: string): void;
+    register(listener: Listener, filepath?: string): void;
     /**
      * Reloads a listener.
      * @param id - ID of the listener.

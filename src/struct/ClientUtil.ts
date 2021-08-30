@@ -226,7 +226,7 @@ export default class ClientUtil {
 	 * Makes a MessageEmbed.
 	 * @param data - Embed data.
 	 */
-	public embed(data: MessageEmbed | MessageEmbedOptions): MessageEmbed {
+	public embed(data?: MessageEmbed | MessageEmbedOptions): MessageEmbed {
 		return new MessageEmbed(data);
 	}
 

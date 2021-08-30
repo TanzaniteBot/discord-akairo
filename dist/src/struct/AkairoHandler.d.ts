@@ -1,9 +1,9 @@
 /// <reference types="node" />
-import AkairoModule from "./AkairoModule";
-import Category from "../util/Category";
 import { Collection } from "discord.js";
 import EventEmitter from "events";
+import Category from "../util/Category";
 import AkairoClient from "./AkairoClient";
+import AkairoModule from "./AkairoModule";
 export declare type Static<M> = {
     (): M;
 };
@@ -75,7 +75,7 @@ export default class AkairoHandler extends EventEmitter {
      * @param mod - Module to use.
      * @param filepath - Filepath of module.
      */
-    register(mod: AkairoModule, filepath: string): void;
+    register(mod: AkairoModule, filepath?: string): void;
     /**
      * Reloads a module.
      * @param id - ID of the module.

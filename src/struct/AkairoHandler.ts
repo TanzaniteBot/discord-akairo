@@ -1,12 +1,12 @@
-import AkairoError from "../util/AkairoError";
-import { AkairoHandlerEvents } from "../util/Constants";
-import AkairoModule from "./AkairoModule";
-import Category from "../util/Category";
 import { Collection } from "discord.js";
 import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
+import AkairoError from "../util/AkairoError";
+import Category from "../util/Category";
+import { AkairoHandlerEvents } from "../util/Constants";
 import AkairoClient from "./AkairoClient";
+import AkairoModule from "./AkairoModule";
 
 export type Static<M> = { (): M };
 
@@ -161,7 +161,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param mod - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public register(mod: AkairoModule, filepath: string): void {
+	public register(mod: AkairoModule, filepath?: string): void {
 		mod.filepath = filepath;
 		mod.client = this.client;
 		mod.handler = this;
@@ -173,7 +173,6 @@ export default class AkairoHandler extends EventEmitter {
 		}
 
 		if (!this.categories.has(mod.categoryID)) {
-			// @ts-expect-error
 			this.categories.set(mod.categoryID, new Category(mod.categoryID));
 		}
 

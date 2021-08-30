@@ -151,8 +151,17 @@ export default class CommandHandler extends AkairoHandler {
      * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
      */
     skipBuiltInPostInhibitors?: boolean;
+    /**
+     * Set up the command handler
+     */
     protected setup(): void;
+    /**
+     * Registers interaction commands.
+     */
     protected registerInteractionCommands(): Promise<void>;
+    /**
+     * updates interaction permissions
+     */
     protected updateInteractionPermissions(owners: Snowflake | Snowflake[]): Promise<void>;
     /**
      * Registers a module.

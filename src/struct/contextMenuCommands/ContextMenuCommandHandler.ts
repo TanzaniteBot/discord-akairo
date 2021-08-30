@@ -1,7 +1,7 @@
-import { Category } from "discord-akairo";
 import { Awaited, Collection, ContextMenuInteraction } from "discord.js";
 import { ContextMenuCommandHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
+import Category from "../../util/Category";
 import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants";
 import AkairoClient from "../AkairoClient";
 import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";

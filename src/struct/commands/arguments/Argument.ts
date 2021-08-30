@@ -1,11 +1,11 @@
+import { Message, MessageOptions, MessagePayload } from "discord.js";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants";
-import Flag from "../Flag";
 import Util from "../../../util/Util";
-import Command from "../Command";
-import { Message, MessagePayload, MessageOptions } from "discord.js";
-import TypeResolver from "./TypeResolver";
-import CommandHandler from "../CommandHandler";
 import AkairoClient from "../../AkairoClient";
+import Command from "../Command";
+import CommandHandler from "../CommandHandler";
+import Flag from "../Flag";
+import TypeResolver from "./TypeResolver";
 
 /**
  * Represents an argument for a command.
@@ -301,8 +301,7 @@ export default class Argument {
 		const commandDefs = this.command.argumentDefaults;
 		const handlerDefs = this.handler.argumentDefaults;
 		const optional = Util.choice(
-			// @ts-expect-error
-			this.prompt && this.prompt.optional,
+			typeof this.prompt === "object" && this.prompt.optional,
 			commandDefs.prompt && commandDefs.prompt.optional,
 			handlerDefs.prompt && handlerDefs.prompt.optional
 		);

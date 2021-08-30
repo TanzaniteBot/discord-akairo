@@ -14,7 +14,7 @@ import Flag from "./Flag";
  * @param options - Options for the command.
  */
 export default abstract class Command extends AkairoModule {
-    constructor(id: string, options: CommandOptions);
+    constructor(id: string, options?: CommandOptions);
     /**
      * Command names.
      */
@@ -314,7 +314,7 @@ export declare type BeforeAction = (message: Message) => any;
  * @param message - Message that triggered the command.
  * @param args - Evaluated arguments.
  */
-export declare type KeySupplier = (message: Message, args: any) => string;
+export declare type KeySupplier = (message: Message | AkairoMessage, args: any) => string;
 /**
  * A function used to check if the command should run arbitrarily.
  * @param message - Message to check.

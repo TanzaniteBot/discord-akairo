@@ -6,7 +6,7 @@ import AkairoModule from "../struct/AkairoModule";
  * @param iterable - Entries to set.
  */
 export default class Category<K extends string, V extends AkairoModule> extends Collection<K, V> {
-    constructor(id: string, iterable: Iterable<readonly [K, V]>);
+    constructor(id: string, iterable?: Iterable<readonly [K, V]>);
     /**
      * ID of the category.
      */

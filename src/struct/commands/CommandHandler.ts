@@ -11,6 +11,7 @@ import {
 	TextBasedChannels,
 	User
 } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
 import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -324,6 +325,9 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public skipBuiltInPostInhibitors?: boolean;
 
+	/**
+	 * Set up the command handler
+	 */
 	protected setup() {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands)
@@ -353,6 +357,9 @@ export default class CommandHandler extends AkairoHandler {
 		});
 	}
 
+	/**
+	 * Registers interaction commands.
+	 */
 	protected async registerInteractionCommands() {
 		const parsedSlashCommands: {
 			name: string;
@@ -457,6 +464,9 @@ export default class CommandHandler extends AkairoHandler {
 		}
 	}
 
+	/**
+	 * updates interaction permissions
+	 */
 	protected async updateInteractionPermissions(
 		owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */
 	) {
@@ -502,9 +512,11 @@ export default class CommandHandler extends AkairoHandler {
 		try {
 			await Promise.all(promises);
 		} catch (e) {
+			/* eslint-disable no-console */
 			console.debug(promises);
 			console.debug(globalCommands);
 			console.debug(fullPermissions);
+			/* eslint-enable no-console */
 			throw e;
 		}
 	}
@@ -619,11 +631,9 @@ export default class CommandHandler extends AkairoHandler {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
-					// @ts-expect-error
 					message.util = this.commandUtils.get(message.id);
 				} else {
-					// @ts-expect-error
-					message.util = new CommandUtil(this, message); // @ts-expect-error
+					message.util = new CommandUtil(this, message);
 					this.commandUtils.set(message.id, message.util);
 				}
 			}
@@ -641,7 +651,6 @@ export default class CommandHandler extends AkairoHandler {
 			}
 
 			if (this.commandUtil) {
-				// @ts-expect-error
 				message.util.parsed = parsed;
 			}
 
@@ -716,60 +725,19 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-			const enum ApplicationCommandOptionTypes {
-				SUB_COMMAND = 1,
-				SUB_COMMAND_GROUP = 2,
-				STRING = 3,
-				INTEGER = 4,
-				BOOLEAN = 5,
-				USER = 6,
-				CHANNEL = 7,
-				ROLE = 8,
-				MENTIONABLE = 9,
-				NUMBER = 10
-			}
-			const convertType = (val: ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes) => {
-				if (typeof val === "string") return val;
-				switch (val) {
-					case ApplicationCommandOptionTypes.SUB_COMMAND:
-						return "SUB_COMMAND";
-					case ApplicationCommandOptionTypes.SUB_COMMAND_GROUP:
-						return "SUB_COMMAND_GROUP";
-					case ApplicationCommandOptionTypes.STRING:
-						return "STRING";
-					case ApplicationCommandOptionTypes.INTEGER:
-						return "INTEGER";
-					case ApplicationCommandOptionTypes.BOOLEAN:
-						return "BOOLEAN";
-					case ApplicationCommandOptionTypes.USER:
-						return "USER";
-					case ApplicationCommandOptionTypes.CHANNEL:
-						return "CHANNEL";
-					case ApplicationCommandOptionTypes.ROLE:
-						return "ROLE";
-					case ApplicationCommandOptionTypes.MENTIONABLE:
-						return "MENTIONABLE";
-					case ApplicationCommandOptionTypes.NUMBER:
-						return "NUMBER";
-					default:
-						return "";
-				}
-			};
 			const convertedOptions = {};
-			for (const option of command.slashOptions) {
+			if (interaction.options["_group"]) convertedOptions["subCommandGroup"] = interaction.options["_group"];
+			if (interaction.options["_subcommand"]) convertedOptions["subCommand"] = interaction.options["_subcommand"];
+			for (const option of interaction.options.data) {
+				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
 				convertedOptions[option.name] = interaction.options[
-					_.camelCase(
-						`GET_${convertType(
-							option.type as ApplicationCommandOptionTypes | keyof ApplicationCommandOptionTypes
-						).replace("SUB_COMMAND", "SUBCOMMAND")}`
-					)
-				](option.name, option.required ?? false);
+					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`)
+				](option.name, false);
 			}
 
 			let key;
 			try {
-				// @ts-expect-error
-				if (command.lock) key = command.lock(message, convertedOptions);
+				if (command.lock) key = (command.lock as KeySupplier)(message, convertedOptions);
 				if (Util.isPromise(key)) key = await key;
 				if (key) {
 					if (command.locker?.has(key)) {

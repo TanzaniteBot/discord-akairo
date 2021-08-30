@@ -83,7 +83,7 @@ export default class ClientUtil {
      * Makes a MessageEmbed.
      * @param data - Embed data.
      */
-    embed(data: MessageEmbed | MessageEmbedOptions): MessageEmbed;
+    embed(data?: MessageEmbed | MessageEmbedOptions): MessageEmbed;
     /**
      * Combination of `<Client>.fetchUser()` and `<Guild>.fetchMember()`.
      * @param guild - Guild to fetch in.

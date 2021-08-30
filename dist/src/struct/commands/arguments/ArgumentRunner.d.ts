@@ -1,8 +1,8 @@
-import Argument, { ArgumentOptions } from "./Argument";
-import Flag from "../Flag";
 import { Message } from "discord.js";
 import Command, { ArgumentGenerator } from "../Command";
 import { ContentParserResult } from "../ContentParser";
+import Flag from "../Flag";
+import Argument, { ArgumentOptions } from "./Argument";
 /**
  * Runs arguments.
  * @param command - Command to run for.

@@ -1,6 +1,6 @@
 import CommandUtil from "../struct/commands/CommandUtil";
 
-export module discord.js {
+declare module "discord.js" {
 	export interface Message {
 		/**
 		 * Extra properties applied to the Discord.js message object.

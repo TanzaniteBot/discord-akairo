@@ -3,7 +3,6 @@ import { Command } from "../../src/index";
 
 export default class ConditionalCommand extends Command {
 	constructor() {
-		// @ts-expect-error
 		super("condition");
 	}
 

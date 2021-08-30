@@ -1,5 +1,5 @@
-import { Command } from "../../src/index";
 import util from "util";
+import { Command } from "../../src/index";
 
 export default class EvalCommand extends Command {
 	constructor() {
@@ -31,8 +31,7 @@ export default class EvalCommand extends Command {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const print = (...a) => {
 			const cleaned = a.map(obj => {
-				// @ts-expect-error
-				if (typeof o !== "string") obj = util.inspect(obj, { depth: 1 });
+				if (typeof a !== "string") obj = util.inspect(obj, { depth: 1 });
 				return obj.replace(tokenRegex, "[TOKEN]");
 			});
 

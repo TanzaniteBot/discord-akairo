@@ -1,9 +1,9 @@
-import Flag from "../Flag";
-import Command from "../Command";
-import { Message, MessagePayload, MessageOptions } from "discord.js";
-import TypeResolver from "./TypeResolver";
-import CommandHandler from "../CommandHandler";
+import { Message, MessageOptions, MessagePayload } from "discord.js";
 import AkairoClient from "../../AkairoClient";
+import Command from "../Command";
+import CommandHandler from "../CommandHandler";
+import Flag from "../Flag";
+import TypeResolver from "./TypeResolver";
 /**
  * Represents an argument for a command.
  * @param command - Command of the argument.

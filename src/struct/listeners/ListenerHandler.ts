@@ -131,7 +131,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param listener - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public override register(listener: Listener, filepath: string): void {
+	public override register(listener: Listener, filepath?: string): void {
 		super.register(listener, filepath);
 		listener.exec = listener.exec.bind(listener);
 		this.addToEmitter(listener.id);
