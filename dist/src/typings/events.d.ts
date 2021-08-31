@@ -75,7 +75,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
      * @param command - Command blocked.
      * @param remaining - Remaining time in milliseconds for cooldown.
      */
-    cooldown: [message: Message, command: Command, remaining: number];
+    cooldown: [message: Message | AkairoMessage, command: Command, remaining: number];
     /**
      * Emitted when a command or inhibitor errors.
      * @param error - The error.
