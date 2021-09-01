@@ -478,7 +478,7 @@ export default class CommandHandler extends AkairoHandler {
 			const command = this.modules.find(mod => mod.aliases[0] === value.name);
 			let allowedUsers: string[] = [];
 			/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
-			if (command.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
+			if (command?.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
 			allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
 
 			return {
