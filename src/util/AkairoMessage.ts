@@ -42,8 +42,11 @@ export default class AkairoMessage extends Base {
 		this.partial = false;
 
 		if (command instanceof Command) {
-			for (const option of command.slashOptions) {
-				this.content += ` ${option.name}: ${interaction.options.get(option.name, option.required || false)?.value}`;
+			if (interaction.options["_group"]) this.content += `group: ${interaction.options["_group"]}`;
+			if (interaction.options["_subcommand"]) this.content += `subcommand: ${interaction.options["_subcommand"]}`;
+			for (const option of interaction.options["_hoistedOptions"]) {
+				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
+				this.content += ` ${option.name}: ${interaction.options.get(option.name, false)?.value}`;
 			}
 		} else if (interaction.command.type === "MESSAGE") {
 			this.content += ` message: ${interaction.options.getMessage("message").id}`;
