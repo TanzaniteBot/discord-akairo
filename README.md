@@ -17,7 +17,8 @@
 
 ### Changes in this fork of akairo
 
-Please see [this file](/docs/general/updates.md) for a list of changes in this fork vs normal akairo
+Please see [this file](/docs/general/updates.md) for a list of changes in this fork vs normal akairo.
+If you have any questions related to this fork please contact `IRONM00N#0001` in the akairo server or join my [bot's discord](https://discord.gg/7FpsYp2c47).
 
 ## Features
 
@@ -77,14 +78,15 @@ _discord-akairo_
 `yarn add discord-akairo@NotEnoughUpdates/discord-akairo`
 
 _discord.js_  
-`yarn add discord.js@NotEnoughUpdates/discord.js`
+`yarn add discord.js@NotEnoughUpdates/discord.js` or `yarn add discord.js@dev`
 
 ## Links
 
 - [Website](https://discord-akairo.github.io)
 - [Repository](https://github.com/discord-akairo/discord-akairo)
 - [Changelog](https://github.com/discord-akairo/discord-akairo/releases)
-- [Discord](https://discord.gg/arTauDY)
+- [Official Akairo Discord](https://discord.gg/arTauDY)
+- [This Fork's Discord](https://discord.gg/7FpsYp2c47)
 
 ## Contributing
 
