@@ -762,7 +762,7 @@ export default class CommandHandler extends AkairoHandler {
 			try {
 				this.emit(CommandHandlerEvents.SLASH_STARTED, message, command, convertedOptions);
 				const ret =
-					Reflect.ownKeys(command).includes("execSlash") || this.execSlash
+					Object.getOwnPropertyNames(Object.getPrototypeOf(command)).includes("execSlash") || this.execSlash
 						? await command.execSlash(message, convertedOptions)
 						: await command.exec(message as any, convertedOptions);
 				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, command, convertedOptions, ret);
