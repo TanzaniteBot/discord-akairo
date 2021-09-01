@@ -13,29 +13,29 @@ You have to setup a `ListenerHandler` just like with commands and inhibitors.
 const { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } = require("discord-akairo");
 
 class MyClient extends AkairoClient {
-	constructor() {
-		super(
-			{
-				ownerID: "123992700587343872"
-			},
-			{
-				disableMentions: "everyone"
-			}
-		);
+  constructor() {
+    super(
+      {
+        ownerID: "123992700587343872"
+      },
+      {
+        disableMentions: "everyone"
+      }
+    );
 
-		this.commandHandler = new CommandHandler(this, {
-			directory: "./commands/",
-			prefix: "?"
-		});
+    this.commandHandler = new CommandHandler(this, {
+      directory: "./commands/",
+      prefix: "?"
+    });
 
-		this.inhibitorHandler = new InhibitorHandler(this, {
-			directory: "./inhibitors/"
-		});
+    this.inhibitorHandler = new InhibitorHandler(this, {
+      directory: "./inhibitors/"
+    });
 
-		this.listenerHandler = new ListenerHandler(this, {
-			directory: "./listeners/"
-		});
-	}
+    this.listenerHandler = new ListenerHandler(this, {
+      directory: "./listeners/"
+    });
+  }
 }
 
 const client = new MyClient();
@@ -59,16 +59,16 @@ Let's start with a simple client `ready` event.
 const { Listener } = require("discord-akairo");
 
 class ReadyListener extends Listener {
-	constructor() {
-		super("ready", {
-			emitter: "client",
-			event: "ready"
-		});
-	}
+  constructor() {
+    super("ready", {
+      emitter: "client",
+      event: "ready"
+    });
+  }
 
-	exec() {
-		console.log("I'm ready!");
-	}
+  exec() {
+    console.log("I'm ready!");
+  }
 }
 
 module.exports = ReadyListener;
@@ -90,9 +90,9 @@ Using `setEmitters`, we can set custom emitters:
 
 ```js
 this.listenerHandler.setEmitters({
-	commandHandler: this.commandHandler,
-	inhibitorHandler: this.inhibitorHandler,
-	listenerHandler: this.listenerHandler
+  commandHandler: this.commandHandler,
+  inhibitorHandler: this.inhibitorHandler,
+  listenerHandler: this.listenerHandler
 });
 ```
 
@@ -108,16 +108,16 @@ Since we set the command handler to the key `commandHandler` up above, we have t
 const { Listener } = require("discord-akairo");
 
 class CommandBlockedListener extends Listener {
-	constructor() {
-		super("commandBlocked", {
-			emitter: "commandHandler",
-			event: "commandBlocked"
-		});
-	}
+  constructor() {
+    super("commandBlocked", {
+      emitter: "commandHandler",
+      event: "commandBlocked"
+    });
+  }
 
-	exec(message, command, reason) {
-		console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`);
-	}
+  exec(message, command, reason) {
+    console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`);
+  }
 }
 
 module.exports = CommandBlockedListener;

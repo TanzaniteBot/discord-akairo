@@ -10,25 +10,25 @@ To set it up, simply import and instantiate the `InhibitorHandler`, just like wi
 const { AkairoClient, CommandHandler, InhibitorHandler } = require("discord-akairo");
 
 class MyClient extends AkairoClient {
-	constructor() {
-		super(
-			{
-				ownerID: "123992700587343872"
-			},
-			{
-				disableMentions: "everyone"
-			}
-		);
+  constructor() {
+    super(
+      {
+        ownerID: "123992700587343872"
+      },
+      {
+        disableMentions: "everyone"
+      }
+    );
 
-		this.commandHandler = new CommandHandler(this, {
-			directory: "./commands/",
-			prefix: "?"
-		});
+    this.commandHandler = new CommandHandler(this, {
+      directory: "./commands/",
+      prefix: "?"
+    });
 
-		this.inhibitorHandler = new InhibitorHandler(this, {
-			directory: "./inhibitors/"
-		});
-	}
+    this.inhibitorHandler = new InhibitorHandler(this, {
+      directory: "./inhibitors/"
+    });
+  }
 }
 
 const client = new MyClient();
@@ -51,17 +51,17 @@ Create a folder named `inhibitors`, then a file there to make one.
 const { Inhibitor } = require("discord-akairo");
 
 class BlacklistInhibitor extends Inhibitor {
-	constructor() {
-		super("blacklist", {
-			reason: "blacklist"
-		});
-	}
+  constructor() {
+    super("blacklist", {
+      reason: "blacklist"
+    });
+  }
 
-	exec(message) {
-		// He's a meanie!
-		const blacklist = ["81440962496172032"];
-		return blacklist.includes(message.author.id);
-	}
+  exec(message) {
+    // He's a meanie!
+    const blacklist = ["81440962496172032"];
+    return blacklist.includes(message.author.id);
+  }
 }
 
 module.exports = BlacklistInhibitor;

@@ -7,9 +7,9 @@ This can be enabled with the `allowMention` option.
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?",
-	allowMention: true
+  directory: "./commands/",
+  prefix: "?",
+  allowMention: true
 });
 ```
 
@@ -23,12 +23,12 @@ This is most useful with an actual database to back it up, so check out the [Usi
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: msg => {
-		// Get prefix here...
-		return prefix;
-	},
-	allowMention: true
+  directory: "./commands/",
+  prefix: msg => {
+    // Get prefix here...
+    return prefix;
+  },
+  allowMention: true
 });
 ```
 
@@ -41,16 +41,16 @@ To use them, simply add the `prefix` option.
 const { Command } = require("discord-akairo");
 
 class SecretCommand extends Command {
-	constructor() {
-		super("secret", {
-			aliases: ["secret"],
-			prefix: "???"
-		});
-	}
+  constructor() {
+    super("secret", {
+      aliases: ["secret"],
+      prefix: "???"
+    });
+  }
 
-	exec(message) {
-		return message.reply("Woah! How did you find this!?");
-	}
+  exec(message) {
+    return message.reply("Woah! How did you find this!?");
+  }
 }
 
 module.exports = SecretCommand;
@@ -67,10 +67,10 @@ Use the `aliasReplacement` option, which takes a regular expression to make alia
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?",
-	aliasReplacement: /-/g,
-	allowMention: true
+  directory: "./commands/",
+  prefix: "?",
+  aliasReplacement: /-/g,
+  allowMention: true
 });
 ```
 

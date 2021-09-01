@@ -14,16 +14,16 @@ const { Inhibitor } = require("discord-akairo");
 const globalBlacklist = require("something");
 
 class GlobalBlacklistInhibitor extends Inhibitor {
-	constructor() {
-		super("globalBlacklist", {
-			reason: "globalBlacklist",
-			priority: 1
-		});
-	}
+  constructor() {
+    super("globalBlacklist", {
+      reason: "globalBlacklist",
+      priority: 1
+    });
+  }
 
-	exec(message) {
-		return globalBlacklist.has(message.author.id);
-	}
+  exec(message) {
+    return globalBlacklist.has(message.author.id);
+  }
 }
 
 module.exports = BlacklistInhibitor;

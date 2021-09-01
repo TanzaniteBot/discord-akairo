@@ -9,28 +9,28 @@ If there was no input, it would go on as normal.
 const { Command } = require("discord-akairo");
 
 class HighestRoleCommand extends Command {
-	constructor() {
-		super("highestRole", {
-			aliases: ["highestRole"],
-			args: [
-				{
-					id: "member",
-					type: "member",
-					prompt: {
-						start: "Who would you like to get the highest role of?",
-						retry: "That's not a valid member! Try again.",
-						optional: true
-					},
-					default: message => message.member
-				}
-			],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("highestRole", {
+      aliases: ["highestRole"],
+      args: [
+        {
+          id: "member",
+          type: "member",
+          prompt: {
+            start: "Who would you like to get the highest role of?",
+            retry: "That's not a valid member! Try again.",
+            optional: true
+          },
+          default: message => message.member
+        }
+      ],
+      channel: "guild"
+    });
+  }
 
-	exec(message, args) {
-		return message.reply(args.member.roles.highest.name);
-	}
+  exec(message, args) {
+    return message.reply(args.member.roles.highest.name);
+  }
 }
 
 module.exports = HighestRoleCommand;
@@ -51,30 +51,30 @@ Infinite prompts are prompts that go on and on until the user says stop.
 const { Command } = require("discord-akairo");
 
 class PickCommand extends Command {
-	constructor() {
-		super("pick", {
-			aliases: ["pick"],
-			args: [
-				{
-					id: "items",
-					match: "none",
-					prompt: {
-						start: [
-							"What items would you like to pick from?",
-							"Type them in separate messages.",
-							"Type `stop` when you are done."
-						],
-						infinite: true
-					}
-				}
-			]
-		});
-	}
+  constructor() {
+    super("pick", {
+      aliases: ["pick"],
+      args: [
+        {
+          id: "items",
+          match: "none",
+          prompt: {
+            start: [
+              "What items would you like to pick from?",
+              "Type them in separate messages.",
+              "Type `stop` when you are done."
+            ],
+            infinite: true
+          }
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const picked = args.items[Math.floor(Math.random() * args.items.length)];
-		return message.reply(`I picked ${picked.trim()}!`);
-	}
+  exec(message, args) {
+    const picked = args.items[Math.floor(Math.random() * args.items.length)];
+    return message.reply(`I picked ${picked.trim()}!`);
+  }
 }
 
 module.exports = PickCommand;

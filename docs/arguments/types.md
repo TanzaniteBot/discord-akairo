@@ -88,25 +88,25 @@ The first way is with an array:
 const { Command } = require("discord-akairo");
 
 class PokemonCommand extends Command {
-	constructor() {
-		super("pokemon", {
-			aliases: ["pokemon"],
-			args: [
-				{
-					id: "option",
-					type: ["grass", "fire", "water", "electric"],
-					default: "electric"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("pokemon", {
+      aliases: ["pokemon"],
+      args: [
+        {
+          id: "option",
+          type: ["grass", "fire", "water", "electric"],
+          default: "electric"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		if (args.option === "grass") return message.reply("bulbasaur");
-		if (args.option === "fire") return message.reply("charmander");
-		if (args.option === "water") return message.reply("squirtle");
-		if (args.option === "electric") return message.reply("pikachu");
-	}
+  exec(message, args) {
+    if (args.option === "grass") return message.reply("bulbasaur");
+    if (args.option === "fire") return message.reply("charmander");
+    if (args.option === "water") return message.reply("squirtle");
+    if (args.option === "electric") return message.reply("pikachu");
+  }
 }
 
 module.exports = PokemonCommand;
@@ -122,30 +122,30 @@ You can also do aliases with the array type like so:
 const { Command } = require("discord-akairo");
 
 class PokemonCommand extends Command {
-	constructor() {
-		super("pokemon", {
-			aliases: ["pokemon"],
-			args: [
-				{
-					id: "option",
-					type: [
-						["grass", "leaf", "green"],
-						["fire", "red"],
-						["water", "blue"],
-						["electric", "electricity", "lightning", "yellow"]
-					],
-					default: "electric"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("pokemon", {
+      aliases: ["pokemon"],
+      args: [
+        {
+          id: "option",
+          type: [
+            ["grass", "leaf", "green"],
+            ["fire", "red"],
+            ["water", "blue"],
+            ["electric", "electricity", "lightning", "yellow"]
+          ],
+          default: "electric"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		if (args.option === "grass") return message.reply("bulbasaur");
-		if (args.option === "fire") return message.reply("charmander");
-		if (args.option === "water") return message.reply("squirtle");
-		if (args.option === "electric") return message.reply("pikachu");
-	}
+  exec(message, args) {
+    if (args.option === "grass") return message.reply("bulbasaur");
+    if (args.option === "fire") return message.reply("charmander");
+    if (args.option === "water") return message.reply("squirtle");
+    if (args.option === "electric") return message.reply("pikachu");
+  }
 }
 
 module.exports = PokemonCommand;
@@ -162,25 +162,25 @@ You can also use a regular expression as a type.
 const { Command } = require("discord-akairo");
 
 class AskCommand extends Command {
-	constructor() {
-		super("ask", {
-			aliases: ["ask"],
-			args: [
-				{
-					id: "yesOrNo",
-					type: /^(yes|no)$/i
-				}
-			]
-		});
-	}
+  constructor() {
+    super("ask", {
+      aliases: ["ask"],
+      args: [
+        {
+          id: "yesOrNo",
+          type: /^(yes|no)$/i
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		// {
-		//   match: [...],
-		//   matches: null
-		// }
-		console.log(args.yesOrNo);
-	}
+  exec(message, args) {
+    // {
+    //   match: [...],
+    //   matches: null
+    // }
+    console.log(args.yesOrNo);
+  }
 }
 
 module.exports = AskCommand;

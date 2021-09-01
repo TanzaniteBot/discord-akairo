@@ -8,16 +8,16 @@ You can categorize a module with the `category` option.
 const { Command } = require("discord-akairo");
 
 class PingCommand extends Command {
-	constructor() {
-		super("ping", {
-			aliases: ["ping"],
-			category: "stuff"
-		});
-	}
+  constructor() {
+    super("ping", {
+      aliases: ["ping"],
+      category: "stuff"
+    });
+  }
 
-	exec(message) {
-		return message.reply("Pong!");
-	}
+  exec(message) {
+    return message.reply("Pong!");
+  }
 }
 
 module.exports = PingCommand;
@@ -37,24 +37,24 @@ Here is a basic command that reloads the inputted ID:
 const { Command } = require("discord-akairo");
 
 class ReloadCommand extends Command {
-	constructor() {
-		super("reload", {
-			aliases: ["reload"],
-			args: [
-				{
-					id: "commandID"
-				}
-			],
-			ownerOnly: true,
-			category: "owner"
-		});
-	}
+  constructor() {
+    super("reload", {
+      aliases: ["reload"],
+      args: [
+        {
+          id: "commandID"
+        }
+      ],
+      ownerOnly: true,
+      category: "owner"
+    });
+  }
 
-	exec(message, args) {
-		// `this` refers to the command object.
-		this.handler.reload(args.commandID);
-		return message.reply(`Reloaded command ${args.commandID}!`);
-	}
+  exec(message, args) {
+    // `this` refers to the command object.
+    this.handler.reload(args.commandID);
+    return message.reply(`Reloaded command ${args.commandID}!`);
+  }
 }
 
 module.exports = ReloadCommand;

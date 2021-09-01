@@ -10,23 +10,23 @@ This is where you can use a function.
 const { Command } = require("discord-akairo");
 
 class HighestRoleCommand extends Command {
-	constructor() {
-		super("highestRole", {
-			aliases: ["highestRole"],
-			args: [
-				{
-					id: "member",
-					type: "member",
-					default: message => message.member
-				}
-			],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("highestRole", {
+      aliases: ["highestRole"],
+      args: [
+        {
+          id: "member",
+          type: "member",
+          default: message => message.member
+        }
+      ],
+      channel: "guild"
+    });
+  }
 
-	exec(message, args) {
-		return message.reply(args.member.roles.highest.name);
-	}
+  exec(message, args) {
+    return message.reply(args.member.roles.highest.name);
+  }
 }
 
 module.exports = HighestRoleCommand;
@@ -121,10 +121,10 @@ Take a look at this slightly exaggerated example for a type for a page argument:
 
 ```js
 args: [
-	{
-		id: "page",
-		type: Argument.compose(Argument.range("integer", 0, Infinity), n => n - 1)
-	}
+  {
+    id: "page",
+    type: Argument.compose(Argument.range("integer", 0, Infinity), n => n - 1)
+  }
 ];
 ```
 

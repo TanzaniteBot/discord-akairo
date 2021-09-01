@@ -21,23 +21,23 @@ We will be reusing this command:
 const { Command } = require("discord-akairo");
 
 class HighestRoleCommand extends Command {
-	constructor() {
-		super("highestRole", {
-			aliases: ["highestRole"],
-			args: [
-				{
-					id: "member",
-					type: "member",
-					default: message => message.member
-				}
-			],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("highestRole", {
+      aliases: ["highestRole"],
+      args: [
+        {
+          id: "member",
+          type: "member",
+          default: message => message.member
+        }
+      ],
+      channel: "guild"
+    });
+  }
 
-	exec(message, args) {
-		return message.reply(args.member.roles.highest.name);
-	}
+  exec(message, args) {
+    return message.reply(args.member.roles.highest.name);
+  }
 }
 
 module.exports = HighestRoleCommand;
@@ -51,26 +51,26 @@ Now, add the `prompt` property with the options you want.
 const { Command } = require("discord-akairo");
 
 class HighestRoleCommand extends Command {
-	constructor() {
-		super("highestRole", {
-			aliases: ["highestRole"],
-			args: [
-				{
-					id: "member",
-					type: "member",
-					prompt: {
-						start: "Who would you like to get the highest role of?",
-						retry: "That's not a valid member! Try again."
-					}
-				}
-			],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("highestRole", {
+      aliases: ["highestRole"],
+      args: [
+        {
+          id: "member",
+          type: "member",
+          prompt: {
+            start: "Who would you like to get the highest role of?",
+            retry: "That's not a valid member! Try again."
+          }
+        }
+      ],
+      channel: "guild"
+    });
+  }
 
-	exec(message, args) {
-		return message.reply(args.member.roles.highest.name);
-	}
+  exec(message, args) {
+    return message.reply(args.member.roles.highest.name);
+  }
 }
 
 module.exports = HighestRoleCommand;
@@ -91,11 +91,11 @@ This includes embeds, attachments, anything that can be sent.
 
 ```js
 prompt: {
-	start: message => {
-		const embed = new MessageEmbed().setDescription("Please input a member!");
-		const content = "Please!";
-		return { embed, content };
-	};
+  start: message => {
+    const embed = new MessageEmbed().setDescription("Please input a member!");
+    const content = "Please!";
+    return { embed, content };
+  };
 }
 ```
 
@@ -106,17 +106,17 @@ For the command handler or the command, we would set the `argumentDefaults` opti
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?",
-	argumentDefaults: {
-		prompt: {
-			timeout: "Time ran out, command has been cancelled.",
-			ended: "Too many retries, command has been cancelled.",
-			cancel: "Command has been cancelled.",
-			retries: 4,
-			time: 30000
-		}
-	}
+  directory: "./commands/",
+  prefix: "?",
+  argumentDefaults: {
+    prompt: {
+      timeout: "Time ran out, command has been cancelled.",
+      ended: "Too many retries, command has been cancelled.",
+      cancel: "Command has been cancelled.",
+      retries: 4,
+      time: 30000
+    }
+  }
 });
 ```
 

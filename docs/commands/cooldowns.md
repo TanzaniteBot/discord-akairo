@@ -10,18 +10,18 @@ const { Command } = require("discord-akairo");
 const exampleAPI = require("example-api");
 
 class RequestCommand extends Command {
-	constructor() {
-		super("request", {
-			aliases: ["request"],
-			cooldown: 10000,
-			ratelimit: 2
-		});
-	}
+  constructor() {
+    super("request", {
+      aliases: ["request"],
+      cooldown: 10000,
+      ratelimit: 2
+    });
+  }
 
-	async exec(message) {
-		const info = await exampleAPI.fetchInfo();
-		return message.reply(info);
-	}
+  async exec(message) {
+    const info = await exampleAPI.fetchInfo();
+    return message.reply(info);
+  }
 }
 
 module.exports = RequestCommand;
@@ -36,9 +36,9 @@ If you wish to set a default cooldown for all commands, the `defaultCooldown` op
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?",
-	defaultCooldown: 1000
+  directory: "./commands/",
+  prefix: "?",
+  defaultCooldown: 1000
 });
 ```
 
@@ -52,10 +52,10 @@ To change this, simply pass in an ID or an array of IDs:
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?",
-	defaultCooldown: 1000,
-	ignoreCooldown: ["123992700587343872", "130175406673231873"]
+  directory: "./commands/",
+  prefix: "?",
+  defaultCooldown: 1000,
+  ignoreCooldown: ["123992700587343872", "130175406673231873"]
 });
 ```
 

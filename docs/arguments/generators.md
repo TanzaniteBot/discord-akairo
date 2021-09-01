@@ -17,19 +17,19 @@ To get started, take this command:
 const { Command } = require("discord-akairo");
 
 class GeneratorCommand extends Command {
-	constructor() {
-		super("generator", {
-			aliases: ["generator"]
-		});
-	}
+  constructor() {
+    super("generator", {
+      aliases: ["generator"]
+    });
+  }
 
-	*args() {
-		// Here!
-	}
+  *args() {
+    // Here!
+  }
 
-	exec(message, args) {
-		// Do whatever.
-	}
+  exec(message, args) {
+    // Do whatever.
+  }
 }
 
 module.exports = GeneratorCommand;

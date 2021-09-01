@@ -8,8 +8,8 @@ To add a custom emitter, use the `setEmitters` method available on the listener 
 
 ```js
 this.listenerHandler.setEmitters({
-	process: process,
-	anything: youWant
+  process: process,
+  anything: youWant
 });
 ```
 
@@ -22,16 +22,16 @@ Now, we can use a listener on the process:
 const { Listener } = require("discord-akairo");
 
 class UnhandledRejectionListener extends Listener {
-	constructor() {
-		super("unhandledRejection", {
-			event: "unhandledRejection",
-			emitter: "process"
-		});
-	}
+  constructor() {
+    super("unhandledRejection", {
+      event: "unhandledRejection",
+      emitter: "process"
+    });
+  }
 
-	exec(error) {
-		console.error(error);
-	}
+  exec(error) {
+    console.error(error);
+  }
 }
 
 module.exports = UnhandledRejectionListener;

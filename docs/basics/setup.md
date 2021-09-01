@@ -29,16 +29,16 @@ As your bot gets more complicated, you may want to separate this client class fr
 const { AkairoClient } = require("discord-akairo");
 
 class MyClient extends AkairoClient {
-	constructor() {
-		super(
-			{
-				// Options for Akairo go here.
-			},
-			{
-				// Options for discord.js goes here.
-			}
-		);
-	}
+  constructor() {
+    super(
+      {
+        // Options for Akairo go here.
+      },
+      {
+        // Options for discord.js goes here.
+      }
+    );
+  }
 }
 
 const client = new MyClient();
@@ -53,16 +53,16 @@ We want to use Discord.js's `disableMentions` option too.
 const { AkairoClient } = require("discord-akairo");
 
 class MyClient extends AkairoClient {
-	constructor() {
-		super(
-			{
-				ownerID: "123992700587343872" // or ['123992700587343872', '86890631690977280']
-			},
-			{
-				disableMentions: "everyone"
-			}
-		);
-	}
+  constructor() {
+    super(
+      {
+        ownerID: "123992700587343872" // or ['123992700587343872', '86890631690977280']
+      },
+      {
+        disableMentions: "everyone"
+      }
+    );
+  }
 }
 
 const client = new MyClient();

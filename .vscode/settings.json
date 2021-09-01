@@ -2,6 +2,9 @@
 	"search.exclude": {
 		"**/dist": true
 	},
+	"files.exclude": {
+		"**/node_modules": true
+	},
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": true,
 		"source.fixAll.eslint": true,

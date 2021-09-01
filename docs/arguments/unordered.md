@@ -9,30 +9,30 @@ For example, if you want a command where the arguments are a role and a member i
 const { Command } = require("discord-akairo");
 
 class AddRoleCommand extends Command {
-	constructor() {
-		super("addrole", {
-			aliases: ["addrole"],
-			args: [
-				{
-					id: "member",
-					type: "member",
-					unordered: true
-				},
-				{
-					id: "role",
-					type: "role",
-					unordered: true
-				}
-			],
-			userPermissions: ["ADMINISTRATOR"],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("addrole", {
+      aliases: ["addrole"],
+      args: [
+        {
+          id: "member",
+          type: "member",
+          unordered: true
+        },
+        {
+          id: "role",
+          type: "role",
+          unordered: true
+        }
+      ],
+      userPermissions: ["ADMINISTRATOR"],
+      channel: "guild"
+    });
+  }
 
-	async exec(message, args) {
-		await args.member.roles.add(args.role);
-		return message.reply("Done!");
-	}
+  async exec(message, args) {
+    await args.member.roles.add(args.role);
+    return message.reply("Done!");
+  }
 }
 
 module.exports = AddRoleCommand;

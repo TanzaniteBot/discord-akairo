@@ -10,22 +10,22 @@ So, we need a different way of matching input instead of phrase by phrase.
 const { Command } = require("discord-akairo");
 
 class PickCommand extends Command {
-	constructor() {
-		super("pick", {
-			aliases: ["pick"],
-			args: [
-				{
-					// Only takes one phrase!
-					id: "items"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("pick", {
+      aliases: ["pick"],
+      args: [
+        {
+          // Only takes one phrase!
+          id: "items"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const picked = args.items; // ???
-		return message.reply(`I picked ${picked}`);
-	}
+  exec(message, args) {
+    const picked = args.items; // ???
+    return message.reply(`I picked ${picked}`);
+  }
 }
 
 module.exports = PickCommand;
@@ -37,23 +37,23 @@ To remedy this, we will use the `match` option.
 const { Command } = require("discord-akairo");
 
 class PickCommand extends Command {
-	constructor() {
-		super("pick", {
-			aliases: ["pick"],
-			args: [
-				{
-					id: "items",
-					match: "content"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("pick", {
+      aliases: ["pick"],
+      args: [
+        {
+          id: "items",
+          match: "content"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const items = args.items.split("|");
-		const picked = items[Math.floor(Math.random() * items.length)];
-		return message.reply(`I picked ${picked.trim()}!`);
-	}
+  exec(message, args) {
+    const items = args.items.split("|");
+    const picked = items[Math.floor(Math.random() * items.length)];
+    return message.reply(`I picked ${picked.trim()}!`);
+  }
 }
 
 module.exports = PickCommand;
@@ -73,31 +73,31 @@ const { Command } = require("discord-akairo");
 const exampleAPI = require("example-api");
 
 class StatsCommand extends Command {
-	constructor() {
-		super("stats", {
-			aliases: ["stats"],
-			args: [
-				{
-					id: "username"
-				},
-				{
-					id: "advanced",
-					match: "flag",
-					flag: "--advanced"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("stats", {
+      aliases: ["stats"],
+      args: [
+        {
+          id: "username"
+        },
+        {
+          id: "advanced",
+          match: "flag",
+          flag: "--advanced"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const user = exampleAPI.getUser(args.username);
+  exec(message, args) {
+    const user = exampleAPI.getUser(args.username);
 
-		if (args.advanced) {
-			return message.reply(user.advancedInfo);
-		}
+    if (args.advanced) {
+      return message.reply(user.advancedInfo);
+    }
 
-		return message.reply(user.basicInfo);
-	}
+    return message.reply(user.basicInfo);
+  }
 }
 
 module.exports = StatsCommand;
@@ -118,29 +118,29 @@ const { Command } = require("discord-akairo");
 const exampleAPI = require("example-api");
 
 class StatsCommand extends Command {
-	constructor() {
-		super("stats", {
-			aliases: ["stats"],
-			args: [
-				{
-					id: "username"
-				},
-				{
-					id: "color",
-					match: "option",
-					flag: "color:",
-					default: "red"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("stats", {
+      aliases: ["stats"],
+      args: [
+        {
+          id: "username"
+        },
+        {
+          id: "color",
+          match: "option",
+          flag: "color:",
+          default: "red"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const team = exampleAPI.getTeam(args.color);
-		const user = team.getUser(args.username);
+  exec(message, args) {
+    const team = exampleAPI.getTeam(args.color);
+    const user = team.getUser(args.username);
 
-		return message.reply(user.info);
-	}
+    return message.reply(user.info);
+  }
 }
 
 module.exports = StatsCommand;
@@ -173,24 +173,24 @@ We can do this with a custom separator using `separator` option alongside the `s
 const { Command } = require("discord-akairo");
 
 class PickCommand extends Command {
-	constructor() {
-		super("pick", {
-			aliases: ["pick"],
-			separator: "|",
-			args: [
-				{
-					id: "items",
-					match: "separate",
-					type: "number"
-				}
-			]
-		});
-	}
+  constructor() {
+    super("pick", {
+      aliases: ["pick"],
+      separator: "|",
+      args: [
+        {
+          id: "items",
+          match: "separate",
+          type: "number"
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const picked = args.items[Math.floor(Math.random() * args.items.length)];
-		return message.reply(`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`);
-	}
+  exec(message, args) {
+    const picked = args.items[Math.floor(Math.random() * args.items.length)];
+    return message.reply(`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`);
+  }
 }
 
 module.exports = PickCommand;

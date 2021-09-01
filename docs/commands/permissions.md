@@ -10,29 +10,29 @@ The two options to use are `clientPermissions` and `userPermissions`.
 const { Command } = require("discord-akairo");
 
 class BanCommand extends Command {
-	constructor() {
-		super("ban", {
-			aliases: ["ban"],
-			args: [
-				{
-					id: "member",
-					type: "member"
-				}
-			],
-			clientPermissions: ["BAN_MEMBERS"],
-			userPermissions: ["BAN_MEMBERS"],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("ban", {
+      aliases: ["ban"],
+      args: [
+        {
+          id: "member",
+          type: "member"
+        }
+      ],
+      clientPermissions: ["BAN_MEMBERS"],
+      userPermissions: ["BAN_MEMBERS"],
+      channel: "guild"
+    });
+  }
 
-	async exec(message, args) {
-		if (!args.member) {
-			return message.reply("No member found with that name.");
-		}
+  async exec(message, args) {
+    if (!args.member) {
+      return message.reply("No member found with that name.");
+    }
 
-		await args.member.ban();
-		return message.reply(`${args.member} was banned!`);
-	}
+    await args.member.ban();
+    return message.reply(`${args.member} was banned!`);
+  }
 }
 
 module.exports = BanCommand;
@@ -55,36 +55,36 @@ If the return value is null, then that means they're not missing anything.
 const { Command } = require("discord-akairo");
 
 class BanCommand extends Command {
-	constructor() {
-		super("ban", {
-			aliases: ["ban"],
-			args: [
-				{
-					id: "member",
-					type: "member"
-				}
-			],
-			clientPermissions: ["BAN_MEMBERS"],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("ban", {
+      aliases: ["ban"],
+      args: [
+        {
+          id: "member",
+          type: "member"
+        }
+      ],
+      clientPermissions: ["BAN_MEMBERS"],
+      channel: "guild"
+    });
+  }
 
-	userPermissions(message) {
-		if (!message.member.roles.cache.some(role => role.name === "Moderator")) {
-			return "Moderator";
-		}
+  userPermissions(message) {
+    if (!message.member.roles.cache.some(role => role.name === "Moderator")) {
+      return "Moderator";
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	async exec(message, args) {
-		if (!args.member) {
-			return message.reply("No member found with that name.");
-		}
+  async exec(message, args) {
+    if (!args.member) {
+      return message.reply("No member found with that name.");
+    }
 
-		await args.member.ban();
-		return message.reply(`${args.member} was banned!`);
-	}
+    await args.member.ban();
+    return message.reply(`${args.member} was banned!`);
+  }
 }
 
 module.exports = BanCommand;

@@ -10,20 +10,20 @@ For commands, we will import and instantiate the `CommandHandler`.
 const { AkairoClient, CommandHandler } = require("discord-akairo");
 
 class MyClient extends AkairoClient {
-	constructor() {
-		super(
-			{
-				ownerID: "123992700587343872" // or ['123992700587343872', '86890631690977280']
-			},
-			{
-				disableMentions: "everyone"
-			}
-		);
+  constructor() {
+    super(
+      {
+        ownerID: "123992700587343872" // or ['123992700587343872', '86890631690977280']
+      },
+      {
+        disableMentions: "everyone"
+      }
+    );
 
-		this.commandHandler = new CommandHandler(this, {
-			// Options for the command handler goes here.
-		});
-	}
+    this.commandHandler = new CommandHandler(this, {
+      // Options for the command handler goes here.
+    });
+  }
 }
 
 const client = new MyClient();
@@ -36,8 +36,8 @@ The `prefix` option is simply the prefixes you want to use, you can have multipl
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?" // or ['?', '!']
+  directory: "./commands/",
+  prefix: "?" // or ['?', '!']
 });
 ```
 
@@ -65,15 +65,15 @@ Here is a basic ping command:
 const { Command } = require("discord-akairo");
 
 class PingCommand extends Command {
-	constructor() {
-		super("ping", {
-			aliases: ["ping"]
-		});
-	}
+  constructor() {
+    super("ping", {
+      aliases: ["ping"]
+    });
+  }
 
-	exec(message) {
-		return message.reply("Pong!");
-	}
+  exec(message) {
+    return message.reply("Pong!");
+  }
 }
 
 module.exports = PingCommand;

@@ -14,15 +14,15 @@ Multiple regex commands/conditional commands can be triggered from one message.
 const { Command } = require("discord-akairo");
 
 class AyyCommand extends Command {
-	constructor() {
-		super("ayy", {
-			regex: /^ayy$/i
-		});
-	}
+  constructor() {
+    super("ayy", {
+      regex: /^ayy$/i
+    });
+  }
 
-	exec(message, args) {
-		return message.reply("lmao");
-	}
+  exec(message, args) {
+    return message.reply("lmao");
+  }
 }
 
 module.exports = AyyCommand;
@@ -40,20 +40,20 @@ The `regex` option can also be a function.
 const { Command } = require("discord-akairo");
 
 class AyyCommand extends Command {
-	constructor() {
-		super("ayy", {
-			category: "random"
-		});
-	}
+  constructor() {
+    super("ayy", {
+      category: "random"
+    });
+  }
 
-	regex(message) {
-		// Do some code...
-		return /^ayy$/i;
-	}
+  regex(message) {
+    // Do some code...
+    return /^ayy$/i;
+  }
 
-	exec(message, args) {
-		return message.reply("lmao");
-	}
+  exec(message, args) {
+    return message.reply("lmao");
+  }
 }
 
 module.exports = AyyCommand;

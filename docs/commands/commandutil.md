@@ -7,10 +7,10 @@ In order to make it available, you must enable `commandUtil`.
 
 ```js
 this.commandHandler = new CommandHandler(this, {
-	directory: "./commands/",
-	prefix: "?",
-	handleEdits: true,
-	commandUtil: true
+  directory: "./commands/",
+  prefix: "?",
+  handleEdits: true,
+  commandUtil: true
 });
 ```
 
@@ -27,16 +27,16 @@ This works for prompts as well.
 const { Command } = require("discord-akairo");
 
 class HelloCommand extends Command {
-	constructor() {
-		super("hello", {
-			aliases: ["hello"]
-		});
-	}
+  constructor() {
+    super("hello", {
+      aliases: ["hello"]
+    });
+  }
 
-	exec(message) {
-		// Also available: util.reply()
-		return message.util.send("Hello!");
-	}
+  exec(message) {
+    // Also available: util.reply()
+    return message.util.send("Hello!");
+  }
 }
 
 module.exports = HelloCommand;
@@ -59,23 +59,23 @@ CommandUtil stores all three of that and more for you.
 const { Command } = require("discord-akairo");
 
 class HelloCommand extends Command {
-	constructor() {
-		super("hello", {
-			aliases: ["hello", "hi", "konnichiha", "bonjour", "heyo"]
-		});
-	}
+  constructor() {
+    super("hello", {
+      aliases: ["hello", "hi", "konnichiha", "bonjour", "heyo"]
+    });
+  }
 
-	exec(message) {
-		if (message.util.parsed.alias === "konnichiha") {
-			return message.util.send("こんにちは！");
-		}
+  exec(message) {
+    if (message.util.parsed.alias === "konnichiha") {
+      return message.util.send("こんにちは！");
+    }
 
-		if (message.util.parsed.alias === "bonjour") {
-			return message.util.send("Bonjour!");
-		}
+    if (message.util.parsed.alias === "bonjour") {
+      return message.util.send("Bonjour!");
+    }
 
-		return message.util.send("Hello!");
-	}
+    return message.util.send("Hello!");
+  }
 }
 
 module.exports = HelloCommand;

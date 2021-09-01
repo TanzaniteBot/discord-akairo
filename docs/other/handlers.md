@@ -10,15 +10,15 @@ Create a new class for your module.
 const { AkairoModule } = require("discord-akairo");
 
 class CustomModule extends AkairoModule {
-	constructor(id, options = {}) {
-		super(id, options);
+  constructor(id, options = {}) {
+    super(id, options);
 
-		this.color = options.color || "red";
-	}
+    this.color = options.color || "red";
+  }
 
-	exec() {
-		throw new Error("Not implemented!");
-	}
+  exec() {
+    throw new Error("Not implemented!");
+  }
 }
 
 module.exports = CustomModule;
@@ -35,14 +35,14 @@ const { AkairoHandler } = require("discord-akairo");
 const CustomModule = require("./CustomModule");
 
 class CustomHandler extends AkairoHandler {
-	constructor(client, options = {}) {
-		super(client, {
-			directory: options.directory,
-			classToHandle: CustomModule
-		});
+  constructor(client, options = {}) {
+    super(client, {
+      directory: options.directory,
+      classToHandle: CustomModule
+    });
 
-		this.customOption = options.customOption || "something";
-	}
+    this.customOption = options.customOption || "something";
+  }
 }
 
 module.exports = CustomHandler;
@@ -56,22 +56,22 @@ const { AkairoClient } = require("discord-akairo");
 const CustomHandler = require("./CustomHandler");
 
 class MyClient extends AkairoClient {
-	constructor() {
-		super(
-			{
-				ownerID: "123992700587343872"
-			},
-			{
-				disableMentions: "everyone"
-			}
-		);
+  constructor() {
+    super(
+      {
+        ownerID: "123992700587343872"
+      },
+      {
+        disableMentions: "everyone"
+      }
+    );
 
-		this.customHandler = new CustomHandler(this, {
-			directory: "./customs/"
-		});
+    this.customHandler = new CustomHandler(this, {
+      directory: "./customs/"
+    });
 
-		this.customHandler.loadAll();
-	}
+    this.customHandler.loadAll();
+  }
 }
 
 module.exports = MyClient;
@@ -83,15 +83,15 @@ And the module:
 const CustomModule = require("../CustomModule");
 
 class CustomCustom extends CustomModule {
-	constructor() {
-		super("custom", {
-			color: "blue"
-		});
-	}
+  constructor() {
+    super("custom", {
+      color: "blue"
+    });
+  }
 
-	exec() {
-		console.log("I did something!");
-	}
+  exec() {
+    console.log("I did something!");
+  }
 }
 
 module.exports = CustomCustom;

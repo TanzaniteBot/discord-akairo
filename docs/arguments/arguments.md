@@ -11,16 +11,16 @@ Let's make a command that takes three numbers and adds them up.
 const { Command } = require("discord-akairo");
 
 class AddCommand extends Command {
-	constructor() {
-		super("add", {
-			aliases: ["add"]
-		});
-	}
+  constructor() {
+    super("add", {
+      aliases: ["add"]
+    });
+  }
 
-	exec(message) {
-		// This doesn't work!
-		return message.reply(a + b + c);
-	}
+  exec(message) {
+    // This doesn't work!
+    return message.reply(a + b + c);
+  }
 }
 
 module.exports = AddCommand;
@@ -33,33 +33,33 @@ This option must be an array of objects, containing info for parsing.
 const { Command } = require("discord-akairo");
 
 class AddCommand extends Command {
-	constructor() {
-		super("add", {
-			aliases: ["add"],
-			args: [
-				{
-					id: "numOne",
-					type: "number",
-					default: 0
-				},
-				{
-					id: "numTwo",
-					type: "number",
-					default: 0
-				},
-				{
-					id: "numThree",
-					type: "number",
-					default: 0
-				}
-			]
-		});
-	}
+  constructor() {
+    super("add", {
+      aliases: ["add"],
+      args: [
+        {
+          id: "numOne",
+          type: "number",
+          default: 0
+        },
+        {
+          id: "numTwo",
+          type: "number",
+          default: 0
+        },
+        {
+          id: "numThree",
+          type: "number",
+          default: 0
+        }
+      ]
+    });
+  }
 
-	exec(message, args) {
-		const sum = args.numOne + args.numTwo + args.numThree;
-		return message.reply(`The sum is ${sum}!`);
-	}
+  exec(message, args) {
+    const sum = args.numOne + args.numTwo + args.numThree;
+    return message.reply(`The sum is ${sum}!`);
+  }
 }
 
 module.exports = AddCommand;

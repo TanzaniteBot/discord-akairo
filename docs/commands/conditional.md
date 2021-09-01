@@ -13,19 +13,19 @@ Multiple conditional commands/regex commands can be triggered on one message.
 const { Command } = require("discord-akairo");
 
 class ComplimentCommand extends Command {
-	constructor() {
-		super("compliment", {
-			category: "random"
-		});
-	}
+  constructor() {
+    super("compliment", {
+      category: "random"
+    });
+  }
 
-	condition(message) {
-		return message.author.id === "126485019500871680";
-	}
+  condition(message) {
+    return message.author.id === "126485019500871680";
+  }
 
-	exec(message) {
-		return message.reply("You are a great person!");
-	}
+  exec(message) {
+    return message.reply("You are a great person!");
+  }
 }
 
 module.exports = ComplimentCommand;

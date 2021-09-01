@@ -8,15 +8,15 @@ If a command requires a guild to be used correctly, you can restrict it to a gui
 const { Command } = require("discord-akairo");
 
 class NicknameCommand extends Command {
-	constructor() {
-		super("nickname", {
-			aliases: ["nickname"]
-		});
-	}
+  constructor() {
+    super("nickname", {
+      aliases: ["nickname"]
+    });
+  }
 
-	exec(message) {
-		return message.reply(`Your nickname is ${message.member.nickname}.`);
-	}
+  exec(message) {
+    return message.reply(`Your nickname is ${message.member.nickname}.`);
+  }
 }
 
 module.exports = NicknameCommand;
@@ -28,16 +28,16 @@ The above breaks in a DM, so let's add the `channel` option.
 const { Command } = require("discord-akairo");
 
 class NicknameCommand extends Command {
-	constructor() {
-		super("nickname", {
-			aliases: ["nickname"],
-			channel: "guild"
-		});
-	}
+  constructor() {
+    super("nickname", {
+      aliases: ["nickname"],
+      channel: "guild"
+    });
+  }
 
-	exec(message) {
-		return message.reply(`Your nickname is ${message.member.nickname}.`);
-	}
+  exec(message) {
+    return message.reply(`Your nickname is ${message.member.nickname}.`);
+  }
 }
 
 module.exports = NicknameCommand;
@@ -56,18 +56,18 @@ Simply add `ownerOnly`.
 const { Command } = require("discord-akairo");
 
 class TokenCommand extends Command {
-	constructor() {
-		super("token", {
-			aliases: ["token"],
-			ownerOnly: true,
-			channel: "dm"
-		});
-	}
+  constructor() {
+    super("token", {
+      aliases: ["token"],
+      ownerOnly: true,
+      channel: "dm"
+    });
+  }
 
-	exec(message) {
-		// Don't actually do this.
-		return message.reply(this.client.token);
-	}
+  exec(message) {
+    // Don't actually do this.
+    return message.reply(this.client.token);
+  }
 }
 
 module.exports = TokenCommand;
