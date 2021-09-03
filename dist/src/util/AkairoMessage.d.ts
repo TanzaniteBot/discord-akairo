@@ -17,9 +17,17 @@ export default class AkairoMessage extends Base {
      */
     author: User;
     /**
+     * The application's id
+     */
+    applicationId: Snowflake;
+    /**
      * The channel that the interaction was sent in.
      */
     get channel(): TextBasedChannels | null;
+    /**
+     * The id of the channel this interaction was sent in
+     */
+    channelId: Snowflake | null;
     /**
      * The message contents with all mentions replaced by the equivalent text.
      * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
@@ -41,6 +49,7 @@ export default class AkairoMessage extends Base {
      * The guild the interaction was sent in (if in a guild channel).
      */
     get guild(): Guild | null;
+    guildId: Snowflake | null;
     /**
      * The ID of the interaction.
      */

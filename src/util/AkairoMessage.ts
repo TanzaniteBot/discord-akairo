@@ -29,9 +29,15 @@ export default class AkairoMessage extends Base {
 
 		this.author = interaction.user;
 
+		this.applicationId = interaction.applicationId;
+
+		this.channelId = interaction.channelId;
+
 		this.content = `${interaction.command.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
 
 		this.createdTimestamp = interaction.createdTimestamp;
+
+		this.guildId = interaction.guildId;
 
 		this.id = interaction.id;
 
@@ -61,11 +67,21 @@ export default class AkairoMessage extends Base {
 	public author: User;
 
 	/**
+	 * The application's id
+	 */
+	public applicationId: Snowflake;
+
+	/**
 	 * The channel that the interaction was sent in.
 	 */
 	public get channel(): TextBasedChannels | null {
 		return this.interaction.channel;
 	}
+
+	/**
+	 * The id of the channel this interaction was sent in
+	 */
+	public channelId: Snowflake | null;
 
 	/**
 	 * The message contents with all mentions replaced by the equivalent text.
@@ -98,6 +114,8 @@ export default class AkairoMessage extends Base {
 	public get guild(): Guild | null {
 		return this.interaction.guild;
 	}
+
+	public guildId: Snowflake | null;
 
 	/**
 	 * The ID of the interaction.
