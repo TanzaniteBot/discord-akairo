@@ -1,0 +1,1 @@
+{"version":3,"file":"sub.d.ts","sourceRoot":"","sources":["../../../test/commands/sub.ts"],"names":[],"mappings":"AAEA,OAAO,EAAc,OAAO,EAAE,MAAM,YAAY,CAAC;AAEjD,OAAO,EAAE,OAAO,EAAE,MAAM,iBAAiB,CAAC;AAE1C,MAAM,CAAC,OAAO,OAAO,UAAW,SAAQ,OAAO;;IAWrC,IAAI,CAAC,OAAO,EAAE,OAAO,EAAE,IAAI,EAAE;QAAE,KAAK,EAAE,MAAM,CAAA;KAAE;CAGvD"}
