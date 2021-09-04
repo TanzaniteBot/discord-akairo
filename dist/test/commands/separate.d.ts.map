@@ -1,1 +1,0 @@
-{"version":3,"file":"separate.d.ts","sourceRoot":"","sources":["../../../test/commands/separate.ts"],"names":[],"mappings":"AAEA,OAAO,EAAc,OAAO,EAAE,MAAM,YAAY,CAAC;AAEjD,OAAO,EAAE,OAAO,EAAE,MAAM,iBAAiB,CAAC;AAE1C,MAAM,CAAC,OAAO,OAAO,eAAgB,SAAQ,OAAO;;IAkB1C,IAAI,CAAC,OAAO,EAAE,OAAO,EAAE,IAAI,EAAE;QAAE,QAAQ,EAAE,MAAM,EAAE,CAAA;KAAE;CAG5D"}

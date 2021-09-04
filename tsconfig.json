@@ -17,10 +17,7 @@
 		"noErrorTruncation": true,
 		"allowJs": true,
 		"strict": true,
-		"useUnknownInCatchVariables": false,
-		"declarationMap": true,
-		"declaration": true,
-		"declarationDir": "dist"
+		"useUnknownInCatchVariables": false
 	},
 	"include": ["src/**/*.ts", "test/**/*.ts", "esm/**/*.mjs"],
 	"exclude": ["node_modules", "dist"]
