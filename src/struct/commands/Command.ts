@@ -27,12 +27,12 @@ export default abstract class Command extends AkairoModule {
 			args = this.args || [],
 			quoted = true,
 			separator,
-			channel = null,
+			channel = null!,
 			ownerOnly = false,
 			superUserOnly = false,
 			editable = true,
 			typing = false,
-			cooldown = null,
+			cooldown = null!,
 			ratelimit = 1,
 			argumentDefaults = {},
 			description = "",
@@ -79,7 +79,7 @@ export default abstract class Command extends AkairoModule {
 
 		this.onlyNsfw = Boolean(onlyNsfw);
 
-		this.channel = channel;
+		this.channel = channel!;
 
 		this.ownerOnly = Boolean(ownerOnly);
 
@@ -89,7 +89,7 @@ export default abstract class Command extends AkairoModule {
 
 		this.typing = Boolean(typing);
 
-		this.cooldown = cooldown;
+		this.cooldown = cooldown!;
 
 		this.ratelimit = ratelimit;
 
@@ -154,7 +154,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Usable only in this channel type.
 	 */
-	public channel?: string | null;
+	public channel?: string;
 
 	/**
 	 * The Akairo client.
@@ -169,7 +169,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Cooldown in milliseconds.
 	 */
-	public cooldown?: number | null;
+	public cooldown?: number;
 
 	/**
 	 * Description of the command.
@@ -234,7 +234,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Whether or not to consider quotes.
 	 */
-	public quoted: boolean | undefined;
+	public quoted!: boolean;
 
 	/**
 	 * Uses allowed before cooldown.
@@ -387,7 +387,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * Restricts channel to either 'guild' or 'dm'.
 	 */
-	channel?: "guild" | "dm" | null;
+	channel?: "guild" | "dm";
 
 	/**
 	 * Permissions required by the client to run this command.
@@ -402,7 +402,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * The command cooldown in milliseconds.
 	 */
-	cooldown?: number | null;
+	cooldown?: number;
 
 	/**
 	 * Description of the command.

@@ -1,12 +1,14 @@
+import EventEmitter from "events";
+
 /**
  * Akairo Utilities.
  */
 export default class Util {
 	/**
-	 *
+	 * Choose the first non-null element in an array
 	 * @param xs
 	 */
-	public static choice(...xs: any[]): any {
+	public static choice<T>(...xs: T[]): T | null {
 		for (const x of xs) {
 			if (x != null) {
 				return x;
@@ -67,9 +69,9 @@ export default class Util {
 	 * Converts something to become callable.
 	 * @param thing - What to turn into a callable.
 	 */
-	public static intoCallable(thing: any): any {
+	public static intoCallable<T>(thing: T | ((...args: any[]) => T)): (...args: any[]) => T {
 		if (typeof thing === "function") {
-			return thing;
+			return thing as () => T;
 		}
 
 		return () => thing;
@@ -79,7 +81,7 @@ export default class Util {
 	 * Checks if the supplied value is an event emitter.
 	 * @param value - Value to check.
 	 */
-	public static isEventEmitter(value: any): boolean {
+	public static isEventEmitter(value: any): value is EventEmitter {
 		return value && typeof value.on === "function" && typeof value.emit === "function";
 	}
 
@@ -87,7 +89,7 @@ export default class Util {
 	 * Checks if the supplied value is a promise.
 	 * @param value - Value to check.
 	 */
-	public static isPromise(value: any): boolean {
+	public static isPromise(value: any): value is Promise<any> {
 		return value && typeof value.then === "function" && typeof value.catch === "function";
 	}
 

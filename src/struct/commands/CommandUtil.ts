@@ -101,9 +101,12 @@ export default class CommandUtil {
 	 * @param options - Options to use.
 	 */
 	public async edit(options: string | MessageEditOptions | MessagePayload): Promise<Message>;
-	public async edit(options: string | MessagePayload | WebhookEditMessageOptions): Promise<Message | APIMessage> {
+	public async edit(options: string | WebhookEditMessageOptions | MessagePayload): Promise<Message | APIMessage>;
+	public async edit(
+		options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload
+	): Promise<Message | APIMessage> {
 		if (this.isSlash) {
-			return (this.lastResponse as any as AkairoMessage).interaction.editReply(options);
+			return (this.lastResponse as unknown as AkairoMessage).interaction.editReply(options);
 		} else {
 			return this.lastResponse!.edit(options);
 		}
@@ -115,25 +118,20 @@ export default class CommandUtil {
 	 * @param options - Options to use.
 	 */
 	public async reply(options: string | MessagePayload | ReplyMessageOptions): Promise<Message>;
-	public async reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage> {
-		let newOptions: ReplyMessageOptions | InteractionReplyOptions = {};
-		if (typeof options == "string") {
-			newOptions.content = options;
-		} else {
-			// @ts-expect-error
-			newOptions = options;
-		}
-
+	public async reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
+	public async reply(
+		options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions
+	): Promise<Message | APIMessage> {
+		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (
 			!this.isSlash &&
 			!this.shouldEdit &&
 			!(newOptions instanceof MessagePayload) &&
 			!Reflect.has(this.message, "deleted")
 		) {
-			// @ts-expect-error
-			newOptions.reply = {
-				messageReference: this.message, // @ts-expect-error
-				failIfNotExists: newOptions.failIfNotExists ?? true
+			(newOptions as MessageOptions).reply = {
+				messageReference: this.message as Message,
+				failIfNotExists: (newOptions as ReplyMessageOptions).failIfNotExists ?? true
 			};
 		}
 		return this.send(newOptions);
@@ -144,15 +142,12 @@ export default class CommandUtil {
 	 * @param options - Options to use.
 	 */
 	public async send(options: string | MessagePayload | MessageOptions): Promise<Message>;
-	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage> {
+	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
+	public async send(
+		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
+	): Promise<Message | APIMessage> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files?.length > 0;
-
-		let newOptions: MessageOptions | InteractionReplyOptions = {};
-		if (typeof options === "string") {
-			newOptions.content = options;
-		} else {
-			newOptions = options as MessageOptions | InteractionReplyOptions;
-		}
+		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!(this.message.interaction instanceof CommandInteraction)) {
 			if (typeof options !== "string") delete (options as InteractionReplyOptions).ephemeral;
 			if (this.shouldEdit && !hasFiles && !this.lastResponse!.deleted && !this.lastResponse!.attachments.size) {
@@ -185,7 +180,10 @@ export default class CommandUtil {
 	 * @param options - Options to use.
 	 */
 	public async sendNew(options: string | MessagePayload | MessageOptions): Promise<Message>;
-	public async sendNew(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage> {
+	public async sendNew(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
+	public async sendNew(
+		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
+	): Promise<Message | APIMessage> {
 		if (!(this.message.interaction instanceof CommandInteraction)) {
 			const sent = await this.message.channel?.send(options);
 			const lastSent = this.setLastResponse(sent!);

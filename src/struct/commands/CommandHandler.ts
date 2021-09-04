@@ -742,7 +742,7 @@ export default class CommandHandler extends AkairoHandler {
 			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
 			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
 			for (const option of interaction.options["_hoistedOptions"]) {
-				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
+				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
 				convertedOptions[option.name] = interaction.options[
 					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`) as
 						| "getBoolean"
@@ -785,7 +785,7 @@ export default class CommandHandler extends AkairoHandler {
 				const ret =
 					Object.getOwnPropertyNames(Object.getPrototypeOf(command)).includes("execSlash") || this.execSlash
 						? await command.execSlash(message, convertedOptions)
-						: await command.exec(message as any, convertedOptions);
+						: await command.exec(message, convertedOptions);
 				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, command, convertedOptions, ret);
 				return true;
 			} catch (err) {
@@ -1196,7 +1196,7 @@ export default class CommandHandler extends AkairoHandler {
 					if (this.cooldowns.get(id)![command.id]) {
 						clearTimeout(this.cooldowns.get(id)![command.id].timer);
 					}
-					this.cooldowns.get(id)![command.id] = null as any;
+					this.cooldowns.get(id)![command.id] = null!;
 
 					if (!Object.keys(this.cooldowns.get(id)!).length) {
 						this.cooldowns.delete(id);

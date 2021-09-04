@@ -18,15 +18,15 @@ export default class Argument {
 		{
 			match = ArgumentMatches.PHRASE,
 			type = ArgumentTypes.STRING,
-			flag = null,
+			flag = null!,
 			multipleFlags = false,
-			index = null,
+			index = null!,
 			unordered = false,
 			limit = Infinity,
-			prompt = null,
+			prompt = null!,
 			default: defaultValue = null,
-			otherwise = null,
-			modifyOtherwise = null
+			otherwise = null!,
+			modifyOtherwise = null!
 		}: ArgumentOptions = {}
 	) {
 		this.command = command;
@@ -39,19 +39,19 @@ export default class Argument {
 
 		this.multipleFlags = multipleFlags;
 
-		this.index = index;
+		this.index = index!;
 
 		this.unordered = unordered;
 
 		this.limit = limit;
 
-		this.prompt = prompt;
+		this.prompt = prompt!;
 
 		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue;
 
-		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
+		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise!;
 
-		this.modifyOtherwise = modifyOtherwise;
+		this.modifyOtherwise = modifyOtherwise!;
 	}
 
 	/**
@@ -91,7 +91,7 @@ export default class Argument {
 	/**
 	 * The index to start from.
 	 */
-	public index?: number | null;
+	public index?: number;
 
 	/**
 	 * The amount of phrases to match for rest, separate, content, or text match.
@@ -106,7 +106,7 @@ export default class Argument {
 	/**
 	 * Function to modify otherwise content.
 	 */
-	public modifyOtherwise: OtherwiseContentModifier | null;
+	public modifyOtherwise: OtherwiseContentModifier;
 
 	/**
 	 * Whether to process multiple option flags instead of just the first.
@@ -116,12 +116,12 @@ export default class Argument {
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
+	public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 	/**
 	 * The prompt options.
 	 */
-	public prompt?: ArgumentPromptOptions | boolean | null;
+	public prompt?: ArgumentPromptOptions | boolean;
 
 	/**
 	 * The type to cast to or a function to use to cast.
@@ -337,9 +337,9 @@ export default class Argument {
 			}
 
 			if (modifyOtherwise) {
-				text = await modifyOtherwise.call(this, message, text, {
+				text = await modifyOtherwise.call(this, message, text as string, {
 					phrase,
-					failure
+					failure: failure as Flag & { value: any }
 				});
 				if (Array.isArray(text)) {
 					text = text.join("\n");
@@ -642,7 +642,7 @@ export interface ArgumentOptions {
 	description?: string | any | any[];
 
 	/** The string(s) to use as the flag for flag or option match. */
-	flag?: string | string[] | null;
+	flag?: string | string[];
 
 	/**  ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator. */
 	id?: string;
@@ -651,7 +651,7 @@ export interface ArgumentOptions {
 	 * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
 	 * Ignored when used with the unordered option.
 	 */
-	index?: number | null;
+	index?: number;
 
 	/**
 	 * Amount of phrases to match when matching more than one.
@@ -664,7 +664,7 @@ export interface ArgumentOptions {
 	match?: ArgumentMatch;
 
 	/** Function to modify otherwise content. */
-	modifyOtherwise?: OtherwiseContentModifier | null;
+	modifyOtherwise?: OtherwiseContentModifier;
 
 	/**
 	 * Whether or not to have flags process multiple inputs.
@@ -674,10 +674,10 @@ export interface ArgumentOptions {
 	multipleFlags?: boolean;
 
 	/** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
-	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
+	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
 	/** Prompt options for when user does not provide input. */
-	prompt?: ArgumentPromptOptions | boolean | null;
+	prompt?: ArgumentPromptOptions | boolean;
 
 	/** Type to cast to. */
 	type?: ArgumentType | ArgumentTypeCaster;

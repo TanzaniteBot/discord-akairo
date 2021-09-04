@@ -174,14 +174,14 @@ export default class InhibitorHandler extends AkairoHandler {
 
 	public override on<K extends keyof InhibitorHandlerEvents>(
 		event: K,
-		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
+		listener: (...args: InhibitorHandlerEvents[K][]) => Awaited<void>
 	): this {
-		return super.on(event, listener as any);
+		return super.on(event, listener);
 	}
 	public override once<K extends keyof InhibitorHandlerEvents>(
 		event: K,
-		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
+		listener: (...args: InhibitorHandlerEvents[K][]) => Awaited<void>
 	): this {
-		return super.once(event, listener as any);
+		return super.once(event, listener);
 	}
 }

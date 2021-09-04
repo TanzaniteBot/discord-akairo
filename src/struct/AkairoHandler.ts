@@ -30,7 +30,7 @@ export default class AkairoHandler extends EventEmitter {
 
 		this.client = client;
 
-		this.directory = directory;
+		this.directory = directory!;
 
 		this.classToHandle = classToHandle;
 
@@ -68,7 +68,7 @@ export default class AkairoHandler extends EventEmitter {
 	/**
 	 * The main directory to modules.
 	 */
-	public directory?: string;
+	public directory: string;
 
 	/**
 	 * File extensions to load.
@@ -118,7 +118,7 @@ export default class AkairoHandler extends EventEmitter {
 			? thing
 			: function findExport(this: any, m: any): any {
 					if (!m) return null;
-					if (m.prototype instanceof (this as any).classToHandle) return m;
+					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
 					// eslint-disable-next-line @typescript-eslint/no-var-requires
 			  }.call(this, require(thing as string));

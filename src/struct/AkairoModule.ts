@@ -13,19 +13,19 @@ export default abstract class AkairoModule {
 
 		this.categoryID = category;
 
-		this.category = null;
+		this.category = null!;
 
-		this.filepath = null;
+		this.filepath = null!;
 
-		this.client = null;
+		this.client = null!;
 
-		this.handler = null;
+		this.handler = null!;
 	}
 
 	/**
 	 * Category this belongs to.
 	 */
-	public category: Category<string, AkairoModule> | null;
+	public category: Category<string, AkairoModule>;
 
 	/**
 	 * ID of the category this belongs to.
@@ -35,17 +35,17 @@ export default abstract class AkairoModule {
 	/**
 	 *  The Akairo client.
 	 */
-	public client: AkairoClient | null;
+	public client: AkairoClient;
 
 	/**
 	 * The filepath.
 	 */
-	public filepath: string | null;
+	public filepath: string;
 
 	/**
 	 * The handler.
 	 */
-	public handler: AkairoHandler | null;
+	public handler: AkairoHandler;
 
 	/**
 	 * ID of the module.

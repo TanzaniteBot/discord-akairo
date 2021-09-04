@@ -99,18 +99,7 @@ class Tokenizer {
 		this.position += n;
 	}
 
-	public choice(
-		...actions: {
-			(): boolean;
-			(): boolean;
-			(): boolean;
-			(): boolean;
-			(): boolean;
-			(): boolean;
-			(): boolean;
-			(): boolean;
-		}[]
-	) {
+	public choice(...actions: { (): boolean }[]) {
 		for (const action of actions) {
 			if (action.call(this)) {
 				return;

@@ -191,7 +191,7 @@ export default class ListenerHandler extends AkairoHandler {
 	setEmitters(emitters: any): ListenerHandler {
 		for (const [key, value] of Object.entries(emitters)) {
 			if (!Util.isEventEmitter(value)) throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
-			this.emitters.set(key, value as any);
+			this.emitters.set(key, value);
 		}
 
 		return this;
