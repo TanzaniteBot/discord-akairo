@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-import { Command, Flag } from "../../src/index";
+import { Formatters, Message } from "discord.js";
 import util from "util";
+import { Command, Flag } from "../../src/index";
 
 export default class FCommand extends Command {
 	constructor() {
@@ -17,7 +18,7 @@ export default class FCommand extends Command {
 
 						return phrase;
 					},
-					default: (msg, value) => {
+					default: (msg: Message, value: string) => {
 						console.log("failed", value);
 						return 1;
 					}
@@ -26,7 +27,7 @@ export default class FCommand extends Command {
 		});
 	}
 
-	override exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+	override exec(message: Message, args: { x: unknown }) {
+		message.channel.send(Formatters.codeBlock(`js${util.inspect(args, { depth: 1 })}`));
 	}
 }

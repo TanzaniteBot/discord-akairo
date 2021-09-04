@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-import { Command } from "../../src/index";
+import { Formatters, Message } from "discord.js";
 import util from "util";
+import { Command } from "../../src/index";
 
 export default class ArgsCommand extends Command {
 	constructor() {
@@ -47,7 +48,19 @@ export default class ArgsCommand extends Command {
 		});
 	}
 
-	override exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+	override exec(
+		message: Message,
+		args: {
+			text: string;
+			content: string;
+			phrase: string;
+			rest: string;
+			restContent: string;
+			separate: string[];
+			flag?: boolean;
+			option: string;
+		}
+	) {
+		message.channel.send(Formatters.codeBlock(`js${util.inspect(args, { depth: 1 })}`));
 	}
 }

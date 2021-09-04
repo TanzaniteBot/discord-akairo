@@ -11,6 +11,6 @@ export default class ConditionalPromiseCommand extends Command {
 	}
 
 	override exec(message: Message) {
-		return message.util.reply("made you promise condition");
+		return message.util!.reply("made you promise condition");
 	}
 }

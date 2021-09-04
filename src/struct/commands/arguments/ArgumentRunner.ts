@@ -47,9 +47,9 @@ export default class ArgumentRunner {
 			index: 0
 		};
 
-		const augmentRest = val => {
+		const augmentRest = (val: Flag | ArgumentOptions) => {
 			if (Flag.is(val, "continue")) {
-				val.rest = parsed.all
+				(val as any).rest = parsed.all
 					.slice(state.index)
 					.map(x => x.raw)
 					.join("");
@@ -426,7 +426,7 @@ export default class ArgumentRunner {
 	public static fromArguments(args: ArgumentOptions[]): GeneratorFunction {
 		// @ts-expect-error
 		return function* generate() {
-			const res = {};
+			const res: { [key: string]: any } = {};
 			// @ts-expect-error
 			for (const [id, arg] of args) {
 				res[id] = yield arg;

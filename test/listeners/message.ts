@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+import { Message } from "discord.js";
 import { Listener } from "../../src/index";
 
 export default class MessageListener extends Listener {
@@ -11,7 +12,7 @@ export default class MessageListener extends Listener {
 		});
 	}
 
-	override exec(msg) {
+	override exec(msg: Message) {
 		console.log(msg.content);
 	}
 }

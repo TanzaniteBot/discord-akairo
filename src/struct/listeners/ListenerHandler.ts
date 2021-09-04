@@ -76,7 +76,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param id - ID of the listener.
 	 */
 	public addToEmitter(id: string): Listener {
-		const listener: Listener = this.modules.get(id.toString());
+		const listener: Listener = this.modules.get(id.toString())!;
 		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
 		/**
@@ -84,7 +84,7 @@ export default class ListenerHandler extends AkairoHandler {
 		 */
 		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
 			? (listener.emitter as EventEmitter)
-			: this.emitters.get(listener.emitter as string);
+			: this.emitters.get(listener.emitter as string)!;
 		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		emitter[listener.type ?? "on"](listener.event, listener.exec);
@@ -172,12 +172,12 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param id - ID of the listener.
 	 */
 	public removeFromEmitter(id: string): Listener {
-		const listener: Listener = this.modules.get(id.toString());
+		const listener: Listener = this.modules.get(id.toString())!;
 		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
 		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
 			? (listener.emitter as EventEmitter)
-			: this.emitters.get(listener.emitter as string);
+			: this.emitters.get(listener.emitter as string)!;
 		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		emitter.removeListener(listener.event, listener.exec);

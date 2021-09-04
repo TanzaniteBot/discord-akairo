@@ -10,7 +10,7 @@ export default class ConditionalCommand extends Command {
 		return message.content === "make me condition";
 	}
 
-	override exec(message) {
-		return message.util.reply("made you condition");
+	override exec(message: Message) {
+		return message.util!.reply("made you condition");
 	}
 }

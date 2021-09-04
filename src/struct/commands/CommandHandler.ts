@@ -9,6 +9,7 @@ import {
 	Message,
 	Snowflake,
 	TextBasedChannels,
+	TextChannel,
 	User
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
@@ -283,7 +284,7 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * Inhibitor handler to use.
 	 */
-	public inhibitorHandler?: InhibitorHandler;
+	public inhibitorHandler: InhibitorHandler | null;
 
 	/**
 	 * Commands loaded, mapped by ID to Command.
@@ -379,7 +380,7 @@ export default class CommandHandler extends AkairoHandler {
 				type: "CHAT_INPUT" | "MESSAGE" | "USER";
 			}[]
 		> = new Collection();
-		const parseDescriptionCommand = description => {
+		const parseDescriptionCommand = (description: { content: () => any }) => {
 			if (typeof description === "object") {
 				if (typeof description.content === "function") return description.content();
 				if (typeof description.content === "string") return description.content;
@@ -401,8 +402,10 @@ export default class CommandHandler extends AkairoHandler {
 
 		let contextCommandHandler: ContextMenuCommandHandler | undefined;
 		for (const key in this.client) {
-			if (this.client[key] instanceof ContextMenuCommandHandler) {
-				contextCommandHandler = this.client[key];
+			if (this.client[key as keyof AkairoClient] instanceof ContextMenuCommandHandler) {
+				contextCommandHandler = this.client[key as keyof AkairoClient] as unknown as
+					| ContextMenuCommandHandler
+					| undefined;
 				break;
 			}
 		}
@@ -423,7 +426,7 @@ export default class CommandHandler extends AkairoHandler {
 			.map(({ name, description, options, defaultPermission, type }) => {
 				return { name, description, options, defaultPermission, type };
 			});
-		const currentGlobalCommands = (await this.client.application?.commands.fetch()).map(value1 => ({
+		const currentGlobalCommands = (await this.client.application?.commands.fetch())!.map(value1 => ({
 			name: value1.name,
 			description: value1.description,
 			options: value1.options,
@@ -432,7 +435,15 @@ export default class CommandHandler extends AkairoHandler {
 		}));
 
 		if (!_.isEqual(currentGlobalCommands, slashCommandsApp)) {
-			await this.client.application?.commands.set(slashCommandsApp);
+			await this.client.application?.commands.set(
+				slashCommandsApp as {
+					name: string;
+					description: string;
+					options: ApplicationCommandOptionData[] | undefined;
+					defaultPermission: boolean;
+					type: "CHAT_INPUT" | "MESSAGE" | "USER";
+				}[]
+			);
 		}
 
 		/* Guilds */
@@ -440,7 +451,7 @@ export default class CommandHandler extends AkairoHandler {
 			for (const guildId of guilds) {
 				guildSlashCommandsParsed.set(guildId, [
 					...(guildSlashCommandsParsed.get(guildId) ?? []),
-					{ name, description, options, defaultPermission, type }
+					{ name, description: description!, options: options!, defaultPermission, type }
 				]);
 			}
 		}
@@ -491,16 +502,16 @@ export default class CommandHandler extends AkairoHandler {
 			};
 		};
 
-		const globalCommands = (await this.client.application?.commands.fetch()).filter(
+		const globalCommands = (await this.client.application?.commands.fetch())?.filter(
 			value => !!this.modules.find(mod => mod.aliases[0] === value.name)
 		);
-		const fullPermissions: GuildApplicationCommandPermissionData[] = globalCommands
-			.filter(value => !value.defaultPermission)
+		const fullPermissions: GuildApplicationCommandPermissionData[] | undefined = globalCommands
+			?.filter(value => !value.defaultPermission)
 			.filter(value => !!this.modules.find(mod => mod.aliases[0] === value.name))
 			.map(value => mapCom(value));
 
 		const promises = this.client.guilds.cache.map(async guild => {
-			const perms = new Array(...fullPermissions);
+			const perms = new Array(...(fullPermissions ?? []));
 			await guild.commands.fetch();
 			if (guild.commands.cache.size)
 				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value)));
@@ -653,14 +664,14 @@ export default class CommandHandler extends AkairoHandler {
 			}
 
 			if (this.commandUtil) {
-				message.util.parsed = parsed;
+				message.util!.parsed = parsed;
 			}
 
 			let ran;
 			if (!parsed.command) {
 				ran = await this.handleRegexAndConditionalCommands(message);
 			} else {
-				ran = await this.handleDirectCommand(message, parsed.content, parsed.command);
+				ran = await this.handleDirectCommand(message, parsed.content!, parsed.command);
 			}
 
 			if (ran === false) {
@@ -701,7 +712,7 @@ export default class CommandHandler extends AkairoHandler {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
-					message.util = this.commandUtils.get(message.id);
+					message.util = this.commandUtils.get(message.id)!;
 				} else {
 					message.util = new CommandUtil(this, message);
 					this.commandUtils.set(message.id, message.util);
@@ -727,13 +738,23 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-			const convertedOptions = {};
+			const convertedOptions: any = {};
 			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
 			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
 			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
 				convertedOptions[option.name] = interaction.options[
-					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`)
+					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`) as
+						| "getBoolean"
+						| "getChannel"
+						| "getString"
+						| "getInteger"
+						| "getNumber"
+						| "getUser"
+						| "getMember"
+						| "getRole"
+						| "getMentionable"
+						| "getMessage"
 				](option.name, false);
 			}
 
@@ -806,7 +827,7 @@ export default class CommandHandler extends AkairoHandler {
 				this.emit(CommandHandlerEvents.COMMAND_BREAKOUT, message, command, args.message);
 				return this.handle(args.message);
 			} else if (Flag.is(args, "continue")) {
-				const continueCommand = this.modules.get(args.command);
+				const continueCommand = this.modules.get(args.command)!;
 				return this.handleDirectCommand(message, args.rest, continueCommand, args.ignore);
 			}
 
@@ -906,7 +927,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message to handle.
 	 */
 	public async handleConditionalCommands(message: Message): Promise<boolean> {
-		const trueCommands = [];
+		const trueCommands: Command[] = [];
 
 		const filterPromises = [];
 		for (const command of this.modules.values()) {
@@ -962,7 +983,7 @@ export default class CommandHandler extends AkairoHandler {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.CLIENT);
 		} else if (this.blockBots && message.author.bot) {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.BOT);
-		} else if (!slash && this.hasPrompt(message.channel, message.author)) {
+		} else if (!slash && this.hasPrompt(message.channel!, message.author)) {
 			this.emit(CommandHandlerEvents.IN_PROMPT, message);
 		} else {
 			return false;
@@ -1027,7 +1048,7 @@ export default class CommandHandler extends AkairoHandler {
 				return true;
 			}
 
-			if (command.onlyNsfw && !message.channel["nsfw"]) {
+			if (command.onlyNsfw && !(message.channel as TextChannel)?.["nsfw"]) {
 				this.emit(event, message, command, BuiltInReasons.NOT_NSFW);
 				return true;
 			}
@@ -1088,7 +1109,7 @@ export default class CommandHandler extends AkairoHandler {
 				}
 			} else if (message.guild) {
 				if (message.channel?.type === "DM") return false;
-				const missing = message.channel?.permissionsFor(message.guild.me)?.missing(command.clientPermissions);
+				const missing = message.channel?.permissionsFor(message.guild.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(
 						slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
@@ -1169,15 +1190,15 @@ export default class CommandHandler extends AkairoHandler {
 
 		if (!this.cooldowns.has(id)) this.cooldowns.set(id, {});
 
-		if (!this.cooldowns.get(id)[command.id]) {
-			this.cooldowns.get(id)[command.id] = {
+		if (!this.cooldowns.get(id)![command.id]) {
+			this.cooldowns.get(id)![command.id] = {
 				timer: setTimeout(() => {
-					if (this.cooldowns.get(id)[command.id]) {
-						clearTimeout(this.cooldowns.get(id)[command.id].timer);
+					if (this.cooldowns.get(id)![command.id]) {
+						clearTimeout(this.cooldowns.get(id)![command.id].timer);
 					}
-					this.cooldowns.get(id)[command.id] = null;
+					this.cooldowns.get(id)![command.id] = null as any;
 
-					if (!Object.keys(this.cooldowns.get(id)).length) {
+					if (!Object.keys(this.cooldowns.get(id)!).length) {
 						this.cooldowns.delete(id);
 					}
 				}, time).unref(),
@@ -1186,10 +1207,10 @@ export default class CommandHandler extends AkairoHandler {
 			};
 		}
 
-		const entry = this.cooldowns.get(id)[command.id];
+		const entry = this.cooldowns.get(id)![command.id];
 
 		if (entry.uses >= command.ratelimit) {
-			const end = this.cooldowns.get(id)[command.id].end;
+			const end = this.cooldowns.get(id)![command.id].end;
 			const diff = end - message.createdTimestamp;
 
 			this.emit(CommandHandlerEvents.COOLDOWN, message, command, diff);
@@ -1253,8 +1274,8 @@ export default class CommandHandler extends AkairoHandler {
 			return prefixes.map(p => [p, cmds]);
 		});
 
-		const pairs = Util.flatMap(await Promise.all(promises), x => x);
-		pairs.sort(([a], [b]) => Util.prefixCompare(a, b));
+		const pairs = Util.flatMap(await Promise.all(promises), (x: any) => x);
+		pairs.sort(([a]: any, [b]: any) => Util.prefixCompare(a, b));
 		return this.parseMultiplePrefixes(message, pairs);
 	}
 
@@ -1393,7 +1414,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param name - Alias to find with.
 	 */
 	public findCommand(name: string): Command {
-		return this.modules.get(this.aliases.get(name.toLowerCase()));
+		return this.modules.get(this.aliases.get(name.toLowerCase())!)!;
 	}
 
 	/**

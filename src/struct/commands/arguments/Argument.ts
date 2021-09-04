@@ -79,7 +79,7 @@ export default class Argument {
 	/**
 	 * The string(s) to use for flag or option match.
 	 */
-	public flag?: string | string[];
+	public flag?: string | string[] | null;
 
 	/**
 	 * The command handler.
@@ -91,7 +91,7 @@ export default class Argument {
 	/**
 	 * The index to start from.
 	 */
-	public index?: number;
+	public index?: number | null;
 
 	/**
 	 * The amount of phrases to match for rest, separate, content, or text match.
@@ -106,7 +106,7 @@ export default class Argument {
 	/**
 	 * Function to modify otherwise content.
 	 */
-	public modifyOtherwise: OtherwiseContentModifier;
+	public modifyOtherwise: OtherwiseContentModifier | null;
 
 	/**
 	 * Whether to process multiple option flags instead of just the first.
@@ -116,12 +116,12 @@ export default class Argument {
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
+	public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
 
 	/**
 	 * The prompt options.
 	 */
-	public prompt?: ArgumentPromptOptions | boolean;
+	public prompt?: ArgumentPromptOptions | boolean | null;
 
 	/**
 	 * The type to cast to or a function to use to cast.
@@ -158,7 +158,14 @@ export default class Argument {
 		const additionalRetry = Number(Boolean(commandInput));
 		const values = isInfinite ? [] : null;
 
-		const getText = async (promptType, prompter, retryCount, inputMessage, inputPhrase, inputParsed) => {
+		const getText = async (
+			promptType: string,
+			prompter: any,
+			retryCount: any,
+			inputMessage: Message | undefined,
+			inputPhrase: string | undefined,
+			inputParsed: string
+		) => {
 			let text = await Util.intoCallable(prompter).call(this, message, {
 				retries: retryCount,
 				infinite: isInfinite,
@@ -197,13 +204,18 @@ export default class Argument {
 		};
 
 		// eslint-disable-next-line complexity
-		const promptOne = async (prevMessage, prevInput, prevParsed, retryCount) => {
+		const promptOne = async (
+			prevMessage: Message | undefined,
+			prevInput: string | undefined,
+			prevParsed: any,
+			retryCount: number
+		): Promise<any> => {
 			let sentStart;
 			// This is either a retry prompt, the start of a non-infinite, or the start of an infinite.
 			if (retryCount !== 1 || !isInfinite || !values?.length) {
 				const promptType = retryCount === 1 ? "start" : "retry";
 				const prompter = retryCount === 1 ? promptOptions.start : promptOptions.retry;
-				const startText = await getText(promptType, prompter, retryCount, prevMessage, prevInput, prevParsed);
+				const startText = await getText(promptType, prompter, retryCount, prevMessage, prevInput, prevParsed!);
 
 				if (startText) {
 					sentStart = await (message.util || message.channel).send(startText);
@@ -215,7 +227,7 @@ export default class Argument {
 				}
 			}
 
-			let input;
+			let input: Message;
 			try {
 				input = (
 					await message.channel.awaitMessages({
@@ -224,7 +236,7 @@ export default class Argument {
 						time: promptOptions.time,
 						errors: ["time"]
 					})
-				).first();
+				).first()!;
 				if (message.util) message.util.addMessage(input);
 			} catch (err) {
 				const timeoutText = await getText("timeout", promptOptions.timeout, retryCount, prevMessage, prevInput, "");
@@ -272,9 +284,10 @@ export default class Argument {
 			}
 
 			if (isInfinite) {
-				values.push(parsedValue);
+				values!.push(parsedValue as never);
 				const limit = promptOptions.limit;
-				if (values.length < limit) return promptOne(message, input.content, parsedValue, 1);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+				if (values?.length! < limit) return promptOne(message, input.content, parsedValue, 1);
 
 				return values;
 			}
@@ -306,7 +319,7 @@ export default class Argument {
 			handlerDefs.prompt && handlerDefs.prompt.optional
 		);
 
-		const doOtherwise = async failure => {
+		const doOtherwise = async (failure: (Flag & { value: any }) | null | undefined) => {
 			const otherwise = Util.choice(this.otherwise, commandDefs.otherwise, handlerDefs.otherwise);
 
 			const modifyOtherwise = Util.choice(
@@ -433,7 +446,7 @@ export default class Argument {
 	 * @param types - Types to use.
 	 */
 	public static compose(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			let acc = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -451,7 +464,7 @@ export default class Argument {
 	 * @param types - Types to use.
 	 */
 	public static composeWithFailure(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			let acc = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -476,7 +489,7 @@ export default class Argument {
 	 * @param types - Types to use.
 	 */
 	public static product(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			const results = [];
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -517,7 +530,7 @@ export default class Argument {
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
 	public static tagged(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
@@ -535,7 +548,7 @@ export default class Argument {
 	 * @param types - Types to use.
 	 */
 	public static taggedUnion(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
 				entry = Argument.tagged(entry);
 				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
@@ -553,7 +566,7 @@ export default class Argument {
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
 	public static taggedWithInput(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
@@ -570,7 +583,7 @@ export default class Argument {
 	 * @param types - Types to use.
 	 */
 	public static union(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
 				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
@@ -588,7 +601,7 @@ export default class Argument {
 	 * @param predicate - The predicate function.
 	 */
 	public static validate(type: ArgumentType | ArgumentTypeCaster, predicate: ParsedValuePredicate): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) return res;
@@ -603,7 +616,7 @@ export default class Argument {
 	 * @param type - The type to use.
 	 */
 	public static withInput(type: ArgumentType | ArgumentTypeCaster): ArgumentTypeCaster {
-		return async function typeFn(message, phrase) {
+		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
@@ -629,7 +642,7 @@ export interface ArgumentOptions {
 	description?: string | any | any[];
 
 	/** The string(s) to use as the flag for flag or option match. */
-	flag?: string | string[];
+	flag?: string | string[] | null;
 
 	/**  ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator. */
 	id?: string;
@@ -638,7 +651,7 @@ export interface ArgumentOptions {
 	 * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
 	 * Ignored when used with the unordered option.
 	 */
-	index?: number;
+	index?: number | null;
 
 	/**
 	 * Amount of phrases to match when matching more than one.
@@ -651,7 +664,7 @@ export interface ArgumentOptions {
 	match?: ArgumentMatch;
 
 	/** Function to modify otherwise content. */
-	modifyOtherwise?: OtherwiseContentModifier;
+	modifyOtherwise?: OtherwiseContentModifier | null;
 
 	/**
 	 * Whether or not to have flags process multiple inputs.
@@ -661,10 +674,10 @@ export interface ArgumentOptions {
 	multipleFlags?: boolean;
 
 	/** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
-	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
+	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
 
 	/** Prompt options for when user does not provide input. */
-	prompt?: ArgumentPromptOptions | boolean;
+	prompt?: ArgumentPromptOptions | boolean | null;
 
 	/** Type to cast to. */
 	type?: ArgumentType | ArgumentTypeCaster;

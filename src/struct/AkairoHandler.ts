@@ -68,7 +68,7 @@ export default class AkairoHandler extends EventEmitter {
 	/**
 	 * The main directory to modules.
 	 */
-	public directory: string;
+	public directory?: string;
 
 	/**
 	 * File extensions to load.
@@ -92,14 +92,14 @@ export default class AkairoHandler extends EventEmitter {
 	public deregister(mod: AkairoModule): void {
 		if (mod.filepath) delete require.cache[require.resolve(mod.filepath)];
 		this.modules.delete(mod.id);
-		mod.category.delete(mod.id);
+		mod.category!.delete(mod.id);
 	}
 
 	/**
 	 * Finds a category by name.
 	 * @param name - Name to find with.
 	 */
-	public findCategory(name: string): Category<string, AkairoModule> {
+	public findCategory(name: string): Category<string, AkairoModule> | undefined {
 		return this.categories.find(category => {
 			return category.id.toLowerCase() === name.toLowerCase();
 		});
@@ -110,15 +110,15 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	public load(thing: string | AkairoModule, isReload = false): AkairoModule {
+	public load(thing: string | AkairoModule, isReload = false): AkairoModule | undefined {
 		const isClass = typeof thing === "function";
 		if (!isClass && !this.extensions.has(path.extname(thing as string))) return undefined;
 
 		let mod = isClass
 			? thing
-			: function findExport(m) {
+			: function findExport(this: any, m: any): any {
 					if (!m) return null;
-					if (m.prototype instanceof this.classToHandle) return m;
+					if (m.prototype instanceof (this as any).classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
 					// eslint-disable-next-line @typescript-eslint/no-var-requires
 			  }.call(this, require(thing as string));
@@ -131,7 +131,7 @@ export default class AkairoHandler extends EventEmitter {
 		}
 
 		if (this.modules.has(mod.id)) throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
-		this.register(mod, isClass ? null : (thing as string));
+		this.register(mod, isClass ? null! : (thing as string));
 		this.emit(AkairoHandlerEvents.LOAD, mod, isReload);
 		return mod;
 	}
@@ -144,7 +144,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * Defaults to the filter passed in the constructor.
 	 */
 	public loadAll(
-		directory: string = this.directory,
+		directory: string = this.directory!,
 		filter: LoadPredicate = this.loadFilter || (() => true)
 	): AkairoHandler {
 		const filepaths = AkairoHandler.readdirRecursive(directory);
@@ -162,13 +162,13 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param filepath - Filepath of module.
 	 */
 	public register(mod: AkairoModule, filepath?: string): void {
-		mod.filepath = filepath;
+		mod.filepath = filepath!;
 		mod.client = this.client;
 		mod.handler = this;
 		this.modules.set(mod.id, mod);
 
 		if (mod.categoryID === "default" && this.automateCategories) {
-			const dirs = path.dirname(filepath).split(path.sep);
+			const dirs = path.dirname(filepath!).split(path.sep);
 			mod.categoryID = dirs[dirs.length - 1];
 		}
 
@@ -176,7 +176,7 @@ export default class AkairoHandler extends EventEmitter {
 			this.categories.set(mod.categoryID, new Category(mod.categoryID));
 		}
 
-		const category = this.categories.get(mod.categoryID);
+		const category = this.categories.get(mod.categoryID)!;
 		mod.category = category;
 		category.set(mod.id, mod);
 	}
@@ -185,7 +185,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * Reloads a module.
 	 * @param id - ID of the module.
 	 */
-	public reload(id: string): AkairoModule {
+	public reload(id: string): AkairoModule | undefined {
 		const mod = this.modules.get(id.toString());
 		if (!mod) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 		if (!mod.filepath) throw new AkairoError("NOT_RELOADABLE", this.classToHandle.name, id);

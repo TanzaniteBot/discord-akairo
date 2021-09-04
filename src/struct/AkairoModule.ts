@@ -25,7 +25,7 @@ export default abstract class AkairoModule {
 	/**
 	 * Category this belongs to.
 	 */
-	public category: Category<string, AkairoModule>;
+	public category: Category<string, AkairoModule> | null;
 
 	/**
 	 * ID of the category this belongs to.
@@ -35,17 +35,17 @@ export default abstract class AkairoModule {
 	/**
 	 *  The Akairo client.
 	 */
-	public client: AkairoClient;
+	public client: AkairoClient | null;
 
 	/**
 	 * The filepath.
 	 */
-	public filepath: string;
+	public filepath: string | null;
 
 	/**
 	 * The handler.
 	 */
-	public handler: AkairoHandler;
+	public handler: AkairoHandler | null;
 
 	/**
 	 * ID of the module.

@@ -1,3 +1,4 @@
+import { Message } from "discord.js";
 import util from "util";
 import { Command } from "../../src/index";
 
@@ -17,19 +18,19 @@ export default class EvalCommand extends Command {
 		});
 	}
 
-	override async exec(message, { code }) {
-		if (!code) return message.util.reply("No code provided!");
+	override async exec(message: Message, { code }: { code: string }) {
+		if (!code) return message.util!.reply("No code provided!");
 
 		const evaled: any = {};
-		const logs = [];
+		const logs: any[] = [];
 
-		const token = this.client.token.split("").join("[^]{0,2}");
-		const rev = this.client.token.split("").reverse().join("[^]{0,2}");
+		const token = this.client.token!.split("").join("[^]{0,2}");
+		const rev = this.client.token!.split("").reverse().join("[^]{0,2}");
 		const tokenRegex = new RegExp(`${token}|${rev}`, "g");
 		const cb = "```";
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const print = (...a) => {
+		const print = (...a: any[]) => {
 			const cleaned = a.map(obj => {
 				if (typeof a !== "string") obj = util.inspect(obj, { depth: 1 });
 				return obj.replace(tokenRegex, "[TOKEN]");
@@ -57,14 +58,9 @@ export default class EvalCommand extends Command {
 
 			if (output.length + code.length > 1900) output = "Output too long.";
 
-			const sent = await message.util.send([
-				`📥\u2000**Input**${cb}js`,
-				code,
-				cb,
-				`📤\u2000**Output**${cb}js`,
-				output,
-				cb
-			]);
+			const sent = await message.util!.send(
+				[`📥\u2000**Input**${cb}js`, code, cb, `📤\u2000**Output**${cb}js`, output, cb].join("\n")
+			);
 
 			evaled.message = sent;
 			evaled.errored = false;
@@ -73,20 +69,15 @@ export default class EvalCommand extends Command {
 			return sent;
 		} catch (err) {
 			console.error(err); // eslint-disable-line no-console
-			let error = err;
+			let error: Error | any = err;
 
 			error = error.toString();
 			error = `${logs.join("\n")}\n${logs.length && error === "undefined" ? "" : error}`;
 			error = error.replace(tokenRegex, "[TOKEN]");
 
-			const sent = await message.util.send([
-				`📥\u2000**Input**${cb}js`,
-				code,
-				cb,
-				`☠\u2000**Error**${cb}js`,
-				error,
-				cb
-			]);
+			const sent = await message.util!.send(
+				[`📥\u2000**Input**${cb}js`, code, cb, `☠\u2000**Error**${cb}js`, error, cb].join("\n")
+			);
 
 			evaled.message = sent;
 			evaled.errored = true;

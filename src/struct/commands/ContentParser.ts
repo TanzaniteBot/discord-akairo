@@ -74,7 +74,7 @@ class Tokenizer {
 	public flagWords: string[];
 	public optionFlagWords: string[];
 	public quoted: boolean;
-	public separator: string;
+	public separator?: string;
 	public position: number;
 	public state: number;
 	public tokens: any[];
@@ -87,19 +87,30 @@ class Tokenizer {
 		return this.content.slice(this.position).match(regex);
 	}
 
-	public slice(from, to) {
+	public slice(from: number, to: number) {
 		return this.content.slice(this.position + from, this.position + to);
 	}
 
-	public addToken(type, value) {
+	public addToken(type: string, value: string) {
 		this.tokens.push({ type, value });
 	}
 
-	public advance(n) {
+	public advance(n: number) {
 		this.position += n;
 	}
 
-	public choice(...actions) {
+	public choice(
+		...actions: {
+			(): boolean;
+			(): boolean;
+			(): boolean;
+			(): boolean;
+			(): boolean;
+			(): boolean;
+			(): boolean;
+			(): boolean;
+		}[]
+	) {
 		for (const action of actions) {
 			if (action.call(this)) {
 				return;
@@ -255,7 +266,7 @@ class Tokenizer {
 }
 
 class Parser {
-	public constructor(tokens, { separated }) {
+	public constructor(tokens: any[], { separated }: { separated: boolean }) {
 		this.tokens = tokens;
 		this.separated = separated;
 		this.position = 0;
@@ -289,15 +300,15 @@ class Parser {
 		this.position++;
 	}
 
-	public lookaheadN(n, ...types) {
+	public lookaheadN(n: number, ...types: string[]) {
 		return this.tokens[this.position + n] != null && types.includes(this.tokens[this.position + n].type);
 	}
 
-	public lookahead(...types) {
+	public lookahead(...types: string[]) {
 		return this.lookaheadN(0, ...types);
 	}
 
-	public match(...types) {
+	public match(...types: string[]) {
 		if (this.lookahead(...types)) {
 			this.next();
 			return this.tokens[this.position - 1];
@@ -481,7 +492,7 @@ export default class ContentParser {
 	/**
 	 * Whether to parse a separator.
 	 */
-	public separator: string;
+	public separator?: string;
 
 	/**
 	 * Parses content.
@@ -509,7 +520,7 @@ export default class ContentParser {
 		};
 
 		for (const arg of args) {
-			const arr = res[arg.match === ArgumentMatches.FLAG ? "flagWords" : "optionFlagWords"];
+			const arr: any[] | any = res[arg.match === ArgumentMatches.FLAG ? "flagWords" : "optionFlagWords"];
 			if (arg.match === ArgumentMatches.FLAG || arg.match === ArgumentMatches.OPTION) {
 				if (Array.isArray(arg.flag)) {
 					arr.push(...arg.flag);

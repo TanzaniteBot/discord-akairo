@@ -33,7 +33,7 @@ export default class AkairoMessage extends Base {
 
 		this.channelId = interaction.channelId;
 
-		this.content = `${interaction.command.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
+		this.content = `${interaction.command!.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
 
 		this.createdTimestamp = interaction.createdTimestamp;
 
@@ -54,10 +54,10 @@ export default class AkairoMessage extends Base {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type as any)) continue;
 				this.content += ` ${option.name}: ${interaction.options.get(option.name, false)?.value}`;
 			}
-		} else if (interaction.command.type === "MESSAGE") {
-			this.content += ` message: ${interaction.options.getMessage("message").id}`;
-		} else if (interaction.command.type === "USER") {
-			this.content += ` message: ${interaction.options.getUser("user").id}`;
+		} else if (interaction.command!.type === "MESSAGE") {
+			this.content += ` message: ${interaction.options.getMessage("message")!.id}`;
+		} else if (interaction.command!.type === "USER") {
+			this.content += ` message: ${interaction.options.getUser("user")!.id}`;
 		}
 	}
 
@@ -88,7 +88,7 @@ export default class AkairoMessage extends Base {
 	 * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
 	 */
 	public get cleanContent(): string | null {
-		return this.content != null ? Util.cleanContent(this.content, this.channel) : null;
+		return this.content != null ? Util.cleanContent(this.content, this.channel!) : null;
 	}
 
 	/**
@@ -131,7 +131,7 @@ export default class AkairoMessage extends Base {
 	 * Represents the author of the interaction as a guild member.
 	 * Only available if the interaction comes from a guild where the author is still a member.
 	 */
-	public member: GuildMember | APIInteractionGuildMember;
+	public member: GuildMember | APIInteractionGuildMember | null;
 
 	/**
 	 * Whether or not this message is a partial
@@ -141,7 +141,7 @@ export default class AkairoMessage extends Base {
 	/**
 	 * Utilities for command responding.
 	 */
-	public util: CommandUtil;
+	public util!: CommandUtil;
 
 	/**
 	 * The url to jump to this message

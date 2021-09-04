@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
+import { Formatters, Message } from "discord.js";
 import util from "util";
-import { Command, Flag } from "../../src/index";
+import { ArgumentOptions, Command, Flag } from "../../src/index";
 
 export default class GenerateCommand extends Command {
 	constructor() {
@@ -10,7 +11,7 @@ export default class GenerateCommand extends Command {
 		});
 	}
 
-	*args() {
+	*args(): IterableIterator<ArgumentOptions | Flag> {
 		const x = yield {
 			type: ["1", "2"],
 			otherwise: "Type 1 or 2!"
@@ -23,7 +24,7 @@ export default class GenerateCommand extends Command {
 		return { x };
 	}
 
-	override exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+	override exec(message: Message, args: { x: "1" | "2" }) {
+		message.channel.send(Formatters.codeBlock(`js${util.inspect(args, { depth: 1 })}`));
 	}
 }

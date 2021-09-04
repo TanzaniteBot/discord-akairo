@@ -197,12 +197,12 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 		event: K,
 		listener: (...args: ContextMenuCommandHandlerEvents[K]) => Awaited<void>
 	): this {
-		return super.on(event, listener);
+		return super.on(event, listener as any);
 	}
 	public override once<K extends keyof ContextMenuCommandHandlerEvents>(
 		event: K,
 		listener: (...args: ContextMenuCommandHandlerEvents[K]) => Awaited<void>
 	): this {
-		return super.once(event, listener);
+		return super.once(event, listener as any);
 	}
 }

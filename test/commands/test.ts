@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
-import { Argument, Command } from "../../src/index";
+import { Formatters, Message } from "discord.js";
 import util from "util";
+import { Argument, Command } from "../../src/index";
 
 export default class TestCommand extends Command {
 	constructor() {
@@ -22,7 +23,7 @@ export default class TestCommand extends Command {
 		});
 	}
 
-	override exec(message, args) {
-		message.channel.send(util.inspect(args, { depth: 1 }), { code: "js" });
+	override exec(message: Message, args: { x: number }) {
+		message.channel.send(Formatters.codeBlock(`js${util.inspect(args, { depth: 1 })}`));
 	}
 }

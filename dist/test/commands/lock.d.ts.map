@@ -1,1 +1,0 @@
-{"version":3,"file":"lock.d.ts","sourceRoot":"","sources":["../../../test/commands/lock.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,OAAO,EAAE,MAAM,YAAY,CAAC;AAErC,OAAO,EAAE,OAAO,EAAE,MAAM,iBAAiB,CAAC;AAI1C,MAAM,CAAC,OAAO,OAAO,WAAY,SAAQ,OAAO;;IAQtC,IAAI,CAAC,OAAO,EAAE,OAAO;CAM9B"}

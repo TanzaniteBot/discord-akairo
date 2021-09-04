@@ -89,7 +89,7 @@ export default class ClientUtil {
 		const name = caseSensitive ? emoji.name : emoji.name?.toLowerCase();
 
 		if (!wholeWord) {
-			return name.includes(text) || name.includes(text.replace(/:/, ""));
+			return !!name?.includes(text) || !!name?.includes(text.replace(/:/, ""));
 		}
 
 		return name === text || name === text.replace(/:/, "");
@@ -260,7 +260,7 @@ export default class ClientUtil {
 		channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
 		caseSensitive = false,
 		wholeWord = false
-	): GuildTextBasedChannels | BaseGuildVoiceChannel {
+	): GuildTextBasedChannels | BaseGuildVoiceChannel | undefined {
 		return (
 			channels.get(text as Snowflake) ||
 			channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord))
@@ -295,7 +295,7 @@ export default class ClientUtil {
 		emojis: Collection<Snowflake, Emoji>,
 		caseSensitive = false,
 		wholeWord = false
-	): Emoji {
+	): Emoji | undefined {
 		return (
 			emojis.get(text as Snowflake) || emojis.find(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord))
 		);
@@ -329,7 +329,7 @@ export default class ClientUtil {
 		guilds: Collection<Snowflake, Guild>,
 		caseSensitive = false,
 		wholeWord = false
-	): Guild {
+	): Guild | undefined {
 		return (
 			guilds.get(text as Snowflake) || guilds.find(guild => this.checkGuild(text, guild, caseSensitive, wholeWord))
 		);
@@ -363,7 +363,7 @@ export default class ClientUtil {
 		members: Collection<Snowflake, GuildMember>,
 		caseSensitive = false,
 		wholeWord = false
-	): GuildMember {
+	): GuildMember | undefined {
 		return (
 			members.get(text as Snowflake) || members.find(member => this.checkMember(text, member, caseSensitive, wholeWord))
 		);
@@ -393,7 +393,7 @@ export default class ClientUtil {
 		const resolved = [];
 
 		for (const key of Object.keys(Permissions.FLAGS)) {
-			if (BigInt(number) & Permissions.FLAGS[key]) resolved.push(key);
+			if (BigInt(number) & Permissions.FLAGS[key as keyof typeof Permissions.FLAGS]) resolved.push(key);
 		}
 
 		return resolved;
@@ -406,7 +406,12 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveRole(text: string, roles: Collection<Snowflake, Role>, caseSensitive = false, wholeWord = false): Role {
+	public resolveRole(
+		text: string,
+		roles: Collection<Snowflake, Role>,
+		caseSensitive = false,
+		wholeWord = false
+	): Role | undefined {
 		return roles.get(text as Snowflake) || roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord));
 	}
 
@@ -438,7 +443,7 @@ export default class ClientUtil {
 		users: Collection<Snowflake, User>,
 		caseSensitive = false,
 		wholeWord = false
-	): User {
+	): User | undefined {
 		return users.get(text as Snowflake) || users.find(user => this.checkUser(text, user, caseSensitive, wholeWord));
 	}
 

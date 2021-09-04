@@ -54,7 +54,7 @@ export default abstract class Listener extends AkairoModule {
 	/**
 	 * Type of listener.
 	 */
-	public type: string;
+	public type: ListenerType;
 
 	/**
 	 * Executes the listener.
@@ -98,5 +98,7 @@ export interface ListenerOptions extends AkairoModuleOptions {
 	 * Type of listener, either 'on' or 'once'.
 	 * Defaults to `on`
 	 */
-	type?: string;
+	type?: ListenerType;
 }
+
+export type ListenerType = "on" | "once" | "prependListener" | "prependOnceListener";

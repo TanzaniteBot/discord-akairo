@@ -18,7 +18,7 @@ import Flag from "./Flag";
  */
 export default abstract class Command extends AkairoModule {
 	constructor(id: string, options?: CommandOptions) {
-		super(id, { category: options.category });
+		super(id, { category: options?.category });
 
 		const {
 			onlyNsfw = false,
@@ -36,9 +36,9 @@ export default abstract class Command extends AkairoModule {
 			ratelimit = 1,
 			argumentDefaults = {},
 			description = "",
-			prefix = this.prefix,
-			clientPermissions = this.clientPermissions,
-			userPermissions = this.userPermissions,
+			prefix = this.prefix, // @ts-expect-error
+			clientPermissions = this.clientPermissions, // @ts-expect-error
+			userPermissions = this.userPermissions, // @ts-expect-error
 			regex = this.regex,
 			// @ts-expect-error
 			condition = this.condition || (() => false),
@@ -52,7 +52,7 @@ export default abstract class Command extends AkairoModule {
 			slashOptions,
 			slashEphemeral = false,
 			slashGuilds = []
-		}: CommandOptions = options;
+		}: CommandOptions = options ?? {};
 
 		this.aliases = aliases ?? [];
 
@@ -68,12 +68,14 @@ export default abstract class Command extends AkairoModule {
 		});
 
 		this.argumentRunner = new ArgumentRunner(this);
-		this.argumentGenerator = Array.isArray(args)
-			? ArgumentRunner.fromArguments(
-					// @ts-expect-error
-					args.map(arg => [arg.id, new Argument(this, arg)])
-			  )
-			: args.bind(this);
+		this.argumentGenerator = (
+			Array.isArray(args)
+				? ArgumentRunner.fromArguments(
+						// @ts-expect-error
+						args.map(arg => [arg.id, new Argument(this, arg)])
+				  )
+				: args.bind(this)
+		) as ArgumentGenerator;
 
 		this.onlyNsfw = Boolean(onlyNsfw);
 
@@ -111,9 +113,9 @@ export default abstract class Command extends AkairoModule {
 
 		if (typeof lock === "string") {
 			this.lock = {
-				guild: (message: Message) => message.guild && message.guild.id,
-				channel: (message: Message) => message.channel.id,
-				user: (message: Message) => message.author.id
+				guild: (message: Message | AkairoMessage): string => message.guild! && message.guild.id!,
+				channel: (message: Message | AkairoMessage): string => message.channel!.id,
+				user: (message: Message | AkairoMessage): string => message.author.id
 			}[lock];
 		}
 
@@ -152,7 +154,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Usable only in this channel type.
 	 */
-	public channel?: string;
+	public channel?: string | null;
 
 	/**
 	 * The Akairo client.
@@ -167,7 +169,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Cooldown in milliseconds.
 	 */
-	public cooldown?: number;
+	public cooldown?: number | null;
 
 	/**
 	 * Description of the command.
@@ -232,7 +234,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Whether or not to consider quotes.
 	 */
-	public quoted: boolean;
+	public quoted: boolean | undefined;
 
 	/**
 	 * Uses allowed before cooldown.
@@ -385,7 +387,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * Restricts channel to either 'guild' or 'dm'.
 	 */
-	channel?: "guild" | "dm";
+	channel?: "guild" | "dm" | null;
 
 	/**
 	 * Permissions required by the client to run this command.
@@ -400,7 +402,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * The command cooldown in milliseconds.
 	 */
-	cooldown?: number;
+	cooldown?: number | null;
 
 	/**
 	 * Description of the command.

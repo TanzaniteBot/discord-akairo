@@ -27,9 +27,10 @@ const Messages = {
  * @param args - Arguments.
  */
 export default class AkairoError extends Error {
-	public constructor(key: string, ...args: (string | boolean)[]) {
+	public constructor(key: keyof typeof Messages, ...args: (string | boolean)[]) {
 		if (Messages[key] == null) throw new TypeError(`Error key '${key}' does not exist`);
-		const message = typeof Messages[key] === "function" ? Messages[key](...args) : Messages[key];
+		const message =
+			typeof Messages[key] === "function" ? (Messages[key] as (...a: any[]) => any)(...args) : Messages[key];
 
 		super(message);
 		this.code = key;

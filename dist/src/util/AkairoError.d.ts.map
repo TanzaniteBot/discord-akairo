@@ -1,1 +1,0 @@
-{"version":3,"file":"AkairoError.d.ts","sourceRoot":"","sources":["../../../src/util/AkairoError.ts"],"names":[],"mappings":"AAuBA;;;;GAIG;AACH,MAAM,CAAC,OAAO,OAAO,WAAY,SAAQ,KAAK;gBAC1B,GAAG,EAAE,MAAM,EAAE,GAAG,IAAI,EAAE,CAAC,MAAM,GAAG,OAAO,CAAC,EAAE;IAQ7D;;OAEG;IACI,IAAI,EAAE,MAAM,CAAC;IAEpB;;OAEG;IACH,IAAoB,IAAI,WAEvB;CACD"}

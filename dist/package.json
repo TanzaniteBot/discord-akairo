@@ -3,7 +3,7 @@
     "version": "8.2.2",
     "description": "A highly customizable bot framework for Discord.js.",
     "main": "./dist/src/index.js",
-    "types": "./dist/src/index.d.ts",
+    "types": "./src/index.ts",
     "author": "1Computer",
     "license": "MIT",
     "keywords": [
@@ -199,7 +199,8 @@
             "@typescript-eslint/prefer-namespace-keyword": "off",
             "@typescript-eslint/no-namespace": "off",
             "@typescript-eslint/no-inferrable-types": "off",
-            "@typescript-eslint/no-empty-function": "off"
+            "@typescript-eslint/no-empty-function": "off",
+            "@typescript-eslint/no-non-null-assertion": "off"
         }
     }
 }

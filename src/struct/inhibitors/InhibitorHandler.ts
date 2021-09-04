@@ -165,7 +165,7 @@ export default class InhibitorHandler extends AkairoHandler {
 			);
 		}
 
-		const inhibitedInhibitors: Inhibitor[] = (await Promise.all(promises)).filter(r => r);
+		const inhibitedInhibitors = (await Promise.all(promises)).filter(r => r) as Inhibitor[];
 		if (!inhibitedInhibitors.length) return null;
 
 		inhibitedInhibitors.sort((a, b) => b.priority - a.priority);
@@ -176,12 +176,12 @@ export default class InhibitorHandler extends AkairoHandler {
 		event: K,
 		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
 	): this {
-		return super.on(event, listener);
+		return super.on(event, listener as any);
 	}
 	public override once<K extends keyof InhibitorHandlerEvents>(
 		event: K,
 		listener: (...args: InhibitorHandlerEvents[K]) => Awaited<void>
 	): this {
-		return super.once(event, listener);
+		return super.once(event, listener as any);
 	}
 }

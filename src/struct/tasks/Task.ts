@@ -32,7 +32,7 @@ export default abstract class Task extends AkairoModule {
 	/**
 	 * The time in milliseconds between each time the task is run.
 	 */
-	public delay: number;
+	public delay?: number;
 
 	/**
 	 * The filepath.

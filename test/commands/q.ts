@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 
+import { Message } from "discord.js";
 import { Command } from "../../src/index";
 
 export default class QCommand extends Command {
@@ -9,8 +10,8 @@ export default class QCommand extends Command {
 		});
 	}
 
-	override exec(message) {
-		const command = this.handler.modules.get("p");
+	override exec(message: Message) {
+		const command = this.handler.modules.get("p")!;
 		return this.handler.handleDirectCommand(message, "", command);
 	}
 }

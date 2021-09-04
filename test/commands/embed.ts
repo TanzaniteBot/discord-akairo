@@ -1,3 +1,4 @@
+import { Message } from "discord.js";
 import { Command } from "../../src/index";
 
 export default class EmbedCommand extends Command {
@@ -23,17 +24,18 @@ export default class EmbedCommand extends Command {
 		});
 	}
 
-	override exec(message, args) {
+	override exec(message: Message, args: { emptyContent?: boolean; emptyEmbed?: boolean; phrase?: string }) {
 		if (args.emptyContent) {
-			return message.util.send(null, { embed: { description: args.phrase } });
+			return message.util!.send({ embeds: [{ description: args.phrase }] });
 		}
 
 		if (args.emptyEmbed) {
-			return message.util.send(args.phrase, { embed: null });
+			return message.util!.send({ content: args.phrase, embeds: [] });
 		}
 
-		return message.util.send(args.phrase, {
-			embed: { description: args.phrase }
+		return message.util!.send({
+			content: args.phrase,
+			embeds: [{ description: args.phrase }]
 		});
 	}
 }

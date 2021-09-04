@@ -117,7 +117,7 @@ export default class TypeResolver {
 				return parseInt(n);
 			},
 
-			[ArgumentTypes.URL]: (_message: Message, phrase) => {
+			[ArgumentTypes.URL]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
 				if (/^<.+>$/.test(phrase)) phrase = phrase.slice(1, -1);
 
@@ -180,14 +180,16 @@ export default class TypeResolver {
 					? this.client.util.resolveUser(
 							phrase,
 							new Collection([
-								[message.channel.recipient.id, message.channel.recipient],
-								[this.client.user?.id, this.client.user]
+								[message.channel.recipient.id!, message.channel.recipient!],
+								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+								[this.client.user?.id!, this.client.user!]
 							])
 					  )
 					: this.client.util.resolveUser(
 							phrase,
 							new Collection([
-								[this.client.user?.id, this.client.user]
+								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+								[this.client.user?.id!, this.client.user!]
 								// Not sure why this is here, bots can't be in group dms
 								// @ts-expect-error
 							]).concat(message.channel.recipients)
@@ -206,13 +208,15 @@ export default class TypeResolver {
 							phrase,
 							new Collection([
 								[message.channel.recipient.id, message.channel.recipient],
-								[this.client.user?.id, this.client.user]
+								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+								[this.client.user?.id!, this.client.user!]
 							])
 					  )
 					: this.client.util.resolveUsers(
 							phrase,
 							new Collection([
-								[this.client.user?.id, this.client.user]
+								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+								[this.client.user?.id!, this.client.user!]
 								// Not sure why this is here, bots can't be in group dms
 								// @ts-expect-error
 							]).concat(message.channel.recipients)

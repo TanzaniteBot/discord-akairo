@@ -27,7 +27,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
-	public guilds: Snowflake[];
+	public guilds?: Snowflake[];
 
 	/**
 	 * The name of the context menu command.
@@ -37,12 +37,12 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	/**
 	 * Usable only by the client owner.
 	 */
-	public ownerOnly: boolean;
+	public ownerOnly?: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
 	 */
-	public superUserOnly: boolean;
+	public superUserOnly?: boolean;
 
 	/**
 	 * The type of the context menu command.
