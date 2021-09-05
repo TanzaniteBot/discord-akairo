@@ -38,7 +38,7 @@ import Flag from "./Flag";
  * @param options - Options.
  */
 export default class CommandHandler extends AkairoHandler {
-	constructor(
+	public constructor(
 		client: AkairoClient,
 		{
 			directory,
@@ -65,7 +65,8 @@ export default class CommandHandler extends AkairoHandler {
 			typing = false,
 			autoRegisterSlashCommands = false,
 			execSlash = false,
-			skipBuiltInPostInhibitors = false
+			skipBuiltInPostInhibitors = false,
+			useSlashPermissions = false
 		}: CommandHandlerOptions = {}
 	) {
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
@@ -160,6 +161,8 @@ export default class CommandHandler extends AkairoHandler {
 		this.execSlash = !!execSlash;
 
 		this.skipBuiltInPostInhibitors = !!skipBuiltInPostInhibitors;
+
+		this.useSlashPermissions = !!useSlashPermissions;
 
 		this.setup();
 	}
@@ -324,7 +327,13 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
 	 */
-	public skipBuiltInPostInhibitors?: boolean;
+	public skipBuiltInPostInhibitors: boolean;
+
+	/**
+	 * Use slash command permissions for owner only commands
+	 * Warning: this is experimental
+	 */
+	public useSlashPermissions: boolean;
 
 	/**
 	 * Set up the command handler
@@ -332,9 +341,10 @@ export default class CommandHandler extends AkairoHandler {
 	protected setup() {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands)
-				this.registerInteractionCommands().then(() =>
-					this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */)
-				);
+				this.registerInteractionCommands().then(() => {
+					if (this.useSlashPermissions)
+						this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
+				});
 
 			this.client.on("messageCreate", async m => {
 				if (m.partial) await m.fetch();
@@ -414,7 +424,7 @@ export default class CommandHandler extends AkairoHandler {
 				parsedSlashCommands.push({
 					name: data.name,
 					guilds: data.guilds ?? [],
-					defaultPermission: !(data.ownerOnly || /* data.superUserOnly || */ false),
+					defaultPermission: this.useSlashPermissions ? !(data.ownerOnly || /* data.superUserOnly || */ false) : true,
 					type: data.type
 				});
 			}
@@ -1603,6 +1613,12 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
 	 */
 	skipBuiltInPostInhibitors?: boolean;
+
+	/**
+	 * Use slash command permissions for owner only commands
+	 * Warning: this is experimental
+	 */
+	useSlashPermissions?: boolean;
 }
 
 /**
