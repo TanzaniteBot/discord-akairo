@@ -34,7 +34,7 @@ import { GuildMember, Message } from "discord.js";
 export default class GreetCommand extends Command {
   public constructor() {
     super("greet", {
-      aliases: ["greet", "greet"],
+      aliases: ["greet"],
       // Text Command Arguments
       args: [
         {

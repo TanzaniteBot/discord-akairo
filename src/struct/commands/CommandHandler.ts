@@ -401,8 +401,8 @@ export default class CommandHandler extends AkairoHandler {
 		for (const [, data] of this.modules) {
 			if (!data.slash) continue;
 			parsedSlashCommands.push({
-				name: data.aliases[0],
-				description: parseDescriptionCommand(data.description),
+				name: data.aliases[0]?.toLowerCase() || data.id?.toLowerCase(),
+				description: parseDescriptionCommand(data.description) || "No description provided.",
 				options: data.slashOptions,
 				guilds: data.slashGuilds ?? [],
 				defaultPermission: !(data.ownerOnly || /* data.superUserOnly || */ false),
