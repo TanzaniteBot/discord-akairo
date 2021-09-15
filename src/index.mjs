@@ -1,5 +1,5 @@
 // @ts-check
-import * as DiscordAkairo from "../dist/src/index.js";
+import * as DiscordAkairo from "./index.js";
 
 export default DiscordAkairo;
 

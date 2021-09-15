@@ -3,6 +3,7 @@
     "version": "8.2.2",
     "description": "A highly customizable bot framework for Discord.js.",
     "main": "./dist/src/index.js",
+    "module": "./esm/discord.mjs",
     "types": "./src/index.ts",
     "author": "1Computer",
     "license": "MIT",
@@ -18,14 +19,11 @@
         "arguments"
     ],
     "exports": {
-        ".": [
-            {
-                "require": "./dist/src/index.js",
-                "import": "./esm/discord.mjs"
-            },
-            "./dist/src/index.js"
-        ],
-        "./esm": "./esm/discord.mjs"
+        "./*": "./*",
+        ".": {
+            "require": "./dist/src/index.js",
+            "import": "./dist/src/index.mjs"
+        }
     },
     "devDependencies": {
         "@discordjs/voice": "^0.5.0",
@@ -42,6 +40,7 @@
         "jsdoc": "^3.6.4",
         "prettier": "^2.3.0",
         "rimraf": "^3.0.2",
+        "shx": "^0.3.3",
         "typescript": "^4.3.5"
     },
     "dependencies": {
@@ -53,7 +52,7 @@
         "test": "yarn run lint",
         "lint": "yarn eslint ./src",
         "format": "yarn prettier --write .",
-        "build": "yarn rimraf node_modules\\discord-akairo-message-util && yarn rimraf dist && yarn tsc"
+        "build": "yarn rimraf node_modules\\discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs"
     },
     "repository": {
         "type": "git",
