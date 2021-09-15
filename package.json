@@ -1,6 +1,6 @@
 {
 	"name": "@notenoughupdates/discord-akairo",
-	"version": "8.2.2",
+	"version": "9.0.0",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
 	"module": "./dist/src/index.mjs",

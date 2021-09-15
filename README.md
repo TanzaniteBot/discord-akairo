@@ -75,7 +75,7 @@ If you have any questions related to this fork please contact `IRONM00N#0001` in
 Requires Node 16+ and Discord.js v13.
 
 _discord-akairo_  
-`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@8.2.2`
+`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@9.0.0`
 
 _discord.js_  
 `yarn add discord.js@npm:@notenoughupdates/discord.js@13.2.0-dev` or `yarn add discord.js@dev`
