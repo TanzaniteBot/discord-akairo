@@ -1,5 +1,5 @@
 {
-	"name": "discord-akairo",
+	"name": "@notenoughupdates/discord-akairo",
 	"version": "8.2.2",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
@@ -27,13 +27,13 @@
 	},
 	"devDependencies": {
 		"@discordjs/voice": "^0.5.0",
+		"@notenoughupdates/discord.js": "^13.2.0-dev",
 		"@types/lodash": "^4.14.172",
 		"@types/node": "^10.14.4",
 		"@types/source-map-support": "^0.5.4",
 		"@typescript-eslint/eslint-plugin": "^4.29.0",
 		"@typescript-eslint/parser": "^4.29.0",
 		"discord-api-types": "^0.22.0",
-		"discord.js": "NotEnoughUpdates/discord.js",
 		"discord.js-docgen": "discordjs/docgen",
 		"eslint": "^7.27.0",
 		"eslint-config-prettier": "^8.3.0",

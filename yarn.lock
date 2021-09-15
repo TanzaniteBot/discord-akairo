@@ -121,6 +121,20 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notenoughupdates/discord.js@^13.2.0-dev":
+  version "13.2.0-dev"
+  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.2.0-dev.tgz#55e61f70463adee740a25dee277489e353616655"
+  integrity sha512-pU1UK3/2FdSlahzYn06O8sJbEk2YtnwSRexH9dmrQNXgdHdJyyBgLwjtNUcKaAizZeR5wyGRqXCcx4DUXP9jPw==
+  dependencies:
+    "@discordjs/builders" "^0.5.0"
+    "@discordjs/collection" "^0.2.1"
+    "@discordjs/form-data" "^3.0.1"
+    "@sapphire/async-queue" "^1.1.4"
+    "@types/ws" "^7.4.7"
+    discord-api-types "^0.22.0"
+    node-fetch "^2.6.1"
+    ws "^7.5.1"
+
 "@sapphire/async-queue@^1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@sapphire/async-queue/-/async-queue-1.1.4.tgz#ae431310917a8880961cebe8e59df6ffa40f2957"
@@ -616,19 +630,6 @@ discord.js-docgen@discordjs/docgen:
     jsdoc-to-markdown "^5.0.1"
     tsubaki "^1.3.2"
     yargs "^14.0.0"
-
-discord.js@NotEnoughUpdates/discord.js:
-  version "13.2.0-dev"
-  resolved "https://codeload.github.com/NotEnoughUpdates/discord.js/tar.gz/01afa917b9884d0b296765d2be15dad7f23eefbb"
-  dependencies:
-    "@discordjs/builders" "^0.5.0"
-    "@discordjs/collection" "^0.2.1"
-    "@discordjs/form-data" "^3.0.1"
-    "@sapphire/async-queue" "^1.1.4"
-    "@types/ws" "^7.4.7"
-    discord-api-types "^0.22.0"
-    node-fetch "^2.6.1"
-    ws "^7.5.1"
 
 dmd@^4.0.5:
   version "4.0.6"
