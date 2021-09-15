@@ -45,6 +45,7 @@
 	},
 	"dependencies": {
 		"discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
+		"discord.js": "npm:@notenoughupdates/discord.js@13.2.0-dev",
 		"lodash": "^4.17.21",
 		"source-map-support": "^0.5.19"
 	},

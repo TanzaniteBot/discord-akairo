@@ -121,7 +121,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@notenoughupdates/discord.js@^13.2.0-dev":
+"@notenoughupdates/discord.js@^13.2.0-dev", "discord.js@npm:@notenoughupdates/discord.js@13.2.0-dev":
   version "13.2.0-dev"
   resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.2.0-dev.tgz#55e61f70463adee740a25dee277489e353616655"
   integrity sha512-pU1UK3/2FdSlahzYn06O8sJbEk2YtnwSRexH9dmrQNXgdHdJyyBgLwjtNUcKaAizZeR5wyGRqXCcx4DUXP9jPw==
