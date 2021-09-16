@@ -2,6 +2,7 @@ import { Collection } from "discord.js";
 import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
+// @ts-ignore
 import import1 from "../../lib/import";
 import AkairoError from "../util/AkairoError";
 import Category from "../util/Category";
