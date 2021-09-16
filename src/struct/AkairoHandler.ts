@@ -2,6 +2,7 @@ import { Collection } from "discord.js";
 import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
+import url from "url";
 import AkairoError from "../util/AkairoError";
 import Category from "../util/Category";
 import { AkairoHandlerEvents } from "../util/Constants";
@@ -121,7 +122,7 @@ export default class AkairoHandler extends EventEmitter {
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
 					// eslint-disable-next-line @typescript-eslint/no-var-requires
-			  }.call(this, await eval(`import(${JSON.stringify(thing)})`));
+			  }.call(this, await eval(`import(${JSON.stringify(url.pathToFileURL(thing as string).toString())})`));
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
 			mod = new mod(this); // eslint-disable-line new-cap
