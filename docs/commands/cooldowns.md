@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 MD026 -->
+
 # Cooldowns
 
 ### No Spam!
@@ -5,11 +7,12 @@
 Cooldowns are how you make sure that troublemakers don't spam your bot.  
 Akairo allows you to set cooldowns in uses per milliseconds.
 
-```js
-const { Command } = require("discord-akairo");
-const exampleAPI = require("example-api");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
+import exampleAPI from "example-api";
 
-class RequestCommand extends Command {
+export default class RequestCommand extends Command {
   constructor() {
     super("request", {
       aliases: ["request"],
@@ -18,13 +21,11 @@ class RequestCommand extends Command {
     });
   }
 
-  async exec(message) {
+  async exec(message: Message): Promise<Message> {
     const info = await exampleAPI.fetchInfo();
     return message.reply(info);
   }
 }
-
-module.exports = RequestCommand;
 ```
 
 `cooldown` is the amount of time a user would be in cooldown for.  
@@ -34,7 +35,7 @@ In simple terms, this means 2 uses every 10000 milliseconds.
 
 If you wish to set a default cooldown for all commands, the `defaultCooldown` option is available:
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?",
@@ -50,7 +51,7 @@ By default, cooldowns are ignored by the client owners.
 This is actually done through the option `ignoreCooldown`.  
 To change this, simply pass in an ID or an array of IDs:
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?",

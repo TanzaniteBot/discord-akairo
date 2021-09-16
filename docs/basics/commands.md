@@ -1,24 +1,26 @@
+<!-- markdownlint-disable MD001 -->
+
 # Basic Commands
 
 ### The Command Handler
 
-In Akairo, the hierachy is that there are handlers which contains modules.  
+In Akairo, the hierarchy is that there are handlers which contains modules.  
 The handlers deals with loading modules and executing them.  
 For commands, we will import and instantiate the `CommandHandler`.
 
-```js
-const { AkairoClient, CommandHandler } = require("discord-akairo");
+```ts
+import { AkairoClient, CommandHandler } from "discord-akairo";
 
 class MyClient extends AkairoClient {
-  constructor() {
-    super(
-      {
-        ownerID: "123992700587343872" // or ['123992700587343872', '86890631690977280']
-      },
-      {
-        disableMentions: "everyone"
-      }
-    );
+  public commandHandler: CommandHandler;
+  public constructor() {
+    super({
+      intents: [
+        /* choose intents based on what you need your bot needs to do */
+      ],
+      ownerID: "123992700587343872", // or ['123992700587343872', '86890631690977280']
+      allowedMentions: { parse: ["users"] }
+    });
 
     this.commandHandler = new CommandHandler(this, {
       // Options for the command handler goes here.
@@ -34,7 +36,7 @@ Now, for some options.
 The `directory` option tells the handler where the main set of commands modules are at.  
 The `prefix` option is simply the prefixes you want to use, you can have multiple too!
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?" // or ['?', '!']
@@ -43,7 +45,7 @@ this.commandHandler = new CommandHandler(this, {
 
 And now that the command handler has been setup, we simply have to tell it to load the modules.
 
-```js
+```ts
 this.commandHandler.loadAll();
 ```
 
@@ -53,30 +55,29 @@ Our first order of business is to make a ping command.
 No bot is complete without one!
 
 We specified that the `directory` is in `./commands/`.  
-So, go there, make a new file, and require Akairo.
+So, go there, make a new file, and import Akairo.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
 ```
 
 Here is a basic ping command:
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PingCommand extends Command {
+export default class PingCommand extends Command {
   constructor() {
     super("ping", {
       aliases: ["ping"]
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     return message.reply("Pong!");
   }
 }
-
-module.exports = PingCommand;
 ```
 
 The first parameter of `super` is the unique ID of the command.  

@@ -1,13 +1,16 @@
+<!-- markdownlint-disable MD001 -->
+
 # Handling Modules
 
 ### Categorizing
 
 You can categorize a module with the `category` option.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PingCommand extends Command {
+export default class PingCommand extends Command {
   constructor() {
     super("ping", {
       aliases: ["ping"],
@@ -15,12 +18,10 @@ class PingCommand extends Command {
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     return message.reply("Pong!");
   }
 }
-
-module.exports = PingCommand;
 ```
 
 A new category will be created on the handler with the ID of `stuff`.  
@@ -33,10 +34,11 @@ With that said, this means you can add, remove, or reload modules while the bot 
 
 Here is a basic command that reloads the inputted ID:
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class ReloadCommand extends Command {
+export default class ReloadCommand extends Command {
   constructor() {
     super("reload", {
       aliases: ["reload"],
@@ -50,14 +52,12 @@ class ReloadCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { commandID: string }) {
     // `this` refers to the command object.
     this.handler.reload(args.commandID);
     return message.reply(`Reloaded command ${args.commandID}!`);
   }
 }
-
-module.exports = ReloadCommand;
 ```
 
 Ways you can reload a module includes:

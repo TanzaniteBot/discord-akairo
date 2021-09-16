@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 MD026 -->
+
 # Basic Listeners
 
 ### Setup
@@ -9,19 +11,21 @@ And plus, you can't reload them as easily!
 Let's add some listeners.  
 You have to setup a `ListenerHandler` just like with commands and inhibitors.
 
-```js
-const { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } = require("discord-akairo");
+```ts
+import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from "discord-akairo";
 
 class MyClient extends AkairoClient {
+  public commandHandler: CommandHandler;
+  public inhibitorHandler: InhibitorHandler;
+  public listenerHandler: ListenerHandler;
   constructor() {
-    super(
-      {
-        ownerID: "123992700587343872"
-      },
-      {
-        disableMentions: "everyone"
-      }
-    );
+    super({
+      intents: [
+        /* choose intents based on what you need your bot needs to do */
+      ],
+      ownerID: "123992700587343872",
+      allowedMentions: { parse: ["users"] }
+    });
 
     this.commandHandler = new CommandHandler(this, {
       directory: "./commands/",
@@ -45,7 +49,7 @@ client.login("TOKEN");
 Then, tell it to load all the modules.  
 The command handler may need to use the listener handler for some operations later on, so it should use it as well:
 
-```js
+```ts
 this.commandHandler.useListenerHandler(this.listenerHandler);
 this.listenerHandler.loadAll();
 ```
@@ -55,10 +59,10 @@ this.listenerHandler.loadAll();
 And now, we can make a listener!  
 Let's start with a simple client `ready` event.
 
-```js
-const { Listener } = require("discord-akairo");
+```ts
+import { Listener } from "discord-akairo";
 
-class ReadyListener extends Listener {
+export default class ReadyListener extends Listener {
   constructor() {
     super("ready", {
       emitter: "client",
@@ -66,12 +70,10 @@ class ReadyListener extends Listener {
     });
   }
 
-  exec() {
+  exec(): void {
     console.log("I'm ready!");
   }
 }
-
-module.exports = ReadyListener;
 ```
 
 The first parameter in `super` is the listener's unique ID.
@@ -88,7 +90,7 @@ By default, the `client` emitter is the only one available.
 Handlers in Akairo are also EventEmitters, so we can have our listener handler listen to our handlers.  
 Using `setEmitters`, we can set custom emitters:
 
-```js
+```ts
 this.listenerHandler.setEmitters({
   commandHandler: this.commandHandler,
   inhibitorHandler: this.inhibitorHandler,
@@ -104,10 +106,11 @@ Remember the `reason` for inhibitors in previous tutorial?
 They are emitted to the `messageBlocked` (anything with `pre` type or before) or `commandBlocked` (everything after) event by the command handler.  
 Since we set the command handler to the key `commandHandler` up above, we have to use that as the `emitter` option.
 
-```js
-const { Listener } = require("discord-akairo");
+```ts
+import { AkairoMessage, Command, Listener } from "discord-akairo";
+import { Message } from "discord.js";
 
-class CommandBlockedListener extends Listener {
+export default class CommandBlockedListener extends Listener {
   constructor() {
     super("commandBlocked", {
       emitter: "commandHandler",
@@ -115,12 +118,10 @@ class CommandBlockedListener extends Listener {
     });
   }
 
-  exec(message, command, reason) {
+  exec(message: Message | AkairoMessage, command: Command, reason: string): void {
     console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`);
   }
 }
-
-module.exports = CommandBlockedListener;
 ```
 
 And if you want your listeners to run only once, you add the option `type` with the value of `'once'`.

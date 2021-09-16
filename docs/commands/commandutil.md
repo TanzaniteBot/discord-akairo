@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # CommandUtil
 
 ### Handling Edits
@@ -5,7 +7,7 @@
 The CommandUtil class is a utility class for working with responses.  
 In order to make it available, you must enable `commandUtil`.
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?",
@@ -23,23 +25,22 @@ You can CommandUtil methods such as `send` in order to send responses.
 With `handleEdits` on, the `send` methods will edit responses accordingly.  
 This works for prompts as well.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class HelloCommand extends Command {
+export default class HelloCommand extends Command {
   constructor() {
     super("hello", {
       aliases: ["hello"]
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     // Also available: util.reply()
     return message.util.send("Hello!");
   }
 }
-
-module.exports = HelloCommand;
 ```
 
 As an example of what that means:
@@ -55,17 +56,18 @@ CommandUtil can also be used to view the prefix, command alias, and arguments us
 The format for command is almost always `<prefix><alias> <arguments>`.  
 CommandUtil stores all three of that and more for you.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class HelloCommand extends Command {
+export default class HelloCommand extends Command {
   constructor() {
     super("hello", {
       aliases: ["hello", "hi", "konnichiha", "bonjour", "heyo"]
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     if (message.util.parsed.alias === "konnichiha") {
       return message.util.send("こんにちは！");
     }
@@ -77,8 +79,6 @@ class HelloCommand extends Command {
     return message.util.send("Hello!");
   }
 }
-
-module.exports = HelloCommand;
 ```
 
 With that, you can see which alias was used by the user.

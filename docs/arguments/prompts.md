@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Argument Prompting
 
 ### Please Try Again
@@ -17,10 +19,11 @@ It allows you to set the following properties:
 Let's start with a basic prompt.  
 We will be reusing this command:
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { GuildMember, Message } from "discord.js";
 
-class HighestRoleCommand extends Command {
+export default class HighestRoleCommand extends Command {
   constructor() {
     super("highestRole", {
       aliases: ["highestRole"],
@@ -28,29 +31,28 @@ class HighestRoleCommand extends Command {
         {
           id: "member",
           type: "member",
-          default: message => message.member
+          default: (message: Message) => message.member
         }
       ],
       channel: "guild"
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
-
-module.exports = HighestRoleCommand;
 ```
 
 First, remove the `default`.  
 Since prompting will have the user retry until it is finished, `default` won't do anything.  
 Now, add the `prompt` property with the options you want.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { GuildMember, Message } from "discord.js";
 
-class HighestRoleCommand extends Command {
+export default class HighestRoleCommand extends Command {
   constructor() {
     super("highestRole", {
       aliases: ["highestRole"],
@@ -68,35 +70,43 @@ class HighestRoleCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
-
-module.exports = HighestRoleCommand;
 ```
 
 Simple as that, you have a prompt.  
 Guess what, you can use a function for those messages too!
 
-```js
-prompt: {
-    start: message => `Hey ${message.author}, who would you like to get the highest role of?`,
-    retry: message => `That\'s not a valid member! Try again, ${message.author}.`
-}
+```ts
+args = [
+  {
+    /* ... */
+    prompt: {
+      start: (message: Message) => `Hey ${message.author}, who would you like to get the highest role of?`,
+      retry: (message: Message) => `That\'s not a valid member! Try again, ${message.author}.`
+    }
+  }
+];
 ```
 
 More complex structures can also be returned as well.  
 This includes embeds, attachments, anything that can be sent.
 
-```js
-prompt: {
-  start: message => {
-    const embed = new MessageEmbed().setDescription("Please input a member!");
-    const content = "Please!";
-    return { embed, content };
-  };
-}
+```ts
+args = [
+  {
+    /* ... */
+    prompt: {
+      start: (message: Message) => {
+        const embed = new MessageEmbed().setDescription("Please input a member!");
+        const content = "Please!";
+        return { embed, content };
+      };
+    }
+  }
+]
 ```
 
 ### Cascading
@@ -104,7 +114,7 @@ prompt: {
 Prompts can also "cascade" from three places: the command handler, then the command, then the argument.  
 For the command handler or the command, we would set the `argumentDefaults` option.
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?",
@@ -123,44 +133,43 @@ this.commandHandler = new CommandHandler(this, {
 Those prompt options would now be applied to all prompts that do not have those options already.  
 Or, with a command with similar arguments:
 
-```js
-const { Command } = require('discord-akairo');
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class AddCommand extends Command {
-    constructor() {
-        super('add', {
-            aliases: ['add'],
-            args: [
-                {
-                    id: 'numOne',
-                    type: 'number',
-                    prompt: true
-                },
-                {
-                    id: 'numTwo',
-                    type: 'number',
-                    prompt: true
-                }
-                {
-                    id: 'numThree',
-                    type: 'number',
-                    prompt: true
-                }
-            ],
-            defaultPrompt: {
-                start: 'Please input a number!',
-                retry: 'Please input a number!'
-            }
-        });
-    }
+export default class AddCommand extends Command {
+  constructor() {
+    super("add", {
+      aliases: ["add"],
+      args: [
+        {
+          id: "numOne",
+          type: "number",
+          prompt: true
+        },
+        {
+          id: "numTwo",
+          type: "number",
+          prompt: true
+        },
+        {
+          id: "numThree",
+          type: "number",
+          prompt: true
+        }
+      ],
+      defaultPrompt: {
+        start: "Please input a number!",
+        retry: "Please input a number!"
+      }
+    });
+  }
 
-    exec(message, args) {
-        const sum = args.numOne + args.numTwo + args.numThree;
-        return message.reply(`The sum is ${sum}!`);
-    }
+  exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
+    const sum = args.numOne + args.numTwo + args.numThree;
+    return message.reply(`The sum is ${sum}!`);
+  }
 }
-
-module.exports = AddCommand;
 ```
 
 Rather than repeating the text for all three arguments, there is a default prompt that applies to all three.  
@@ -171,17 +180,20 @@ Their `prompt` property still has to be truthy in order to actually prompt, of c
 Prompts can then be modified with a modify function.  
 It is most useful inside the `argumentDefaults` option, such as on the command handler.
 
-```js
-argumentDefaults: {
+```ts
+this.commandHandler = new CommandHandler(this, {
+  /* ... */
+  argumentDefaults: {
     prompt: {
-        modifyStart: (message, text) => `${text}\nType cancel to cancel this command.`,
-        modifyRetry: (message, text) => `${text}\nType cancel to cancel this command.`,
-        timeout: 'Time ran out, command has been cancelled.',
-        ended: 'Too many retries, command has been cancelled.',
-        cancel: 'Command has been cancelled.',
-        retries: 4,
-        time: 30000
+      modifyStart: (message: Message, text: string) => `${text}\nType cancel to cancel this command.`,
+      modifyRetry: (message: Message, text: string) => `${text}\nType cancel to cancel this command.`,
+      timeout: 'Time ran out, command has been cancelled.',
+      ended: 'Too many retries, command has been cancelled.',
+      cancel: 'Command has been cancelled.',
+      retries: 4,
+      time: 30000
     }
+  }
 }
 ```
 

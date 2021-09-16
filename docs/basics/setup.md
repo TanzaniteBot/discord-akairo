@@ -1,16 +1,23 @@
+<!-- markdownlint-disable MD001 MD040 -->
+
 # Setting Up
 
 ### Installation
 
 Before even doing anything else, you of course have to install the Discord.js and Akairo.
 
-`npm i discord.js`  
-`npm i discord-akairo`
+> Yarn 2.0+ needs to have the version specified due to this [issue](https://github.com/yarnpkg/berry/issues/1816). If you are using yarn 2.0 use the second command.
 
-If you feel like working with SQLite or Sequelize later, install them too.
+**discord-akairo**
+`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo`
+`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@9.0.0`
+`npm i discord-akairo@npm:@notenoughupdates/discord-akairo`
 
-`npm i sqlite`  
-`npm i sequelize`
+**discord.js fork**
+_optional you can use regular discord.js instead if you want_
+`yarn add discord.js@npm:@notenoughupdates/discord.js`
+`yarn add discord.js@npm:@notenoughupdates/discord.js@13.2.0-dev`
+`npm i discord.js@npm:@notenoughupdates/discord.js`
 
 Once everything has been installed, your working directory should look something like this:
 
@@ -22,22 +29,17 @@ mybot
 
 ### Main File
 
-Inside `bot.js`, require `discord-akairo` and extend the `AkairoClient` class to customize your client.  
+Inside `bot.ts`, import `discord-akairo` and extend the `AkairoClient` class to customize your client.  
 As your bot gets more complicated, you may want to separate this client class from your main file.
 
-```js
-const { AkairoClient } = require("discord-akairo");
+```ts
+import { AkairoClient } from "discord-akairo";
 
 class MyClient extends AkairoClient {
   constructor() {
-    super(
-      {
-        // Options for Akairo go here.
-      },
-      {
-        // Options for discord.js goes here.
-      }
-    );
+    super({
+      // Options for Akairo and discord.js go here.
+    });
   }
 }
 
@@ -47,21 +49,20 @@ client.login("TOKEN");
 
 There are some options you may want to setup first, for example, the owner of the bot.
 If you would like to have multiple owners simply add those with an array.  
-We want to use Discord.js's `disableMentions` option too.
+We want to use Discord.js's `allowedMentions` option too.
 
-```js
-const { AkairoClient } = require("discord-akairo");
+```ts
+import { AkairoClient } from "discord-akairo";
 
 class MyClient extends AkairoClient {
   constructor() {
-    super(
-      {
-        ownerID: "123992700587343872" // or ['123992700587343872', '86890631690977280']
-      },
-      {
-        disableMentions: "everyone"
-      }
-    );
+    super({
+      intents: [
+        /* choose intents based on what you need your bot needs to do */
+      ],
+      ownerID: "123992700587343872", // or ['123992700587343872', '86890631690977280']
+      allowedMentions: { parse: ["users"] }
+    });
   }
 }
 

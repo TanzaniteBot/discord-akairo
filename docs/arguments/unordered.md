@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 MD026 -->
+
 # Unordered Arguments
 
 ### Any Order!
@@ -5,10 +7,11 @@
 Arguments can be made to be unordered.  
 For example, if you want a command where the arguments are a role and a member in any order:
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { GuildMember, Message, Role } from "discord.js";
 
-class AddRoleCommand extends Command {
+export default class AddRoleCommand extends Command {
   constructor() {
     super("addrole", {
       aliases: ["addrole"],
@@ -29,13 +32,11 @@ class AddRoleCommand extends Command {
     });
   }
 
-  async exec(message, args) {
+  async exec(message: Message, args: { member: GuildMember; role: Role }) {
     await args.member.roles.add(args.role);
     return message.reply("Done!");
   }
 }
-
-module.exports = AddRoleCommand;
 ```
 
 The above command would work as `!addrole member role` and `!addrole role member`.  

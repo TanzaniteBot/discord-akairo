@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Inhibitor Types
 
 ### More Coverage
@@ -7,10 +9,11 @@ They do not actually run on all messages.
 
 To change that, change the `type` option.
 
-```js
-const { Inhibitor } = require("discord-akairo");
+```ts
+import { Inhibitor } from "discord-akairo";
+import { Message } from "discord.js";
 
-class BlacklistInhibitor extends Inhibitor {
+export default class BlacklistInhibitor extends Inhibitor {
   constructor() {
     super("blacklist", {
       reason: "blacklist",
@@ -18,14 +21,12 @@ class BlacklistInhibitor extends Inhibitor {
     });
   }
 
-  exec(message) {
+  exec(message: Message): boolean {
     // Still a meanie!
     const blacklist = ["81440962496172032"];
     return blacklist.includes(message.author.id);
   }
 }
-
-module.exports = BlacklistInhibitor;
 ```
 
 There are three types:

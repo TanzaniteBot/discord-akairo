@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD026 MD033 MD041 -->
 <div align="center">
   <br />
   <p>

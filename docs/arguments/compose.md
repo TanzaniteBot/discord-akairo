@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Composing Types
 
 ### Union Types
@@ -5,7 +7,7 @@
 Akairo allows the creation of union types, where the input can match one of many types.  
 You can import the `Argument` class, where there is the `Argument.union` static method.
 
-```js
+```ts
 {
     id: 'numOrName',
     type: Argument.union('integer', 'string')
@@ -21,7 +23,7 @@ A product type in Akairo casts the input to multiple types.
 The static method `Argument.product` lets us create one of these.  
 The type will parse the input into an array containing the values respective to the given types.
 
-```js
+```ts
 {
     id: 'numAndName',
     type: Argument.product('integer', 'string')
@@ -36,7 +38,7 @@ If any of the types fail, the entire argument fails.
 Extra validation can be done on the parsed value using `Argument.validate`.  
 For numbers and things with a length or size, `Argument.range` is a convenient method as well.
 
-```js
+```ts
 {
     id: 'content',
     type: Argument.validate('string', (m, p, str) => str.length < 2000)
@@ -46,7 +48,7 @@ For numbers and things with a length or size, `Argument.range` is a convenient m
 This argument ensures that the input is less than 2000 characters in length.  
 If it is over 2000 characters, the input is considered invalid.
 
-```js
+```ts
 {
     id: 'number',
     type: Argument.range('number', 0, 100)
@@ -63,7 +65,7 @@ Types can be composed together using `Argument.compose`.
 For example, the result of `Argument.compose(type1, type2)` is a type that uses the first type, then the result of that is passed the second.  
 A use case of this function is for preprocessing before casting:
 
-```js
+```ts
 {
     id: 'lowercaseChars',
     type: Argument.compose('lowercase', 'charCodes')

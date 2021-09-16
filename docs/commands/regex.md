@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Regex Commands
 
 ### Memes
@@ -10,22 +12,21 @@ Regex commands are commands that run if the following conditions are true:
 
 Multiple regex commands/conditional commands can be triggered from one message.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class AyyCommand extends Command {
+export default class AyyCommand extends Command {
   constructor() {
     super("ayy", {
       regex: /^ayy$/i
     });
   }
 
-  exec(message, args) {
+  exec(message: Message): Promise<Message> {
     return message.reply("lmao");
   }
 }
-
-module.exports = AyyCommand;
 ```
 
 This command will trigger on any message with the content `ayy`, case-insensitive.  
@@ -36,25 +37,24 @@ The `matches` property will be the matches, if using a global regex.
 
 The `regex` option can also be a function.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class AyyCommand extends Command {
+export default class AyyCommand extends Command {
   constructor() {
     super("ayy", {
       category: "random"
     });
   }
 
-  regex(message) {
+  regex(message: Message) {
     // Do some code...
     return /^ayy$/i;
   }
 
-  exec(message, args) {
+  exec(message: Message): Promise<Message> {
     return message.reply("lmao");
   }
 }
-
-module.exports = AyyCommand;
 ```

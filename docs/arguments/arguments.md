@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Basic Arguments
 
 ### Adding Numbers
@@ -7,32 +9,32 @@ In Akairo, arguments are the most complex things ever, so this tutorial will onl
 
 Let's make a command that takes three numbers and adds them up.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class AddCommand extends Command {
+export default class AddCommand extends Command {
   constructor() {
     super("add", {
       aliases: ["add"]
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     // This doesn't work!
     return message.reply(a + b + c);
   }
 }
-
-module.exports = AddCommand;
 ```
 
 Now we will add arguments in the command options with the `args` option.  
 This option must be an array of objects, containing info for parsing.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class AddCommand extends Command {
+export default class AddCommand extends Command {
   constructor() {
     super("add", {
       aliases: ["add"],
@@ -56,13 +58,11 @@ class AddCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
     const sum = args.numOne + args.numTwo + args.numThree;
     return message.reply(`The sum is ${sum}!`);
   }
 }
-
-module.exports = AddCommand;
 ```
 
 Arguments must always have an `id`, it will be what you use to refer to them in `args`.  

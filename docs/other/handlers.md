@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Custom Handlers
 
 ### And Custom Modules
@@ -6,10 +8,11 @@ Internally, Akairo's handlers all extends AkairoHandler, and all modules extends
 So, you can create your own handlers and module types!  
 Create a new class for your module.
 
-```js
-const { AkairoModule } = require("discord-akairo");
+```ts
+import { AkairoModule } from "discord-akairo";
 
-class CustomModule extends AkairoModule {
+export default class CustomModule extends AkairoModule {
+  public color: string;
   constructor(id, options = {}) {
     super(id, options);
 
@@ -20,8 +23,6 @@ class CustomModule extends AkairoModule {
     throw new Error("Not implemented!");
   }
 }
-
-module.exports = CustomModule;
 ```
 
 Note that the `exec` method you see in Command, Inhibitor, and Listener are not native to AkairoModule.  
@@ -30,11 +31,12 @@ We throw an error there just in case you forget to implement it.
 
 Then, create a new class for your handler:
 
-```js
-const { AkairoHandler } = require("discord-akairo");
-const CustomModule = require("./CustomModule");
+```ts
+import { AkairoHandler } from "discord-akairo";
+import CustomModule from "./CustomModule";
 
-class CustomHandler extends AkairoHandler {
+export default class CustomHandler extends AkairoHandler {
+  customOption: string;
   constructor(client, options = {}) {
     super(client, {
       directory: options.directory,
@@ -44,27 +46,25 @@ class CustomHandler extends AkairoHandler {
     this.customOption = options.customOption || "something";
   }
 }
-
-module.exports = CustomHandler;
 ```
 
 For the handler, the `super()` takes the client, the directory for the handler, and the class of the module type we want to handle.  
 Now we can add it to our client if we so desire:
 
-```js
-const { AkairoClient } = require("discord-akairo");
-const CustomHandler = require("./CustomHandler");
+```ts
+import { AkairoClient } from "discord-akairo";
+import CustomHandler from "./CustomHandler";
 
-class MyClient extends AkairoClient {
+export default class MyClient extends AkairoClient {
+  public customHandler: CustomHandler;
   constructor() {
-    super(
-      {
-        ownerID: "123992700587343872"
-      },
-      {
-        disableMentions: "everyone"
-      }
-    );
+    super({
+      intents: [
+        /* choose intents based on what you need your bot needs to do */
+      ],
+      ownerID: "123992700587343872", // or ['123992700587343872', '86890631690977280']
+      allowedMentions: { parse: ["users"] }
+    });
 
     this.customHandler = new CustomHandler(this, {
       directory: "./customs/"
@@ -73,28 +73,24 @@ class MyClient extends AkairoClient {
     this.customHandler.loadAll();
   }
 }
-
-module.exports = MyClient;
 ```
 
 And the module:
 
-```js
-const CustomModule = require("../CustomModule");
+```ts
+import CustomModule from "../CustomModule";
 
-class CustomCustom extends CustomModule {
+export default class CustomCustom extends CustomModule {
   constructor() {
     super("custom", {
       color: "blue"
     });
   }
 
-  exec() {
+  exec(): void {
     console.log("I did something!");
   }
 }
-
-module.exports = CustomCustom;
 ```
 
 Custom handlers and modules are can get much more complicated than this.  

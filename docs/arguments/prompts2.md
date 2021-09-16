@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # More Prompting
 
 ### Optional Prompts
@@ -5,10 +7,11 @@
 Optional prompts are prompts that run if there was input, but the type casting failed.  
 If there was no input, it would go on as normal.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { GuildMember, Message } from "discord.js";
 
-class HighestRoleCommand extends Command {
+export default class HighestRoleCommand extends Command {
   constructor() {
     super("highestRole", {
       aliases: ["highestRole"],
@@ -21,19 +24,17 @@ class HighestRoleCommand extends Command {
             retry: "That's not a valid member! Try again.",
             optional: true
           },
-          default: message => message.member
+          default: (message: Message) => message.member
         }
       ],
       channel: "guild"
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
-
-module.exports = HighestRoleCommand;
 ```
 
 With it, `default` is now used again.
@@ -47,10 +48,11 @@ With it, `default` is now used again.
 Infinite prompts are prompts that go on and on until the user says stop.  
 (You can customize the input, but by default it is `stop`.)
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PickCommand extends Command {
+export default class PickCommand extends Command {
   constructor() {
     super("pick", {
       aliases: ["pick"],
@@ -71,13 +73,11 @@ class PickCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { items }) {
     const picked = args.items[Math.floor(Math.random() * args.items.length)];
     return message.reply(`I picked ${picked.trim()}!`);
   }
 }
-
-module.exports = PickCommand;
 ```
 
 And with that, `args.items` is now an array of responses from the user.  

@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 MD026 -->
+
 # Inhibitor Priority
 
 ### Me First!
@@ -9,11 +11,12 @@ So, if you had named the inhibitors `blacklist.js` and `globalBlacklist.js`, the
 Whenever both inhibitors block a message, the `commandBlocked` event would fire with the blacklist inhibitor's reason.  
 If you want the global blacklist inhibitor's instead you can use the `priority` option.
 
-```js
-const { Inhibitor } = require("discord-akairo");
-const globalBlacklist = require("something");
+```ts
+import { Inhibitor } from "discord-akairo";
+import { Message } from "discord.js";
+import globalBlacklist from "something";
 
-class GlobalBlacklistInhibitor extends Inhibitor {
+export default class GlobalBlacklistInhibitor extends Inhibitor {
   constructor() {
     super("globalBlacklist", {
       reason: "globalBlacklist",
@@ -21,12 +24,10 @@ class GlobalBlacklistInhibitor extends Inhibitor {
     });
   }
 
-  exec(message) {
+  exec(message: Message): boolean {
     return globalBlacklist.has(message.author.id);
   }
 }
-
-module.exports = BlacklistInhibitor;
 ```
 
 By default, inhibitors have a priority of 0.  

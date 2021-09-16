@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Matching Input
 
 ### Entire Content
@@ -6,10 +8,11 @@ Let's say you have a command that picks from a list inputted.
 Obviously, you won't know how many things there are.  
 So, we need a different way of matching input instead of phrase by phrase.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PickCommand extends Command {
+export default class PickCommand extends Command {
   constructor() {
     super("pick", {
       aliases: ["pick"],
@@ -22,21 +25,20 @@ class PickCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { items: string }): Promise<Message> {
     const picked = args.items; // ???
     return message.reply(`I picked ${picked}`);
   }
 }
-
-module.exports = PickCommand;
 ```
 
 To remedy this, we will use the `match` option.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PickCommand extends Command {
+export default class PickCommand extends Command {
   constructor() {
     super("pick", {
       aliases: ["pick"],
@@ -49,14 +51,12 @@ class PickCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { items: string }): Promise<Message> {
     const items = args.items.split("|");
     const picked = items[Math.floor(Math.random() * items.length)];
     return message.reply(`I picked ${picked.trim()}!`);
   }
 }
-
-module.exports = PickCommand;
 ```
 
 Now, the entire content, excluding the prefix and command of course, is matched.
@@ -68,11 +68,12 @@ This is where `flag` match comes in handy.
 
 Here is a command where the user can change the output with a flag:
 
-```js
-const { Command } = require("discord-akairo");
-const exampleAPI = require("example-api");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
+import exampleAPI from "example-api";
 
-class StatsCommand extends Command {
+export default class StatsCommand extends Command {
   constructor() {
     super("stats", {
       aliases: ["stats"],
@@ -89,7 +90,7 @@ class StatsCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { username: string; advanced: boolean }): Promise<Message> {
     const user = exampleAPI.getUser(args.username);
 
     if (args.advanced) {
@@ -99,8 +100,6 @@ class StatsCommand extends Command {
     return message.reply(user.basicInfo);
   }
 }
-
-module.exports = StatsCommand;
 ```
 
 Now, if a user does `?stats 1Computer` they will get the `basicInfo`, but if they do `?stats 1Computer --advanced`, they will get the `advancedInfo`.  
@@ -113,11 +112,12 @@ Here, we will use `option` for unordered input.
 
 Similar to the above example, but this time, we have many different possibilities.
 
-```js
-const { Command } = require("discord-akairo");
-const exampleAPI = require("example-api");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
+import exampleAPI from "example-api";
 
-class StatsCommand extends Command {
+export default class StatsCommand extends Command {
   constructor() {
     super("stats", {
       aliases: ["stats"],
@@ -135,15 +135,13 @@ class StatsCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { username: string; color: string }): Promise<Message> {
     const team = exampleAPI.getTeam(args.color);
     const user = team.getUser(args.username);
 
     return message.reply(user.info);
   }
 }
-
-module.exports = StatsCommand;
 ```
 
 So now, all of these inputs can be valid:
@@ -169,10 +167,11 @@ Let's say that we want our pick command to only work on numbers.
 This would mean having to deal with splitting then casting the types within the args!  
 We can do this with a custom separator using `separator` option alongside the `separate` match.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PickCommand extends Command {
+export default class PickCommand extends Command {
   constructor() {
     super("pick", {
       aliases: ["pick"],
@@ -187,13 +186,11 @@ class PickCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { items: number[] }): Promise<Message> {
     const picked = args.items[Math.floor(Math.random() * args.items.length)];
     return message.reply(`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`);
   }
 }
-
-module.exports = PickCommand;
 ```
 
 The `separate` match matches the phrases individually into an array where each element is type casted one by one.  

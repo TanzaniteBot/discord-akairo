@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Permissions
 
 ### Permission Flags
@@ -6,10 +8,11 @@ Some commands should only be used by someone with certain permissions.
 There are options to help you do this.  
 The two options to use are `clientPermissions` and `userPermissions`.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { GuildMember, Message } from "discord.js";
 
-class BanCommand extends Command {
+export default class BanCommand extends Command {
   constructor() {
     super("ban", {
       aliases: ["ban"],
@@ -25,7 +28,7 @@ class BanCommand extends Command {
     });
   }
 
-  async exec(message, args) {
+  async exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     if (!args.member) {
       return message.reply("No member found with that name.");
     }
@@ -34,8 +37,6 @@ class BanCommand extends Command {
     return message.reply(`${args.member} was banned!`);
   }
 }
-
-module.exports = BanCommand;
 ```
 
 This now checks for the required permissions for the client, then the user.  
@@ -51,10 +52,11 @@ A function can be used on both `clientPermissions` and `userPermissions`.
 The return value is the `missing` parameter that is sent to the `missingPermissions` event.  
 If the return value is null, then that means they're not missing anything.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { GuildMember, Message } from "discord.js";
 
-class BanCommand extends Command {
+export default class BanCommand extends Command {
   constructor() {
     super("ban", {
       aliases: ["ban"],
@@ -69,7 +71,7 @@ class BanCommand extends Command {
     });
   }
 
-  userPermissions(message) {
+  userPermissions(message: Message) {
     if (!message.member.roles.cache.some(role => role.name === "Moderator")) {
       return "Moderator";
     }
@@ -77,7 +79,7 @@ class BanCommand extends Command {
     return null;
   }
 
-  async exec(message, args) {
+  async exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     if (!args.member) {
       return message.reply("No member found with that name.");
     }
@@ -86,6 +88,4 @@ class BanCommand extends Command {
     return message.reply(`${args.member} was banned!`);
   }
 }
-
-module.exports = BanCommand;
 ```

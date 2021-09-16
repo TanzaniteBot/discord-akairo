@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Argument Types
 
 ### Basic Types
@@ -84,10 +86,11 @@ The types below are also Discord-related, but have no plural form.
 There are other ways to do type-casting instead of a string literal too.  
 The first way is with an array:
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PokemonCommand extends Command {
+export default class PokemonCommand extends Command {
   constructor() {
     super("pokemon", {
       aliases: ["pokemon"],
@@ -101,15 +104,13 @@ class PokemonCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
     if (args.option === "grass") return message.reply("bulbasaur");
     if (args.option === "fire") return message.reply("charmander");
     if (args.option === "water") return message.reply("squirtle");
     if (args.option === "electric") return message.reply("pikachu");
   }
 }
-
-module.exports = PokemonCommand;
 ```
 
 With the above, the user can only enter one of the entries in the array.  
@@ -118,10 +119,11 @@ This means that if the array was `['GrasS', 'FIrE']` and the input was `grass`, 
 
 You can also do aliases with the array type like so:
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PokemonCommand extends Command {
+export default class PokemonCommand extends Command {
   constructor() {
     super("pokemon", {
       aliases: ["pokemon"],
@@ -140,15 +142,13 @@ class PokemonCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
     if (args.option === "grass") return message.reply("bulbasaur");
     if (args.option === "fire") return message.reply("charmander");
     if (args.option === "water") return message.reply("squirtle");
     if (args.option === "electric") return message.reply("pikachu");
   }
 }
-
-module.exports = PokemonCommand;
 ```
 
 If the user inputs anything from the arrays, the first entry will be used.  
@@ -158,10 +158,11 @@ So, the input of `leaf` will give you `grass`, `blue` will give you `water`, etc
 
 You can also use a regular expression as a type.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class AskCommand extends Command {
+export default class AskCommand extends Command {
   constructor() {
     super("ask", {
       aliases: ["ask"],
@@ -174,7 +175,7 @@ class AskCommand extends Command {
     });
   }
 
-  exec(message, args) {
+  exec(message: Message, args: { yesOrNo }) {
     // {
     //   match: [...],
     //   matches: null
@@ -182,8 +183,6 @@ class AskCommand extends Command {
     console.log(args.yesOrNo);
   }
 }
-
-module.exports = AskCommand;
 ```
 
 This will match `yes` or `no`, case-insensitive and `args.yesOrNo` will give you the result from `word.match(/^(yes|no)$/i`.  

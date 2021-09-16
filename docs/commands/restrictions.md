@@ -1,33 +1,35 @@
+<!-- markdownlint-disable MD001 -->
+
 # Restrictions
 
 ### Channel Restrictions
 
 If a command requires a guild to be used correctly, you can restrict it to a guild with one option.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class NicknameCommand extends Command {
+export default class NicknameCommand extends Command {
   constructor() {
     super("nickname", {
       aliases: ["nickname"]
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     return message.reply(`Your nickname is ${message.member.nickname}.`);
   }
 }
-
-module.exports = NicknameCommand;
 ```
 
 The above breaks in a DM, so let's add the `channel` option.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class NicknameCommand extends Command {
+export default class NicknameCommand extends Command {
   constructor() {
     super("nickname", {
       aliases: ["nickname"],
@@ -35,12 +37,10 @@ class NicknameCommand extends Command {
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     return message.reply(`Your nickname is ${message.member.nickname}.`);
   }
 }
-
-module.exports = NicknameCommand;
 ```
 
 Everything is fixed and you can go on your way!  
@@ -52,10 +52,11 @@ Remember the `ownerID` option in your client?
 Your commands can be owner-only, restricting them to be used by the owner(s).  
 Simply add `ownerOnly`.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class TokenCommand extends Command {
+export default class TokenCommand extends Command {
   constructor() {
     super("token", {
       aliases: ["token"],
@@ -64,13 +65,11 @@ class TokenCommand extends Command {
     });
   }
 
-  exec(message) {
+  exec(message: Message): Promise<Message> {
     // Don't actually do this.
     return message.reply(this.client.token);
   }
 }
-
-module.exports = TokenCommand;
 ```
 
 This will emit `commandBlocked` with the reason `owner` if someone else uses it.

@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD001 -->
+
 # Prefixes and Aliases
 
 ### Mentioning
@@ -5,7 +7,7 @@
 Sometimes people can forget or not know the prefix for your bot, so letting them use command with a mention is useful.  
 This can be enabled with the `allowMention` option.
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?",
@@ -21,7 +23,7 @@ A prefix can change based on the message.
 Use a function as the `prefix` option to do so.  
 This is most useful with an actual database to back it up, so check out the [Using Providers](../other/providers.md) section.
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: msg => {
@@ -37,10 +39,11 @@ this.commandHandler = new CommandHandler(this, {
 Prefix overrides are command-specific prefixes.  
 To use them, simply add the `prefix` option.
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class SecretCommand extends Command {
+export default class SecretCommand extends Command {
   constructor() {
     super("secret", {
       aliases: ["secret"],
@@ -48,12 +51,10 @@ class SecretCommand extends Command {
     });
   }
 
-  exec(message) {
+  exec(message: Message) {
     return message.reply("Woah! How did you find this!?");
   }
 }
-
-module.exports = SecretCommand;
 ```
 
 Now, if our prefix was `?`, `?secret` won't work, but `???secret` would.  
@@ -65,7 +66,7 @@ To speed up your development, you can make command aliases automatically.
 For example, if you had a command alias that is two words, you might want both `command-name` and `commandname` to be valid.  
 Use the `aliasReplacement` option, which takes a regular expression to make aliases:
 
-```js
+```ts
 this.commandHandler = new CommandHandler(this, {
   directory: "./commands/",
   prefix: "?",

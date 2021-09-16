@@ -1,16 +1,17 @@
 # Ping Command
 
-```js
-const { Command } = require("discord-akairo");
+```ts
+import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
-class PingCommand extends Command {
+export default class PingCommand extends Command {
   constructor() {
     super("ping", {
       aliases: ["ping", "hello"]
     });
   }
 
-  async exec(message) {
+  async exec(message: Message): Promise<Message> {
     const sent = await message.util.reply("Pong!");
     const timeDiff = (sent.editedAt || sent.createdAt) - (message.editedAt || message.createdAt);
     return message.util.reply([
@@ -20,6 +21,4 @@ class PingCommand extends Command {
     ]);
   }
 }
-
-module.exports = PingCommand;
 ```
