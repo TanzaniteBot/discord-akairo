@@ -60,8 +60,8 @@ export default abstract class Task extends AkairoModule {
 	/**
 	 * Reloads the task.
 	 */
-	public override reload(): Task {
-		return super.reload() as Task;
+	public override reload(): Promise<Task> {
+		return super.reload() as Promise<Task>;
 	}
 
 	/**

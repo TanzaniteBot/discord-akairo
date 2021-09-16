@@ -1452,8 +1452,8 @@ export default class CommandHandler extends AkairoHandler {
 	 * Loads a command.
 	 * @param thing - Module or path to module.
 	 */
-	public override load(thing: string | Command): Command {
-		return super.load(thing) as Command;
+	public override load(thing: string | Command): Promise<Command> {
+		return super.load(thing) as Promise<Command>;
 	}
 
 	/**
@@ -1461,8 +1461,8 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): CommandHandler {
-		return super.loadAll(directory, filter) as CommandHandler;
+	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<CommandHandler> {
+		return super.loadAll(directory, filter) as Promise<CommandHandler>;
 	}
 
 	/**
@@ -1484,15 +1484,15 @@ export default class CommandHandler extends AkairoHandler {
 	 * Reloads a command.
 	 * @param id - ID of the command.
 	 */
-	public override reload(id: string): Command {
-		return super.reload(id) as Command;
+	public override reload(id: string): Promise<Command> {
+		return super.reload(id) as Promise<Command>;
 	}
 
 	/**
 	 * Reloads all commands.
 	 */
-	public override reloadAll(): CommandHandler {
-		return super.reloadAll() as CommandHandler;
+	public override reloadAll(): Promise<CommandHandler> {
+		return super.reloadAll() as Promise<CommandHandler>;
 	}
 
 	public override on<K extends keyof CommandHandlerEventsType>(

@@ -19,6 +19,6 @@
 		"strict": true,
 		"useUnknownInCatchVariables": false
 	},
-	"include": ["src/**/*.ts", "test/**/*.ts", "src/index.mjs"],
+	"include": ["src/**/*.ts", "test/**/*.ts", "src/index.mjs", "lib/**/*.js"],
 	"exclude": ["node_modules", "dist"]
 }

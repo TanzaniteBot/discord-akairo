@@ -55,8 +55,8 @@ export default abstract class AkairoModule {
 	/**
 	 * Reloads the module.
 	 */
-	reload(): AkairoModule {
-		return this.handler?.reload(this.id) as this;
+	reload(): Promise<AkairoModule> {
+		return this.handler?.reload(this.id) as Promise<this>;
 	}
 
 	/**

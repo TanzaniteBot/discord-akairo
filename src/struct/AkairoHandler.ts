@@ -2,6 +2,7 @@ import { Collection } from "discord.js";
 import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
+import import1 from "../../lib/import";
 import AkairoError from "../util/AkairoError";
 import Category from "../util/Category";
 import { AkairoHandlerEvents } from "../util/Constants";
@@ -110,7 +111,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	public load(thing: string | AkairoModule, isReload = false): AkairoModule | undefined {
+	public async load(thing: string | AkairoModule, isReload = false): Promise<AkairoModule | undefined> {
 		const isClass = typeof thing === "function";
 		if (!isClass && !this.extensions.has(path.extname(thing as string))) return undefined;
 
@@ -121,7 +122,7 @@ export default class AkairoHandler extends EventEmitter {
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
 					// eslint-disable-next-line @typescript-eslint/no-var-requires
-			  }.call(this, require(thing as string));
+			  }.call(this, await import1(thing));
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
 			mod = new mod(this); // eslint-disable-line new-cap
@@ -143,16 +144,18 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 * Defaults to the filter passed in the constructor.
 	 */
-	public loadAll(
+	public async loadAll(
 		directory: string = this.directory!,
 		filter: LoadPredicate = this.loadFilter || (() => true)
-	): AkairoHandler {
+	): Promise<AkairoHandler> {
 		const filepaths = AkairoHandler.readdirRecursive(directory);
+		const promises = [];
 		for (let filepath of filepaths) {
 			filepath = path.resolve(filepath);
-			if (filter(filepath)) this.load(filepath);
+			if (filter(filepath)) promises.push(this.load(filepath));
 		}
 
+		await Promise.all(promises);
 		return this;
 	}
 
@@ -185,7 +188,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * Reloads a module.
 	 * @param id - ID of the module.
 	 */
-	public reload(id: string): AkairoModule | undefined {
+	public async reload(id: string): Promise<AkairoModule | undefined> {
 		const mod = this.modules.get(id.toString());
 		if (!mod) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 		if (!mod.filepath) throw new AkairoError("NOT_RELOADABLE", this.classToHandle.name, id);
@@ -193,18 +196,20 @@ export default class AkairoHandler extends EventEmitter {
 		this.deregister(mod);
 
 		const filepath = mod.filepath;
-		const newMod = this.load(filepath, true);
+		const newMod = await this.load(filepath, true);
 		return newMod;
 	}
 
 	/**
 	 * Reloads all modules.
 	 */
-	public reloadAll(): AkairoHandler {
+	public async reloadAll(): Promise<AkairoHandler> {
+		const promises = [];
 		for (const m of Array.from(this.modules.values())) {
-			if (m.filepath) this.reload(m.id);
+			if (m.filepath) promises.push(this.reload(m.id));
 		}
 
+		await Promise.all(promises);
 		return this;
 	}
 

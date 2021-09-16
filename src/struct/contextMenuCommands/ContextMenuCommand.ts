@@ -81,8 +81,8 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	/**
 	 * Reloads the context menu command.
 	 */
-	public override reload(): ContextMenuCommand {
-		return super.reload() as ContextMenuCommand;
+	public override reload(): Promise<ContextMenuCommand> {
+		return super.reload() as Promise<ContextMenuCommand>;
 	}
 
 	/**

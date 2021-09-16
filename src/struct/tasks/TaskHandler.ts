@@ -80,8 +80,8 @@ export default class TaskHandler extends AkairoHandler {
 	 * Loads a task.
 	 * @param thing - Module or path to module.
 	 */
-	public override load(thing: string | Task, isReload?: boolean): Task {
-		return super.load(thing, isReload) as Task;
+	public override load(thing: string | Task, isReload?: boolean): Promise<Task> {
+		return super.load(thing, isReload) as Promise<Task>;
 	}
 
 	/**
@@ -89,8 +89,8 @@ export default class TaskHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): TaskHandler {
-		return super.loadAll(directory, filter) as TaskHandler;
+	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<TaskHandler> {
+		return super.loadAll(directory, filter) as Promise<TaskHandler>;
 	}
 
 	/**
@@ -106,15 +106,15 @@ export default class TaskHandler extends AkairoHandler {
 	 * Reloads a task.
 	 * @param id - ID of the task.
 	 */
-	public override reload(id: string): Task {
-		return super.reload(id) as Task;
+	public override reload(id: string): Promise<Task> {
+		return super.reload(id) as Promise<Task>;
 	}
 
 	/**
 	 * Reloads all tasks.
 	 */
-	public override reloadAll(): TaskHandler {
-		return super.reloadAll() as TaskHandler;
+	public override reloadAll(): Promise<TaskHandler> {
+		return super.reloadAll() as Promise<TaskHandler>;
 	}
 
 	/**

@@ -80,8 +80,8 @@ export default abstract class Inhibitor extends AkairoModule {
 	/**
 	 * Reloads the inhibitor.
 	 */
-	public override reload(): Inhibitor {
-		return super.reload() as Inhibitor;
+	public override reload(): Promise<Inhibitor> {
+		return super.reload() as Promise<Inhibitor>;
 	}
 
 	/**

@@ -113,8 +113,8 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	public override load(thing: string | Listener, isReload?: boolean): Listener {
-		return super.load(thing, isReload) as Listener;
+	public override load(thing: string | Listener, isReload?: boolean): Promise<Listener> {
+		return super.load(thing, isReload) as Promise<Listener>;
 	}
 
 	/**
@@ -122,8 +122,8 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): ListenerHandler {
-		return super.loadAll(directory, filter) as ListenerHandler;
+	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<ListenerHandler> {
+		return super.loadAll(directory, filter) as Promise<ListenerHandler>;
 	}
 
 	/**
@@ -141,15 +141,15 @@ export default class ListenerHandler extends AkairoHandler {
 	 * Reloads a listener.
 	 * @param id - ID of the listener.
 	 */
-	public override reload(id: string): Listener {
-		return super.reload(id) as Listener;
+	public override reload(id: string): Promise<Listener> {
+		return super.reload(id) as Promise<Listener>;
 	}
 
 	/**
 	 * Reloads all listeners.
 	 */
-	public override reloadAll(): ListenerHandler {
-		return super.reloadAll() as ListenerHandler;
+	public override reloadAll(): Promise<ListenerHandler> {
+		return super.reloadAll() as Promise<ListenerHandler>;
 	}
 
 	/**

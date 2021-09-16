@@ -27,13 +27,13 @@
 	},
 	"devDependencies": {
 		"@discordjs/voice": "^0.5.0",
-		"@notenoughupdates/discord.js": "^13.2.0-dev",
 		"@types/lodash": "^4.14.172",
 		"@types/node": "^10.14.4",
 		"@types/source-map-support": "^0.5.4",
 		"@typescript-eslint/eslint-plugin": "^4.29.0",
 		"@typescript-eslint/parser": "^4.29.0",
 		"discord-api-types": "^0.22.0",
+		"discord.js": "npm:@notenoughupdates/discord.js",
 		"discord.js-docgen": "discordjs/docgen",
 		"eslint": "^7.27.0",
 		"eslint-config-prettier": "^8.3.0",
@@ -45,7 +45,6 @@
 	},
 	"dependencies": {
 		"discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
-		"discord.js": "npm:@notenoughupdates/discord.js@13.2.0-dev",
 		"lodash": "^4.17.21",
 		"source-map-support": "^0.5.19"
 	},

@@ -141,8 +141,8 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * Loads an context menu command.
 	 * @param thing - Module or path to module.
 	 */
-	public override load(thing: string | ContextMenuCommand): ContextMenuCommand {
-		return super.load(thing) as ContextMenuCommand;
+	public override load(thing: string | ContextMenuCommand): Promise<ContextMenuCommand> {
+		return super.load(thing) as Promise<ContextMenuCommand>;
 	}
 
 	/**
@@ -150,8 +150,8 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): ContextMenuCommandHandler {
-		return super.loadAll(directory, filter) as ContextMenuCommandHandler;
+	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<ContextMenuCommandHandler> {
+		return super.loadAll(directory, filter) as Promise<ContextMenuCommandHandler>;
 	}
 
 	/**
@@ -167,15 +167,15 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * Reloads an context menu command.
 	 * @param id - ID of the context menu command.
 	 */
-	public override reload(id: string): ContextMenuCommand {
-		return super.reload(id) as ContextMenuCommand;
+	public override reload(id: string): Promise<ContextMenuCommand> {
+		return super.reload(id) as Promise<ContextMenuCommand>;
 	}
 
 	/**
 	 * Reloads all context menu commands.
 	 */
-	public override reloadAll(): ContextMenuCommandHandler {
-		return super.reloadAll() as ContextMenuCommandHandler;
+	public override reloadAll(): Promise<ContextMenuCommandHandler> {
+		return super.reloadAll() as Promise<ContextMenuCommandHandler>;
 	}
 
 	/**

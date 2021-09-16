@@ -68,8 +68,8 @@ export default abstract class Listener extends AkairoModule {
 	/**
 	 * Reloads the listener.
 	 */
-	public override reload(): Listener {
-		return super.reload() as Listener;
+	public override reload(): Promise<Listener> {
+		return super.reload() as Promise<Listener>;
 	}
 
 	/**

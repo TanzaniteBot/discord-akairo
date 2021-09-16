@@ -83,8 +83,8 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * Loads an inhibitor.
 	 * @param thing - Module or path to module.
 	 */
-	public override load(thing: string | Inhibitor): Inhibitor {
-		return super.load(thing) as Inhibitor;
+	public override load(thing: string | Inhibitor): Promise<Inhibitor> {
+		return super.load(thing) as Promise<Inhibitor>;
 	}
 
 	/**
@@ -92,8 +92,8 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): InhibitorHandler {
-		return super.loadAll(directory, filter) as InhibitorHandler;
+	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<InhibitorHandler> {
+		return super.loadAll(directory, filter) as Promise<InhibitorHandler>;
 	}
 
 	/**
@@ -109,15 +109,15 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * Reloads an inhibitor.
 	 * @param id - ID of the inhibitor.
 	 */
-	public override reload(id: string): Inhibitor {
-		return super.reload(id) as Inhibitor;
+	public override reload(id: string): Promise<Inhibitor> {
+		return super.reload(id) as Promise<Inhibitor>;
 	}
 
 	/**
 	 * Reloads all inhibitors.
 	 */
-	public override reloadAll(): InhibitorHandler {
-		return super.reloadAll() as InhibitorHandler;
+	public override reloadAll(): Promise<InhibitorHandler> {
+		return super.reloadAll() as Promise<InhibitorHandler>;
 	}
 
 	/**

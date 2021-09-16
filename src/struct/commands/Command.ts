@@ -348,8 +348,8 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Reloads the command.
 	 */
-	public override reload(): Command {
-		return super.reload() as Command;
+	public override reload(): Promise<Command> {
+		return super.reload() as Promise<Command>;
 	}
 
 	/**
