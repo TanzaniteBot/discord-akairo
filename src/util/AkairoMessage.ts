@@ -13,9 +13,7 @@ import {
 	Util
 } from "discord.js";
 import AkairoClient from "../struct/AkairoClient";
-import Command from "../struct/commands/Command";
 import CommandUtil from "../struct/commands/CommandUtil";
-import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
 
 /**
  * A command interaction represented as a message.
@@ -24,39 +22,30 @@ import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand
  * @param command - The command of the interaction
  */
 export default class AkairoMessage extends Base {
-	public constructor(client: AkairoClient, interaction: CommandInteraction, command: Command | ContextMenuCommand) {
+	public constructor(client: AkairoClient, interaction: CommandInteraction) {
 		super(client);
 
 		this.author = interaction.user;
-
 		this.applicationId = interaction.applicationId;
-
 		this.channelId = interaction.channelId;
-
 		this.content = `${interaction.command!.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
-
 		this.createdTimestamp = interaction.createdTimestamp;
-
 		this.guildId = interaction.guildId;
-
 		this.id = interaction.id;
-
 		this.interaction = interaction;
-
 		this.member = interaction.member;
-
 		this.partial = false;
 
-		if (command instanceof Command) {
+		if (interaction.command?.type === "CHAT_INPUT") {
 			if (interaction.options["_group"]) this.content += `group: ${interaction.options["_group"]}`;
 			if (interaction.options["_subcommand"]) this.content += `subcommand: ${interaction.options["_subcommand"]}`;
 			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
 				this.content += ` ${option.name}: ${interaction.options.get(option.name, false)?.value}`;
 			}
-		} else if (interaction.command!.type === "MESSAGE") {
+		} else if (interaction.command?.type === "MESSAGE") {
 			this.content += ` message: ${interaction.options.getMessage("message")!.id}`;
-		} else if (interaction.command!.type === "USER") {
+		} else if (interaction.command?.type === "USER") {
 			this.content += ` message: ${interaction.options.getUser("user")!.id}`;
 		}
 	}

@@ -19,38 +19,45 @@ export default class Util {
 	}
 
 	/**
-	 *
-	 * @param o1
+	 * Deep assign properties to an object.
+	 * @param target
 	 * @param os
 	 */
-	public static deepAssign(o1: any, ...os: any): any {
+	public static deepAssign<A, B>(target: A, ...os: B[]) {
 		for (const o of os) {
-			for (const [k, v] of Object.entries(o)) {
-				const vIsObject = v && typeof v === "object";
-				const o1kIsObject = Object.prototype.hasOwnProperty.call(o1, k) && o1[k] && typeof o1[k] === "object";
-				if (vIsObject && o1kIsObject) {
-					Util.deepAssign(o1[k], v);
+			for (const [key, value] of Object.entries(o)) {
+				const valueIsObject = value && typeof value === "object";
+				const targetKeyIsObject =
+					Object.prototype.hasOwnProperty.call(target, key) &&
+					target[key as keyof typeof target] &&
+					typeof target[key as keyof typeof target] === "object";
+				if (valueIsObject && targetKeyIsObject) {
+					Util.deepAssign(target[key as keyof typeof target], value);
 				} else {
-					o1[k] = v;
+					target[key as keyof typeof target] = value;
 				}
 			}
 		}
 
-		return o1;
+		return target;
 	}
 
 	/**
-	 *
-	 * @param xs
-	 * @param f
+	 * Map an iterable object and then flatten it it into an array
+	 * @param iterable - the object to map and flatten
+	 * @param filter - the filter to map with
 	 */
-	public static flatMap(xs: any, f: any): any {
-		const res = [];
-		for (const x of xs) {
-			res.push(...f(x));
+	public static flatMap<
+		Type,
+		Ret extends { [Symbol.iterator](): Iterator<unknown> },
+		Func extends (...args: any[]) => Ret
+	>(iterable: Iterable<Type>, filter: Func): Type {
+		const result = [];
+		for (const x of iterable) {
+			result.push(...filter(x));
 		}
 
-		return res;
+		return result as unknown as Type;
 	}
 
 	/**

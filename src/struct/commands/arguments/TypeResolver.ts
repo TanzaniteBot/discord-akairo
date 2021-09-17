@@ -1,6 +1,7 @@
 import {
 	BaseGuildVoiceChannel,
 	Collection,
+	DMChannel,
 	GuildMember,
 	Message,
 	NewsChannel,
@@ -102,12 +103,7 @@ export default class TypeResolver {
 			},
 
 			// Just for fun.
-			[ArgumentTypes.EMOJINT]: (
-				_message: Message,
-				phrase: {
-					replace: (arg0: RegExp, arg1: (m: any) => number) => any;
-				}
-			) => {
+			[ArgumentTypes.EMOJINT]: (_message: Message, phrase: any) => {
 				if (!phrase) return null;
 				const n = phrase.replace(/0⃣|1⃣|2⃣|3⃣|4⃣|5⃣|6⃣|7⃣|8⃣|9⃣|🔟/g, (m: string) => {
 					return ["0⃣", "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"].indexOf(m);
@@ -176,23 +172,12 @@ export default class TypeResolver {
 
 				const person = message.guild
 					? this.client.util.resolveMember(phrase, message.guild.members.cache)
-					: message.channel.type === "DM"
-					? this.client.util.resolveUser(
-							phrase,
-							new Collection([
-								[message.channel.recipient.id!, message.channel.recipient!],
-								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-								[this.client.user?.id!, this.client.user!]
-							])
-					  )
 					: this.client.util.resolveUser(
 							phrase,
 							new Collection([
-								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-								[this.client.user?.id!, this.client.user!]
-								// Not sure why this is here, bots can't be in group dms
-								// @ts-expect-error
-							]).concat(message.channel.recipients)
+								[(message.channel as DMChannel).recipient.id!, (message.channel as DMChannel).recipient!],
+								[this.client.user!.id, this.client.user!]
+							])
 					  );
 
 				if (!person) return null;
@@ -203,23 +188,12 @@ export default class TypeResolver {
 				if (!phrase) return null;
 				const persons = message.guild
 					? this.client.util.resolveMembers(phrase, message.guild.members.cache)
-					: message.channel.type === "DM"
-					? this.client.util.resolveUsers(
-							phrase,
-							new Collection([
-								[message.channel.recipient.id, message.channel.recipient],
-								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-								[this.client.user?.id!, this.client.user!]
-							])
-					  )
 					: this.client.util.resolveUsers(
 							phrase,
 							new Collection([
-								// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-								[this.client.user?.id!, this.client.user!]
-								// Not sure why this is here, bots can't be in group dms
-								// @ts-expect-error
-							]).concat(message.channel.recipients)
+								[(message.channel as DMChannel).recipient.id, (message.channel as DMChannel).recipient],
+								[this.client.user!.id, this.client.user!]
+							])
 					  );
 
 				if (!persons.size) return null;
@@ -571,7 +545,6 @@ export default class TypeResolver {
 		};
 
 		for (const [key, value] of Object.entries(builtins)) {
-			// @ts-expect-error
 			this.types.set(key, value);
 		}
 	}

@@ -573,60 +573,27 @@ export interface ContentParserResult {
 /**
  * A single phrase or flag.
  */
-export type StringData =
-	| {
-			/**
-			 * One of 'Phrase', 'Flag', 'OptionFlag'.
-			 */
-			type: "Phrase";
+export type StringData = {
+	/**
+	 * One of 'Phrase', 'Flag', 'OptionFlag'.
+	 */
+	type: "Phrase" | "Flag" | "OptionFlag";
 
-			/**
-			 * The value of a 'Phrase' or 'OptionFlag'.
-			 */
-			value: string;
+	/**
+	 * The key of a 'Flag' or 'OptionFlag'.
+	 */
+	key: string;
 
-			/**
-			 * The raw string with whitespace and/or separator.
-			 */
-			raw: string;
-	  }
-	| {
-			/**
-			 * One of 'Phrase', 'Flag', 'OptionFlag'.
-			 */
-			type: "Flag";
+	/**
+	 * The value of a 'Phrase' or 'OptionFlag'.
+	 */
+	value: string;
 
-			/**
-			 * The key of a 'Flag' or 'OptionFlag'.
-			 */
-			key: string;
-
-			/**
-			 * The raw string with whitespace and/or separator.
-			 */
-			raw: string;
-	  }
-	| {
-			/**
-			 * One of 'Phrase', 'Flag', 'OptionFlag'.
-			 */
-			type: "OptionFlag";
-
-			/**
-			 * The key of a 'Flag' or 'OptionFlag'.
-			 */
-			key: string;
-
-			/**
-			 * The value of a 'Phrase' or 'OptionFlag'.
-			 */
-			value: string;
-
-			/**
-			 * The raw string with whitespace and/or separator.
-			 */
-			raw: string;
-	  };
+	/**
+	 * The raw string with whitespace and/or separator.
+	 */
+	raw: string;
+};
 
 /**
  * Flags extracted from an argument list.

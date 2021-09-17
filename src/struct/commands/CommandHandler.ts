@@ -82,53 +82,29 @@ export default class CommandHandler extends AkairoHandler {
 		});
 
 		this.autoRegisterSlashCommands = autoRegisterSlashCommands;
-
 		this.typing = typing;
-
 		this.autoDefer = autoDefer;
-
 		this.resolver = new TypeResolver(this);
-
 		this.aliases = new Collection();
-
 		this.aliasReplacement = aliasReplacement;
-
 		this.prefixes = new Collection();
-
-		this.blockClient = !!blockClient;
-
-		this.blockBots = !!blockBots;
-
-		this.fetchMembers = !!fetchMembers;
-
-		this.handleEdits = !!handleEdits;
-
-		this.storeMessages = !!storeMessages;
-
-		this.commandUtil = !!commandUtil;
-		if ((this.handleEdits || this.storeMessages) && !this.commandUtil) {
-			throw new AkairoError("COMMAND_UTIL_EXPLICIT");
-		}
-
+		this.blockClient = Boolean(blockClient);
+		this.blockBots = Boolean(blockBots);
+		this.fetchMembers = Boolean(fetchMembers);
+		this.handleEdits = Boolean(handleEdits);
+		this.storeMessages = Boolean(storeMessages);
+		this.commandUtil = Boolean(commandUtil);
+		if ((this.handleEdits || this.storeMessages) && !this.commandUtil) throw new AkairoError("COMMAND_UTIL_EXPLICIT");
 		this.commandUtilLifetime = commandUtilLifetime;
-
 		this.commandUtilSweepInterval = commandUtilSweepInterval;
-		if (this.commandUtilSweepInterval > 0) {
+		if (this.commandUtilSweepInterval > 0)
 			setInterval(() => this.sweepCommandUtil(), this.commandUtilSweepInterval).unref();
-		}
-
 		this.commandUtils = new Collection();
-
 		this.cooldowns = new Collection();
-
 		this.defaultCooldown = defaultCooldown;
-
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
-
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
-
 		this.prompts = new Collection();
-
 		this.argumentDefaults = Util.deepAssign(
 			{
 				prompt: {
@@ -149,21 +125,13 @@ export default class CommandHandler extends AkairoHandler {
 			},
 			argumentDefaults
 		);
-
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
-
-		this.allowMention = typeof allowMention === "function" ? allowMention.bind(this) : !!allowMention;
-
+		this.allowMention = typeof allowMention === "function" ? allowMention.bind(this) : Boolean(allowMention);
 		this.inhibitorHandler = null;
-
-		this.autoDefer = !!autoDefer;
-
-		this.execSlash = !!execSlash;
-
-		this.skipBuiltInPostInhibitors = !!skipBuiltInPostInhibitors;
-
-		this.useSlashPermissions = !!useSlashPermissions;
-
+		this.autoDefer = Boolean(autoDefer);
+		this.execSlash = Boolean(execSlash);
+		this.skipBuiltInPostInhibitors = Boolean(skipBuiltInPostInhibitors);
+		this.useSlashPermissions = Boolean(useSlashPermissions);
 		this.setup();
 	}
 
@@ -512,12 +480,12 @@ export default class CommandHandler extends AkairoHandler {
 			};
 		};
 
-		const globalCommands = (await this.client.application?.commands.fetch())?.filter(
-			value => !!this.modules.find(mod => mod.aliases[0] === value.name)
+		const globalCommands = (await this.client.application?.commands.fetch())?.filter(value =>
+			Boolean(this.modules.find(mod => mod.aliases[0] === value.name))
 		);
 		const fullPermissions: GuildApplicationCommandPermissionData[] | undefined = globalCommands
 			?.filter(value => !value.defaultPermission)
-			.filter(value => !!this.modules.find(mod => mod.aliases[0] === value.name))
+			.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)))
 			.map(value => mapCom(value));
 
 		const promises = this.client.guilds.cache.map(async guild => {
@@ -629,8 +597,7 @@ export default class CommandHandler extends AkairoHandler {
 				if (prefixes?.size === 1) {
 					this.prefixes.delete(command.prefix);
 				} else {
-					// @ts-expect-error
-					prefixes.delete(command.prefix);
+					prefixes?.delete(command.prefix as string);
 				}
 			}
 		}
@@ -709,7 +676,7 @@ export default class CommandHandler extends AkairoHandler {
 			return false;
 		}
 
-		const message = new AkairoMessage(this.client, interaction, command);
+		const message = new AkairoMessage(this.client, interaction);
 
 		try {
 			if (this.fetchMembers && message.guild && !message.member) {
@@ -1103,7 +1070,6 @@ export default class CommandHandler extends AkairoHandler {
 	): Promise<boolean> {
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
-				// @ts-expect-error
 				let missing = command.clientPermissions(message);
 				if (Util.isPromise(missing)) missing = await missing;
 
@@ -1143,7 +1109,6 @@ export default class CommandHandler extends AkairoHandler {
 
 			if (!isIgnored) {
 				if (typeof command.userPermissions === "function") {
-					// @ts-expect-error
 					let missing = command.userPermissions(message);
 					if (Util.isPromise(missing)) missing = await missing;
 
@@ -1286,7 +1251,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		const pairs = Util.flatMap(await Promise.all(promises), (x: any) => x);
 		pairs.sort(([a]: any, [b]: any) => Util.prefixCompare(a, b));
-		return this.parseMultiplePrefixes(message, pairs);
+		return this.parseMultiplePrefixes(message, pairs as [string, Set<string>][]);
 	}
 
 	/**

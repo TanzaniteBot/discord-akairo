@@ -15,7 +15,6 @@ export default abstract class Task extends AkairoModule {
 		super(id, { category });
 
 		this.delay = delay;
-
 		this.runOnStart = runOnStart;
 	}
 

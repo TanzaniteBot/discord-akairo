@@ -30,27 +30,16 @@ export default class Argument {
 		}: ArgumentOptions = {}
 	) {
 		this.command = command;
-
 		this.match = match;
-
 		this.type = typeof type === "function" ? type.bind(this) : type;
-
 		this.flag = flag;
-
 		this.multipleFlags = multipleFlags;
-
 		this.index = index!;
-
 		this.unordered = unordered;
-
 		this.limit = limit;
-
 		this.prompt = prompt!;
-
 		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue;
-
 		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise!;
-
 		this.modifyOtherwise = modifyOtherwise!;
 	}
 
@@ -638,13 +627,19 @@ export interface ArgumentOptions {
 	 */
 	default?: DefaultValueSupplier | any;
 
-	/** The description of the argument */
+	/**
+	 * The description of the argument
+	 */
 	description?: string | any | any[];
 
-	/** The string(s) to use as the flag for flag or option match. */
+	/**
+	 * The string(s) to use as the flag for flag or option match.
+	 */
 	flag?: string | string[];
 
-	/**  ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator. */
+	/**
+	 * ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator.
+	 */
 	id?: string;
 
 	/**
@@ -660,10 +655,14 @@ export interface ArgumentOptions {
 	 */
 	limit?: number;
 
-	/** Method to match text. Defaults to 'phrase'. */
+	/**
+	 * Method to match text. Defaults to 'phrase'.
+	 */
 	match?: ArgumentMatch;
 
-	/** Function to modify otherwise content. */
+	/**
+	 * Function to modify otherwise content.
+	 */
 	modifyOtherwise?: OtherwiseContentModifier;
 
 	/**
@@ -673,13 +672,19 @@ export interface ArgumentOptions {
 	 */
 	multipleFlags?: boolean;
 
-	/** Text sent if argument parsing fails. This overrides the `default` option and all prompt options. */
+	/**
+	 * Text sent if argument parsing fails. This overrides the `default` option and all prompt options.
+	 */
 	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
-	/** Prompt options for when user does not provide input. */
+	/**
+	 * Prompt options for when user does not provide input.
+	 */
 	prompt?: ArgumentPromptOptions | boolean;
 
-	/** Type to cast to. */
+	/**
+	 * Type to cast to.
+	 */
 	type?: ArgumentType | ArgumentTypeCaster;
 
 	/**
@@ -698,19 +703,29 @@ export interface ArgumentOptions {
  * Data passed to argument prompt functions.
  */
 export interface ArgumentPromptData {
-	/** Whether the prompt is infinite or not. */
+	/**
+	 * Whether the prompt is infinite or not.
+	 */
 	infinite: boolean;
 
-	/** The message that caused the prompt. */
+	/**
+	 * The message that caused the prompt.
+	 */
 	message: Message;
 
-	/** Amount of retries so far. */
+	/**
+	 * Amount of retries so far.
+	 */
 	retries: number;
 
-	/** The input phrase that caused the prompt if there was one, otherwise an empty string. */
+	/**
+	 * The input phrase that caused the prompt if there was one, otherwise an empty string.
+	 */
 	phrase: string;
 
-	/** The value that failed if there was one, otherwise null. */
+	/**
+	 * The value that failed if there was one, otherwise null.
+	 */
 	failure: void | (Flag & { value: any });
 }
 
@@ -726,13 +741,19 @@ export interface ArgumentPromptOptions {
 	 */
 	breakout?: boolean;
 
-	/** Text sent on cancellation of command. */
+	/**
+	 * Text sent on cancellation of command.
+	 */
 	cancel?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 
-	/** Word to use for cancelling the command. Defaults to 'cancel'. */
+	/**
+	 * Word to use for cancelling the command. Defaults to 'cancel'.
+	 */
 	cancelWord?: string;
 
-	/** Text sent on amount of tries reaching the max. */
+	/**
+	 * Text sent on amount of tries reaching the max.
+	 */
 	ended?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 
 	/**
@@ -743,43 +764,69 @@ export interface ArgumentPromptOptions {
 	 */
 	infinite?: boolean;
 
-	/** Amount of inputs allowed for an infinite prompt before finishing. Defaults to Infinity. */
+	/**
+	 * Amount of inputs allowed for an infinite prompt before finishing. Defaults to Infinity.
+	 */
 	limit?: number;
 
-	/** Function to modify cancel messages. */
+	/**
+	 * Function to modify cancel messages.
+	 */
 	modifyCancel?: PromptContentModifier;
 
-	/** Function to modify out of tries messages. */
+	/**
+	 * Function to modify out of tries messages.
+	 */
 	modifyEnded?: PromptContentModifier;
 
-	/** Function to modify retry prompts. */
+	/**
+	 * Function to modify retry prompts.
+	 */
 	modifyRetry?: PromptContentModifier;
 
-	/** Function to modify start prompts. */
+	/**
+	 * Function to modify start prompts.
+	 */
 	modifyStart?: PromptContentModifier;
 
-	/** Function to modify timeout messages. */
+	/**
+	 * Function to modify timeout messages.
+	 */
 	modifyTimeout?: PromptContentModifier;
 
-	/** Prompts only when argument is provided but was not of the right type. Defaults to false. */
+	/**
+	 * Prompts only when argument is provided but was not of the right type. Defaults to false.
+	 */
 	optional?: boolean;
 
-	/** Amount of retries allowed. Defaults to 1. */
+	/**
+	 * Amount of retries allowed. Defaults to 1.
+	 */
 	retries?: number;
 
-	/** Text sent on a retry (failure to cast type). */
+	/**
+	 * Text sent on a retry (failure to cast type).
+	 */
 	retry?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 
-	/** Text sent on start of prompt. */
+	/**
+	 * Text sent on start of prompt.
+	 */
 	start?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 
-	/** Word to use for ending infinite prompts. Defaults to 'stop'. */
+	/**
+	 * Word to use for ending infinite prompts. Defaults to 'stop'.
+	 */
 	stopWord?: string;
 
-	/** Time to wait for input. Defaults to 30000. */
+	/**
+	 * Time to wait for input. Defaults to 30000.
+	 */
 	time?: number;
 
-	/** Text sent on collector time out. */
+	/**
+	 * Text sent on collector time out.
+	 */
 	timeout?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 }
 
@@ -955,13 +1002,19 @@ export interface FailureData {
  * Defaults for argument options.
  */
 export interface DefaultArgumentOptions {
-	/** Default prompt options. */
+	/**
+	 * Default prompt options.
+	 */
 	prompt?: ArgumentPromptOptions;
 
-	/** Default text sent if argument parsing fails. */
+	/**
+	 * Default text sent if argument parsing fails.
+	 */
 	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
 
-	/** Function to modify otherwise content. */
+	/**
+	 * Function to modify otherwise content.
+	 */
 	modifyOtherwise?: OtherwiseContentModifier;
 }
 

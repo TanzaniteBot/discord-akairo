@@ -30,19 +30,12 @@ export default class AkairoHandler extends EventEmitter {
 		super();
 
 		this.client = client;
-
 		this.directory = directory!;
-
 		this.classToHandle = classToHandle;
-
 		this.extensions = new Set(extensions);
-
 		this.automateCategories = Boolean(automateCategories);
-
 		this.loadFilter = loadFilter;
-
 		this.modules = new Collection();
-
 		this.categories = new Collection();
 	}
 

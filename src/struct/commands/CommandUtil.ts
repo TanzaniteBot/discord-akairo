@@ -24,21 +24,11 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
 export default class CommandUtil {
 	public constructor(handler: CommandHandler | ContextMenuCommandHandler, message: Message | AkairoMessage) {
 		this.handler = handler;
-
 		this.message = message;
-
 		this.parsed = null;
-
 		this.shouldEdit = false;
-
 		this.lastResponse = null;
-
-		if (this.handler instanceof CommandHandler && this.handler.storeMessages) {
-			this.messages = new Collection();
-		} else {
-			this.messages = null;
-		}
-
+		this.messages = this.handler instanceof CommandHandler && this.handler.storeMessages ? new Collection() : null;
 		this.isSlash = this.message instanceof AkairoMessage;
 	}
 

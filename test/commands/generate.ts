@@ -11,7 +11,7 @@ export default class GenerateCommand extends Command {
 		});
 	}
 
-	*args(): IterableIterator<ArgumentOptions | Flag> {
+	override *args(): IterableIterator<ArgumentOptions | Flag> {
 		const x = yield {
 			type: ["1", "2"],
 			otherwise: "Type 1 or 2!"

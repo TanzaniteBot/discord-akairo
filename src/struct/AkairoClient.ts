@@ -9,15 +9,10 @@ import ClientUtil from "./ClientUtil";
 export default class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
 	public constructor(options?: AkairoOptions & ClientOptions, clientOptions?: ClientOptions) {
 		super(clientOptions || options!);
-
 		const { ownerID = "" } = options!;
-
 		const { superUserID = "" } = options!;
-
 		this.ownerID = ownerID;
-
 		this.superUserID = superUserID;
-
 		this.util = new ClientUtil(this);
 	}
 

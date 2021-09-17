@@ -89,7 +89,7 @@ export default class ClientUtil {
 		const name = caseSensitive ? emoji.name : emoji.name?.toLowerCase();
 
 		if (!wholeWord) {
-			return !!name?.includes(text) || !!name?.includes(text.replace(/:/, ""));
+			return Boolean(name?.includes(text) || name?.includes(text.replace(/:/, "")));
 		}
 
 		return name === text || name === text.replace(/:/, "");

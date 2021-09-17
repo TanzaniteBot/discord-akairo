@@ -17,14 +17,18 @@ import Flag from "./Flag";
  * @param options - Options for the command.
  */
 export default abstract class Command extends AkairoModule {
+	/**
+	 * Executes the command.
+	 * @param message - Message that triggered the command.
+	 * @param args - Evaluated arguments.
+	 */
 	constructor(id: string, options?: CommandOptions) {
 		super(id, { category: options?.category });
 
 		const {
 			onlyNsfw = false,
 			aliases = [],
-			// @ts-expect-error: otherwise generator functions break
-			args = this.args || [],
+			args = this._args || this.args || [],
 			quoted = true,
 			separator,
 			channel = null!,
@@ -36,11 +40,10 @@ export default abstract class Command extends AkairoModule {
 			ratelimit = 1,
 			argumentDefaults = {},
 			description = "",
-			prefix = this.prefix, // @ts-expect-error
-			clientPermissions = this.clientPermissions, // @ts-expect-error
-			userPermissions = this.userPermissions, // @ts-expect-error
+			prefix = this.prefix,
+			clientPermissions = this.clientPermissions,
+			userPermissions = this.userPermissions,
 			regex = this.regex,
-			// @ts-expect-error
 			condition = this.condition || (() => false),
 			before = this.before || (() => undefined),
 			lock,
@@ -53,64 +56,39 @@ export default abstract class Command extends AkairoModule {
 			slashEphemeral = false,
 			slashGuilds = []
 		}: CommandOptions = options ?? {};
-
 		this.aliases = aliases ?? [];
-
 		const { flagWords, optionFlagWords } = Array.isArray(args)
 			? ContentParser.getFlags(args)
 			: { flagWords: flags, optionFlagWords: optionFlags };
-
 		this.contentParser = new ContentParser({
 			flagWords,
 			optionFlagWords,
 			quoted,
 			separator
 		});
-
 		this.argumentRunner = new ArgumentRunner(this);
 		this.argumentGenerator = (
 			Array.isArray(args)
-				? ArgumentRunner.fromArguments(
-						// @ts-expect-error
-						args.map(arg => [arg.id, new Argument(this, arg)])
-				  )
+				? ArgumentRunner.fromArguments(args.map(arg => [arg.id!, new Argument(this, arg)]))
 				: args.bind(this)
 		) as ArgumentGenerator;
-
 		this.onlyNsfw = Boolean(onlyNsfw);
-
 		this.channel = channel!;
-
 		this.ownerOnly = Boolean(ownerOnly);
-
 		this.superUserOnly = Boolean(superUserOnly);
-
 		this.editable = Boolean(editable);
-
 		this.typing = Boolean(typing);
-
 		this.cooldown = cooldown!;
-
 		this.ratelimit = ratelimit;
-
 		this.argumentDefaults = argumentDefaults;
-
 		this.description = Array.isArray(description) ? description.join("\n") : description;
-
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
-
 		this.clientPermissions = typeof clientPermissions === "function" ? clientPermissions.bind(this) : clientPermissions;
-
 		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
-
 		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
-
 		this.condition = condition.bind(this);
-
 		this.before = before.bind(this);
-
 		this.lock = lock;
-
 		if (typeof lock === "string") {
 			this.lock = {
 				guild: (message: Message | AkairoMessage): string => message.guild! && message.guild.id!,
@@ -118,21 +96,12 @@ export default abstract class Command extends AkairoModule {
 				user: (message: Message | AkairoMessage): string => message.author.id
 			}[lock];
 		}
-
-		if (this.lock) {
-			this.locker = new Set();
-		}
-
+		if (this.lock) this.locker = new Set();
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
-
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
-
 		this.slashOptions = slashOptions;
-
 		this.slashEphemeral = slashEphemeral;
-
 		this.slash = slash;
-
 		this.slashGuilds = slashGuilds;
 	}
 
@@ -164,7 +133,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Permissions required to run command by the client.
 	 */
-	public clientPermissions: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	public clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
 	 * Cooldown in milliseconds.
@@ -244,7 +213,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * The regex trigger for this command.
 	 */
-	public regex: RegExp | RegexSupplier;
+	public regex?: RegExp | RegexSupplier;
 
 	/**
 	 * Mark command as slash command and set information.
@@ -279,12 +248,12 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Permissions required to run command by the user.
 	 */
-	public userPermissions: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	public userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
 	 * Argument options or generator.
 	 */
-	// public args: ArgumentOptions[] | ArgumentGenerator;
+	public _args?: ArgumentOptions[] | ArgumentGenerator;
 
 	/**
 	 * The content parser.
@@ -296,20 +265,16 @@ export default abstract class Command extends AkairoModule {
 	 */
 	public argumentRunner: ArgumentRunner;
 
+	public *args(
+		message: Message,
+		parsed: ContentParserResult,
+		state: ArgumentRunnerState
+	): IterableIterator<ArgumentOptions | Flag> {}
+
 	/**
 	 * Generator for arguments.
 	 */
 	public argumentGenerator: ArgumentGenerator;
-
-	/**
-	 * Executes the command.
-	 * @param message - Message that triggered the command.
-	 * @param args - Evaluated arguments.
-	 */
-	/* public exec(message: Message, args: any): any; */
-	public exec(message: Message | AkairoMessage, args: any): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
-	}
 
 	/**
 	 * Runs before argument parsing and execution.
@@ -321,8 +286,15 @@ export default abstract class Command extends AkairoModule {
 	 * Checks if the command should be ran by using an arbitrary condition.
 	 * @param message - Message being handled.
 	 */
-	// @ts-expect-error
-	public condition(message: Message): boolean | Promise<boolean> {}
+	public condition(message: Message): boolean | Promise<boolean> {
+		return false;
+	}
+
+	public exec(message: Message, args: any): any;
+	public exec(message: Message | AkairoMessage, args: any): any;
+	public exec(message: Message | AkairoMessage, args: any): any {
+		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
+	}
 
 	/**
 	 * Execute the slash command
@@ -527,14 +499,14 @@ export type KeySupplier = (message: Message | AkairoMessage, args: any) => strin
  * A function used to check if the command should run arbitrarily.
  * @param message - Message to check.
  */
-export type ExecutionPredicate = (message: Message) => boolean;
+export type ExecutionPredicate = (message: Message) => boolean | Promise<boolean>;
 
 /**
  * A function used to check if a message has permissions for the command.
  * A non-null return value signifies the reason for missing permissions.
  * @param message - Message that triggered the command.
  */
-export type MissingPermissionSupplier = (message: Message) => Promise<any> | any;
+export type MissingPermissionSupplier = (message: Message | AkairoMessage) => Promise<any> | any;
 
 /**
  * A function used to return a regular expression.
