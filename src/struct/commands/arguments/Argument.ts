@@ -879,6 +879,8 @@ export type ArgumentMatch =
  * - `command` matches the ID of a command.
  * - `inhibitor` matches the ID of an inhibitor.
  * - `listener` matches the ID of a listener.
+ * - `task` matches the ID of a task.
+ * - `contextMenuCommand` matches the ID of a context menu command.
  *
  * Possible Discord-related types.
  * These types can be plural (add an 's' to the end) and a collection of matching objects will be used.
@@ -888,6 +890,9 @@ export type ArgumentMatch =
  * - `channel` tries to resolve to a channel.
  * - `textChannel` tries to resolve to a text channel.
  * - `voiceChannel` tries to resolve to a voice channel.
+ * - `categoryChannel` tries to resolve to a category channel.
+ * - `newsChannel` tries to resolve to a news channel.
+ * - `storeChannel` tries to resolve to a store channel.
  * - `stageChannel` tries to resolve to a stage channel.
  * - `threadChannel` tries to resolve a thread channel.
  * - `role` tries to resolve to a role.
@@ -912,7 +917,7 @@ export type ArgumentMatch =
  * A regular expression can also be used.
  * The evaluated argument will be an object containing the `match` and `matches` if global.
  */
-export type ArgumentType =
+export type BaseArgumentType =
 	| "string"
 	| "lowercase"
 	| "uppercase"
@@ -965,9 +970,10 @@ export type ArgumentType =
 	| "command"
 	| "inhibitor"
 	| "listener"
-	| (string | string[])[]
-	| RegExp
-	| string;
+	| "task"
+	| "contextMenuCommand";
+
+export type ArgumentType = BaseArgumentType | (string | string[])[] | RegExp | string;
 
 /**
  * A function for processing user input to use as an argument.

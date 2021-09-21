@@ -13,8 +13,10 @@ import { URL } from "url";
 import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels";
 import { ArgumentTypes } from "../../../util/Constants";
 import AkairoClient from "../../AkairoClient";
+import ContextMenuCommandHandler from "../../contextMenuCommands/ContextMenuCommandHandler";
 import InhibitorHandler from "../../inhibitors/InhibitorHandler";
 import ListenerHandler from "../../listeners/ListenerHandler";
+import TaskHandler from "../../tasks/TaskHandler";
 import CommandHandler from "../CommandHandler";
 import { ArgumentTypeCaster } from "./Argument";
 
@@ -26,15 +28,12 @@ import { ArgumentTypeCaster } from "./Argument";
 export default class TypeResolver {
 	public constructor(handler: CommandHandler) {
 		this.client = handler.client;
-
 		this.commandHandler = handler;
-
 		this.inhibitorHandler = null;
-
 		this.listenerHandler = null;
-
+		this.taskHandler = null;
+		this.contextMenuCommandHandler = null;
 		this.types = new Collection();
-
 		this.addBuiltInTypes();
 	}
 
@@ -57,6 +56,16 @@ export default class TypeResolver {
 	 * The listener handler.
 	 */
 	public listenerHandler?: ListenerHandler | null;
+
+	/**
+	 * The task handler.
+	 */
+	public taskHandler: TaskHandler | null;
+
+	/**
+	 * The context menu command handler.
+	 */
+	public contextMenuCommandHandler: ContextMenuCommandHandler | null;
 
 	/**
 	 * Collection of types.
@@ -541,6 +550,16 @@ export default class TypeResolver {
 			[ArgumentTypes.LISTENER]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
 				return this.listenerHandler?.modules.get(phrase) || null;
+			},
+
+			[ArgumentTypes.TASK]: (_message: Message, phrase: string) => {
+				if (!phrase) return null;
+				return this.taskHandler?.modules.get(phrase) || null;
+			},
+
+			[ArgumentTypes.CONTEXT_MENU_COMMAND]: (_message: Message, phrase: string) => {
+				if (!phrase) return null;
+				return this.contextMenuCommandHandler?.modules.get(phrase) || null;
 			}
 		};
 

@@ -26,6 +26,7 @@ import AkairoModule from "../AkairoModule";
 import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler";
 import InhibitorHandler from "../inhibitors/InhibitorHandler";
 import ListenerHandler from "../listeners/ListenerHandler";
+import TaskHandler from "../tasks/TaskHandler";
 import { DefaultArgumentOptions } from "./arguments/Argument";
 import TypeResolver from "./arguments/TypeResolver";
 import Command, { KeySupplier } from "./Command";
@@ -644,6 +645,11 @@ export default class CommandHandler extends AkairoHandler {
 				message.util!.parsed = parsed;
 			}
 
+			if (parsed.command?.slashOnly) {
+				this.emit(CommandHandlerEvents.SLASH_ONLY, message, parsed.command);
+				return false;
+			}
+
 			let ran;
 			if (!parsed.command) {
 				ran = await this.handleRegexAndConditionalCommands(message);
@@ -774,6 +780,7 @@ export default class CommandHandler extends AkairoHandler {
 			return null;
 		}
 	}
+
 	/**
 	 * Handles normal commands.
 	 * @param message - Message to handle.
@@ -1068,32 +1075,21 @@ export default class CommandHandler extends AkairoHandler {
 		command: Command,
 		slash: boolean = false
 	): Promise<boolean> {
+		const event = slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS;
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
 				let missing = command.clientPermissions(message);
 				if (Util.isPromise(missing)) missing = await missing;
 
 				if (missing != null) {
-					this.emit(
-						slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
-						message,
-						command,
-						"client",
-						missing
-					);
+					this.emit(event, message, command, "client", missing);
 					return true;
 				}
 			} else if (message.guild) {
 				if (message.channel?.type === "DM") return false;
 				const missing = message.channel?.permissionsFor(message.guild.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
-					this.emit(
-						slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
-						message,
-						command,
-						"client",
-						missing
-					);
+					this.emit(event, message, command, "client", missing);
 					return true;
 				}
 			}
@@ -1113,26 +1109,14 @@ export default class CommandHandler extends AkairoHandler {
 					if (Util.isPromise(missing)) missing = await missing;
 
 					if (missing != null) {
-						this.emit(
-							slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
-							message,
-							command,
-							"user",
-							missing
-						);
+						this.emit(event, message, command, "user", missing);
 						return true;
 					}
 				} else if (message.guild) {
 					if (message.channel?.type === "DM") return false;
 					const missing = message.channel?.permissionsFor(message.author)?.missing(command.userPermissions);
 					if (missing?.length) {
-						this.emit(
-							slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS,
-							message,
-							command,
-							"user",
-							missing
-						);
+						this.emit(event, message, command, "user", missing);
 						return true;
 					}
 				}
@@ -1409,6 +1393,26 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	public useListenerHandler(listenerHandler: ListenerHandler): CommandHandler {
 		this.resolver.listenerHandler = listenerHandler;
+
+		return this;
+	}
+
+	/**
+	 * Set the task handler to use.
+	 * @param taskHandler - The task handler.
+	 */
+	public useTaskHandler(taskHandler: TaskHandler): CommandHandler {
+		this.resolver.taskHandler = taskHandler;
+
+		return this;
+	}
+
+	/**
+	 * Set the context menu command handler to use.
+	 * @param contextMenuCommandHandler - The context menu command handler.
+	 */
+	public useContextMenuCommandHandler(contextMenuCommandHandler: ContextMenuCommandHandler): CommandHandler {
+		this.resolver.contextMenuCommandHandler = contextMenuCommandHandler;
 
 		return this;
 	}

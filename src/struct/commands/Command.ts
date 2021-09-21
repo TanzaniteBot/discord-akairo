@@ -54,7 +54,8 @@ export default abstract class Command extends AkairoModule {
 			slash = false,
 			slashOptions,
 			slashEphemeral = false,
-			slashGuilds = []
+			slashGuilds = [],
+			slashOnly = false
 		}: CommandOptions = options ?? {};
 		this.aliases = aliases ?? [];
 		const { flagWords, optionFlagWords } = Array.isArray(args)
@@ -103,6 +104,7 @@ export default abstract class Command extends AkairoModule {
 		this.slashEphemeral = slashEphemeral;
 		this.slash = slash;
 		this.slashGuilds = slashGuilds;
+		this.slashOnly = slashOnly;
 	}
 
 	/**
@@ -265,6 +267,19 @@ export default abstract class Command extends AkairoModule {
 	 */
 	public argumentRunner: ArgumentRunner;
 
+	/**
+	 * Only allows this command to be executed as a slash command.
+	 */
+	public slashOnly: boolean;
+
+	/**
+	 * Generator for arguments.
+	 * When yielding argument options, that argument is ran and the result of the processing is given.
+	 * The last value when the generator is done is the resulting `args` for the command's `exec`.
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed content.
+	 * @param state - Argument processing state.
+	 */
 	public *args(
 		message: Message,
 		parsed: ContentParserResult,
@@ -480,6 +495,11 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * Permissions required by the user to run this command.
 	 */
 	userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+
+	/**
+	 * Only allow this command to be used as a slash command. Also makes `slash` `true`
+	 */
+	slashOnly?: boolean;
 }
 
 /**

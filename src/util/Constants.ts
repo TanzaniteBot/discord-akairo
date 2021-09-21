@@ -61,7 +61,9 @@ export enum ArgumentTypes {
 	COMMAND_ALIAS = "commandAlias",
 	COMMAND = "command",
 	INHIBITOR = "inhibitor",
-	LISTENER = "listener"
+	LISTENER = "listener",
+	TASK = "task",
+	CONTEXT_MENU_COMMAND = "contextMenuCommand"
 }
 export enum AkairoHandlerEvents {
 	LOAD = "load",
@@ -86,7 +88,8 @@ export enum CommandHandlerEvents {
 	SLASH_FINISHED = "slashFinished",
 	SLASH_MISSING_PERMISSIONS = "slashMissingPermissions",
 	SLASH_NOT_FOUND = "slashNotFound",
-	SLASH_STARTED = "slashStarted"
+	SLASH_STARTED = "slashStarted",
+	SLASH_ONLY = "slashOnly"
 }
 export enum ContextCommandHandlerEvents {
 	ERROR = "error",
