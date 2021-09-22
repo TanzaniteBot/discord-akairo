@@ -10,3 +10,7 @@ test/db.sqlite
 dist/test/db.sqlite
 tsconfig.tsbuildinfo
 yarn-error.log
+
+test/node_modules
+test/dist
+test/src/auth.json

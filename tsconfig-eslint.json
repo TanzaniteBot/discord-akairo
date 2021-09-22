@@ -2,12 +2,6 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"target": "esnext",
-		"outDir": "dist",
-		"lib": ["esnext", "esnext.array", "esnext.asyncIterable", "esnext.intl", "esnext.symbol", "DOM"],
-		"sourceMap": false,
-		"inlineSourceMap": true,
-		"inlineSources": true,
-		"incremental": true,
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
@@ -19,6 +13,6 @@
 		"strict": true,
 		"useUnknownInCatchVariables": false
 	},
-	"include": ["src/**/*.ts", "src/index.mjs", "lib/**/*.js"],
+	"include": ["src/**/*.ts", "test/**/*.ts", "src/index.mjs", "lib/**/*.js"],
 	"exclude": ["node_modules", "dist"]
 }

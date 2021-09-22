@@ -1,0 +1,21 @@
+{
+	"name": "akairo-test",
+	"version": "0.0.0",
+	"main": "dist/bot.js",
+	"license": "MIT",
+	"scripts": {
+		"start": "yarn build && node --trace-warnings dist/bot.js",
+		"build": "yarn rimraf dist && yarn tsc"
+	},
+	"dependencies": {
+		"discord-akairo": "file:..",
+		"discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
+		"discord.js": "npm:@notenoughupdates/discord.js",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.3.5"
+	},
+	"devDependencies": {
+		"@types/lodash": "^4.14.173",
+		"@types/node": "^16.9.6"
+	}
+}
