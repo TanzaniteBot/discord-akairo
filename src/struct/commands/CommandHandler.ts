@@ -715,58 +715,25 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-			const convertedOptions: any = {};
-			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
-			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
-			for (const option of interaction.options["_hoistedOptions"]) {
-				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
-				convertedOptions[option.name] = interaction.options[
-					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`) as
-						| "getBoolean"
-						| "getChannel"
-						| "getString"
-						| "getInteger"
-						| "getNumber"
-						| "getUser"
-						| "getMember"
-						| "getRole"
-						| "getMentionable"
-						| "getMessage"
-				](option.name, false);
-			}
-
-			const lisOptions: any = {}
-			interaction.options.data.forEach(option => {
-				switch (option.type) {
-					case "STRING":
-						lisOptions[option.name] = 'option.value';
-						break;
-					case "INTEGER":
-						lisOptions[option.name] = option.value;
-						break;
-					case "BOOLEAN":
-						lisOptions[option.name] = option.value;
-						break;
-					case "NUMBER":
-						lisOptions[option.name] = option.value;
-						break;
-					case "USER": {
-						const thing = { user: option.user, member: option.member };
-						lisOptions[option.name] = thing;
-						break;
-					}
-					case "CHANNEL":
-						lisOptions[option.name] = option.channel;
-						break;
-					case "ROLE":
-						lisOptions[option.name] = option.role;
-						break;
-					case "MENTIONABLE":
-						lisOptions[option.name] = option.role ? option.role : { user: option.user, member: option.member };
-						break;
-				}
-				// convertedOptions[option.name] = option
-			});
+			const convertedOptions: any = {pain: 'pain!'};
+			// if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
+			// if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
+			// for (const option of interaction.options["_hoistedOptions"]) {
+			// 	if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
+			// 	convertedOptions[option.name] = interaction.options[
+			// 		_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`) as
+			// 			| "getBoolean"
+			// 			| "getChannel"
+			// 			| "getString"
+			// 			| "getInteger"
+			// 			| "getNumber"
+			// 			| "getUser"
+			// 			| "getMember"
+			// 			| "getRole"
+			// 			| "getMentionable"
+			// 			| "getMessage"
+			// 	](option.name, false);
+			// }
 
 			let key;
 			try {
@@ -794,7 +761,7 @@ export default class CommandHandler extends AkairoHandler {
 				this.emit(CommandHandlerEvents.SLASH_STARTED, message, command, convertedOptions);
 				const ret =
 					Object.getOwnPropertyNames(Object.getPrototypeOf(command)).includes("execSlash") || this.execSlash
-						? await command.execSlash(message, lisOptions)
+						? await command.execSlash(message, convertedOptions)
 						: await command.exec(message, convertedOptions);
 				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, command, convertedOptions, ret);
 				return true;
