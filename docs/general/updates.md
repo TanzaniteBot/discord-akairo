@@ -69,13 +69,13 @@ export default class GreetCommand extends Command {
   // If you want it to always run execSlash you will have to add the execSlash option to your command handler
   // and it will only use the execSlash and throw a error if you aren't using it
   public override execSlash(message: AkairoMessage, { member }: { member: GuildMember }) {
-    message.reply(`Hello ${member}!`);
+    await message.reply(`Hello ${member}!`);
   }
 
   /* Using just exec */
 
   public override exec(message: Message | AkairoMessage, { member }: { member: GuildMember }) {
-    message.util.reply(`Hello ${member}!`); // message.util can reply to both regular messages and slash commands
+    await message.util.reply(`Hello ${member}!`); // message.util can reply to both regular messages and slash commands
   }
 }
 ```
