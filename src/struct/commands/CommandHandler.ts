@@ -720,7 +720,7 @@ export default class CommandHandler extends AkairoHandler {
 			interaction.options.data.forEach(option => {
 				switch (option.type) {
 					case "STRING":
-						convertedOptions[option.name] = option.value;
+						convertedOptions[option.name] = 'option.value';
 						break;
 					case "INTEGER":
 						convertedOptions[option.name] = option.value;
