@@ -732,8 +732,9 @@ export default class CommandHandler extends AkairoHandler {
 						convertedOptions[option.name] = option.value;
 						break;
 					case "USER": {
-						// const thing = { user: option.user, member: option.member };
-						convertedOptions[option.name] = { user: option.user, member: option.member };
+						const thing = { user: option.user, member: option.member };
+						convertedOptions[option.name] = thing;
+						console.log(thing)
 						break;
 					}
 					case "CHANNEL":
