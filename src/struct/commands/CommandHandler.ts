@@ -718,22 +718,36 @@ export default class CommandHandler extends AkairoHandler {
 			const convertedOptions: any = {};
 
 			interaction.options.data.forEach(option => {
-				switch(option.type) {
-					case 'STRING': convertedOptions[option.name] = option.value; break
-					case 'INTEGER': convertedOptions[option.name] = option.value; break
-					case 'BOOLEAN': convertedOptions[option.name] = option.value; break
-					case 'NUMBER': convertedOptions[option.name] = option.value; break
-					case 'USER': {
-						const thing = {user: option.user, member: option.member}
-						convertedOptions[option.name] = thing
-						break
+				switch (option.type) {
+					case "STRING":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "INTEGER":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "BOOLEAN":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "NUMBER":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "USER": {
+						// const thing = { user: option.user, member: option.member };
+						convertedOptions[option.name] = { user: option.user, member: option.member };
+						break;
 					}
-					case 'CHANNEL': convertedOptions[option.name] = option.channel; break
-					case 'ROLE': convertedOptions[option.name] = option.role; break
-					case 'MENTIONABLE': convertedOptions[option.name] = option.role? option.role : {user: option.user, member:option.member}
+					case "CHANNEL":
+						convertedOptions[option.name] = option.channel;
+						break;
+					case "ROLE":
+						convertedOptions[option.name] = option.role;
+						break;
+					case "MENTIONABLE":
+						convertedOptions[option.name] = option.role ? option.role : { user: option.user, member: option.member };
+						break;
 				}
 				// convertedOptions[option.name] = option
-			})
+			});
 
 			let key;
 			try {
