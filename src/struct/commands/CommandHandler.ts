@@ -714,7 +714,7 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-			const convertedOptions: any = { pain: "pain!" };
+			const convertedOptions: any = {};
 			interaction.options.data.forEach(option => {
 				switch (option.type) {
 					case "STRING":
