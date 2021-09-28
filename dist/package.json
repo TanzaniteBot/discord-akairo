@@ -52,7 +52,7 @@
         "test": "yarn run lint",
         "lint": "yarn eslint ./src",
         "format": "yarn prettier --write .",
-        "build": "yarn rimraf node_modules\\discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs"
+        "build": "yarn rimraf node_modules/discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs"
     },
     "repository": {
         "type": "git",
