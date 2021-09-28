@@ -742,6 +742,7 @@ export default class CommandHandler extends AkairoHandler {
 						break;
 					case "MENTIONABLE":
 						convertedOptions[option.name] = option.role ? option.role : { user: option.user, member: option.member };
+						break;
 				}
 				// convertedOptions[option.name] = option
 			});
