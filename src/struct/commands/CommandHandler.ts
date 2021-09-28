@@ -12,7 +12,6 @@ import {
 	TextChannel,
 	User
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
 import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -715,25 +714,37 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-			const convertedOptions: any = {pain: 'pain!'};
-			// if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
-			// if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
-			// for (const option of interaction.options["_hoistedOptions"]) {
-			// 	if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
-			// 	convertedOptions[option.name] = interaction.options[
-			// 		_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`) as
-			// 			| "getBoolean"
-			// 			| "getChannel"
-			// 			| "getString"
-			// 			| "getInteger"
-			// 			| "getNumber"
-			// 			| "getUser"
-			// 			| "getMember"
-			// 			| "getRole"
-			// 			| "getMentionable"
-			// 			| "getMessage"
-			// 	](option.name, false);
-			// }
+			const convertedOptions: any = { pain: "pain!" };
+			interaction.options.data.forEach(option => {
+				switch (option.type) {
+					case "STRING":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "INTEGER":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "BOOLEAN":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "NUMBER":
+						convertedOptions[option.name] = option.value;
+						break;
+					case "USER": {
+						const thing = { user: option.user, member: option.member };
+						convertedOptions[option.name] = thing;
+						break;
+					}
+					case "CHANNEL":
+						convertedOptions[option.name] = option.channel;
+						break;
+					case "ROLE":
+						convertedOptions[option.name] = option.role;
+						break;
+					case "MENTIONABLE":
+						convertedOptions[option.name] = option.role ? option.role : { user: option.user, member: option.member };
+				}
+				// convertedOptions[option.name] = option
+			});
 
 			let key;
 			try {
