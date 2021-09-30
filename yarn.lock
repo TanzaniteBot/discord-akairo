@@ -619,9 +619,9 @@ discord.js-docgen@discordjs/docgen:
     yargs "^14.0.0"
 
 "discord.js@npm:@notenoughupdates/discord.js":
-  version "13.2.0-dev"
-  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.2.0-dev.tgz#55e61f70463adee740a25dee277489e353616655"
-  integrity sha512-pU1UK3/2FdSlahzYn06O8sJbEk2YtnwSRexH9dmrQNXgdHdJyyBgLwjtNUcKaAizZeR5wyGRqXCcx4DUXP9jPw==
+  version "13.2.0-dev-909c8596cbb989b811ca50d07a9895e8c9246f7d"
+  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.2.0-dev-909c8596cbb989b811ca50d07a9895e8c9246f7d.tgz#d9e404d087ab40c6581b0fc1f9b8e7b8b9c8335f"
+  integrity sha512-yFapLAjC1NBWHStgyJc8HAYfVc4uu1JTsF0qqw8rf57bTSZQn6A8uECK/y3v34iR/B5fU5a/HHb9ccAvvu9r7A==
   dependencies:
     "@discordjs/builders" "^0.5.0"
     "@discordjs/collection" "^0.2.1"

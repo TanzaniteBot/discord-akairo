@@ -4,6 +4,7 @@ import {
 	Awaited,
 	Collection,
 	CommandInteraction,
+	CommandInteractionOption,
 	GuildApplicationCommandPermissionData,
 	GuildResolvable,
 	Message,
@@ -12,7 +13,6 @@ import {
 	TextChannel,
 	User
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
 import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -721,24 +721,16 @@ export default class CommandHandler extends AkairoHandler {
 			if (await this.runPostTypeInhibitors(message, command)) {
 				return false;
 			}
-			const convertedOptions: any = {};
+			const convertedOptions: ConvertedOptionsType = {};
+
 			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
 			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
 			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
-				convertedOptions[option.name] = interaction.options[
-					_.camelCase(`GET_${option.type as keyof ApplicationCommandOptionTypes}`) as
-						| "getBoolean"
-						| "getChannel"
-						| "getString"
-						| "getInteger"
-						| "getNumber"
-						| "getUser"
-						| "getMember"
-						| "getRole"
-						| "getMentionable"
-						| "getMessage"
-				](option.name, false);
+				convertedOptions[option.name] = interaction.options[_.camelCase(`GET_${option.type}`) as GetFunctions](
+					option.name,
+					false
+				);
 			}
 
 			let key;
@@ -1658,3 +1650,29 @@ export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boo
  * @param message - Message to get prefix for.
  */
 export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
+
+type GetFunctions =
+	| "getBoolean"
+	| "getChannel"
+	| "getString"
+	| "getInteger"
+	| "getNumber"
+	| "getUser"
+	| "getMember"
+	| "getRole"
+	| "getMentionable"
+	| "getMessage";
+
+type ConvertedOptionsType = {
+	[key: string]:
+		| string
+		| boolean
+		| number
+		| null
+		| NonNullable<CommandInteractionOption["channel"]>
+		| NonNullable<CommandInteractionOption["user"]>
+		| NonNullable<CommandInteractionOption["member"]>
+		| NonNullable<CommandInteractionOption["role"]>
+		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
+		| NonNullable<CommandInteractionOption["message"]>;
+};
