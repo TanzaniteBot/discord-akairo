@@ -78,13 +78,13 @@ If you have any questions related to this fork please contact `IRONM00N#0001` in
 
 **discord-akairo**
 `yarn add discord-akairo@npm:@notenoughupdates/discord-akairo`
-`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@9.0.0`
+`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@latest`
 `npm i discord-akairo@npm:@notenoughupdates/discord-akairo`
 
 **discord.js fork**
 _optional you can use regular discord.js instead if you want_
 `yarn add discord.js@npm:@notenoughupdates/discord.js`
-`yarn add discord.js@npm:@notenoughupdates/discord.js@13.2.0-dev`
+`yarn add discord.js@npm:@notenoughupdates/discord.js@latest`
 `npm i discord.js@npm:@notenoughupdates/discord.js`
 
 ## Links

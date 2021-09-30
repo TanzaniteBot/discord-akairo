@@ -49,10 +49,12 @@
 		"source-map-support": "^0.5.19"
 	},
 	"scripts": {
-		"test": "yarn run lint",
+		"test": "yarn lint",
 		"lint": "yarn eslint ./src",
-		"format": "yarn prettier --write .",
-		"build": "yarn rimraf node_modules\\discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs"
+		"format": "yarn prettier . --write",
+		"build": "yarn rimraf node_modules/discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs",
+		"prepare": "yarn build",
+		"prepublishOnly": "yarn test"
 	},
 	"repository": {
 		"type": "git",

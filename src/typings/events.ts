@@ -184,13 +184,12 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 */
 	slashStarted: [message: AkairoMessage, command: Command, args: any];
 
-
 	/**
 	 * Emitted when a normal command is blocked because the command is configured to be `slashOnly`
 	 * @param message - Message sent.
 	 * @param command - Command blocked.
 	 */
-	slashOnly: [message: Message, command: Command]
+	slashOnly: [message: Message, command: Command];
 }
 
 export interface InhibitorHandlerEvents extends AkairoHandlerEvents {

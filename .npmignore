@@ -6,8 +6,6 @@ node_modules
 .gitattributes
 .gitignore
 .travis.yml
+.vscode
 test/
 docs/
-tsconfig.json
-tslint.json
-dist/test

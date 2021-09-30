@@ -4,13 +4,13 @@ node_modules
 .vscode/*
 !.vscode/settings.json
 
-test/auth.json
-dist/test/auth.json
-test/db.sqlite
-dist/test/db.sqlite
+dist
+
 tsconfig.tsbuildinfo
 yarn-error.log
 
+test/auth.json
+test/db.sqlite
 test/node_modules
 test/dist
 test/src/auth.json

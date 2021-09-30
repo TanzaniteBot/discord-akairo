@@ -863,60 +863,6 @@ export type ArgumentMatch =
 	| "restContent"
 	| "none";
 
-/**
- * The type that the argument should be cast to.
- * - `string` does not cast to any type.
- * - `lowercase` makes the input lowercase.
- * - `uppercase` makes the input uppercase.
- * - `charCodes` transforms the input to an array of char codes.
- * - `number` casts to a number.
- * - `integer` casts to an integer.
- * - `bigint` casts to a big integer.
- * - `url` casts to an `URL` object.
- * - `date` casts to a `Date` object.
- * - `color` casts a hex code to an integer.
- * - `commandAlias` tries to resolve to a command from an alias.
- * - `command` matches the ID of a command.
- * - `inhibitor` matches the ID of an inhibitor.
- * - `listener` matches the ID of a listener.
- * - `task` matches the ID of a task.
- * - `contextMenuCommand` matches the ID of a context menu command.
- *
- * Possible Discord-related types.
- * These types can be plural (add an 's' to the end) and a collection of matching objects will be used.
- * - `user` tries to resolve to a user.
- * - `member` tries to resolve to a member.
- * - `relevant` tries to resolve to a relevant user, works in both guilds and DMs.
- * - `channel` tries to resolve to a channel.
- * - `textChannel` tries to resolve to a text channel.
- * - `voiceChannel` tries to resolve to a voice channel.
- * - `categoryChannel` tries to resolve to a category channel.
- * - `newsChannel` tries to resolve to a news channel.
- * - `storeChannel` tries to resolve to a store channel.
- * - `stageChannel` tries to resolve to a stage channel.
- * - `threadChannel` tries to resolve a thread channel.
- * - `role` tries to resolve to a role.
- * - `emoji` tries to resolve to a custom emoji.
- * - `guild` tries to resolve to a guild.
- *
- * Other Discord-related types:
- * - `message` tries to fetch a message from an ID within the channel.
- * - `guildMessage` tries to fetch a message from an ID within the guild.
- * - `relevantMessage` is a combination of the above, works in both guilds and DMs.
- * - `invite` tries to fetch an invite object from a link.
- * - `userMention` matches a mention of a user.
- * - `memberMention` matches a mention of a guild member.
- * - `channelMention` matches a mention of a channel.
- * - `roleMention` matches a mention of a role.
- * - `emojiMention` matches a mention of an emoji.
- *
- * An array of strings can be used to restrict input to only those strings, case insensitive.
- * The array can also contain an inner array of strings, for aliases.
- * If so, the first entry of the array will be used as the final argument.
- *
- * A regular expression can also be used.
- * The evaluated argument will be an object containing the `match` and `matches` if global.
- */
 export type BaseArgumentType =
 	| "string"
 	| "lowercase"
@@ -973,6 +919,60 @@ export type BaseArgumentType =
 	| "task"
 	| "contextMenuCommand";
 
+/**
+ * The type that the argument should be cast to.
+ * - `string` does not cast to any type.
+ * - `lowercase` makes the input lowercase.
+ * - `uppercase` makes the input uppercase.
+ * - `charCodes` transforms the input to an array of char codes.
+ * - `number` casts to a number.
+ * - `integer` casts to an integer.
+ * - `bigint` casts to a big integer.
+ * - `url` casts to an `URL` object.
+ * - `date` casts to a `Date` object.
+ * - `color` casts a hex code to an integer.
+ * - `commandAlias` tries to resolve to a command from an alias.
+ * - `command` matches the ID of a command.
+ * - `inhibitor` matches the ID of an inhibitor.
+ * - `listener` matches the ID of a listener.
+ * - `task` matches the ID of a task.
+ * - `contextMenuCommand` matches the ID of a context menu command.
+ *
+ * Possible Discord-related types.
+ * These types can be plural (add an 's' to the end) and a collection of matching objects will be used.
+ * - `user` tries to resolve to a user.
+ * - `member` tries to resolve to a member.
+ * - `relevant` tries to resolve to a relevant user, works in both guilds and DMs.
+ * - `channel` tries to resolve to a channel.
+ * - `textChannel` tries to resolve to a text channel.
+ * - `voiceChannel` tries to resolve to a voice channel.
+ * - `categoryChannel` tries to resolve to a category channel.
+ * - `newsChannel` tries to resolve to a news channel.
+ * - `storeChannel` tries to resolve to a store channel.
+ * - `stageChannel` tries to resolve to a stage channel.
+ * - `threadChannel` tries to resolve a thread channel.
+ * - `role` tries to resolve to a role.
+ * - `emoji` tries to resolve to a custom emoji.
+ * - `guild` tries to resolve to a guild.
+ *
+ * Other Discord-related types:
+ * - `message` tries to fetch a message from an ID within the channel.
+ * - `guildMessage` tries to fetch a message from an ID within the guild.
+ * - `relevantMessage` is a combination of the above, works in both guilds and DMs.
+ * - `invite` tries to fetch an invite object from a link.
+ * - `userMention` matches a mention of a user.
+ * - `memberMention` matches a mention of a guild member.
+ * - `channelMention` matches a mention of a channel.
+ * - `roleMention` matches a mention of a role.
+ * - `emojiMention` matches a mention of an emoji.
+ *
+ * An array of strings can be used to restrict input to only those strings, case insensitive.
+ * The array can also contain an inner array of strings, for aliases.
+ * If so, the first entry of the array will be used as the final argument.
+ *
+ * A regular expression can also be used.
+ * The evaluated argument will be an object containing the `match` and `matches` if global.
+ */
 export type ArgumentType = BaseArgumentType | (string | string[])[] | RegExp | string;
 
 /**

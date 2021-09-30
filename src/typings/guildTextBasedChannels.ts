@@ -1,3 +1,3 @@
-import { DMChannel, PartialDMChannel, TextBasedChannels } from 'discord.js';
+import { DMChannel, PartialDMChannel, TextBasedChannels } from "discord.js";
 
-export type GuildTextBasedChannels= Exclude<TextBasedChannels, PartialDMChannel|DMChannel>
+export type GuildTextBasedChannels = Exclude<TextBasedChannels, PartialDMChannel | DMChannel>;
