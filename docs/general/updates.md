@@ -2,7 +2,7 @@
 
 ## TypeScript
 
-Everything has been rewritten in TypeScript - this means that typings will matches exactly with the code itself.
+Everything has been rewritten in TypeScript - this means that typings will match exactly with the code itself.
 
 ## Slash commands
 
@@ -255,4 +255,4 @@ export default class NsfwCommand extends Command {
 
 If you want a good database, we recommend using an ORM like sequelize. Databases aren't hard to set up by themselves, and are much more convenient when used without being limited by providers.
 
-> For support regarding this fork, you can ping @IRONM00N#0001 in the Akairo discord server in #general or preferably join [my bots discord](https://discord.gg/7FpsYp2c47) and ask there.
+> For support regarding this fork, you can ping @IRONM00N#0001 in the Akairo discord server or preferably join [my bots discord](https://discord.gg/7FpsYp2c47) and ask there.

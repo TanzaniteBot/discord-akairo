@@ -71,6 +71,8 @@ export default class CommandUtil {
 	 * Adds client prompt or user reply to messages.
 	 * @param message - Message to add.
 	 */
+	public addMessage(message: Message): Message;
+	public addMessage(message: Message[]): Message[];
 	public addMessage(message: Message | Message[]): Message | Message[] {
 		if (this.handler instanceof CommandHandler && this.handler.storeMessages) {
 			if (Array.isArray(message)) {
