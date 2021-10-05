@@ -1,6 +1,6 @@
 {
 	"name": "@notenoughupdates/discord-akairo",
-	"version": "9.0.2",
+	"version": "9.0.3",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
 	"module": "./dist/src/index.mjs",
@@ -32,8 +32,8 @@
 		"@types/source-map-support": "^0.5.4",
 		"@typescript-eslint/eslint-plugin": "^4.32.0",
 		"@typescript-eslint/parser": "^4.32.0",
-		"discord-api-types": "^0.22.0",
-		"discord.js": "npm:@notenoughupdates/discord.js",
+		"discord-api-types": "0.23.1",
+		"discord.js": "npm:@notenoughupdates/discord.js@latest",
 		"discord.js-docgen": "discordjs/docgen",
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",

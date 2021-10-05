@@ -1,4 +1,4 @@
-import { Awaited, Collection } from "discord.js";
+import { Awaitable, Collection } from "discord.js";
 import EventEmitter from "events";
 import { ListenerHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -199,13 +199,13 @@ export default class ListenerHandler extends AkairoHandler {
 
 	public override on<K extends keyof ListenerHandlerEvents>(
 		event: K,
-		listener: (...args: ListenerHandlerEvents[K][]) => Awaited<void>
+		listener: (...args: ListenerHandlerEvents[K][]) => Awaitable<void>
 	): this {
 		return super.on(event, listener);
 	}
 	public override once<K extends keyof ListenerHandlerEvents>(
 		event: K,
-		listener: (...args: ListenerHandlerEvents[K][]) => Awaited<void>
+		listener: (...args: ListenerHandlerEvents[K][]) => Awaitable<void>
 	): this {
 		return super.once(event, listener);
 	}

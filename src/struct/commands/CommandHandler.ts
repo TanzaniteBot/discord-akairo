@@ -1,7 +1,7 @@
 import {
 	ApplicationCommand,
 	ApplicationCommandOptionData,
-	Awaited,
+	Awaitable,
 	Collection,
 	CommandInteraction,
 	CommandInteractionOption,
@@ -1458,13 +1458,13 @@ export default class CommandHandler extends AkairoHandler {
 
 	public override on<K extends keyof CommandHandlerEventsType>(
 		event: K,
-		listener: (...args: CommandHandlerEventsType[K][]) => Awaited<void>
+		listener: (...args: CommandHandlerEventsType[K][]) => Awaitable<void>
 	): this {
 		return super.on(event, listener);
 	}
 	public override once<K extends keyof CommandHandlerEventsType>(
 		event: K,
-		listener: (...args: CommandHandlerEventsType[K][]) => Awaited<void>
+		listener: (...args: CommandHandlerEventsType[K][]) => Awaitable<void>
 	): this {
 		return super.once(event, listener);
 	}

@@ -1,4 +1,4 @@
-import { Awaited, Collection, ContextMenuInteraction } from "discord.js";
+import { Awaitable, Collection, ContextMenuInteraction } from "discord.js";
 import { ContextMenuCommandHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
 import Category from "../../util/Category";
@@ -195,13 +195,13 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 
 	public override on<K extends keyof ContextMenuCommandHandlerEvents>(
 		event: K,
-		listener: (...args: ContextMenuCommandHandlerEvents[K][]) => Awaited<void>
+		listener: (...args: ContextMenuCommandHandlerEvents[K][]) => Awaitable<void>
 	): this {
 		return super.on(event, listener);
 	}
 	public override once<K extends keyof ContextMenuCommandHandlerEvents>(
 		event: K,
-		listener: (...args: ContextMenuCommandHandlerEvents[K][]) => Awaited<void>
+		listener: (...args: ContextMenuCommandHandlerEvents[K][]) => Awaitable<void>
 	): this {
 		return super.once(event, listener);
 	}

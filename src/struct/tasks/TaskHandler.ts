@@ -1,4 +1,4 @@
-import { Awaited, Collection } from "discord.js";
+import { Awaitable, Collection } from "discord.js";
 import { TaskHandlerEvents } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
 import Category from "../../util/Category";
@@ -151,13 +151,13 @@ export default class TaskHandler extends AkairoHandler {
 
 	public override on<K extends keyof TaskHandlerEvents>(
 		event: K,
-		listener: (...args: TaskHandlerEvents[K][]) => Awaited<void>
+		listener: (...args: TaskHandlerEvents[K][]) => Awaitable<void>
 	): this {
 		return super.on(event, listener);
 	}
 	public override once<K extends keyof TaskHandlerEvents>(
 		event: K,
-		listener: (...args: TaskHandlerEvents[K][]) => Awaited<void>
+		listener: (...args: TaskHandlerEvents[K][]) => Awaitable<void>
 	): this {
 		return super.once(event, listener);
 	}
