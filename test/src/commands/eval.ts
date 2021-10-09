@@ -58,7 +58,7 @@ export default class EvalCommand extends Command {
 
 			if (output.length + code.length > 1900) output = "Output too long.";
 
-			const sent = await message.util!.send(
+			const sent = await message.util!.sendNew(
 				[`📥\u2000**Input**${cb}js`, code, cb, `📤\u2000**Output**${cb}js`, output, cb].join("\n")
 			);
 

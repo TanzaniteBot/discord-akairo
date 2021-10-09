@@ -5,9 +5,9 @@ import { Message } from "discord.js";
 
 export default class MessageListener extends Listener {
 	public constructor() {
-		super("message", {
+		super("messageCreate", {
 			emitter: "client",
-			event: "message",
+			event: "messageCreate",
 			category: "client"
 		});
 	}

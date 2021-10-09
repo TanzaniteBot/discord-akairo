@@ -115,15 +115,17 @@ export default class CommandUtil {
 		options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		const newOptions = typeof options === "string" ? { content: options } : options;
+
 		if (
 			!this.isSlash &&
 			!this.shouldEdit &&
 			!(newOptions instanceof MessagePayload) &&
-			!Reflect.has(this.message, "deleted")
+			!(this.message as Message).deleted
 		) {
 			(newOptions as MessageOptions).reply = {
 				messageReference: this.message as Message,
-				failIfNotExists: (newOptions as ReplyMessageOptions).failIfNotExists ?? true
+				failIfNotExists:
+					(newOptions as ReplyMessageOptions).failIfNotExists ?? this.handler.client.options.failIfNotExists
 			};
 		}
 		return this.send(newOptions);

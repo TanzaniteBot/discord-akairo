@@ -6,6 +6,7 @@ import {
 	ListenerHandler,
 	TaskHandler
 } from "discord-akairo";
+import { Intents } from "discord.js";
 import path from "path";
 
 export default class TestClient extends AkairoClient {
@@ -18,21 +19,21 @@ export default class TestClient extends AkairoClient {
 		super({
 			ownerID: ["123992700587343872", "322862723090219008"],
 			intents: [
-				"DIRECT_MESSAGE_REACTIONS",
-				"DIRECT_MESSAGE_REACTIONS",
-				"DIRECT_MESSAGE_TYPING",
-				"DIRECT_MESSAGES",
-				"GUILDS",
-				"GUILD_BANS",
-				"GUILD_EMOJIS_AND_STICKERS",
-				"GUILD_INTEGRATIONS",
-				"GUILD_INVITES",
-				"GUILD_MEMBERS",
-				"GUILD_MESSAGE_REACTIONS",
-				"GUILD_MESSAGE_TYPING",
-				"GUILD_PRESENCES",
-				"GUILD_VOICE_STATES",
-				"GUILD_WEBHOOKS"
+				Intents.FLAGS.DIRECT_MESSAGES,
+				Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+				Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+				Intents.FLAGS.GUILDS,
+				Intents.FLAGS.GUILD_BANS,
+				Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+				Intents.FLAGS.GUILD_INTEGRATIONS,
+				Intents.FLAGS.GUILD_INVITES,
+				Intents.FLAGS.GUILD_MEMBERS,
+				Intents.FLAGS.GUILD_MESSAGES,
+				Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+				Intents.FLAGS.GUILD_MESSAGE_TYPING,
+				Intents.FLAGS.GUILD_PRESENCES,
+				Intents.FLAGS.GUILD_VOICE_STATES,
+				Intents.FLAGS.GUILD_WEBHOOKS
 			]
 		});
 
@@ -112,6 +113,5 @@ export default class TestClient extends AkairoClient {
 
 	public async start(token: string) {
 		await this.login(token);
-		console.log("Ready!"); // eslint-disable-line no-console
 	}
 }
