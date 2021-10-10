@@ -113,5 +113,6 @@ export default class TestClient extends AkairoClient {
 
 	public async start(token: string) {
 		await this.login(token);
+		this.taskHandler.startAll();
 	}
 }

@@ -9,7 +9,7 @@
 	},
 	"dependencies": {
 		"discord-akairo": "file:..",
-		"discord-akairo-message-util": "NotEnoughUpdates/discord-akairo-message-util",
+		"discord-akairo-message-util": "npm:@notenoughupdates/discord-akairo-message-util",
 		"discord.js": "npm:@notenoughupdates/discord.js@dev",
 		"rimraf": "^3.0.2",
 		"typescript": "^4.3.5"
