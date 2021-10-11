@@ -35,4 +35,4 @@ jobs:
       - name: ESLint
         run: yarn lint
       - name: Test Build
-        run: yarn build-tsc
+        run: yarn tsc --noEmit
