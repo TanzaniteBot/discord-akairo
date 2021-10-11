@@ -27,6 +27,7 @@
 	},
 	"devDependencies": {
 		"@discordjs/voice": "^0.6.0",
+		"@favware/npm-deprecate": "^1.0.4",
 		"@types/lodash": "^4.14.175",
 		"@types/node": "^16.10.2",
 		"@types/source-map-support": "^0.5.4",
