@@ -306,7 +306,6 @@ export default abstract class Command extends AkairoModule {
 	}
 
 	public exec(message: Message, args: any): any;
-	public exec(message: AkairoMessage, args: any): any;
 	public exec(message: Message | AkairoMessage, args: any): any;
 	public exec(message: Message | AkairoMessage, args: any): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
