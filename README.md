@@ -8,7 +8,7 @@
   <p>
     <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://img.shields.io/npm/v/@notenoughupdates/discord-akairo.svg?maxAge=3600" alt="NPM version" /></a>
     <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://img.shields.io/npm/dt/@notenoughupdates/discord-akairo.svg?maxAge=3600" alt="NPM downloads" /></a>
-    <a href="https://github.com/NotEnoughUpdates/discord-akairo/actions"><img src="https://img.shields.io/github/checks-status/NotEnoughUpdates/discord-akairo/master" alt="Build status" /></a>
+    <a href="https://github.com/NotEnoughUpdates/discord-akairo/actions"><img src="https://img.shields.io/github/workflow/status/NotEnoughUpdates/discord-akairo/Test/master" alt="Build status" /></a>
   </p>
   <p>
     <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://nodeico.herokuapp.com/@notenoughupdates/discord-akairo.svg" alt="npm installnfo" /></a>
