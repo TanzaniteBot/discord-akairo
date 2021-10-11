@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD001 MD040 -->
+<!-- markdownlint-disable MD001 MD033 MD040 -->
 
 # Setting Up
 
@@ -8,16 +8,9 @@ Before even doing anything else, you of course have to install the Discord.js an
 
 > Yarn 2.0+ needs to have the version specified due to this [issue](https://github.com/yarnpkg/berry/issues/1816). If you are using yarn 2.0 use the second command.
 
-**discord-akairo**
-`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo`
-`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@9.0.0`
-`npm i discord-akairo@npm:@notenoughupdates/discord-akairo`
+**discord-akairo**<br />`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@dev`<br />`npm i discord-akairo@npm:@notenoughupdates/discord-akairo`<br />
 
-**discord.js fork**
-_optional you can use regular discord.js instead if you want_
-`yarn add discord.js@npm:@notenoughupdates/discord.js`
-`yarn add discord.js@npm:@notenoughupdates/discord.js@13.2.0-dev`
-`npm i discord.js@npm:@notenoughupdates/discord.js`
+**discord.js fork**<br />_optional you can use regular discord.js instead if you want_<br />`yarn add discord.js@npm:@notenoughupdates/discord.js@dev`<br />`npm i discord.js@npm:@notenoughupdates/discord.js`<br />
 
 Once everything has been installed, your working directory should look something like this:
 

@@ -1,14 +1,14 @@
 <!-- markdownlint-disable MD001 MD024 -->
 
-# Updating to v8
+# Updating to v9
 
 ### Breaking Changes
 
-This tutorial is for updating from Akairo v7 to v8.  
+This tutorial is for updating from Akairo v7 to v9.  
 Many changes were introduced in v8 so hopefully this guide can help you fix them.
 
-Not only are there changes within the framework, there are also changes with Discord.js v12.  
-You will have to update to Node 10 in order to use the libraries due to new JavaScript features.
+Not only are there changes within the framework, there are also changes with Discord.js v13.  
+You will have to update to Node 16 in order to use the libraries due to new JavaScript features.
 
 The suggestions below are not an exhaustive list.  
 For a full changelog, see [here](https://github.com/discord-akairo/discord-akairo/releases).
@@ -162,13 +162,6 @@ To see if the message was edited, you can check with `message.edited`.
 
 The `dynamic` and `dynamicInt` types were removed.  
 Instead, use a union type e.g. `Argument.union('integer', 'string')`.
-
-##### SQLiteHandler
-
-SQLiteHandler and related properties in AkairoClient have been removed completely.  
-Alternatives include `SQLiteProvider` and `SequelizeProvider`.  
-Or, you can make your own by extending the `Provider` class.  
-For a guide on how to use the new providers, see [Using Providers](./providers,md).
 
 ##### Other Removals
 

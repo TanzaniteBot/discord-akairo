@@ -1,6 +1,6 @@
 {
 	"name": "@notenoughupdates/discord-akairo",
-	"version": "9.0.3-dev",
+	"version": "9.0.4-dev",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
 	"module": "./dist/src/index.mjs",
@@ -50,7 +50,7 @@
 		"source-map-support": "^0.5.20"
 	},
 	"scripts": {
-		"test": "yarn lint",
+		"test": "yarn lint && yarn tsc --noEmit",
 		"lint": "yarn eslint ./src",
 		"format": "yarn prettier . --write",
 		"build": "yarn rimraf node_modules/discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs",
@@ -59,12 +59,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/discord-akairo/discord-akairo.git"
+		"url": "https://github.com/NotEnoughUpdates/discord-akairo"
 	},
 	"bugs": {
-		"url": "https://github.com/discord-akairo/discord-akairo/issues"
+		"url": "https://github.com/NotEnoughUpdates/discord-akairo/issues"
 	},
-	"homepage": "https://github.com/discord-akairo/discord-akairo",
+	"homepage": "https://github.com/NotEnoughUpdates/discord-akairo/wiki",
 	"prettier": {
 		"useTabs": true,
 		"trailingComma": "none",
