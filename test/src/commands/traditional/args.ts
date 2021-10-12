@@ -61,6 +61,6 @@ export default class ArgsCommand extends Command {
 			option: string;
 		}
 	) {
-		message.channel.send(Formatters.codeBlock(`js${util.inspect(args, { depth: 1 })}`));
+		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
 	}
 }

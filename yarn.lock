@@ -157,21 +157,21 @@
     rimraf "^3.0.2"
 
 "@sapphire/async-queue@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@sapphire/async-queue/-/async-queue-1.1.5.tgz#2a52774ad9c24b1e9be88f4a211e735419014e4e"
-  integrity sha512-NQ8GeTBeOkeAylVYTnO9zfEZO74iMNGCRrR3uIRnCrhkyPC+nsewyQtTamjSDWxXFTf+xGSJ9khiY2p56k/bMA==
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@sapphire/async-queue/-/async-queue-1.1.6.tgz#785ea53b2b6b0a471cf03cf2e836f9f5b5139be2"
+  integrity sha512-M5CbgMgesemMUCQo5G/InGHvp+GZx6uuJNV1iwvSWD8EFNVrfxaTcqhcAXM3MPYkjlxvNnoDNk0R1lfzvca6LA==
 
 "@sapphire/fetch@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@sapphire/fetch/-/fetch-2.0.0.tgz#24b18328cb767d3fa8ed5bac4909f8a1494324ab"
-  integrity sha512-SPuvU3OTcJMMTmongQQWfeg9QnHpOEAYQ1NGuRI760r68BjnGCU5rw7xR4U4i6izYIir732aMwY8Q9kQp1a2dw==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@sapphire/fetch/-/fetch-2.0.1.tgz#b4866ae7c904d58331d25fe6fcc63b58201c0041"
+  integrity sha512-NUuS6pDbSHbeGLaB/c+/lFuZNO3qOl0mCe+HbTugMK5krdblTI2ARKkspZablctklTlWk6gDnQdsdYMnLK8Hxg==
   dependencies:
     cross-fetch "^3.1.4"
 
 "@sapphire/utilities@^3.0.1":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@sapphire/utilities/-/utilities-3.0.2.tgz#d471041d871a37186df31e52476d87328065a6e5"
-  integrity sha512-LD5BjfKU6b/SEpQq+vMNhneOujgoe4EabL/3I5XThej0dbngWf90d7ET9VQnFVfe0qQbGin+MEu9f2im9WYSzw==
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@sapphire/utilities/-/utilities-3.0.3.tgz#7e854dde9489407fbb4a56d0955412d956a93640"
+  integrity sha512-DWjQzXFK8m8STmlTmOS8fi0HI1TUOnAQkbChVyTEhRUQZ3vR0VtiEWpghQRl5j4HwjP0x9Fx1B4JDfmS3+sYrg==
 
 "@sindresorhus/is@^4.0.1":
   version "4.2.0"
@@ -777,9 +777,9 @@ discord.js-docgen@discordjs/docgen:
     yargs "^14.0.0"
 
 "discord.js@npm:@notenoughupdates/discord.js@dev":
-  version "13.3.0-dev.1633808359.c462423"
-  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.3.0-dev.1633808359.c462423.tgz#f074e0cb21fd4d4815462558cd947989d40f5661"
-  integrity sha512-4MdNQWJZVcX2Xo9TssJ0/17KFHUZK4J8qQx1H5BfqKJOq2tHWspso/Hcu7bLNODw6Im21aemcON7KkQcoAT3PA==
+  version "13.3.0-dev.1633998001.c462423"
+  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.3.0-dev.1633998001.c462423.tgz#cc02706a963d1f9960c5ecc045609570cb4c7f19"
+  integrity sha512-IYg1des9pZ3GYfyqs+sWKhsgkrHiuTgRIMrkE0a1Msv4HRPhQUAK50plxpAoryV0VTa5UFJMp5vGxOTZSE6+lQ==
   dependencies:
     "@discordjs/builders" "^0.6.0"
     "@discordjs/collection" "^0.2.1"

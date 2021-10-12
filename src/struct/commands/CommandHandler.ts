@@ -5,6 +5,7 @@ import {
 	Collection,
 	CommandInteraction,
 	CommandInteractionOption,
+	CommandInteractionOptionResolver,
 	GuildApplicationCommandPermissionData,
 	GuildResolvable,
 	Message,
@@ -372,7 +373,12 @@ export default class CommandHandler extends AkairoHandler {
 			parsedSlashCommands.push({
 				name: data.aliases[0]?.toLowerCase() || data.id?.toLowerCase(),
 				description: parseDescriptionCommand(data.description) || "No description provided.",
-				options: data.slashOptions,
+				options: data.slashOptions?.map(o => {
+					// this may not be necessary but im not sure
+					const temp = Object.assign({}, o);
+					delete temp.resolve;
+					return temp as ApplicationCommandOptionData;
+				}),
 				guilds: data.slashGuilds ?? [],
 				defaultPermission: !(data.ownerOnly || /* data.superUserOnly || */ false),
 				type: "CHAT_INPUT"
@@ -675,9 +681,9 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	// eslint-disable-next-line complexity
 	public async handleSlash(interaction: CommandInteraction): Promise<boolean | null> {
-		const command = this.findCommand(interaction.commandName);
+		const commandModule = this.findCommand(interaction.commandName);
 
-		if (!command) {
+		if (!commandModule) {
 			this.emit(CommandHandlerEvents.SLASH_NOT_FOUND, interaction);
 			return false;
 		}
@@ -718,7 +724,7 @@ export default class CommandHandler extends AkairoHandler {
 				message.util.parsed = parsed;
 			}
 
-			if (await this.runPostTypeInhibitors(message, command)) {
+			if (await this.runPostTypeInhibitors(message, commandModule)) {
 				return false;
 			}
 			const convertedOptions: ConvertedOptionsType = {};
@@ -727,48 +733,48 @@ export default class CommandHandler extends AkairoHandler {
 			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
 			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
-				convertedOptions[option.name] = interaction.options[_.camelCase(`GET_${option.type}`) as GetFunctions](
-					option.name,
-					false
-				);
+				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
+				convertedOptions[option.name] = interaction.options[
+					_.camelCase(`GET_${originalOption?.resolve ?? option.type}`) as GetFunctions
+				](option.name, false);
 			}
 
 			let key;
 			try {
-				if (command.lock) key = (command.lock as KeySupplier)(message, convertedOptions);
+				if (commandModule.lock) key = (commandModule.lock as KeySupplier)(message, convertedOptions);
 				if (Util.isPromise(key)) key = await key;
 				if (key) {
-					if (command.locker?.has(key)) {
+					if (commandModule.locker?.has(key)) {
 						key = null;
-						this.emit(CommandHandlerEvents.COMMAND_LOCKED, message, command);
+						this.emit(CommandHandlerEvents.COMMAND_LOCKED, message, commandModule);
 						return true;
 					}
-					command.locker?.add(key);
+					commandModule.locker?.add(key);
 				}
 			} catch (err) {
-				this.emitError(err, message, command);
+				this.emitError(err, message, commandModule);
 			} finally {
-				if (key) command.locker?.delete(key);
+				if (key) commandModule.locker?.delete(key);
 			}
 
-			if (this.autoDefer || command.slashEphemeral) {
-				await interaction.deferReply({ ephemeral: command.slashEphemeral });
+			if (this.autoDefer || commandModule.slashEphemeral) {
+				await interaction.deferReply({ ephemeral: commandModule.slashEphemeral });
 			}
 
 			try {
-				this.emit(CommandHandlerEvents.SLASH_STARTED, message, command, convertedOptions);
+				this.emit(CommandHandlerEvents.SLASH_STARTED, message, commandModule, convertedOptions);
 				const ret =
-					Object.getOwnPropertyNames(Object.getPrototypeOf(command)).includes("execSlash") || this.execSlash
-						? await command.execSlash(message, convertedOptions)
-						: await command.exec(message, convertedOptions);
-				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, command, convertedOptions, ret);
+					Object.getOwnPropertyNames(Object.getPrototypeOf(commandModule)).includes("execSlash") || this.execSlash
+						? await commandModule.execSlash(message, convertedOptions)
+						: await commandModule.exec(message, convertedOptions);
+				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, commandModule, convertedOptions, ret);
 				return true;
 			} catch (err) {
-				this.emit(CommandHandlerEvents.SLASH_ERROR, err, message, command);
+				this.emit(CommandHandlerEvents.SLASH_ERROR, err, message, commandModule);
 				return false;
 			}
 		} catch (err) {
-			this.emitError(err, message, command);
+			this.emitError(err, message, commandModule);
 			return null;
 		}
 	}
@@ -1651,6 +1657,21 @@ export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boo
  */
 export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
 
+/**
+ * Calls the corresponding get function on the {@link CommandInteractionOptionResolver}
+ */
+export type SlashResolveTypes =
+	| "boolean"
+	| "channel"
+	| "string"
+	| "integer"
+	| "number"
+	| "user"
+	| "member"
+	| "role"
+	| "mentionable"
+	| "message";
+
 type GetFunctions =
 	| "getBoolean"
 	| "getChannel"
@@ -1676,3 +1697,6 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
 		| NonNullable<CommandInteractionOption["message"]>;
 };
+
+// eslint-disable-next-line no-unused-expressions, no-constant-condition
+if (false) CommandInteractionOptionResolver;

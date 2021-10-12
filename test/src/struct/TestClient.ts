@@ -60,7 +60,8 @@ export default class TestClient extends AkairoClient {
 					retries: 5
 				},
 				modifyOtherwise: (msg, text) => `${msg.author}, ${text}`
-			}
+			},
+			autoRegisterSlashCommands: true
 		});
 
 		this.inhibitorHandler = new InhibitorHandler(this, {

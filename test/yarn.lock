@@ -28,9 +28,9 @@
     mime-types "^2.1.12"
 
 "@sapphire/async-queue@^1.1.5":
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/@sapphire/async-queue/-/async-queue-1.1.5.tgz#2a52774ad9c24b1e9be88f4a211e735419014e4e"
-  integrity sha512-NQ8GeTBeOkeAylVYTnO9zfEZO74iMNGCRrR3uIRnCrhkyPC+nsewyQtTamjSDWxXFTf+xGSJ9khiY2p56k/bMA==
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@sapphire/async-queue/-/async-queue-1.1.6.tgz#785ea53b2b6b0a471cf03cf2e836f9f5b5139be2"
+  integrity sha512-M5CbgMgesemMUCQo5G/InGHvp+GZx6uuJNV1iwvSWD8EFNVrfxaTcqhcAXM3MPYkjlxvNnoDNk0R1lfzvca6LA==
 
 "@sindresorhus/is@^4.0.1":
   version "4.2.0"
@@ -51,9 +51,9 @@
     form-data "^3.0.0"
 
 "@types/node@*", "@types/node@^16.9.6":
-  version "16.10.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.2.tgz#5764ca9aa94470adb4e1185fe2e9f19458992b2e"
-  integrity sha512-zCclL4/rx+W5SQTzFs9wyvvyCwoK9QtBpratqz2IYJ3O8Umrn0m3nsTv0wQBk9sRGpvUe9CwPDrQFB10f1FIjQ==
+  version "16.10.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.10.3.tgz#7a8f2838603ea314d1d22bb3171d899e15c57bd5"
+  integrity sha512-ho3Ruq+fFnBrZhUYI46n/bV2GjwzSkwuT4dTf0GkuNFmnb8nq4ny2z9JEVemFi6bdEJanHLlYfy9c6FN9B9McQ==
 
 "@types/ws@^8.2.0":
   version "8.2.0"
@@ -107,17 +107,13 @@ delayed-stream@~1.0.0:
   resolved "https://registry.yarnpkg.com/delayed-stream/-/delayed-stream-1.0.0.tgz#df3ae199acadfb7d440aaae0b29e2272b24ec619"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
-discord-akairo-message-util@NotEnoughUpdates/discord-akairo-message-util:
-  version "1.0.0"
-  resolved "https://codeload.github.com/NotEnoughUpdates/discord-akairo-message-util/tar.gz/9831d4f340bc8c3452d3dfef0497f7844dee0f29"
-
-"discord-akairo-message-util@npm:@notenoughupdates/discord-akairo-message-util@latest":
+"discord-akairo-message-util@npm:@notenoughupdates/discord-akairo-message-util", "discord-akairo-message-util@npm:@notenoughupdates/discord-akairo-message-util@latest":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@notenoughupdates/discord-akairo-message-util/-/discord-akairo-message-util-1.0.0.tgz#ef133b8308b839b8840949cf4e5828784bb100cb"
   integrity sha512-4xIHggAop1ik7UZdUZjxSVd2epuTzcgHuHCOTnuZebpMk6ZqFLTdzEiGKov5GHaTvnGNkBddgFq18HwixwpW1g==
 
 "discord-akairo@file:..":
-  version "9.0.3-dev"
+  version "9.0.5-dev"
   dependencies:
     discord-akairo-message-util "npm:@notenoughupdates/discord-akairo-message-util@latest"
     lodash "^4.17.21"
@@ -134,9 +130,9 @@ discord-api-types@^0.23.1:
   integrity sha512-igWmn+45mzXRWNEPU25I/pr8MwxHb767wAr51oy3VRLRcTlp5ADBbrBR0lq3SA1Rfw3MtM4TQu1xo3kxscfVdQ==
 
 "discord.js@npm:@notenoughupdates/discord.js@dev":
-  version "13.3.0-dev.1633808359.c462423"
-  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.3.0-dev.1633808359.c462423.tgz#f074e0cb21fd4d4815462558cd947989d40f5661"
-  integrity sha512-4MdNQWJZVcX2Xo9TssJ0/17KFHUZK4J8qQx1H5BfqKJOq2tHWspso/Hcu7bLNODw6Im21aemcON7KkQcoAT3PA==
+  version "13.3.0-dev.1633998001.c462423"
+  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.3.0-dev.1633998001.c462423.tgz#cc02706a963d1f9960c5ecc045609570cb4c7f19"
+  integrity sha512-IYg1des9pZ3GYfyqs+sWKhsgkrHiuTgRIMrkE0a1Msv4HRPhQUAK50plxpAoryV0VTa5UFJMp5vGxOTZSE6+lQ==
   dependencies:
     "@discordjs/builders" "^0.6.0"
     "@discordjs/collection" "^0.2.1"
@@ -209,17 +205,17 @@ lodash@^4.17.21:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-mime-db@1.49.0:
-  version "1.49.0"
-  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.49.0.tgz#f3dfde60c99e9cf3bc9701d687778f537001cbed"
-  integrity sha512-CIc8j9URtOVApSFCQIF+VBkX1RwXp/oMMOrqdyXSBXq5RWNEsRfyj1kiRnQgmNXmHxPoFIxOroKA3zcU9P+nAA==
+mime-db@1.50.0:
+  version "1.50.0"
+  resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.50.0.tgz#abd4ac94e98d3c0e185016c67ab45d5fde40c11f"
+  integrity sha512-9tMZCDlYHqeERXEHO9f/hKfNXhre5dK2eE/krIvUjZbS2KPcqGDfNShIWS1uW9XOTKQKqK6qbeOci18rbfW77A==
 
 mime-types@^2.1.12:
-  version "2.1.32"
-  resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.32.tgz#1d00e89e7de7fe02008db61001d9e02852670fd5"
-  integrity sha512-hJGaVS4G4c9TSMYh2n6SQAGrC4RnfU+daP8G7cSCmaqNjiOoUY0VHCMS42pxnQmVF1GWwFhbHWn3RIxCqTmZ9A==
+  version "2.1.33"
+  resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.33.tgz#1fa12a904472fafd068e48d9e8401f74d3f70edb"
+  integrity sha512-plLElXp7pRDd0bNZHw+nMd52vRYjLwQjygaNg7ddJ2uJtTlmnTCjWuPKxVu6//AdaRuME84SvLW91sIkBqGT0g==
   dependencies:
-    mime-db "1.49.0"
+    mime-db "1.50.0"
 
 minimatch@^3.0.4:
   version "3.0.4"

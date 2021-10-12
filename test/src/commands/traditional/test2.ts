@@ -24,6 +24,6 @@ export default class Test2Command extends Command {
 	}
 
 	public override exec(message: Message, args: { y: number }) {
-		message.channel.send(Formatters.codeBlock(`js${util.inspect(args, { depth: 1 })}`));
+		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
 	}
 }

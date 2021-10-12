@@ -7,7 +7,7 @@ import AkairoClient from "../AkairoClient";
 import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
 import Argument, { ArgumentOptions, DefaultArgumentOptions } from "./arguments/Argument";
 import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner";
-import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier } from "./CommandHandler";
+import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveTypes } from "./CommandHandler";
 import ContentParser, { ContentParserResult } from "./ContentParser";
 import Flag from "./Flag";
 
@@ -235,7 +235,7 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Options for using the slash command.
 	 */
-	public slashOptions?: ApplicationCommandOptionData[];
+	public slashOptions?: SlashOption[];
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
@@ -472,14 +472,14 @@ export interface CommandOptions extends AkairoModuleOptions {
 	slashEphemeral?: boolean;
 
 	/**
-	 * Assign slash commands to Specific guilds. This option will make the commands do not register globally, but only to the chosen servers.
+	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only to the chosen servers.
 	 */
 	slashGuilds?: string[];
 
 	/**
 	 * Options for using the slash command.
 	 */
-	slashOptions?: ApplicationCommandOptionData[];
+	slashOptions?: SlashOption[];
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
@@ -547,3 +547,12 @@ export type ArgumentGenerator = (
 	parsed: ContentParserResult,
 	state: ArgumentRunnerState
 ) => IterableIterator<ArgumentOptions | Flag>;
+
+export type SlashOption = ApplicationCommandOptionData & {
+	/**
+	 * Allows you to get a discord resolved object
+	 *
+	 * ex. get the resolved member object when the type is `USER`
+	 */
+	resolve?: SlashResolveTypes;
+};
