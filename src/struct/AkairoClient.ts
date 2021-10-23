@@ -1,5 +1,8 @@
-import { Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
+import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
+import { AkairoClientEvents } from "../typings/events";
 import ClientUtil from "./ClientUtil";
+
+type Event = AkairoClientEvents;
 
 /**
  * The Akairo framework client. Creates the handlers and sets them up.
@@ -51,6 +54,40 @@ export default class AkairoClient<Ready extends boolean = boolean> extends Clien
 		return Array.isArray(this.superUserID)
 			? this.superUserID.includes(id) || this.ownerID.includes(id)
 			: id === this.superUserID || id === this.ownerID;
+	}
+
+	public override on<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
+	public override on<S extends string | symbol>(
+		event: Exclude<S, keyof Event>,
+		listener: (...args: any[]) => Awaitable<void>
+	): this {
+		return super.on(event as any, listener);
+	}
+
+	public override once<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
+	public override once<S extends string | symbol>(
+		event: Exclude<S, keyof Event>,
+		listener: (...args: any[]) => Awaitable<void>
+	): this {
+		return super.once(event as any, listener);
+	}
+
+	public override emit<K extends keyof Event>(event: K, ...args: Event[K]): boolean;
+	public override emit<S extends string | symbol>(event: Exclude<S, keyof Event>, ...args: unknown[]): boolean {
+		return super.emit(event as any, ...args);
+	}
+
+	public override off<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
+	public override off<S extends string | symbol>(
+		event: Exclude<S, keyof Event>,
+		listener: (...args: any[]) => Awaitable<void>
+	): this {
+		return super.off(event as any, listener);
+	}
+
+	public override removeAllListeners<K extends keyof Event>(event?: K): this;
+	public override removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof Event>): this {
+		return super.removeAllListeners(event as any);
 	}
 }
 

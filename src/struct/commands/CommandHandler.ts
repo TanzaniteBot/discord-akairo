@@ -14,6 +14,7 @@ import {
 	TextChannel,
 	User
 } from "discord.js";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
 import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError";
@@ -30,7 +31,14 @@ import ListenerHandler from "../listeners/ListenerHandler";
 import TaskHandler from "../tasks/TaskHandler";
 import { DefaultArgumentOptions } from "./arguments/Argument";
 import TypeResolver from "./arguments/TypeResolver";
-import Command, { KeySupplier } from "./Command";
+import Command, {
+	AkairoApplicationCommandChannelOptionData,
+	AkairoApplicationCommandChoicesData,
+	AkairoApplicationCommandNonOptionsData,
+	AkairoApplicationCommandSubCommandData,
+	AkairoApplicationCommandSubGroupData,
+	KeySupplier
+} from "./Command";
 import CommandUtil from "./CommandUtil";
 import Flag from "./Flag";
 
@@ -738,6 +746,71 @@ export default class CommandHandler extends AkairoHandler {
 					_.camelCase(`GET_${originalOption?.resolve ?? option.type}`) as GetFunctions
 				](option.name, false);
 			}
+
+			(() => {
+				type SubCommand = AkairoApplicationCommandSubCommandData;
+				type SubCommandGroup = AkairoApplicationCommandSubGroupData;
+				type NonSubSlashOptions =
+					| AkairoApplicationCommandChoicesData
+					| AkairoApplicationCommandNonOptionsData
+					| AkairoApplicationCommandChannelOptionData;
+
+				if (convertedOptions.subcommand || convertedOptions.subcommandGroup) {
+					const usedSubcommandOrGroup = commandModule.slashOptions?.find(o => o.name === convertedOptions.subcommand);
+					if (!usedSubcommandOrGroup) {
+						this.client.emit("akairoDebug", `Unable to find subcommand`);
+						return;
+					}
+					if ([ApplicationCommandOptionTypes.SUB_COMMAND, "SUB_COMMAND"].includes(usedSubcommandOrGroup.type)) {
+						if (!(usedSubcommandOrGroup as SubCommand).options) {
+							this.client.emit("akairoDebug", `Unable to find subcommand options`);
+							return;
+						}
+						handleOptions((usedSubcommandOrGroup as SubCommand).options!);
+					} else if (
+						[ApplicationCommandOptionTypes.SUB_COMMAND_GROUP, "SUB_COMMAND_GROUP"].includes(usedSubcommandOrGroup.type)
+					) {
+						const usedSubCommand = (usedSubcommandOrGroup as SubCommandGroup).options?.find(
+							subcommand => subcommand.name === convertedOptions.subcommand
+						);
+						if (!usedSubCommand) {
+							this.client.emit("akairoDebug", `Unable to find subcommand`);
+							return;
+						} else if (!usedSubCommand.options) {
+							this.client.emit("akairoDebug", `Unable to find subcommand options`);
+							return;
+						}
+
+						handleOptions(usedSubCommand.options);
+					} else {
+						throw new Error(`Unexpected command type ${usedSubcommandOrGroup.type}`);
+					}
+				} else {
+					handleOptions((commandModule.slashOptions ?? []) as NonSubSlashOptions[]);
+				}
+
+				function handleOptions(options: NonSubSlashOptions[]) {
+					for (const option of options) {
+						if (!Reflect.has(convertedOptions, option.name) || convertedOptions[option.name] === undefined) {
+							switch (option.type) {
+								case "BOOLEAN" || ApplicationCommandOptionTypes.BOOLEAN:
+									convertedOptions[option.name] = false;
+									break;
+								case "CHANNEL" || ApplicationCommandOptionTypes.CHANNEL:
+								case "INTEGER" || ApplicationCommandOptionTypes.INTEGER:
+								case "MENTIONABLE" || ApplicationCommandOptionTypes.MENTIONABLE:
+								case "NUMBER" || ApplicationCommandOptionTypes.NUMBER:
+								case "ROLE" || ApplicationCommandOptionTypes.ROLE:
+								case "STRING" || ApplicationCommandOptionTypes.STRING:
+								case "USER" || ApplicationCommandOptionTypes.USER:
+								default:
+									convertedOptions[option.name] = null;
+									break;
+							}
+						}
+					}
+				}
+			})();
 
 			let key;
 			try {

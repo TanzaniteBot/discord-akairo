@@ -1,5 +1,14 @@
 /*  eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { ApplicationCommandOptionData, Message, PermissionResolvable, Snowflake } from "discord.js";
+import {
+	ApplicationCommandChannelOptionData,
+	ApplicationCommandChoicesData,
+	ApplicationCommandNonOptionsData,
+	ApplicationCommandSubCommandData,
+	ApplicationCommandSubGroupData,
+	Message,
+	PermissionResolvable,
+	Snowflake
+} from "discord.js";
 import AkairoError from "../../util/AkairoError";
 import AkairoMessage from "../../util/AkairoMessage";
 import Category from "../../util/Category";
@@ -548,7 +557,53 @@ export type ArgumentGenerator = (
 	state: ArgumentRunnerState
 ) => IterableIterator<ArgumentOptions | Flag>;
 
-export type SlashOption = ApplicationCommandOptionData & {
+export interface AkairoApplicationCommandSubGroupData extends ApplicationCommandSubGroupData {
+	options?: AkairoApplicationCommandSubCommandData[];
+}
+
+export interface AkairoApplicationCommandSubCommandData extends ApplicationCommandSubCommandData {
+	options?: (
+		| AkairoApplicationCommandChoicesData
+		| AkairoApplicationCommandNonOptionsData
+		| AkairoApplicationCommandChannelOptionData
+	)[];
+}
+
+export interface AkairoApplicationCommandChoicesData extends ApplicationCommandChoicesData {
+	/**
+	 * Allows you to get a discord resolved object
+	 *
+	 * ex. get the resolved member object when the type is `USER`
+	 */
+	resolve?: SlashResolveTypes;
+}
+
+export interface AkairoApplicationCommandNonOptionsData extends ApplicationCommandNonOptionsData {
+	/**
+	 * Allows you to get a discord resolved object
+	 *
+	 * ex. get the resolved member object when the type is `USER`
+	 */
+	resolve?: SlashResolveTypes;
+}
+
+export interface AkairoApplicationCommandChannelOptionData extends ApplicationCommandChannelOptionData {
+	/**
+	 * Allows you to get a discord resolved object
+	 *
+	 * ex. get the resolved member object when the type is `USER`
+	 */
+	resolve?: SlashResolveTypes;
+}
+
+export type AkairoApplicationCommandOptionData =
+	| AkairoApplicationCommandSubGroupData
+	| AkairoApplicationCommandNonOptionsData
+	| AkairoApplicationCommandChannelOptionData
+	| AkairoApplicationCommandChoicesData
+	| AkairoApplicationCommandSubCommandData;
+
+export type SlashOption = AkairoApplicationCommandOptionData & {
 	/**
 	 * Allows you to get a discord resolved object
 	 *

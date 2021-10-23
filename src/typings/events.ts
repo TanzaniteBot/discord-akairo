@@ -1,4 +1,4 @@
-import { CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
+import { ClientEvents, CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
 import AkairoModule from "../struct/AkairoModule";
 import Command from "../struct/commands/Command";
 import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
@@ -292,4 +292,11 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 		command: Command,
 		reason: typeof BuiltInReasons.OWNER | typeof BuiltInReasons.SUPER_USER
 	];
+}
+
+export interface AkairoClientEvents extends ClientEvents {
+	/**
+	 * Emitted for akairo debugging information.
+	 */
+	akairoDebug: [message: string];
 }

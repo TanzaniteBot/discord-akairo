@@ -137,8 +137,8 @@ export default class Argument {
 	 * @param commandInput - Previous input from command if there was one.
 	 * @param parsedInput - Previous parsed input from command if there was one.
 	 */
-	public async collect(message: Message, commandInput: string = "", parsedInput: any = null): Promise<Flag | any> {
-		const promptOptions: any = {};
+	public async collect(message: Message, commandInput = "", parsedInput: any = null): Promise<Flag | any> {
+		const promptOptions: ArgumentPromptOptions = {};
 		Object.assign(promptOptions, this.handler.argumentDefaults.prompt);
 		Object.assign(promptOptions, this.command.argumentDefaults.prompt);
 		Object.assign(promptOptions, this.prompt || {});
@@ -179,9 +179,9 @@ export default class Argument {
 				text = await modifier.call(this, message, text, {
 					retries: retryCount,
 					infinite: isInfinite,
-					message: inputMessage,
-					phrase: inputPhrase,
-					failure: inputParsed
+					message: inputMessage!,
+					phrase: inputPhrase!,
+					failure: inputParsed as any
 				});
 
 				if (Array.isArray(text)) {
@@ -242,7 +242,7 @@ export default class Argument {
 				if (looksLike && looksLike.command) return Flag.retry(input);
 			}
 
-			if (input?.content.toLowerCase() === promptOptions.cancelWord.toLowerCase()) {
+			if (input?.content.toLowerCase() === promptOptions.cancelWord!.toLowerCase()) {
 				const cancelText = await getText("cancel", promptOptions.cancel, retryCount, input, input?.content, "cancel");
 				if (cancelText) {
 					const sentCancel = await message.channel.send(cancelText);
@@ -252,14 +252,14 @@ export default class Argument {
 				return Flag.cancel();
 			}
 
-			if (isInfinite && input?.content.toLowerCase() === promptOptions.stopWord.toLowerCase()) {
+			if (isInfinite && input?.content.toLowerCase() === promptOptions.stopWord!.toLowerCase()) {
 				if (!values?.length) return promptOne(input, input?.content, null, retryCount + 1);
 				return values;
 			}
 
 			const parsedValue = await this.cast(input, input.content);
 			if (Argument.isFailure(parsedValue)) {
-				if (retryCount <= promptOptions.retries) {
+				if (retryCount <= promptOptions.retries!) {
 					return promptOne(input, input?.content, parsedValue, retryCount + 1);
 				}
 
@@ -274,7 +274,7 @@ export default class Argument {
 
 			if (isInfinite) {
 				values!.push(parsedValue as never);
-				const limit = promptOptions.limit;
+				const limit = promptOptions.limit!;
 				// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
 				if (values?.length! < limit) return promptOne(message, input.content, parsedValue, 1);
 
