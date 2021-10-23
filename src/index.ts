@@ -24,13 +24,20 @@ import Argument, {
 } from "./struct/commands/arguments/Argument";
 import TypeResolver from "./struct/commands/arguments/TypeResolver";
 import Command, {
+	AkairoApplicationCommandChannelOptionData,
+	AkairoApplicationCommandChoicesData,
+	AkairoApplicationCommandNonOptionsData,
+	AkairoApplicationCommandOptionData,
+	AkairoApplicationCommandSubCommandData,
+	AkairoApplicationCommandSubGroupData,
 	ArgumentGenerator,
 	BeforeAction,
 	CommandOptions,
 	ExecutionPredicate,
 	KeySupplier,
 	MissingPermissionSupplier,
-	RegexSupplier
+	RegexSupplier,
+	SlashOption
 } from "./struct/commands/Command";
 import CommandHandler, {
 	CommandHandlerOptions,
@@ -38,7 +45,8 @@ import CommandHandler, {
 	IgnoreCheckPredicate,
 	MentionPrefixPredicate,
 	ParsedComponentData,
-	PrefixSupplier
+	PrefixSupplier,
+	SlashResolveTypes
 } from "./struct/commands/CommandHandler";
 import CommandUtil from "./struct/commands/CommandUtil";
 import Flag from "./struct/commands/Flag";
@@ -51,6 +59,7 @@ import ListenerHandler from "./struct/listeners/ListenerHandler";
 import Task, { TaskOptions } from "./struct/tasks/Task";
 import TaskHandler from "./struct/tasks/TaskHandler";
 import type {
+	AkairoClientEvents,
 	AkairoHandlerEvents,
 	CommandHandlerEvents,
 	InhibitorHandlerEvents,
@@ -67,7 +76,14 @@ import Util from "./util/Util";
 const version = packageJSON.version;
 
 export {
+	AkairoApplicationCommandChannelOptionData,
+	AkairoApplicationCommandChoicesData,
+	AkairoApplicationCommandNonOptionsData,
+	AkairoApplicationCommandOptionData,
+	AkairoApplicationCommandSubCommandData,
+	AkairoApplicationCommandSubGroupData,
 	AkairoClient,
+	AkairoClientEvents,
 	AkairoError,
 	AkairoHandler,
 	AkairoHandlerEvents,
@@ -126,6 +142,8 @@ export {
 	PromptContentModifier,
 	PromptContentSupplier,
 	RegexSupplier,
+	SlashOption,
+	SlashResolveTypes,
 	Task,
 	TaskHandler,
 	TaskHandlerEvents,
