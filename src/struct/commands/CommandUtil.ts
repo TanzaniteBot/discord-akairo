@@ -2,7 +2,6 @@
 import { APIMessage } from "discord-api-types";
 import {
 	Collection,
-	CommandInteraction,
 	InteractionReplyOptions,
 	Message,
 	MessageEditOptions,
@@ -21,8 +20,8 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler";
  * @param handler - The command handler.
  * @param message - Message that triggered the command.
  */
-export default class CommandUtil {
-	public constructor(handler: CommandHandler | ContextMenuCommandHandler, message: Message | AkairoMessage) {
+export default class CommandUtil<MessageType extends AkairoMessage | Message> {
+	public constructor(handler: CommandHandler | ContextMenuCommandHandler, message: MessageType) {
 		this.handler = handler;
 		this.message = message;
 		this.parsed = null;
@@ -50,7 +49,7 @@ export default class CommandUtil {
 	/**
 	 * Message that triggered the command.
 	 */
-	public message: Message | AkairoMessage;
+	public message: MessageType;
 
 	/**
 	 * Messages stored from prompts and prompt replies.
@@ -66,6 +65,10 @@ export default class CommandUtil {
 	 * Whether or not the last response should be edited.
 	 */
 	public shouldEdit: boolean;
+
+	public isSlashMessage(message: Message | AkairoMessage): message is AkairoMessage {
+		return message instanceof AkairoMessage;
+	}
 
 	/**
 	 * Adds client prompt or user reply to messages.
@@ -97,10 +100,10 @@ export default class CommandUtil {
 	public async edit(
 		options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload
 	): Promise<Message | APIMessage> {
-		if (this.isSlash) {
-			return (this.lastResponse as unknown as AkairoMessage).interaction.editReply(options);
-		} else {
+		if (!this.isSlashMessage(this.message)) {
 			return this.lastResponse!.edit(options);
+		} else {
+			return this.message.interaction.editReply(options);
 		}
 	}
 
@@ -114,18 +117,17 @@ export default class CommandUtil {
 	public async reply(
 		options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
-		const newOptions = typeof options === "string" ? { content: options } : options;
+		const newOptions = (typeof options === "string" ? { content: options } : options) as ReplyMessageOptions;
 
 		if (
-			!this.isSlash &&
+			!this.isSlashMessage(this.message) &&
 			!this.shouldEdit &&
 			!(newOptions instanceof MessagePayload) &&
 			!(this.message as Message).deleted
 		) {
 			(newOptions as MessageOptions).reply = {
-				messageReference: this.message as Message,
-				failIfNotExists:
-					(newOptions as ReplyMessageOptions).failIfNotExists ?? this.handler.client.options.failIfNotExists
+				messageReference: this.message,
+				failIfNotExists: newOptions.failIfNotExists ?? this.handler.client.options.failIfNotExists
 			};
 		}
 		return this.send(newOptions);
@@ -142,29 +144,28 @@ export default class CommandUtil {
 	): Promise<Message | APIMessage> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files?.length > 0;
 		const newOptions = typeof options === "string" ? { content: options } : options;
-		if (!(this.message.interaction instanceof CommandInteraction)) {
-			if (typeof options !== "string") delete (options as InteractionReplyOptions).ephemeral;
+		if (!this.isSlashMessage(this.message)) {
+			(newOptions as InteractionReplyOptions).ephemeral = undefined;
 			if (this.shouldEdit && !hasFiles && !this.lastResponse!.deleted && !this.lastResponse!.attachments.size) {
-				return this.lastResponse!.edit(options);
+				return this.lastResponse!.edit(newOptions);
 			}
-			const sent = await this.message.channel?.send(options);
+			const sent = await this.message.channel?.send(newOptions);
 
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
 
 			return sent!;
 		} else {
-			if (typeof options !== "string") delete (options as MessageOptions).reply;
+			(newOptions as MessageOptions).reply = undefined;
 			if (this.lastResponse || this.message.interaction.deferred || this.message.interaction.replied) {
-				this.lastResponse = (await this.message.interaction.editReply(options)) as Message;
+				this.lastResponse = (await this.message.interaction.editReply(newOptions)) as Message;
 				return this.lastResponse;
 			} else {
-				if (!(newOptions as InteractionReplyOptions).ephemeral) {
-					(newOptions as InteractionReplyOptions).fetchReply = true;
-					this.lastResponse = (await this.message.interaction.reply(newOptions)) as unknown as Message;
-					return this.lastResponse;
-				}
-				return this.message.interaction.reply(newOptions) as unknown as Promise<Message | APIMessage>;
+				Object.assign(newOptions, { fetchReply: true });
+				this.lastResponse = (await this.message.interaction.reply(
+					newOptions as InteractionReplyOptions & { fetchReply: true }
+				)) as Message;
+				return this.lastResponse;
 			}
 		}
 	}
@@ -178,7 +179,7 @@ export default class CommandUtil {
 	public async sendNew(
 		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
-		if (!(this.message.interaction instanceof CommandInteraction)) {
+		if (!this.isSlashMessage(this.message)) {
 			const sent = await this.message.channel?.send(options);
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
@@ -194,7 +195,7 @@ export default class CommandUtil {
 	 * Changes if the message should be edited.
 	 * @param state - Change to editable or not.
 	 */
-	public setEditable(state: boolean): CommandUtil {
+	public setEditable(state: boolean): CommandUtil<MessageType> {
 		this.shouldEdit = Boolean(state);
 		return this;
 	}
@@ -216,8 +217,8 @@ export default class CommandUtil {
 	 * Deletes the last response.
 	 */
 	public async delete(): Promise<Message | void> {
-		if (this.isSlash) {
-			return (this.message as AkairoMessage).interaction.deleteReply();
+		if (this.isSlashMessage(this.message)) {
+			return this.message.interaction.deleteReply();
 		} else {
 			return this.lastResponse?.delete();
 		}

@@ -132,7 +132,7 @@ export default class AkairoMessage extends Base {
 	/**
 	 * Utilities for command responding.
 	 */
-	public util!: CommandUtil;
+	public util!: CommandUtil<AkairoMessage>;
 
 	/**
 	 * The url to jump to this message

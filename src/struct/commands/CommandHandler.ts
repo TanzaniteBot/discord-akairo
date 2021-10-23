@@ -213,7 +213,7 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * Collection of CommandUtils.
 	 */
-	public commandUtils: Collection<string, CommandUtil>;
+	public commandUtils: Collection<string, CommandUtil<Message | AkairoMessage>>;
 
 	/**
 	 * Time interval in milliseconds for sweeping command util instances.
@@ -636,7 +636,7 @@ export default class CommandHandler extends AkairoHandler {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
-					message.util = this.commandUtils.get(message.id);
+					message.util = this.commandUtils.get(message.id) as CommandUtil<Message>;
 				} else {
 					message.util = new CommandUtil(this, message);
 					this.commandUtils.set(message.id, message.util);
@@ -709,7 +709,7 @@ export default class CommandHandler extends AkairoHandler {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
-					message.util = this.commandUtils.get(message.id)!;
+					message.util = this.commandUtils.get(message.id) as CommandUtil<AkairoMessage>;
 				} else {
 					message.util = new CommandUtil(this, message);
 					this.commandUtils.set(message.id, message.util);

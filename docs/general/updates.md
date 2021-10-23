@@ -88,7 +88,7 @@ Note that this example assumes either:
    - The type is `USER`
    - Required is `false`
 
-You can use the `message.util` methods to reply to both regular and slash commands. Additionally you can use `message.util.isSlash` to know if the message is a slash command or not
+You can use the `message.util` methods to reply to both regular and slash commands. Additionally you can use `message.util.isSlash` to know if the message is a slash command or not or `message.util.isSlashMessage(message) for type guarding.
 
 ### Ephemeral responses
 
@@ -213,7 +213,7 @@ You can also do this manually
 // command
 /* ... */
 public override exec(message: Message | AkairoMessage) {
-  if (message.util.isSlash) await (message as AkairoMessage).interaction.deferReply()
+  if (message.util.isSlashMessage(message)) await message.interaction.deferReply()
   /* ... */
 }
 /* ... */

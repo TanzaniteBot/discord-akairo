@@ -8,6 +8,6 @@ declare module "discord.js" {
 		 * Available on all messages after 'all' inhibitors and built-in inhibitors (bot, client).
 		 * Not all properties of the util are available, depending on the input.
 		 * */
-		util?: CommandUtil;
+		util?: CommandUtil<Message>;
 	}
 }
