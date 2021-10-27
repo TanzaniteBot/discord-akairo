@@ -18,13 +18,6 @@
 		"commands",
 		"arguments"
 	],
-	"exports": {
-		"./*": "./*",
-		".": {
-			"require": "./dist/src/index.js",
-			"import": "./dist/src/index.mjs"
-		}
-	},
 	"devDependencies": {
 		"@discordjs/voice": "^0.6.0",
 		"@favware/npm-deprecate": "^1.0.4",
@@ -41,7 +34,6 @@
 		"jsdoc": "^3.6.7",
 		"prettier": "^2.4.1",
 		"rimraf": "^3.0.2",
-		"shx": "^0.3.3",
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
@@ -53,7 +45,7 @@
 		"test": "yarn lint && yarn tsc --noEmit",
 		"lint": "yarn eslint ./src",
 		"format": "yarn prettier . --write",
-		"build": "yarn rimraf node_modules/discord-akairo-message-util && yarn rimraf dist && yarn tsc && shx cp src/index.mjs dist/src/index.mjs",
+		"build": "yarn rimraf node_modules/discord-akairo-message-util && yarn rimraf dist && yarn tsc",
 		"prepare": "yarn build",
 		"prepublishOnly": "yarn test"
 	},
