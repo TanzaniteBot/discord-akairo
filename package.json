@@ -33,7 +33,7 @@
 		"@types/source-map-support": "^0.5.4",
 		"@typescript-eslint/eslint-plugin": "^4.32.0",
 		"@typescript-eslint/parser": "^4.32.0",
-		"discord-api-types": "0.23.1",
+		"discord-api-types": "0.24.0",
 		"discord.js": "npm:@notenoughupdates/discord.js@dev",
 		"discord.js-docgen": "discordjs/docgen",
 		"eslint": "^7.32.0",
