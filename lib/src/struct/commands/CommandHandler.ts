@@ -737,11 +737,15 @@ export default class CommandHandler extends AkairoHandler {
 			}
 			const convertedOptions: ConvertedOptionsType = {};
 
+			// @ts-expect-error: djs stripped privates accidentally ig
 			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
+			// @ts-expect-error: djs stripped privates accidentally ig
 			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
+			// @ts-expect-error: djs stripped privates accidentally ig
 			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
+
 				convertedOptions[option.name] = interaction.options[
 					_.camelCase(`GET_${originalOption?.resolve ?? option.type}`) as GetFunctions
 				](option.name, false);
@@ -1754,8 +1758,8 @@ type GetFunctions =
 	| "getUser"
 	| "getMember"
 	| "getRole"
-	| "getMentionable"
-	| "getMessage";
+	| "getMentionable";
+// | "getMessage";
 
 type ConvertedOptionsType = {
 	[key: string]:

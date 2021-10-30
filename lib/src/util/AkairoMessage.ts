@@ -39,13 +39,17 @@ export default class AkairoMessage extends Base {
 		this.partial = false;
 
 		if (interaction.command?.type === "CHAT_INPUT") {
+			// @ts-expect-error: djs stripped privates accidentally ig
 			if (interaction.options["_group"]) this.content += `group: ${interaction.options["_group"]}`;
+			// @ts-expect-error: djs stripped privates accidentally ig
 			if (interaction.options["_subcommand"]) this.content += `subcommand: ${interaction.options["_subcommand"]}`;
+			// @ts-expect-error: djs stripped privates accidentally ig
 			for (const option of interaction.options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
 				this.content += ` ${option.name}: ${interaction.options.get(option.name, false)?.value}`;
 			}
 		} else if (interaction.command?.type === "MESSAGE") {
+			// @ts-expect-error: the method will exist if the type equals `MESSAGE`
 			this.content += ` message: ${interaction.options.getMessage("message")!.id}`;
 		} else if (interaction.command?.type === "USER") {
 			this.content += ` message: ${interaction.options.getUser("user")!.id}`;

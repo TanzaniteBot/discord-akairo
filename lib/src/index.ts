@@ -1,4 +1,3 @@
-import "discord-akairo-message-util";
 import "source-map-support/register";
 import packageJSON from "../package.json";
 import AkairoClient, { AkairoOptions } from "./struct/AkairoClient";
@@ -72,27 +71,60 @@ import AkairoMessage from "./util/AkairoMessage";
 import Category from "./util/Category";
 import * as Constants from "./util/Constants";
 import Util from "./util/Util";
-
 const version = packageJSON.version;
 
+declare module "discord.js" {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	export interface Message<Cached extends boolean = boolean> extends Base {
+		/**
+		 * Extra properties applied to the Discord.js message object.
+		 * Utilities for command responding.
+		 * Available on all messages after 'all' inhibitors and built-in inhibitors (bot, client).
+		 * Not all properties of the util are available, depending on the input.
+		 * */
+		util?: CommandUtil<Message>;
+	}
+}
+
 export {
+	AkairoClient,
+	AkairoError,
+	AkairoHandler,
+	AkairoMessage,
+	AkairoModule,
+	Argument,
+	Category,
+	ClientUtil,
+	Command,
+	CommandHandler,
+	CommandUtil,
+	Constants,
+	ContextMenuCommand,
+	ContextMenuCommandHandler,
+	Flag,
+	Inhibitor,
+	InhibitorHandler,
+	Listener,
+	ListenerHandler,
+	PromptContentModifier,
+	Task,
+	TaskHandler,
+	TypeResolver,
+	Util,
+	version
+};
+export type {
 	AkairoApplicationCommandChannelOptionData,
 	AkairoApplicationCommandChoicesData,
 	AkairoApplicationCommandNonOptionsData,
 	AkairoApplicationCommandOptionData,
 	AkairoApplicationCommandSubCommandData,
 	AkairoApplicationCommandSubGroupData,
-	AkairoClient,
 	AkairoClientEvents,
-	AkairoError,
-	AkairoHandler,
 	AkairoHandlerEvents,
 	AkairoHandlerOptions,
-	AkairoMessage,
-	AkairoModule,
 	AkairoModuleOptions,
 	AkairoOptions,
-	Argument,
 	ArgumentGenerator,
 	ArgumentMatch,
 	ArgumentOptions,
@@ -102,33 +134,20 @@ export {
 	ArgumentTypeCaster_,
 	ArgumentTypeCaster,
 	BeforeAction,
-	Category,
-	ClientUtil,
-	Command,
-	CommandHandler,
 	CommandHandlerEvents,
 	CommandHandlerOptions,
 	CommandOptions,
-	CommandUtil,
-	Constants,
-	ContextMenuCommand,
-	ContextMenuCommandHandler,
 	ContextMenuCommandOptions,
 	CooldownData,
 	DefaultArgumentOptions,
 	DefaultValueSupplier,
 	ExecutionPredicate,
 	FailureData,
-	Flag,
 	GuildTextBasedChannels,
 	IgnoreCheckPredicate,
-	Inhibitor,
-	InhibitorHandler,
 	InhibitorHandlerEvents,
 	InhibitorOptions,
 	KeySupplier,
-	Listener,
-	ListenerHandler,
 	ListenerHandlerEvents,
 	ListenerOptions,
 	LoadPredicate,
@@ -139,16 +158,10 @@ export {
 	ParsedComponentData,
 	ParsedValuePredicate,
 	PrefixSupplier,
-	PromptContentModifier,
 	PromptContentSupplier,
 	RegexSupplier,
 	SlashOption,
 	SlashResolveTypes,
-	Task,
-	TaskHandler,
 	TaskHandlerEvents,
-	TaskOptions,
-	TypeResolver,
-	Util,
-	version
+	TaskOptions
 };

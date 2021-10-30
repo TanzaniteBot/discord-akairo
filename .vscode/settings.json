@@ -15,8 +15,8 @@
 	"editor.insertSpaces": false,
 	"editor.wordWrap": "on",
 	"editor.tabSize": 2,
-	"prettier.configPath": "package.json",
-	"prettier.prettierPath": "node_modules/prettier",
+	"prettier.configPath": "lib/package.json",
+	"prettier.prettierPath": "lib/node_modules/prettier",
 	"prettier.withNodeModules": true,
 	"prettier.useEditorConfig": false,
 	"compile-hero.disable-compile-files-on-did-save-code": true
