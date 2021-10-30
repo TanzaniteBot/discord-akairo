@@ -1,27 +1,29 @@
-name: NPM auto deprecate
+name: Auto Deprecate
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 1 * * *"
 jobs:
   auto-deprecate:
-    name: NPM auto deprecate
+    name: Auto Deprecate
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lib
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
       - name: Install Node v16
         uses: actions/setup-node@v2
         with:
           node-version: 16
-
+      - name: Yarn Cache
+        uses: c-hive/gha-yarn-cache@v2
+        with:
+          directory: lib
       - name: Install dependencies
-        working-directory: ./lib
         run: yarn install
-
       - name: Deprecate versions
-        working-directory: ./lib
         run: 'npm exec --no npm-deprecate -- --name "*dev*" --package "@notenoughupdates/discord-akairo"'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

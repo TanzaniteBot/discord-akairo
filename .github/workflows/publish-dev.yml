@@ -1,4 +1,4 @@
-name: Publish dev
+name: Publish Dev
 on:
   workflow_dispatch:
   schedule:
@@ -7,17 +7,16 @@ jobs:
   npm:
     name: npm
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lib
     steps:
-      - name: Checkout repository
+      - name: Checkout Repo
         uses: actions/checkout@v2
-
-      - name: Install Node v16
-        uses: actions/setup-node@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
         with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org/
-          cache: yarn
-
+          node-version: 16.x
       - name: Check previous released version
         id: pre-release
         working-directory: ./lib
@@ -25,22 +24,21 @@ jobs:
           if [[ $(npm view @notenoughupdates/discord-akairo@dev version | grep -e "$(jq --raw-output '.version' package.json).*.$(git rev-parse --short HEAD | cut -b1-3)") ]]; \
           then echo '::set-output name=release::false'; \
           else echo '::set-output name=release::true'; fi
-
-      - name: Install dependencies
+      - name: Yarn Cache
         if: steps.pre-release.outputs.release == 'true'
-        working-directory: ./lib
+        uses: c-hive/gha-yarn-cache@v2
+        with:
+          directory: lib
+      - name: Install Dependencies
+        if: steps.pre-release.outputs.release == 'true'
         run: yarn install
-
-      - name: Deprecate old versions
+      - name: Deprecate Old Versions
         if: steps.pre-release.outputs.release == 'true'
-        working-directory: ./lib
         run: npm deprecate @notenoughupdates/discord-akairo@"~$(jq --raw-output '.version' package.json)" "no longer supported" || true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-
       - name: Publish
         if: steps.pre-release.outputs.release == 'true'
-        working-directory: ./lib
         run: |
           npm version --git-tag-version=false $(jq --raw-output '.version' package.json).$(date +%s).$(git rev-parse --short HEAD)
           npm publish --tag dev || true
