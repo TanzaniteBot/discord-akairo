@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "noImplicitOverride": true,
+    "alwaysStrict": true,
+    "noErrorTruncation": true,
+    "allowJs": true,
+    "strict": true,
+    "useUnknownInCatchVariables": false
+  },
+  "include": ["lib/src/**/*.ts"],
+  "exclude": ["lib/node_modules", "lib/dist"]
+}
