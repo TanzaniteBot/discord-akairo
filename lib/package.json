@@ -29,9 +29,9 @@
 		"lint": "yarn eslint ./src",
 		"format": "yarn prettier . --write",
 		"build": "yarn rimraf dist && yarn tsc",
-		"build:no-emit": "yarn rimraf dist && yarn tsc --noEmit",
+		"build:no-emit": "yarn tsc --noEmit",
 		"prepare": "yarn build",
-		"prepublishOnly": "yarn test"
+		"prepublishOnly": "yarn lint && yarn build:no-emit"
 	},
 	"dependencies": {
 		"lodash": "^4.17.21",
