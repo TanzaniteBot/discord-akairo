@@ -3,14 +3,7 @@
 		"module": "commonjs",
 		"target": "esnext",
 		"outDir": "dist",
-		"lib": [
-			"esnext",
-			"esnext.array",
-			"esnext.asyncIterable",
-			"esnext.intl",
-			"esnext.symbol",
-			"DOM"
-		],
+		"lib": ["esnext", "esnext.array", "esnext.asyncIterable", "esnext.intl", "esnext.symbol", "DOM"],
 		"sourceMap": false,
 		"inlineSourceMap": true,
 		"inlineSources": true,
@@ -28,11 +21,6 @@
 		"declarationMap": true,
 		"declaration": true
 	},
-	"include": [
-		"src/**/*.ts"
-	],
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
 }
