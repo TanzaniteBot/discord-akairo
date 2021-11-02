@@ -2,6 +2,7 @@ import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
 	Base,
 	CommandInteraction,
+	CommandInteractionOptionResolver,
 	Guild,
 	GuildMember,
 	InteractionReplyOptions,
@@ -39,18 +40,18 @@ export default class AkairoMessage extends Base {
 		this.partial = false;
 
 		if (interaction.command?.type === "CHAT_INPUT") {
-			// @ts-expect-error: djs stripped privates accidentally ig
-			if (interaction.options["_group"]) this.content += `group: ${interaction.options["_group"]}`;
-			// @ts-expect-error: djs stripped privates accidentally ig
-			if (interaction.options["_subcommand"]) this.content += `subcommand: ${interaction.options["_subcommand"]}`;
-			// @ts-expect-error: djs stripped privates accidentally ig
-			for (const option of interaction.options["_hoistedOptions"]) {
+			if ((interaction.options as CommandInteractionOptionResolver)["_group"])
+				this.content += `group: ${(interaction.options as CommandInteractionOptionResolver)["_group"]}`;
+			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
+				this.content += `subcommand: ${(interaction.options as CommandInteractionOptionResolver)["_subcommand"]}`;
+			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
 				this.content += ` ${option.name}: ${interaction.options.get(option.name, false)?.value}`;
 			}
 		} else if (interaction.command?.type === "MESSAGE") {
-			// @ts-expect-error: the method will exist if the type equals `MESSAGE`
-			this.content += ` message: ${interaction.options.getMessage("message")!.id}`;
+			this.content += ` message: ${
+				(interaction.options as CommandInteractionOptionResolver).getMessage("message")!.id
+			}`;
 		} else if (interaction.command?.type === "USER") {
 			this.content += ` message: ${interaction.options.getUser("user")!.id}`;
 		}
@@ -83,7 +84,7 @@ export default class AkairoMessage extends Base {
 	 * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
 	 */
 	public get cleanContent(): string | null {
-		return this.content != null ? Util.cleanContent(this.content, this.channel!) : null;
+		return this.content !== null ? Util.cleanContent(this.content, this.channel!) : null;
 	}
 
 	/**
@@ -145,6 +146,13 @@ export default class AkairoMessage extends Base {
 		return this.interaction.ephemeral
 			? null
 			: `https://discord.com/channels/${this.guild ? this.guild.id : "@me"}/${this.channel?.id}/${this.id}`;
+	}
+
+	/**
+	 * Indicates whether this interaction is received from a guild.
+	 */
+	public inGuild(): this is this & { guild: Guild; member: GuildMember } {
+		return Boolean(this.guildId && this.member);
 	}
 
 	/**

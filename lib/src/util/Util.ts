@@ -10,7 +10,7 @@ export default class Util {
 	 */
 	public static choice<T>(...xs: T[]): T | null {
 		for (const x of xs) {
-			if (x != null) {
+			if (x !== null) {
 				return x;
 			}
 		}

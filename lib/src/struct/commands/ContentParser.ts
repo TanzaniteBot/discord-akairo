@@ -158,7 +158,7 @@ class Tokenizer {
 	}
 
 	public runQuote() {
-		if (this.separator == null && this.quoted && this.startsWith('"')) {
+		if (this.separator === null && this.quoted && this.startsWith('"')) {
 			if (this.state === 1) {
 				this.state = 0;
 			} else if (this.state === 0) {
@@ -174,7 +174,7 @@ class Tokenizer {
 	}
 
 	public runOpenQuote() {
-		if (this.separator == null && this.quoted && this.startsWith('"')) {
+		if (this.separator === null && this.quoted && this.startsWith('"')) {
 			if (this.state === 0) {
 				this.state = 2;
 			}
@@ -188,7 +188,7 @@ class Tokenizer {
 	}
 
 	public runEndQuote() {
-		if (this.separator == null && this.quoted && this.startsWith("”")) {
+		if (this.separator === null && this.quoted && this.startsWith("”")) {
 			if (this.state === 2) {
 				this.state = 0;
 			}
@@ -202,7 +202,7 @@ class Tokenizer {
 	}
 
 	public runSeparator() {
-		if (this.separator != null && this.startsWith(this.separator)) {
+		if (this.separator !== null && this.separator !== undefined && this.startsWith(this.separator)) {
 			this.addToken("Separator", this.slice(0, this.separator.length));
 			this.advance(this.separator.length);
 			return true;
@@ -290,7 +290,7 @@ class Parser {
 	}
 
 	public lookaheadN(n: number, ...types: string[]) {
-		return this.tokens[this.position + n] != null && types.includes(this.tokens[this.position + n].type);
+		return this.tokens[this.position + n] !== null && types.includes(this.tokens[this.position + n].type);
 	}
 
 	public lookahead(...types: string[]) {
@@ -361,13 +361,13 @@ class Parser {
 			raw: flag.value
 		};
 		const ws = this.lookahead("WS") ? this.match("WS") : null;
-		if (ws != null) {
+		if (ws !== null) {
 			parsed.raw += ws.value;
 		}
 
 		const phrase = this.lookahead("Quote", "OpenQuote", "EndQuote", "Word") ? this.parsePhrase() : null;
 
-		if (phrase != null) {
+		if (phrase !== null) {
 			parsed.value = phrase.value;
 			parsed.raw += phrase.raw;
 		}
@@ -388,7 +388,7 @@ class Parser {
 				}
 
 				const endQuote = this.lookahead("Quote") ? this.match("Quote") : null;
-				if (endQuote != null) {
+				if (endQuote !== null) {
 					parsed.raw += endQuote.value;
 				}
 
@@ -410,7 +410,7 @@ class Parser {
 				}
 
 				const endQuote = this.lookahead("EndQuote") ? this.match("EndQuote") : null;
-				if (endQuote != null) {
+				if (endQuote !== null) {
 					parsed.raw += endQuote.value;
 				}
 
@@ -495,7 +495,7 @@ export default class ContentParser {
 			separator: this.separator
 		}).tokenize();
 
-		return new Parser(tokens, { separated: this.separator != null }).parse();
+		return new Parser(tokens, { separated: this.separator !== null }).parse();
 	}
 
 	/**

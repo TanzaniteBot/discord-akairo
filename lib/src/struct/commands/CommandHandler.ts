@@ -553,7 +553,7 @@ export default class CommandHandler extends AkairoHandler {
 			}
 		}
 
-		if (command.prefix != null) {
+		if (command.prefix !== null && command.prefix !== undefined) {
 			let newEntry = false;
 
 			if (Array.isArray(command.prefix)) {
@@ -597,7 +597,7 @@ export default class CommandHandler extends AkairoHandler {
 			}
 		}
 
-		if (command.prefix != null) {
+		if (command.prefix !== null && command.prefix !== undefined) {
 			if (Array.isArray(command.prefix)) {
 				for (const prefix of command.prefix) {
 					const prefixes = this.prefixes.get(prefix);
@@ -650,7 +650,7 @@ export default class CommandHandler extends AkairoHandler {
 			let parsed = await this.parseCommand(message);
 			if (!parsed.command) {
 				const overParsed = await this.parseCommandOverwrittenPrefixes(message);
-				if (overParsed.command || (parsed.prefix == null && overParsed.prefix != null)) {
+				if (overParsed.command || (parsed.prefix === null && overParsed.prefix !== null)) {
 					parsed = overParsed;
 				}
 			}
@@ -723,7 +723,7 @@ export default class CommandHandler extends AkairoHandler {
 			let parsed = await this.parseCommand(message);
 			if (!parsed.command) {
 				const overParsed = await this.parseCommandOverwrittenPrefixes(message);
-				if (overParsed.command || (parsed.prefix == null && overParsed.prefix != null)) {
+				if (overParsed.command || (parsed.prefix === null && overParsed.prefix !== null)) {
 					parsed = overParsed;
 				}
 			}
@@ -737,12 +737,11 @@ export default class CommandHandler extends AkairoHandler {
 			}
 			const convertedOptions: ConvertedOptionsType = {};
 
-			// @ts-expect-error: djs stripped privates accidentally ig
-			if (interaction.options["_group"]) convertedOptions["subcommandGroup"] = interaction.options["_group"];
-			// @ts-expect-error: djs stripped privates accidentally ig
-			if (interaction.options["_subcommand"]) convertedOptions["subcommand"] = interaction.options["_subcommand"];
-			// @ts-expect-error: djs stripped privates accidentally ig
-			for (const option of interaction.options["_hoistedOptions"]) {
+			if ((interaction.options as CommandInteractionOptionResolver)["_group"])
+				convertedOptions["subcommandGroup"] = (interaction.options as CommandInteractionOptionResolver)["_group"];
+			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
+				convertedOptions["subcommand"] = (interaction.options as CommandInteractionOptionResolver)["_subcommand"];
+			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
@@ -947,7 +946,7 @@ export default class CommandHandler extends AkairoHandler {
 			if (entry.regex.global) {
 				let matched;
 
-				while ((matched = entry.regex.exec(message.content)) != null) {
+				while ((matched = entry.regex.exec(message.content)) !== null) {
 					matches.push(matched);
 				}
 			}
@@ -1034,7 +1033,7 @@ export default class CommandHandler extends AkairoHandler {
 	public async runAllTypeInhibitors(message: Message | AkairoMessage, slash: boolean = false): Promise<boolean> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("all", message) : null;
 
-		if (reason != null) {
+		if (reason !== null) {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, reason);
 		} else if (!message.author) {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.AUTHOR_NOT_FOUND);
@@ -1058,7 +1057,7 @@ export default class CommandHandler extends AkairoHandler {
 	public async runPreTypeInhibitors(message: Message | AkairoMessage): Promise<boolean> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("pre", message) : null;
 
-		if (reason != null) {
+		if (reason !== null) {
 			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, reason);
 		} else {
 			return false;
@@ -1127,7 +1126,7 @@ export default class CommandHandler extends AkairoHandler {
 			}
 		}
 
-		if (reason != null) {
+		if (reason !== null) {
 			this.emit(event, message, command, reason);
 			return true;
 		}
@@ -1156,7 +1155,7 @@ export default class CommandHandler extends AkairoHandler {
 				let missing = command.clientPermissions(message);
 				if (Util.isPromise(missing)) missing = await missing;
 
-				if (missing != null) {
+				if (missing !== null) {
 					this.emit(event, message, command, "client", missing);
 					return true;
 				}
@@ -1183,7 +1182,7 @@ export default class CommandHandler extends AkairoHandler {
 					let missing = command.userPermissions(message);
 					if (Util.isPromise(missing)) missing = await missing;
 
-					if (missing != null) {
+					if (missing !== null) {
 						this.emit(event, message, command, "user", missing);
 						return true;
 					}
@@ -1217,7 +1216,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		if (isIgnored) return false;
 
-		const time = command.cooldown != null ? command.cooldown : this.defaultCooldown;
+		const time = command.cooldown !== null ? command.cooldown : this.defaultCooldown;
 		if (!time) return false;
 
 		const endTime = message.createdTimestamp + time;
@@ -1328,7 +1327,7 @@ export default class CommandHandler extends AkairoHandler {
 			return result;
 		}
 
-		const guess = parses.find(parsed => parsed.prefix != null);
+		const guess = parses.find(parsed => parsed.prefix !== null);
 		if (guess) {
 			return guess;
 		}
@@ -1364,8 +1363,8 @@ export default class CommandHandler extends AkairoHandler {
 			return { prefix, alias, content, afterPrefix };
 		}
 
-		if (associatedCommands == null) {
-			if (command.prefix != null) {
+		if (associatedCommands === null) {
+			if (command.prefix !== null) {
 				return { prefix, alias, content, afterPrefix };
 			}
 		} else if (!associatedCommands.has(command.id)) {
