@@ -1120,7 +1120,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("post", message, command) : null;
 
-		if (this.skipBuiltInPostInhibitors && reason !== null) {
+		if (this.skipBuiltInPostInhibitors && reason == null) {
 			if (await this.runPermissionChecks(message, command, slash)) {
 				return true;
 			}
