@@ -344,7 +344,7 @@ export default class Argument {
 		};
 
 		if (!phrase && optional) {
-			if (this.otherwise !== null) {
+			if (this.otherwise != null) {
 				return doOtherwise(null);
 			}
 
@@ -356,15 +356,15 @@ export default class Argument {
 
 		const res = await this.cast(message, phrase);
 		if (Argument.isFailure(res)) {
-			if (this.otherwise !== null) {
+			if (this.otherwise != null) {
 				return doOtherwise(res);
 			}
 
-			if (this.prompt !== null) {
+			if (this.prompt != null) {
 				return this.collect(message, phrase, res);
 			}
 
-			return this.default === null ? res : Util.intoCallable(this.default)(message, { phrase, failure: res });
+			return this.default == null ? res : Util.intoCallable(this.default)(message, { phrase, failure: res });
 		}
 
 		return res;
@@ -412,7 +412,7 @@ export default class Argument {
 			if (type.global) {
 				let matched;
 
-				while ((matched = type.exec(phrase)) !== null) {
+				while ((matched = type.exec(phrase)) != null) {
 					matches.push(matched);
 				}
 			}
@@ -469,7 +469,7 @@ export default class Argument {
 	 * @param value - Value to check.
 	 */
 	public static isFailure(value: any): value is null | undefined | (Flag & { value: any }) {
-		return value === null || Flag.is(value, "fail");
+		return value == null || Flag.is(value, "fail");
 	}
 
 	/**
@@ -506,13 +506,7 @@ export default class Argument {
 	): ArgumentTypeCaster {
 		return Argument.validate(type, (msg, p, x) => {
 			const o =
-				typeof x === "number" || typeof x === "bigint"
-					? x
-					: x.length !== null
-					? x.length
-					: x.size !== null
-					? x.size
-					: x;
+				typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
 
 			return o >= min && (inclusive ? o <= max : o < max);
 		});

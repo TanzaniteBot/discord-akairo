@@ -84,7 +84,7 @@ export default class AkairoMessage extends Base {
 	 * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
 	 */
 	public get cleanContent(): string | null {
-		return this.content !== null ? Util.cleanContent(this.content, this.channel!) : null;
+		return this.content != null ? Util.cleanContent(this.content, this.channel!) : null;
 	}
 
 	/**

@@ -104,7 +104,7 @@ export default class ArgumentRunner {
 		};
 
 		const runFn = cases[arg.match];
-		if (runFn === null) {
+		if (runFn == null) {
 			throw new AkairoError("UNKNOWN_MATCH_TYPE", arg.match);
 		}
 
@@ -140,7 +140,7 @@ export default class ArgumentRunner {
 				const phrase = parsed.phrases[i] ? parsed.phrases[i].value : "";
 				// `cast` is used instead of `process` since we do not want prompts.
 				const res = await arg.cast(message, phrase);
-				if (res !== null) {
+				if (res != null) {
 					state.usedIndices.add(i);
 					return res;
 				}
@@ -150,9 +150,9 @@ export default class ArgumentRunner {
 			return arg.process(message, "");
 		}
 
-		const index = arg.index === null || arg.index === undefined ? state.phraseIndex : arg.index;
+		const index = arg.index == null ? state.phraseIndex : arg.index;
 		const ret = arg.process(message, parsed.phrases[index] ? parsed.phrases[index].value : "");
-		if (arg.index === null) {
+		if (arg.index == null) {
 			ArgumentRunner.increaseIndex(parsed, state);
 		}
 
@@ -172,14 +172,14 @@ export default class ArgumentRunner {
 		state: ArgumentRunnerState,
 		arg: Argument
 	): Promise<Flag | any> {
-		const index = arg.index === null || arg.index === undefined ? state.phraseIndex : arg.index;
+		const index = arg.index == null ? state.phraseIndex : arg.index;
 		const rest = parsed.phrases
 			.slice(index, index + arg.limit)
 			.map(x => x.raw)
 			.join("")
 			.trim();
 		const ret = await arg.process(message, rest);
-		if (arg.index === null) {
+		if (arg.index == null) {
 			ArgumentRunner.increaseIndex(parsed, state);
 		}
 
@@ -199,11 +199,11 @@ export default class ArgumentRunner {
 		state: ArgumentRunnerState,
 		arg: Argument
 	): Promise<Flag | any> {
-		const index = arg.index === null || arg.index === undefined ? state.phraseIndex : arg.index;
+		const index = arg.index == null ? state.phraseIndex : arg.index;
 		const phrases = parsed.phrases.slice(index, index + arg.limit);
 		if (!phrases.length) {
 			const ret = await arg.process(message, "");
-			if (arg.index !== null) {
+			if (arg.index != null) {
 				ArgumentRunner.increaseIndex(parsed, state);
 			}
 
@@ -221,7 +221,7 @@ export default class ArgumentRunner {
 			res.push(response);
 		}
 
-		if (arg.index !== null) {
+		if (arg.index != null) {
 			ArgumentRunner.increaseIndex(parsed, state);
 		}
 
@@ -252,7 +252,7 @@ export default class ArgumentRunner {
 
 		const flagFound = parsed.flags.some(flag => names.some(name => name?.toLowerCase() === flag.key.toLowerCase()));
 
-		return arg.default === null ? flagFound : !flagFound;
+		return arg.default == null ? flagFound : !flagFound;
 	}
 
 	/**
@@ -287,7 +287,7 @@ export default class ArgumentRunner {
 			names.some(name => name?.toLowerCase() === flag.key.toLowerCase())
 		);
 
-		return arg.process(message, foundFlag !== null && foundFlag !== undefined ? foundFlag.value : "");
+		return arg.process(message, foundFlag != null ? foundFlag.value : "");
 	}
 
 	/**
@@ -303,7 +303,7 @@ export default class ArgumentRunner {
 		state: ArgumentRunnerState,
 		arg: Argument
 	): Promise<Flag | any> {
-		const index = arg.index === null || arg.index === undefined ? 0 : arg.index;
+		const index = arg.index == null ? 0 : arg.index;
 		const text = parsed.phrases
 			.slice(index, index + arg.limit)
 			.map(x => x.raw)
@@ -325,7 +325,7 @@ export default class ArgumentRunner {
 		state: ArgumentRunnerState,
 		arg: Argument
 	): Promise<Flag | any> {
-		const index = arg.index === null || arg.index === undefined ? 0 : arg.index;
+		const index = arg.index == null ? 0 : arg.index;
 		const content = parsed.all
 			.slice(index, index + arg.limit)
 			.map(x => x.raw)
@@ -347,14 +347,14 @@ export default class ArgumentRunner {
 		state: ArgumentRunnerState,
 		arg: Argument
 	): Promise<Flag | any> {
-		const index = arg.index === null || arg.index === undefined ? state.index : arg.index;
+		const index = arg.index == null ? state.index : arg.index;
 		const rest = parsed.all
 			.slice(index, index + arg.limit)
 			.map(x => x.raw)
 			.join("")
 			.trim();
 		const ret = await arg.process(message, rest);
-		if (arg.index === null) {
+		if (arg.index == null) {
 			ArgumentRunner.increaseIndex(parsed, state);
 		}
 
