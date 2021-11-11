@@ -1,13 +1,45 @@
-import Category from "../util/Category";
-import AkairoClient from "./AkairoClient";
-import AkairoHandler from "./AkairoHandler";
+import type Category from "../util/Category.js";
+import type AkairoClient from "./AkairoClient.js";
+import type AkairoHandler from "./AkairoHandler.js";
 
 /**
  * Base class for a module.
- * @param id - ID of module.
- * @param options - Options.
  */
 export default abstract class AkairoModule {
+	/**
+	 * Category this belongs to.
+	 */
+	public declare category: Category<string, AkairoModule>;
+
+	/**
+	 * ID of the category this belongs to.
+	 */
+	public declare categoryID: string;
+
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * The filepath.
+	 */
+	public declare filepath: string;
+
+	/**
+	 * The handler.
+	 */
+	public declare handler: AkairoHandler;
+
+	/**
+	 * ID of the module.
+	 */
+	public declare id: string;
+
+	/**
+	 * @param id - ID of module.
+	 * @param options - Options.
+	 */
 	public constructor(id: string, { category = "default" }: AkairoModuleOptions = {}) {
 		this.id = id;
 		this.categoryID = category;
@@ -18,53 +50,23 @@ export default abstract class AkairoModule {
 	}
 
 	/**
-	 * Category this belongs to.
-	 */
-	public category: Category<string, AkairoModule>;
-
-	/**
-	 * ID of the category this belongs to.
-	 */
-	public categoryID: string;
-
-	/**
-	 *  The Akairo client.
-	 */
-	public client: AkairoClient;
-
-	/**
-	 * The filepath.
-	 */
-	public filepath: string;
-
-	/**
-	 * The handler.
-	 */
-	public handler: AkairoHandler;
-
-	/**
-	 * ID of the module.
-	 */
-	public id: string;
-
-	/**
 	 * Reloads the module.
 	 */
-	reload(): Promise<AkairoModule> {
+	public reload(): Promise<AkairoModule> {
 		return this.handler?.reload(this.id) as Promise<this>;
 	}
 
 	/**
 	 * Removes the module.
 	 */
-	remove(): AkairoModule {
+	public remove(): AkairoModule {
 		return this.handler?.remove(this.id) as this;
 	}
 
 	/**
 	 * Returns the ID.
 	 */
-	toString(): string {
+	public toString(): string {
 		return this.id;
 	}
 }

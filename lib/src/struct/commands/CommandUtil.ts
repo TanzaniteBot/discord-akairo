@@ -11,16 +11,53 @@ import {
 	Snowflake,
 	WebhookEditMessageOptions
 } from "discord.js";
-import AkairoMessage from "../../util/AkairoMessage";
-import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler";
-import CommandHandler, { ParsedComponentData } from "./CommandHandler";
+import AkairoMessage from "../../util/AkairoMessage.js";
+import type ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler.js";
+import CommandHandler, { ParsedComponentData } from "./CommandHandler.js";
 
 /**
  * Command utilities.
- * @param handler - The command handler.
- * @param message - Message that triggered the command.
  */
 export default class CommandUtil<MessageType extends AkairoMessage | Message> {
+	/**
+	 * The command handler.
+	 */
+	public declare handler: CommandHandler | ContextMenuCommandHandler;
+
+	/**
+	 * Whether or not the command is a slash command.
+	 */
+	public declare isSlash: boolean;
+
+	/**
+	 * The last response sent.
+	 */
+	public declare lastResponse: Message | null;
+
+	/**
+	 * Message that triggered the command.
+	 */
+	public declare message: MessageType;
+
+	/**
+	 * Messages stored from prompts and prompt replies.
+	 */
+	public declare messages: Collection<Snowflake, Message> | null;
+
+	/**
+	 * The parsed components.
+	 */
+	public declare parsed: ParsedComponentData | null;
+
+	/**
+	 * Whether or not the last response should be edited.
+	 */
+	public declare shouldEdit: boolean;
+
+	/**
+	 * @param handler - The command handler.
+	 * @param message - Message that triggered the command.
+	 */
 	public constructor(handler: CommandHandler | ContextMenuCommandHandler, message: MessageType) {
 		this.handler = handler;
 		this.message = message;
@@ -32,40 +69,9 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 	}
 
 	/**
-	 * The command handler.
+	 * Whether or not the provided message is a slash message
+	 * @param message - The message to test
 	 */
-	public handler: CommandHandler | ContextMenuCommandHandler;
-
-	/**
-	 * Whether or not the command is a slash command.
-	 */
-	public isSlash: boolean;
-
-	/**
-	 * The last response sent.
-	 */
-	public lastResponse: Message | null;
-
-	/**
-	 * Message that triggered the command.
-	 */
-	public message: MessageType;
-
-	/**
-	 * Messages stored from prompts and prompt replies.
-	 */
-	public messages: Collection<Snowflake, Message> | null;
-
-	/**
-	 * The parsed components.
-	 */
-	public parsed: ParsedComponentData | null;
-
-	/**
-	 * Whether or not the last response should be edited.
-	 */
-	public shouldEdit: boolean;
-
 	public isSlashMessage(message: Message | AkairoMessage): message is AkairoMessage {
 		return message instanceof AkairoMessage;
 	}

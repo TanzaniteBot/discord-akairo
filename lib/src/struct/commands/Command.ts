@@ -1,4 +1,4 @@
-/*  eslint-disable func-names, @typescript-eslint/no-unused-vars */
+/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import {
 	ApplicationCommandChannelOptionData,
 	ApplicationCommandChoicesData,
@@ -9,29 +9,196 @@ import {
 	PermissionResolvable,
 	Snowflake
 } from "discord.js";
-import AkairoError from "../../util/AkairoError";
-import AkairoMessage from "../../util/AkairoMessage";
-import Category from "../../util/Category";
-import AkairoClient from "../AkairoClient";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
-import Argument, { ArgumentOptions, DefaultArgumentOptions } from "./arguments/Argument";
-import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner";
-import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveTypes } from "./CommandHandler";
-import ContentParser, { ContentParserResult } from "./ContentParser";
-import Flag from "./Flag";
+import AkairoError from "../../util/AkairoError.js";
+import type AkairoMessage from "../../util/AkairoMessage.js";
+import type Category from "../../util/Category.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
+import Argument, { ArgumentOptions, DefaultArgumentOptions } from "./arguments/Argument.js";
+import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
+import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveTypes } from "./CommandHandler.js";
+import ContentParser, { ContentParserResult } from "./ContentParser.js";
+import type Flag from "./Flag.js";
 
 /**
  * Represents a command.
- * @param id - Command ID.
- * @param options - Options for the command.
  */
 export default abstract class Command extends AkairoModule {
 	/**
-	 * Executes the command.
-	 * @param message - Message that triggered the command.
-	 * @param args - Evaluated arguments.
+	 * Command names.
 	 */
-	constructor(id: string, options?: CommandOptions) {
+	public declare aliases: string[];
+
+	/**
+	 * Default prompt options.
+	 */
+	public declare argumentDefaults: DefaultArgumentOptions;
+
+	/**
+	 * Category the command belongs to.
+	 */
+	public declare category: Category<string, Command>;
+
+	/**
+	 * Usable only in this channel type.
+	 */
+	public declare channel?: string;
+
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * Permissions required to run command by the client.
+	 */
+	public declare clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+
+	/**
+	 * Cooldown in milliseconds.
+	 */
+	public declare cooldown?: number;
+
+	/**
+	 * Description of the command.
+	 */
+	public declare description: any;
+
+	/**
+	 * Whether or not this command can be ran by an edit.
+	 */
+	public declare editable: boolean;
+
+	/**
+	 * The filepath.
+	 */
+	public declare filepath: string;
+
+	/**
+	 * The handler.
+	 */
+	public declare handler: CommandHandler;
+
+	/**
+	 * The ID of the command.
+	 */
+	public declare id: string;
+
+	/**
+	 * ID of user(s) to ignore cooldown or a function to ignore.
+	 */
+	public declare ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
+	 */
+	public declare ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * The key supplier for the locker.
+	 */
+	public declare lock?: KeySupplier | "channel" | "guild" | "user";
+
+	/**
+	 * Stores the current locks.
+	 */
+	public declare locker?: Set<string>;
+
+	/**
+	 * Whether or not the command can only be run in  NSFW channels.
+	 */
+	public declare onlyNsfw: boolean;
+
+	/**
+	 * Usable only by the client owner.
+	 */
+	public declare ownerOnly: boolean;
+
+	/**
+	 * Command prefix overwrite.
+	 */
+	public declare prefix?: string | string[] | PrefixSupplier;
+
+	/**
+	 * Whether or not to consider quotes.
+	 */
+	public declare quoted: boolean;
+
+	/**
+	 * Uses allowed before cooldown.
+	 */
+	public declare ratelimit: number;
+
+	/**
+	 * The regex trigger for this command.
+	 */
+	public declare regex?: RegExp | RegexSupplier;
+
+	/**
+	 * Mark command as slash command and set information.
+	 */
+	public declare slash?: boolean;
+
+	/**
+	 * Whether slash command responses for this command should be ephemeral or not.
+	 */
+	public declare slashEphemeral?: boolean;
+
+	/**
+	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
+	 */
+	public declare slashGuilds?: Snowflake[];
+
+	/**
+	 * Options for using the slash command.
+	 */
+	public declare slashOptions?: SlashOption[];
+
+	/**
+	 * Whether or not to allow client superUsers(s) only.
+	 */
+	public declare superUserOnly: boolean;
+
+	/**
+	 * Whether or not to type during command execution.
+	 */
+	public declare typing: boolean;
+
+	/**
+	 * Permissions required to run command by the user.
+	 */
+	public declare userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+
+	/**
+	 * Argument options or generator.
+	 */
+	public declare _args?: ArgumentOptions[] | ArgumentGenerator;
+
+	/**
+	 * The content parser.
+	 */
+	public declare contentParser: ContentParser;
+
+	/**
+	 * The argument runner.
+	 */
+	public declare argumentRunner: ArgumentRunner;
+
+	/**
+	 * Only allows this command to be executed as a slash command.
+	 */
+	public declare slashOnly: boolean;
+
+	/**
+	 * Generator for arguments.
+	 */
+	public declare argumentGenerator: ArgumentGenerator;
+
+	/**
+	 * @param id - Command ID.
+	 * @param options - Options for the command.
+	 */
+	constructor(id: string, options: CommandOptions = {}) {
 		super(id, { category: options?.category });
 
 		const {
@@ -65,8 +232,8 @@ export default abstract class Command extends AkairoModule {
 			slashEphemeral = false,
 			slashGuilds = [],
 			slashOnly = false
-		}: CommandOptions = options ?? {};
-		this.aliases = aliases ?? [];
+		} = options;
+		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
 			? ContentParser.getFlags(args)
 			: { flagWords: flags, optionFlagWords: optionFlags };
@@ -117,171 +284,6 @@ export default abstract class Command extends AkairoModule {
 	}
 
 	/**
-	 * Command names.
-	 */
-	public aliases: string[];
-
-	/**
-	 * Default prompt options.
-	 */
-	public argumentDefaults: DefaultArgumentOptions;
-
-	/**
-	 * Category the command belongs to.
-	 */
-	public declare category: Category<string, Command>;
-
-	/**
-	 * Usable only in this channel type.
-	 */
-	public channel?: string;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Permissions required to run command by the client.
-	 */
-	public clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
-
-	/**
-	 * Cooldown in milliseconds.
-	 */
-	public cooldown?: number;
-
-	/**
-	 * Description of the command.
-	 */
-	public description: any;
-
-	/**
-	 * Whether or not this command can be ran by an edit.
-	 */
-	public editable: boolean;
-
-	/**
-	 * The filepath.
-	 */
-	public declare filepath: string;
-
-	/**
-	 * The handler.
-	 */
-	public declare handler: CommandHandler;
-
-	/**
-	 * The ID of the command.
-	 */
-	public declare id: string;
-
-	/**
-	 * ID of user(s) to ignore cooldown or a function to ignore.
-	 */
-	public ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
-
-	/**
-	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
-	 */
-	public ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
-
-	/**
-	 * The key supplier for the locker.
-	 */
-	public lock?: KeySupplier | "channel" | "guild" | "user";
-
-	/**
-	 * Stores the current locks.
-	 */
-	public locker?: Set<string>;
-
-	/**
-	 * Whether or not the command can only be run in  NSFW channels.
-	 */
-	public onlyNsfw: boolean;
-
-	/**
-	 * Usable only by the client owner.
-	 */
-	public ownerOnly: boolean;
-
-	/**
-	 * Command prefix overwrite.
-	 */
-	public prefix?: string | string[] | PrefixSupplier;
-
-	/**
-	 * Whether or not to consider quotes.
-	 */
-	public quoted!: boolean;
-
-	/**
-	 * Uses allowed before cooldown.
-	 */
-	public ratelimit: number;
-
-	/**
-	 * The regex trigger for this command.
-	 */
-	public regex?: RegExp | RegexSupplier;
-
-	/**
-	 * Mark command as slash command and set information.
-	 */
-	public slash?: boolean;
-
-	/**
-	 * Whether slash command responses for this command should be ephemeral or not.
-	 */
-	public slashEphemeral?: boolean;
-
-	/**
-	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
-	 */
-	public slashGuilds?: Snowflake[];
-
-	/**
-	 * Options for using the slash command.
-	 */
-	public slashOptions?: SlashOption[];
-
-	/**
-	 * Whether or not to allow client superUsers(s) only.
-	 */
-	public superUserOnly: boolean;
-
-	/**
-	 * Whether or not to type during command execution.
-	 */
-	public typing: boolean;
-
-	/**
-	 * Permissions required to run command by the user.
-	 */
-	public userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
-
-	/**
-	 * Argument options or generator.
-	 */
-	public _args?: ArgumentOptions[] | ArgumentGenerator;
-
-	/**
-	 * The content parser.
-	 */
-	public contentParser: ContentParser;
-
-	/**
-	 * The argument runner.
-	 */
-	public argumentRunner: ArgumentRunner;
-
-	/**
-	 * Only allows this command to be executed as a slash command.
-	 */
-	public slashOnly: boolean;
-
-	/**
 	 * Generator for arguments.
 	 * When yielding argument options, that argument is ran and the result of the processing is given.
 	 * The last value when the generator is done is the resulting `args` for the command's `exec`.
@@ -294,11 +296,6 @@ export default abstract class Command extends AkairoModule {
 		parsed: ContentParserResult,
 		state: ArgumentRunnerState
 	): IterableIterator<ArgumentOptions | Flag> {}
-
-	/**
-	 * Generator for arguments.
-	 */
-	public argumentGenerator: ArgumentGenerator;
 
 	/**
 	 * Runs before argument parsing and execution.
@@ -314,6 +311,11 @@ export default abstract class Command extends AkairoModule {
 		return false;
 	}
 
+	/**
+	 * Executes the command.
+	 * @param message - Message that triggered the command.
+	 * @param args - Evaluated arguments.
+	 */
 	public exec(message: Message, args: any): any;
 	public exec(message: Message | AkairoMessage, args: any): any;
 	public exec(message: Message | AkairoMessage, args: any): any {
@@ -340,20 +342,18 @@ export default abstract class Command extends AkairoModule {
 		const parsed = this.contentParser.parse(content);
 		return this.argumentRunner.run(message, parsed, this.argumentGenerator);
 	}
+}
 
+export default interface Command {
 	/**
 	 * Reloads the command.
 	 */
-	public override reload(): Promise<Command> {
-		return super.reload() as Promise<Command>;
-	}
+	reload(): Promise<Command>;
 
 	/**
 	 * Removes the command.
 	 */
-	public override remove(): Command {
-		return super.remove() as Command;
-	}
+	remove(): Command;
 }
 
 /**

@@ -1,45 +1,17 @@
 import { Awaitable, Collection } from "discord.js";
-import EventEmitter from "events";
-import { ListenerHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError";
-import Category from "../../util/Category";
-import Util from "../../util/Util";
-import AkairoClient from "../AkairoClient";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import Listener from "./Listener";
+import type EventEmitter from "events";
+import type { ListenerHandlerEvents } from "../../typings/events";
+import AkairoError from "../../util/AkairoError.js";
+import type Category from "../../util/Category.js";
+import Util from "../../util/Util.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import Listener from "./Listener.js";
 
 /**
  * Loads listeners and registers them with EventEmitters.
- * @param client - The Akairo client.
- * @param options - Options.
  */
 export default class ListenerHandler extends AkairoHandler {
-	public constructor(
-		client: AkairoClient,
-		{
-			directory,
-			classToHandle = Listener,
-			extensions = [".js", ".ts"],
-			automateCategories,
-			loadFilter
-		}: AkairoHandlerOptions = {}
-	) {
-		if (!(classToHandle.prototype instanceof Listener || classToHandle === Listener)) {
-			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Listener.name);
-		}
-
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
-
-		this.emitters = new Collection();
-		this.emitters.set("client", this.client);
-	}
-
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -64,12 +36,41 @@ export default class ListenerHandler extends AkairoHandler {
 	 * EventEmitters for use, mapped by name to EventEmitter.
 	 * By default, 'client' is set to the given client.
 	 */
-	public emitters: Collection<string, EventEmitter>;
+	public declare emitters: Collection<string, EventEmitter>;
 
 	/**
 	 * Listeners loaded, mapped by ID to Listener.
 	 */
 	public declare modules: Collection<string, Listener>;
+
+	/**
+	 * @param client - The Akairo client.
+	 * @param options - Options.
+	 */
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions = {}) {
+		const {
+			directory,
+			classToHandle = Listener,
+			extensions = [".js", ".ts"],
+			automateCategories,
+			loadFilter
+		} = options;
+
+		if (!(classToHandle.prototype instanceof Listener || classToHandle === Listener)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Listener.name);
+		}
+
+		super(client, {
+			directory,
+			classToHandle,
+			extensions,
+			automateCategories,
+			loadFilter
+		});
+
+		this.emitters = new Collection();
+		this.emitters.set("client", this.client);
+	}
 
 	/**
 	 * Adds a listener to the EventEmitter.
@@ -79,9 +80,6 @@ export default class ListenerHandler extends AkairoHandler {
 		const listener: Listener = this.modules.get(id.toString())!;
 		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
-		/**
-		 * @type {AkairoHandler}
-		 */
 		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
 			? (listener.emitter as EventEmitter)
 			: this.emitters.get(listener.emitter as string)!;
@@ -92,8 +90,8 @@ export default class ListenerHandler extends AkairoHandler {
 	}
 
 	/**
-	 * Deregisters a module.
-	 * @param mod - Module to use.
+	 * Deregisters a listener.
+	 * @param mod - Listener to use.
 	 */
 	public override deregister(listener: Listener): void {
 		this.removeFromEmitter(listener.id);
@@ -101,70 +99,14 @@ export default class ListenerHandler extends AkairoHandler {
 	}
 
 	/**
-	 * Finds a category by name.
-	 * @param name - Name to find with.
-	 */
-	public override findCategory(name: string): Category<string, Listener> {
-		return super.findCategory(name) as Category<string, Listener>;
-	}
-
-	/**
-	 * Loads a module, can be a module class or a filepath.
-	 * @param thing - Module class or path to module.
-	 * @param isReload - Whether this is a reload or not.
-	 */
-	public override load(thing: string | Listener, isReload?: boolean): Promise<Listener> {
-		return super.load(thing, isReload) as Promise<Listener>;
-	}
-
-	/**
-	 * Reads all listeners from the directory and loads them.
-	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
-	 * @param filter - Filter for files, where true means it should be loaded.
-	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<ListenerHandler> {
-		return super.loadAll(directory, filter) as Promise<ListenerHandler>;
-	}
-
-	/**
-	 * Registers a module.
-	 * @param listener - Module to use.
-	 * @param filepath - Filepath of module.
+	 * Registers a listener.
+	 * @param listener - Listener to use.
+	 * @param filepath - Filepath of listener.
 	 */
 	public override register(listener: Listener, filepath?: string): void {
 		super.register(listener, filepath);
 		listener.exec = listener.exec.bind(listener);
 		this.addToEmitter(listener.id);
-	}
-
-	/**
-	 * Reloads a listener.
-	 * @param id - ID of the listener.
-	 */
-	public override reload(id: string): Promise<Listener> {
-		return super.reload(id) as Promise<Listener>;
-	}
-
-	/**
-	 * Reloads all listeners.
-	 */
-	public override reloadAll(): Promise<ListenerHandler> {
-		return super.reloadAll() as Promise<ListenerHandler>;
-	}
-
-	/**
-	 * Removes a listener.
-	 * @param id - ID of the listener.
-	 */
-	public override remove(id: string): Listener {
-		return super.remove(id) as Listener;
-	}
-
-	/**
-	 * Removes all listeners.
-	 */
-	public override removeAll(): ListenerHandler {
-		return super.removeAll() as ListenerHandler;
 	}
 
 	/**
@@ -188,7 +130,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 * Sets custom emitters.
 	 * @param emitters - Emitters to use. The key is the name and value is the emitter.
 	 */
-	setEmitters(emitters: any): ListenerHandler {
+	public setEmitters(emitters: any): ListenerHandler {
 		for (const [key, value] of Object.entries(emitters)) {
 			if (!Util.isEventEmitter(value)) throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
 			this.emitters.set(key, value);
@@ -196,17 +138,53 @@ export default class ListenerHandler extends AkairoHandler {
 
 		return this;
 	}
+}
 
-	public override on<K extends keyof ListenerHandlerEvents>(
-		event: K,
-		listener: (...args: ListenerHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.on(event, listener);
-	}
-	public override once<K extends keyof ListenerHandlerEvents>(
-		event: K,
-		listener: (...args: ListenerHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.once(event, listener);
-	}
+type Events = ListenerHandlerEvents;
+
+export default interface ListenerHandler {
+	/**
+	 * Finds a category by name.
+	 * @param name - Name to find with.
+	 */
+	findCategory(name: string): Category<string, Listener>;
+
+	/**
+	 * Loads a listener, can be a listener class or a filepath.
+	 * @param thing - Listener class or path to listener.
+	 * @param isReload - Whether this is a reload or not.
+	 */
+	load(thing: string | Listener, isReload?: boolean): Promise<Listener>;
+
+	/**
+	 * Reads all listeners from the directory and loads them.
+	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
+	 * @param filter - Filter for files, where true means it should be loaded.
+	 */
+	loadAll(directory?: string, filter?: LoadPredicate): Promise<ListenerHandler>;
+
+	/**
+	 * Reloads a listener.
+	 * @param id - ID of the listener.
+	 */
+	reload(id: string): Promise<Listener>;
+
+	/**
+	 * Reloads all listeners.
+	 */
+	reloadAll(): Promise<ListenerHandler>;
+
+	/**
+	 * Removes a listener.
+	 * @param id - ID of the listener.
+	 */
+	remove(id: string): Listener;
+
+	/**
+	 * Removes all listeners.
+	 */
+	removeAll(): ListenerHandler;
+
+	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }

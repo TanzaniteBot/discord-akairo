@@ -1,32 +1,21 @@
-import { Message } from "discord.js";
-import AkairoError from "../../util/AkairoError";
-import AkairoMessage from "../../util/AkairoMessage";
-import Category from "../../util/Category";
-import AkairoClient from "../AkairoClient";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
-import Command from "../commands/Command";
-import InhibitorHandler from "./InhibitorHandler";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { Message } from "discord.js";
+import AkairoError from "../../util/AkairoError.js";
+import type AkairoMessage from "../../util/AkairoMessage.js";
+import type Category from "../../util/Category.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
+import type Command from "../commands/Command.js";
+import type InhibitorHandler from "./InhibitorHandler.js";
 
 /**
  * Represents an inhibitor.
- * @param id - Inhibitor ID.
- * @param options - Options for the inhibitor.
  */
 export default abstract class Inhibitor extends AkairoModule {
-	public constructor(id: string, { category, reason = "", type = "post", priority = 0 }: InhibitorOptions = {}) {
-		super(id, { category });
-
-		this.reason = reason;
-
-		this.type = type;
-
-		this.priority = priority;
-	}
-
 	/**
 	 * The priority of the inhibitor.
 	 */
-	public priority: number;
+	public declare priority: number;
 
 	/**
 	 * The category the inhibitor belongs to.
@@ -56,12 +45,26 @@ export default abstract class Inhibitor extends AkairoModule {
 	/**
 	 * Reason emitted when command is inhibited.
 	 */
-	public reason: string;
+	public declare reason: string;
 
 	/**
 	 * The type of the inhibitor for when it should run.
 	 */
-	public type: string;
+	public declare type: string;
+
+	/**
+	 * @param id - Inhibitor ID.
+	 * @param options - Options for the inhibitor.
+	 */
+	public constructor(id: string, options: InhibitorOptions = {}) {
+		const { category, reason = "", type = "post", priority = 0 } = options;
+
+		super(id, { category });
+
+		this.reason = reason;
+		this.type = type;
+		this.priority = priority;
+	}
 
 	/**
 	 * Checks if message should be blocked.
@@ -70,27 +73,23 @@ export default abstract class Inhibitor extends AkairoModule {
 	 * @param message - Message being handled.
 	 * @param command - Command to check.
 	 */
-	/* eslint-disable @typescript-eslint/no-unused-vars */
 	public exec(message: Message, command?: Command): boolean | Promise<boolean>;
 	public exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean>;
 	public exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean> {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
-	/* eslint-enable  @typescript-eslint/no-unused-vars */
+}
 
+export default interface Inhibitor {
 	/**
 	 * Reloads the inhibitor.
 	 */
-	public override reload(): Promise<Inhibitor> {
-		return super.reload() as Promise<Inhibitor>;
-	}
+	reload(): Promise<Inhibitor>;
 
 	/**
 	 * Removes the inhibitor.
 	 */
-	public override remove(): Inhibitor {
-		return super.remove() as Inhibitor;
-	}
+	remove(): Inhibitor;
 }
 
 /**

@@ -1,38 +1,41 @@
 import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
-import { AkairoClientEvents } from "../typings/events";
-import ClientUtil from "./ClientUtil";
-
-type Event = AkairoClientEvents;
+import type { AkairoClientEvents } from "../typings/events";
+import ClientUtil from "./ClientUtil.js";
 
 /**
  * The Akairo framework client. Creates the handlers and sets them up.
- * @param options - Options for the client.
- * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
  */
 export default class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
-	public constructor(options?: AkairoOptions & ClientOptions, clientOptions?: ClientOptions) {
-		super(clientOptions || options!);
-		const { ownerID = "" } = options!;
-		const { superUserID = "" } = options!;
-		this.ownerID = ownerID;
-		this.superUserID = superUserID;
-		this.util = new ClientUtil(this);
-	}
-
 	/**
 	 * The ID of the owner(s).
 	 */
-	public ownerID: Snowflake | Snowflake[];
+	public declare ownerID: Snowflake | Snowflake[];
 
 	/**
 	 * The ID of the superUser(s).
 	 */
-	public superUserID: Snowflake | Snowflake[];
+	public declare superUserID: Snowflake | Snowflake[];
 
 	/**
 	 * Utility methods.
 	 */
-	public util: ClientUtil;
+	public declare util: ClientUtil;
+
+	/**
+	 * @param options - Options for the client.
+	 * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
+	 */
+	public constructor(options: AkairoOptions & ClientOptions);
+	public constructor(options: AkairoOptions, clientOptions: ClientOptions);
+	public constructor(options: (AkairoOptions & ClientOptions) | AkairoOptions, clientOptions?: ClientOptions) {
+		Object.assign(options, clientOptions);
+		super(options as AkairoOptions & ClientOptions);
+		const { ownerID = "" } = options;
+		const { superUserID = "" } = options;
+		this.ownerID = ownerID;
+		this.superUserID = superUserID;
+		this.util = new ClientUtil(this);
+	}
 
 	/**
 	 * Checks if a user is the owner of this bot.
@@ -55,49 +58,38 @@ export default class AkairoClient<Ready extends boolean = boolean> extends Clien
 			? this.superUserID.includes(id) || this.ownerID.includes(id)
 			: id === this.superUserID || id === this.ownerID;
 	}
+}
 
-	public override on<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
-	public override on<S extends string | symbol>(
-		event: Exclude<S, keyof Event>,
-		listener: (...args: any[]) => Awaitable<void>
-	): this {
-		return super.on(event as any, listener);
-	}
+type Event = AkairoClientEvents;
 
-	public override once<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
-	public override once<S extends string | symbol>(
-		event: Exclude<S, keyof Event>,
-		listener: (...args: any[]) => Awaitable<void>
-	): this {
-		return super.once(event as any, listener);
-	}
+export default interface AkairoClient {
+	on<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
+	on<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
 
-	public override emit<K extends keyof Event>(event: K, ...args: Event[K]): boolean;
-	public override emit<S extends string | symbol>(event: Exclude<S, keyof Event>, ...args: unknown[]): boolean {
-		return super.emit(event as any, ...args);
-	}
+	once<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
+	once<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
 
-	public override off<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
-	public override off<S extends string | symbol>(
-		event: Exclude<S, keyof Event>,
-		listener: (...args: any[]) => Awaitable<void>
-	): this {
-		return super.off(event as any, listener);
-	}
+	emit<K extends keyof Event>(event: K, ...args: Event[K]): boolean;
+	emit<S extends string | symbol>(event: Exclude<S, keyof Event>, ...args: unknown[]): boolean;
 
-	public override removeAllListeners<K extends keyof Event>(event?: K): this;
-	public override removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof Event>): this {
-		return super.removeAllListeners(event as any);
-	}
+	off<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
+	off<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
+
+	removeAllListeners<K extends keyof Event>(event?: K): this;
+	removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof Event>): this;
 }
 
 /**
  * Options for the client.
  */
 export interface AkairoOptions {
-	/** Discord ID of the client owner(s). */
+	/**
+	 * Discord ID of the client owner(s).
+	 */
 	ownerID?: Snowflake | Snowflake[];
 
-	/** Discord ID of the client superUsers(s). */
+	/**
+	 * Discord ID of the client superUsers(s).
+	 */
 	superUserID?: Snowflake | Snowflake[];
 }

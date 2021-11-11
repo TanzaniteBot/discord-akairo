@@ -1,45 +1,18 @@
-import { Awaitable, Collection, ContextMenuInteraction } from "discord.js";
-import { ContextMenuCommandHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError";
-import Category from "../../util/Category";
-import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants";
-import AkairoClient from "../AkairoClient";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import AkairoModule from "../AkairoModule";
-import InhibitorHandler from "../inhibitors/InhibitorHandler";
-import ContextMenuCommand from "./ContextMenuCommand";
+import type { Awaitable, Collection, ContextMenuInteraction } from "discord.js";
+import type { ContextMenuCommandHandlerEvents } from "../../typings/events";
+import AkairoError from "../../util/AkairoError.js";
+import type Category from "../../util/Category.js";
+import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import type AkairoModule from "../AkairoModule.js";
+import type InhibitorHandler from "../inhibitors/InhibitorHandler.js";
+import ContextMenuCommand from "./ContextMenuCommand.js";
 
 /**
  * Loads context menu commands and handles them.
- * @param client - The Akairo client.
- * @param options - Options.
  */
 export default class ContextMenuCommandHandler extends AkairoHandler {
-	public constructor(
-		client: AkairoClient,
-		{
-			directory,
-			classToHandle = ContextMenuCommand,
-			extensions = [".js", ".ts"],
-			automateCategories,
-			loadFilter
-		}: AkairoHandlerOptions = {}
-	) {
-		if (!(classToHandle.prototype instanceof ContextMenuCommand || classToHandle === ContextMenuCommand)) {
-			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, ContextMenuCommand.name);
-		}
-
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
-
-		this.setup();
-	}
-
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -63,13 +36,44 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	/**
 	 * Inhibitor handler to use.
 	 */
-	public inhibitorHandler?: InhibitorHandler;
+	public declare inhibitorHandler?: InhibitorHandler;
 
 	/**
 	 * Context menu commands loaded, mapped by ID to context menu command.
 	 */
 	public declare modules: Collection<string, ContextMenuCommand>;
 
+	/**
+	 * @param client - The Akairo client.
+	 * @param options - Options.
+	 */
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions = {}) {
+		const {
+			directory,
+			classToHandle = ContextMenuCommand,
+			extensions = [".js", ".ts"],
+			automateCategories,
+			loadFilter
+		} = options;
+
+		if (!(classToHandle.prototype instanceof ContextMenuCommand || classToHandle === ContextMenuCommand)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, ContextMenuCommand.name);
+		}
+
+		super(client, {
+			directory,
+			classToHandle,
+			extensions,
+			automateCategories,
+			loadFilter
+		});
+
+		this.setup();
+	}
+
+	/**
+	 * Set up the context menu command handler
+	 */
 	protected setup() {
 		this.client.once("ready", () => {
 			this.client.on("interactionCreate", i => {
@@ -80,6 +84,10 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 		});
 	}
 
+	/**
+	 * Handles an interaction.
+	 * @param interaction - Interaction to handle.
+	 */
 	public async handle(interaction: ContextMenuInteraction): Promise<boolean | null> {
 		const command = this.modules.find(module => module.name === interaction.commandName);
 
@@ -120,89 +128,65 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 
 		throw err;
 	}
+}
 
+type Events = ContextMenuCommandHandlerEvents;
+
+export default interface ContextMenuCommandHandler {
 	/**
 	 * Deregisters a module.
 	 * @param contextMenuCommand - Module to use.
 	 */
-	public override deregister(contextMenuCommand: ContextMenuCommand): void {
-		return super.deregister(contextMenuCommand);
-	}
+	deregister(contextMenuCommand: ContextMenuCommand): void;
 
 	/**
 	 * Finds a category by name.
 	 * @param name - Name to find with.
 	 */
-	public override findCategory(name: string): Category<string, ContextMenuCommand> {
-		return super.findCategory(name) as Category<string, ContextMenuCommand>;
-	}
+	findCategory(name: string): Category<string, ContextMenuCommand>;
 
 	/**
 	 * Loads an context menu command.
 	 * @param thing - Module or path to module.
 	 */
-	public override load(thing: string | ContextMenuCommand): Promise<ContextMenuCommand> {
-		return super.load(thing) as Promise<ContextMenuCommand>;
-	}
+	load(thing: string | ContextMenuCommand): Promise<ContextMenuCommand>;
 
 	/**
 	 * Reads all context menu commands from the directory and loads them.
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<ContextMenuCommandHandler> {
-		return super.loadAll(directory, filter) as Promise<ContextMenuCommandHandler>;
-	}
+	loadAll(directory?: string, filter?: LoadPredicate): Promise<ContextMenuCommandHandler>;
 
 	/**
 	 * Registers a module.
 	 * @param contextMenuCommand - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public override register(contextMenuCommand: ContextMenuCommand, filepath?: string): void {
-		return super.register(contextMenuCommand, filepath);
-	}
+	register(contextMenuCommand: ContextMenuCommand, filepath?: string): void;
 
 	/**
 	 * Reloads an context menu command.
 	 * @param id - ID of the context menu command.
 	 */
-	public override reload(id: string): Promise<ContextMenuCommand> {
-		return super.reload(id) as Promise<ContextMenuCommand>;
-	}
+	reload(id: string): Promise<ContextMenuCommand>;
 
 	/**
 	 * Reloads all context menu commands.
 	 */
-	public override reloadAll(): Promise<ContextMenuCommandHandler> {
-		return super.reloadAll() as Promise<ContextMenuCommandHandler>;
-	}
+	reloadAll(): Promise<ContextMenuCommandHandler>;
 
 	/**
 	 * Removes an context menu command.
-	 * @param {string} id - ID of the context menu command.
+	 * @param id - ID of the context menu command.
 	 */
-	public override remove(id: string): ContextMenuCommand {
-		return super.remove(id) as ContextMenuCommand;
-	}
+	remove(id: string): ContextMenuCommand;
 
 	/**
 	 * Removes all context menu commands.
 	 */
-	public override removeAll(): ContextMenuCommandHandler {
-		return super.removeAll() as ContextMenuCommandHandler;
-	}
+	removeAll(): ContextMenuCommandHandler;
 
-	public override on<K extends keyof ContextMenuCommandHandlerEvents>(
-		event: K,
-		listener: (...args: ContextMenuCommandHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.on(event, listener);
-	}
-	public override once<K extends keyof ContextMenuCommandHandlerEvents>(
-		event: K,
-		listener: (...args: ContextMenuCommandHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.once(event, listener);
-	}
+	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }

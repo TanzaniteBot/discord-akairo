@@ -1,23 +1,14 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import AkairoError from "../../util/AkairoError";
-import Category from "../../util/Category";
-import AkairoClient from "../AkairoClient";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
-import TaskHandler from "./TaskHandler";
+import AkairoError from "../../util/AkairoError.js";
+import type Category from "../../util/Category.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
+import type TaskHandler from "./TaskHandler.js";
 
 /**
  * Represents a task.
- * @param id - Task ID.
- * @param options - Options for the task.
  */
 export default abstract class Task extends AkairoModule {
-	public constructor(id: string, { category, delay, runOnStart = false }: TaskOptions) {
-		super(id, { category });
-
-		this.delay = delay;
-		this.runOnStart = runOnStart;
-	}
-
 	/**
 	 * The category of this task.
 	 */
@@ -31,7 +22,7 @@ export default abstract class Task extends AkairoModule {
 	/**
 	 * The time in milliseconds between each time the task is run.
 	 */
-	public delay?: number;
+	public declare delay?: number;
 
 	/**
 	 * The filepath.
@@ -46,7 +37,19 @@ export default abstract class Task extends AkairoModule {
 	/**
 	 * Whether or not to run the task on start.
 	 */
-	public runOnStart: boolean;
+	public declare runOnStart: boolean;
+
+	/**
+	 * @param id - Task ID.
+	 * @param options - Options for the task.
+	 */
+	public constructor(id: string, options: TaskOptions = {}) {
+		const { category, delay, runOnStart = false } = options;
+
+		super(id, { category });
+		this.delay = delay;
+		this.runOnStart = runOnStart;
+	}
 
 	/**
 	 * Executes the task.
@@ -55,27 +58,23 @@ export default abstract class Task extends AkairoModule {
 	public exec(...args: any[]): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
+}
 
+export default interface Task {
 	/**
 	 * Reloads the task.
 	 */
-	public override reload(): Promise<Task> {
-		return super.reload() as Promise<Task>;
-	}
+	reload(): Promise<Task>;
 
 	/**
 	 * Removes the task.
 	 */
-	public override remove(): Task {
-		return super.remove() as Task;
-	}
+	remove(): Task;
 
 	/**
 	 * Returns the ID.
 	 */
-	public override toString(): string {
-		return super.toString();
-	}
+	toString(): string;
 }
 
 /**

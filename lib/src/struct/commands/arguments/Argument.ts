@@ -1,21 +1,87 @@
-import { Message, MessageOptions, MessagePayload } from "discord.js";
-import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants";
-import Util from "../../../util/Util";
-import AkairoClient from "../../AkairoClient";
-import Command from "../Command";
-import CommandHandler from "../CommandHandler";
-import Flag from "../Flag";
-import TypeResolver from "./TypeResolver";
+import type { Message, MessageOptions, MessagePayload } from "discord.js";
+import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
+import Util from "../../../util/Util.js";
+import type AkairoClient from "../../AkairoClient.js";
+import type Command from "../Command.js";
+import type CommandHandler from "../CommandHandler.js";
+import Flag from "../Flag.js";
+import type TypeResolver from "./TypeResolver.js";
 
 /**
  * Represents an argument for a command.
- * @param command - Command of the argument.
- * @param options - Options for the argument.
  */
 export default class Argument {
-	public constructor(
-		command: Command,
-		{
+	/**
+	 * The command this argument belongs to.
+	 */
+	public declare command: Command;
+
+	/**
+	 * The default value of the argument or a function supplying the default value.
+	 */
+	public declare default: DefaultValueSupplier | any;
+
+	/**
+	 *  Description of the command.
+	 */
+	public declare description: string | any;
+
+	/**
+	 * The string(s) to use for flag or option match.
+	 */
+	public declare flag?: string | string[] | null;
+
+	/**
+	 * The index to start from.
+	 */
+	public declare index?: number;
+
+	/**
+	 * The amount of phrases to match for rest, separate, content, or text match.
+	 */
+	public declare limit: number;
+
+	/**
+	 * The method to match text.
+	 */
+	public declare match: ArgumentMatch;
+
+	/**
+	 * Function to modify otherwise content.
+	 */
+	public declare modifyOtherwise: OtherwiseContentModifier;
+
+	/**
+	 * Whether to process multiple option flags instead of just the first.
+	 */
+	public declare multipleFlags: boolean;
+
+	/**
+	 * The content or function supplying the content sent when argument parsing fails.
+	 */
+	public declare otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
+
+	/**
+	 * The prompt options.
+	 */
+	public declare prompt?: ArgumentPromptOptions | boolean;
+
+	/**
+	 * The type to cast to or a function to use to cast.
+	 */
+	public declare type: ArgumentType | ArgumentTypeCaster;
+
+	/**
+	 * Whether or not the argument is unordered.
+	 */
+	public declare unordered: boolean | number | number[];
+
+	/**
+	 * @param command - Command of the argument.
+	 * @param options - Options for the argument.
+	 */
+	public constructor(command: Command, options: ArgumentOptions = {}) {
+		const {
 			match = ArgumentMatches.PHRASE,
 			type = ArgumentTypes.STRING,
 			flag = null!,
@@ -27,8 +93,8 @@ export default class Argument {
 			default: defaultValue = null,
 			otherwise = null!,
 			modifyOtherwise = null!
-		}: ArgumentOptions = {}
-	) {
+		} = options;
+
 		this.command = command;
 		this.match = match;
 		this.type = typeof type === "function" ? type.bind(this) : type;
@@ -51,76 +117,11 @@ export default class Argument {
 	}
 
 	/**
-	 * The command this argument belongs to.
-	 */
-	public command: Command;
-
-	/**
-	 * The default value of the argument or a function supplying the default value.
-	 */
-	public default: DefaultValueSupplier | any;
-
-	/**
-	 *  Description of the command.
-	 */
-	public description: string | any;
-
-	/**
-	 * The string(s) to use for flag or option match.
-	 */
-	public flag?: string | string[] | null;
-
-	/**
 	 * The command handler.
 	 */
 	get handler(): CommandHandler {
 		return this.command.handler;
 	}
-
-	/**
-	 * The index to start from.
-	 */
-	public index?: number;
-
-	/**
-	 * The amount of phrases to match for rest, separate, content, or text match.
-	 */
-	public limit: number;
-
-	/**
-	 * The method to match text.
-	 */
-	public match: ArgumentMatch;
-
-	/**
-	 * Function to modify otherwise content.
-	 */
-	public modifyOtherwise: OtherwiseContentModifier;
-
-	/**
-	 * Whether to process multiple option flags instead of just the first.
-	 */
-	public multipleFlags: boolean;
-
-	/**
-	 * The content or function supplying the content sent when argument parsing fails.
-	 */
-	public otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
-
-	/**
-	 * The prompt options.
-	 */
-	public prompt?: ArgumentPromptOptions | boolean;
-
-	/**
-	 * The type to cast to or a function to use to cast.
-	 */
-	public type: ArgumentType | ArgumentTypeCaster;
-
-	/**
-	 * Whether or not the argument is unordered.
-	 */
-	public unordered: boolean | number | number[];
 
 	/**
 	 * Casts a phrase to this argument's type.

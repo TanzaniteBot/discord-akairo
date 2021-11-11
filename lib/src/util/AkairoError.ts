@@ -23,10 +23,17 @@ const Messages = {
 
 /**
  * Represents an error for Akairo.
- * @param key - Error key.
- * @param args - Arguments.
  */
 export default class AkairoError extends Error {
+	/**
+	 * The error code.
+	 */
+	public declare code: string;
+
+	/**
+	 * @param key - Error key.
+	 * @param args - Arguments.
+	 */
 	public constructor(key: keyof typeof Messages, ...args: (string | boolean)[]) {
 		if (Messages[key] == null) throw new TypeError(`Error key '${key}' does not exist`);
 		const message =
@@ -35,11 +42,6 @@ export default class AkairoError extends Error {
 		super(message);
 		this.code = key;
 	}
-
-	/**
-	 * The error code.
-	 */
-	public code: string;
 
 	/**
 	 * The error name.

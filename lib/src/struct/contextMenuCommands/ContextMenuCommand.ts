@@ -1,53 +1,39 @@
-/* eslint-disable spaced-comment */
-import { ContextMenuInteraction, Snowflake } from "discord.js";
-import AkairoError from "../../util/AkairoError";
-import Category from "../../util/Category";
-import AkairoClient from "../AkairoClient";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
-import ContextMenuCommandHandler from "./ContextMenuCommandHandler";
+/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
+import type { ContextMenuInteraction, Snowflake } from "discord.js";
+import AkairoError from "../../util/AkairoError.js";
+import type Category from "../../util/Category.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
+import type ContextMenuCommandHandler from "./ContextMenuCommandHandler.js";
 
 /**
  * Represents a context menu command.
- * @param id - Listener ID.
- * @param options - Options for the context menu command.
  */
 export default abstract class ContextMenuCommand extends AkairoModule {
-	public constructor(
-		id: string,
-		{ category, guilds, name, ownerOnly, superUserOnly, type }: ContextMenuCommandOptions
-	) {
-		super(id, { category });
-		this.guilds = guilds;
-		this.name = name;
-		this.ownerOnly = ownerOnly;
-		this.superUserOnly = superUserOnly;
-		this.type = type;
-	}
-
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
-	public guilds?: Snowflake[];
+	public declare guilds?: Snowflake[];
 
 	/**
 	 * The name of the context menu command.
 	 */
-	public name: string;
+	public declare name: string;
 
 	/**
 	 * Usable only by the client owner.
 	 */
-	public ownerOnly?: boolean;
+	public declare ownerOnly?: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
 	 */
-	public superUserOnly?: boolean;
+	public declare superUserOnly?: boolean;
 
 	/**
 	 * The type of the context menu command.
 	 */
-	public type: "USER" | "MESSAGE";
+	public declare type: "USER" | "MESSAGE";
 
 	/**
 	 * The category of this context menu command.
@@ -70,27 +56,39 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	public declare handler: ContextMenuCommandHandler;
 
 	/**
-	 * Executes the context menu command.
-	 * @param interaction - The context menu command interaction.
+	 * @param id - Listener ID.
+	 * @param options - Options for the context menu command.
 	 */
-	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
-	public exec(interaction: ContextMenuInteraction): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
+	public constructor(id: string, options: ContextMenuCommandOptions) {
+		const { category, guilds, name, ownerOnly, superUserOnly, type } = options;
+
+		super(id, { category });
+		this.guilds = guilds;
+		this.name = name;
+		this.ownerOnly = ownerOnly;
+		this.superUserOnly = superUserOnly;
+		this.type = type;
 	}
 
 	/**
+	 * Executes the context menu command.
+	 * @param interaction - The context menu command interaction.
+	 */
+	public exec(interaction: ContextMenuInteraction): any {
+		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
+	}
+}
+
+export default interface ContextMenuCommand {
+	/**
 	 * Reloads the context menu command.
 	 */
-	public override reload(): Promise<ContextMenuCommand> {
-		return super.reload() as Promise<ContextMenuCommand>;
-	}
+	reload(): Promise<ContextMenuCommand>;
 
 	/**
 	 * Removes the context menu command.
 	 */
-	public override remove(): ContextMenuCommand {
-		return super.remove() as ContextMenuCommand;
-	}
+	remove(): ContextMenuCommand;
 }
 
 /**

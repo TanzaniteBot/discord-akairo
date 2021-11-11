@@ -1,5 +1,5 @@
-import { ArgumentMatches } from "../../util/Constants";
-import { ArgumentOptions } from "./arguments/Argument";
+import { ArgumentMatches } from "../../util/Constants.js";
+import type { ArgumentOptions } from "./arguments/Argument.js";
 
 /*
  * Grammar:
@@ -55,6 +55,15 @@ import { ArgumentOptions } from "./arguments/Argument";
  */
 
 class Tokenizer {
+	public declare content: string;
+	public declare flagWords: string[];
+	public declare optionFlagWords: string[];
+	public declare quoted: boolean;
+	public declare separator?: string;
+	public declare position: number;
+	public declare state: number;
+	public declare tokens: any[];
+
 	public constructor(
 		content: string,
 		{ flagWords = [], optionFlagWords = [], quoted = true, separator }: ContentParserOptions = {}
@@ -69,15 +78,6 @@ class Tokenizer {
 		this.state = 0;
 		this.tokens = [];
 	}
-
-	public content: string;
-	public flagWords: string[];
-	public optionFlagWords: string[];
-	public quoted: boolean;
-	public separator?: string;
-	public position: number;
-	public state: number;
-	public tokens: any[];
 
 	public startsWith(str: string) {
 		return this.content.slice(this.position, this.position + str.length).toLowerCase() === str.toLowerCase();
@@ -255,22 +255,9 @@ class Tokenizer {
 }
 
 class Parser {
-	public constructor(tokens: any[], { separated }: { separated: boolean }) {
-		this.tokens = tokens;
-		this.separated = separated;
-		this.position = 0;
-
-		this.results = {
-			all: [],
-			phrases: [],
-			flags: [],
-			optionFlags: []
-		};
-	}
-
-	public tokens: any;
-	public separated: any;
-	public position: number;
+	public declare tokens: any;
+	public declare separated: any;
+	public declare position: number;
 
 	/**
 	 * Phrases are `{ type: 'Phrase', value, raw }`.
@@ -284,6 +271,19 @@ class Parser {
 		flags: any[];
 		optionFlags: any[];
 	};
+
+	public constructor(tokens: any[], { separated }: { separated: boolean }) {
+		this.tokens = tokens;
+		this.separated = separated;
+		this.position = 0;
+
+		this.results = {
+			all: [],
+			phrases: [],
+			flags: [],
+			optionFlags: []
+		};
+	}
 
 	public next() {
 		this.position++;
@@ -449,9 +449,31 @@ class Parser {
 
 /**
  * Parses content.
- * @param options - Options.
  */
 export default class ContentParser {
+	/**
+	 * Words considered flags.
+	 */
+	public declare flagWords: string[];
+
+	/**
+	 * Words considered option flags.
+	 */
+	public declare optionFlagWords: string[];
+
+	/**
+	 * Whether to parse quotes. Defaults to `true`.
+	 */
+	public declare quoted: boolean;
+
+	/**
+	 * Whether to parse a separator.
+	 */
+	public declare separator?: string;
+
+	/**
+	 * @param options - Options.
+	 */
 	public constructor({ flagWords = [], optionFlagWords = [], quoted = true, separator }: ContentParserOptions = {}) {
 		this.flagWords = flagWords;
 		this.flagWords.sort((a, b) => b.length - a.length);
@@ -462,26 +484,6 @@ export default class ContentParser {
 		this.quoted = Boolean(quoted);
 		this.separator = separator;
 	}
-
-	/**
-	 * Words considered flags.
-	 */
-	public flagWords: string[];
-
-	/**
-	 * Words considered option flags.
-	 */
-	public optionFlagWords: string[];
-
-	/**
-	 * Whether to parse quotes. Defaults to `true`.
-	 */
-	public quoted: boolean;
-
-	/**
-	 * Whether to parse a separator.
-	 */
-	public separator?: string;
 
 	/**
 	 * Parses content.
@@ -531,14 +533,17 @@ export interface ContentParserOptions {
 	 * Words considered flags.
 	 */
 	flagWords?: string[];
+
 	/**
 	 * Words considered option flags.
 	 */
 	optionFlagWords?: string[];
+
 	/**
 	 * Whether to parse quotes. Defaults to `true`.
 	 */
 	quoted?: boolean;
+
 	/**
 	 * Whether to parse a separator.
 	 */
@@ -603,6 +608,7 @@ export interface ExtractedFlags {
 	 * Words considered flags.
 	 */
 	flagWords?: string[];
+
 	/**
 	 * Words considered option flags.
 	 */

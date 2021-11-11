@@ -1,43 +1,18 @@
-import { Awaitable, Collection, Message } from "discord.js";
-import { Category } from "../..";
-import { InhibitorHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError";
-import AkairoMessage from "../../util/AkairoMessage";
-import Util from "../../util/Util";
-import AkairoClient from "../AkairoClient";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import Command from "../commands/Command";
-import Inhibitor from "./Inhibitor";
+import type { Awaitable, Collection, Message } from "discord.js";
+import type { InhibitorHandlerEvents } from "../../typings/events";
+import AkairoError from "../../util/AkairoError.js";
+import type AkairoMessage from "../../util/AkairoMessage.js";
+import type Category from "../../util/Category.js";
+import Util from "../../util/Util.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import type Command from "../commands/Command.js";
+import Inhibitor from "./Inhibitor.js";
 
 /**
  * Loads inhibitors and checks messages.
- * @param client - The Akairo client.
- * @param options - Options.
  */
 export default class InhibitorHandler extends AkairoHandler {
-	public constructor(
-		client: AkairoClient,
-		{
-			directory,
-			classToHandle = Inhibitor,
-			extensions = [".js", ".ts"],
-			automateCategories,
-			loadFilter
-		}: AkairoHandlerOptions = {}
-	) {
-		if (!(classToHandle.prototype instanceof Inhibitor || classToHandle === Inhibitor)) {
-			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Inhibitor.name);
-		}
-
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
-	}
-
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -64,75 +39,29 @@ export default class InhibitorHandler extends AkairoHandler {
 	public declare modules: Collection<string, Inhibitor>;
 
 	/**
-	 * Deregisters a module.
-	 * @param inhibitor - Module to use.
+	 * @param client - The Akairo client.
+	 * @param options - Options.
 	 */
-	public override deregister(inhibitor: Inhibitor): void {
-		return super.deregister(inhibitor);
-	}
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions = {}) {
+		const {
+			directory,
+			classToHandle = Inhibitor,
+			extensions = [".js", ".ts"],
+			automateCategories,
+			loadFilter
+		} = options;
 
-	/**
-	 * Finds a category by name.
-	 * @param name - Name to find with.
-	 */
-	public override findCategory(name: string): Category<string, Inhibitor> {
-		return super.findCategory(name) as Category<string, Inhibitor>;
-	}
+		if (!(classToHandle.prototype instanceof Inhibitor || classToHandle === Inhibitor)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Inhibitor.name);
+		}
 
-	/**
-	 * Loads an inhibitor.
-	 * @param thing - Module or path to module.
-	 */
-	public override load(thing: string | Inhibitor): Promise<Inhibitor> {
-		return super.load(thing) as Promise<Inhibitor>;
-	}
-
-	/**
-	 * Reads all inhibitors from the directory and loads them.
-	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
-	 * @param filter - Filter for files, where true means it should be loaded.
-	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<InhibitorHandler> {
-		return super.loadAll(directory, filter) as Promise<InhibitorHandler>;
-	}
-
-	/**
-	 * Registers a module.
-	 * @param inhibitor - Module to use.
-	 * @param filepath - Filepath of module.
-	 */
-	public override register(inhibitor: Inhibitor, filepath?: string): void {
-		return super.register(inhibitor, filepath);
-	}
-
-	/**
-	 * Reloads an inhibitor.
-	 * @param id - ID of the inhibitor.
-	 */
-	public override reload(id: string): Promise<Inhibitor> {
-		return super.reload(id) as Promise<Inhibitor>;
-	}
-
-	/**
-	 * Reloads all inhibitors.
-	 */
-	public override reloadAll(): Promise<InhibitorHandler> {
-		return super.reloadAll() as Promise<InhibitorHandler>;
-	}
-
-	/**
-	 * Removes an inhibitor.
-	 * @param {string} id - ID of the inhibitor.
-	 */
-	public override remove(id: string): Inhibitor {
-		return super.remove(id) as Inhibitor;
-	}
-
-	/**
-	 * Removes all inhibitors.
-	 */
-	public override removeAll(): InhibitorHandler {
-		return super.removeAll() as InhibitorHandler;
+		super(client, {
+			directory,
+			classToHandle,
+			extensions,
+			automateCategories,
+			loadFilter
+		});
 	}
 
 	/**
@@ -171,17 +100,65 @@ export default class InhibitorHandler extends AkairoHandler {
 		inhibitedInhibitors.sort((a, b) => b.priority - a.priority);
 		return inhibitedInhibitors[0].reason;
 	}
+}
 
-	public override on<K extends keyof InhibitorHandlerEvents>(
-		event: K,
-		listener: (...args: InhibitorHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.on(event, listener);
-	}
-	public override once<K extends keyof InhibitorHandlerEvents>(
-		event: K,
-		listener: (...args: InhibitorHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.once(event, listener);
-	}
+type Events = InhibitorHandlerEvents;
+
+export default interface InhibitorHandler {
+	/**
+	 * Deregisters an inhibitor.
+	 * @param inhibitor - Inhibitor to use.
+	 */
+	deregister(inhibitor: Inhibitor): void;
+
+	/**
+	 * Finds a category by name.
+	 * @param name - Name to find with.
+	 */
+	findCategory(name: string): Category<string, Inhibitor>;
+
+	/**
+	 * Loads an inhibitor.
+	 * @param thing - Inhibitor or path to inhibitor.
+	 */
+	load(thing: string | Inhibitor): Promise<Inhibitor>;
+
+	/**
+	 * Reads all inhibitors from the directory and loads them.
+	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
+	 * @param filter - Filter for files, where true means it should be loaded.
+	 */
+	loadAll(directory?: string, filter?: LoadPredicate): Promise<InhibitorHandler>;
+
+	/**
+	 * Registers an inhibitor.
+	 * @param inhibitor - Inhibitor to use.
+	 * @param filepath - Filepath of inhibitor.
+	 */
+	register(inhibitor: Inhibitor, filepath?: string): void;
+
+	/**
+	 * Reloads an inhibitor.
+	 * @param id - ID of the inhibitor.
+	 */
+	reload(id: string): Promise<Inhibitor>;
+
+	/**
+	 * Reloads all inhibitors.
+	 */
+	reloadAll(): Promise<InhibitorHandler>;
+
+	/**
+	 * Removes an inhibitor.
+	 * @param id - ID of the inhibitor.
+	 */
+	remove(id: string): Inhibitor;
+
+	/**
+	 * Removes all inhibitors.
+	 */
+	removeAll(): InhibitorHandler;
+
+	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }

@@ -3,7 +3,9 @@
 		"**/dist": true
 	},
 	"files.exclude": {
-		"**/node_modules": true
+		"**/node_modules": true,
+		"**/*js.map": true,
+		"**/*d.ts.map": true,
 	},
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": true,
@@ -18,6 +20,5 @@
 	"prettier.configPath": "lib/package.json",
 	"prettier.prettierPath": "lib/node_modules/prettier",
 	"prettier.withNodeModules": true,
-	"prettier.useEditorConfig": false,
-	"compile-hero.disable-compile-files-on-did-save-code": true
+	"prettier.useEditorConfig": false
 }

@@ -1,20 +1,22 @@
-import { Message } from "discord.js";
+import type { Message } from "discord.js";
 
 /**
  * Represents a special return value during command execution or argument parsing.
- * @param type - Type of flag.
- * @param data - Extra data.
  */
 export default class Flag {
+	/**
+	 * The type of flag.
+	 */
+	public declare type: string;
+
+	/**
+	 * @param type - Type of flag.
+	 * @param data - Extra data.
+	 */
 	constructor(type: string, data: any = {}) {
 		this.type = type;
 		Object.assign(this, data);
 	}
-
-	/**
-	 * The type of flag.
-	 */
-	public type: string;
 
 	/**
 	 * Creates a flag that cancels the command.

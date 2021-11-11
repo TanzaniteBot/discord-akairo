@@ -13,23 +13,25 @@ import {
 	Snowflake,
 	User
 } from "discord.js";
-import { Stream } from "stream";
-import { GuildTextBasedChannels } from "../typings/guildTextBasedChannels";
-import AkairoClient from "./AkairoClient";
+import type { Stream } from "stream";
+import type { GuildTextBasedChannels } from "../typings/guildTextBasedChannels.js";
+import type AkairoClient from "./AkairoClient.js";
 
 /**
  * Client utilities to help with common tasks.
- * @param {AkairoClient} client - The client.
  */
 export default class ClientUtil {
-	public constructor(client: AkairoClient) {
-		this.client = client;
-	}
-
 	/**
 	 * The Akairo client.
 	 */
-	public readonly client: AkairoClient;
+	public declare readonly client: AkairoClient;
+
+	/**
+	 * @param client - The client.
+	 */
+	public constructor(client: AkairoClient) {
+		this.client = client;
+	}
 
 	/**
 	 * Makes a MessageAttachment.
@@ -358,7 +360,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	resolveMember(
+	public resolveMember(
 		text: string,
 		members: Collection<Snowflake, GuildMember>,
 		caseSensitive = false,
@@ -376,7 +378,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	resolveMembers(
+	public resolveMembers(
 		text: string,
 		members: Collection<Snowflake, GuildMember>,
 		caseSensitive = false,

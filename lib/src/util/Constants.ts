@@ -9,6 +9,7 @@ export enum ArgumentMatches {
 	REST_CONTENT = "restContent",
 	NONE = "none"
 }
+
 export enum ArgumentTypes {
 	STRING = "string",
 	LOWERCASE = "lowercase",
@@ -65,10 +66,12 @@ export enum ArgumentTypes {
 	TASK = "task",
 	CONTEXT_MENU_COMMAND = "contextMenuCommand"
 }
+
 export enum AkairoHandlerEvents {
 	LOAD = "load",
 	REMOVE = "remove"
 }
+
 export enum CommandHandlerEvents {
 	COMMAND_BLOCKED = "commandBlocked",
 	COMMAND_BREAKOUT = "commandBreakout",
@@ -91,6 +94,7 @@ export enum CommandHandlerEvents {
 	SLASH_STARTED = "slashStarted",
 	SLASH_ONLY = "slashOnly"
 }
+
 export enum ContextCommandHandlerEvents {
 	ERROR = "error",
 	FINISHED = "finished",
@@ -98,6 +102,7 @@ export enum ContextCommandHandlerEvents {
 	STARTED = "started",
 	BLOCKED = "blocked"
 }
+
 export enum BuiltInReasons {
 	CLIENT = "client",
 	BOT = "bot",

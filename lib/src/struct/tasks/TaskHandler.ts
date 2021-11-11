@@ -1,40 +1,15 @@
-import { Awaitable, Collection } from "discord.js";
-import { TaskHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError";
-import Category from "../../util/Category";
-import AkairoClient from "../AkairoClient";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import Task from "./Task";
+import type { Awaitable, Collection } from "discord.js";
+import type { TaskHandlerEvents } from "../../typings/events";
+import AkairoError from "../../util/AkairoError.js";
+import type Category from "../../util/Category.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import Task from "./Task.js";
 
 /**
  * Loads tasks.
- * @param client - The Akairo client.
- * @param options - Options.
  */
 export default class TaskHandler extends AkairoHandler {
-	public constructor(
-		client: AkairoClient,
-		{
-			directory,
-			classToHandle = Task,
-			extensions = [".js", ".ts"],
-			automateCategories,
-			loadFilter
-		}: AkairoHandlerOptions
-	) {
-		if (!(classToHandle.prototype instanceof Task || classToHandle === Task)) {
-			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Task.name);
-		}
-
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
-	}
-
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -61,75 +36,30 @@ export default class TaskHandler extends AkairoHandler {
 	public declare modules: Collection<string, Task>;
 
 	/**
-	 * Deregisters a module.
-	 * @param task - Module to use.
+	 * @param client - The Akairo client.
+	 * @param options - Options.
 	 */
-	public override deregister(task: Task): void {
-		return super.deregister(task);
-	}
+	public constructor(
+		client: AkairoClient,
+		{
+			directory,
+			classToHandle = Task,
+			extensions = [".js", ".ts"],
+			automateCategories,
+			loadFilter
+		}: AkairoHandlerOptions
+	) {
+		if (!(classToHandle.prototype instanceof Task || classToHandle === Task)) {
+			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Task.name);
+		}
 
-	/**
-	 * Finds a category by name.
-	 * @param name - Name to find with.
-	 */
-	public override findCategory(name: string): Category<string, Task> {
-		return super.findCategory(name) as Category<string, Task>;
-	}
-
-	/**
-	 * Loads a task.
-	 * @param thing - Module or path to module.
-	 */
-	public override load(thing: string | Task, isReload?: boolean): Promise<Task> {
-		return super.load(thing, isReload) as Promise<Task>;
-	}
-
-	/**
-	 * Reads all tasks from the directory and loads them.
-	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
-	 * @param filter - Filter for files, where true means it should be loaded.
-	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<TaskHandler> {
-		return super.loadAll(directory, filter) as Promise<TaskHandler>;
-	}
-
-	/**
-	 * Registers a task.
-	 * @param task - Task to use.
-	 * @param filepath - Filepath of task.
-	 */
-	public override register(task: Task, filepath?: string): void {
-		return super.register(task, filepath);
-	}
-
-	/**
-	 * Reloads a task.
-	 * @param id - ID of the task.
-	 */
-	public override reload(id: string): Promise<Task> {
-		return super.reload(id) as Promise<Task>;
-	}
-
-	/**
-	 * Reloads all tasks.
-	 */
-	public override reloadAll(): Promise<TaskHandler> {
-		return super.reloadAll() as Promise<TaskHandler>;
-	}
-
-	/**
-	 * Removes a task.
-	 * @param id - ID of the task.
-	 */
-	public override remove(id: string): Task {
-		return super.remove(id) as Task;
-	}
-
-	/**
-	 * Removes all tasks.
-	 */
-	public override removeAll(): TaskHandler {
-		return super.removeAll() as TaskHandler;
+		super(client, {
+			directory,
+			classToHandle,
+			extensions,
+			automateCategories,
+			loadFilter
+		});
 	}
 
 	/**
@@ -148,17 +78,65 @@ export default class TaskHandler extends AkairoHandler {
 			});
 		});
 	}
+}
 
-	public override on<K extends keyof TaskHandlerEvents>(
-		event: K,
-		listener: (...args: TaskHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.on(event, listener);
-	}
-	public override once<K extends keyof TaskHandlerEvents>(
-		event: K,
-		listener: (...args: TaskHandlerEvents[K][]) => Awaitable<void>
-	): this {
-		return super.once(event, listener);
-	}
+type Events = TaskHandlerEvents;
+
+export default interface TaskHandler {
+	/**
+	 * Deregisters a task.
+	 * @param task - Task to use.
+	 */
+	deregister(task: Task): void;
+
+	/**
+	 * Finds a category by name.
+	 * @param name - Name to find with.
+	 */
+	findCategory(name: string): Category<string, Task>;
+
+	/**
+	 * Loads a task.
+	 * @param thing - Task or path to task.
+	 */
+	load(thing: string | Task, isReload?: boolean): Promise<Task>;
+
+	/**
+	 * Reads all tasks from the directory and loads them.
+	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
+	 * @param filter - Filter for files, where true means it should be loaded.
+	 */
+	loadAll(directory?: string, filter?: LoadPredicate): Promise<TaskHandler>;
+
+	/**
+	 * Registers a task.
+	 * @param task - Task to use.
+	 * @param filepath - Filepath of task.
+	 */
+	register(task: Task, filepath?: string): void;
+
+	/**
+	 * Reloads a task.
+	 * @param id - ID of the task.
+	 */
+	reload(id: string): Promise<Task>;
+
+	/**
+	 * Reloads all tasks.
+	 */
+	reloadAll(): Promise<TaskHandler>;
+
+	/**
+	 * Removes a task.
+	 * @param id - ID of the task.
+	 */
+	remove(id: string): Task;
+
+	/**
+	 * Removes all tasks.
+	 */
+	removeAll(): TaskHandler;
+
+	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }

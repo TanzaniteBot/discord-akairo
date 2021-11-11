@@ -10,22 +10,59 @@ import {
 	ThreadChannel
 } from "discord.js";
 import { URL } from "url";
-import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels";
-import { ArgumentTypes } from "../../../util/Constants";
-import AkairoClient from "../../AkairoClient";
-import ContextMenuCommandHandler from "../../contextMenuCommands/ContextMenuCommandHandler";
-import InhibitorHandler from "../../inhibitors/InhibitorHandler";
-import ListenerHandler from "../../listeners/ListenerHandler";
-import TaskHandler from "../../tasks/TaskHandler";
-import CommandHandler from "../CommandHandler";
-import { ArgumentTypeCaster } from "./Argument";
+import type { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels.js";
+import { ArgumentTypes } from "../../../util/Constants.js";
+import type AkairoClient from "../../AkairoClient.js";
+import type ContextMenuCommandHandler from "../../contextMenuCommands/ContextMenuCommandHandler.js";
+import type InhibitorHandler from "../../inhibitors/InhibitorHandler.js";
+import type ListenerHandler from "../../listeners/ListenerHandler.js";
+import type TaskHandler from "../../tasks/TaskHandler.js";
+import type CommandHandler from "../CommandHandler.js";
+import type { ArgumentTypeCaster } from "./Argument.js";
 
 /**
  * Type resolver for command arguments.
  * The types are documented under ArgumentType.
- * @param handler - The command handler.
  */
 export default class TypeResolver {
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * The command handler.
+	 */
+	public declare commandHandler: CommandHandler;
+
+	/**
+	 * The inhibitor handler.
+	 */
+	public declare inhibitorHandler?: InhibitorHandler | null;
+
+	/**
+	 * The listener handler.
+	 */
+	public declare listenerHandler?: ListenerHandler | null;
+
+	/**
+	 * The task handler.
+	 */
+	public declare taskHandler: TaskHandler | null;
+
+	/**
+	 * The context menu command handler.
+	 */
+	public declare contextMenuCommandHandler: ContextMenuCommandHandler | null;
+
+	/**
+	 * Collection of types.
+	 */
+	public declare types: Collection<string, ArgumentTypeCaster>;
+
+	/**
+	 * @param handler - The command handler.
+	 */
 	public constructor(handler: CommandHandler) {
 		this.client = handler.client;
 		this.commandHandler = handler;
@@ -36,41 +73,6 @@ export default class TypeResolver {
 		this.types = new Collection();
 		this.addBuiltInTypes();
 	}
-
-	/**
-	 * The Akairo client.
-	 */
-	public client: AkairoClient;
-
-	/**
-	 * The command handler.
-	 */
-	public commandHandler: CommandHandler;
-
-	/**
-	 * The inhibitor handler.
-	 */
-	public inhibitorHandler?: InhibitorHandler | null;
-
-	/**
-	 * The listener handler.
-	 */
-	public listenerHandler?: ListenerHandler | null;
-
-	/**
-	 * The task handler.
-	 */
-	public taskHandler: TaskHandler | null;
-
-	/**
-	 * The context menu command handler.
-	 */
-	public contextMenuCommandHandler: ContextMenuCommandHandler | null;
-
-	/**
-	 * Collection of types.
-	 */
-	public types: Collection<string, ArgumentTypeCaster>;
 
 	/**
 	 * Adds built-in types.

@@ -1,4 +1,4 @@
-import { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
+import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
 	Base,
 	CommandInteraction,
@@ -13,16 +13,73 @@ import {
 	User,
 	Util
 } from "discord.js";
-import AkairoClient from "../struct/AkairoClient";
-import CommandUtil from "../struct/commands/CommandUtil";
+import type AkairoClient from "../struct/AkairoClient.js";
+import type CommandUtil from "../struct/commands/CommandUtil.js";
 
 /**
  * A command interaction represented as a message.
- * @param client - AkairoClient
- * @param interaction - CommandInteraction
- * @param command - The command of the interaction
  */
 export default class AkairoMessage extends Base {
+	/**
+	 * The author of the interaction.
+	 */
+	public declare author: User;
+
+	/**
+	 * The application's id
+	 */
+	public declare applicationId: Snowflake;
+
+	/**
+	 * The id of the channel this interaction was sent in
+	 */
+	public declare channelId: Snowflake | null;
+
+	/**
+	 * The command name and arguments represented as a string.
+	 */
+	public declare content: string;
+
+	/**
+	 * The timestamp the interaction was sent at.
+	 */
+	public declare createdTimestamp: number;
+
+	/**
+	 * The id of the guild this interaction was sent in
+	 */
+	public declare guildId: Snowflake | null;
+
+	/**
+	 * The ID of the interaction.
+	 */
+	public declare id: Snowflake;
+
+	/**
+	 * The command interaction.
+	 */
+	public declare interaction: CommandInteraction;
+
+	/**
+	 * Represents the author of the interaction as a guild member.
+	 * Only available if the interaction comes from a guild where the author is still a member.
+	 */
+	public declare member: GuildMember | APIInteractionGuildMember | null;
+
+	/**
+	 * Whether or not this message is a partial
+	 */
+	public declare readonly partial: false;
+
+	/**
+	 * Utilities for command responding.
+	 */
+	public declare util: CommandUtil<AkairoMessage>;
+
+	/**
+	 * @param client - AkairoClient
+	 * @param interaction - CommandInteraction
+	 */
 	public constructor(client: AkairoClient, interaction: CommandInteraction) {
 		super(client);
 
@@ -58,26 +115,11 @@ export default class AkairoMessage extends Base {
 	}
 
 	/**
-	 * The author of the interaction.
-	 */
-	public author: User;
-
-	/**
-	 * The application's id
-	 */
-	public applicationId: Snowflake;
-
-	/**
 	 * The channel that the interaction was sent in.
 	 */
 	public get channel(): TextBasedChannels | null {
 		return this.interaction.channel;
 	}
-
-	/**
-	 * The id of the channel this interaction was sent in
-	 */
-	public channelId: Snowflake | null;
 
 	/**
 	 * The message contents with all mentions replaced by the equivalent text.
@@ -88,9 +130,11 @@ export default class AkairoMessage extends Base {
 	}
 
 	/**
-	 * The command name and arguments represented as a string.
+	 * The guild the interaction was sent in (if in a guild channel).
 	 */
-	public content: string;
+	public get guild(): Guild | null {
+		return this.interaction.guild;
+	}
 
 	/**
 	 * The time the message was sent at
@@ -98,46 +142,6 @@ export default class AkairoMessage extends Base {
 	public get createdAt(): Date {
 		return this.interaction.createdAt;
 	}
-
-	/**
-	 * The timestamp the interaction was sent at.
-	 */
-	public createdTimestamp: number;
-
-	/**
-	 * The guild the interaction was sent in (if in a guild channel).
-	 */
-	public get guild(): Guild | null {
-		return this.interaction.guild;
-	}
-
-	public guildId: Snowflake | null;
-
-	/**
-	 * The ID of the interaction.
-	 */
-	public id: Snowflake;
-
-	/**
-	 * The command interaction.
-	 */
-	public interaction: CommandInteraction;
-
-	/**
-	 * Represents the author of the interaction as a guild member.
-	 * Only available if the interaction comes from a guild where the author is still a member.
-	 */
-	public member: GuildMember | APIInteractionGuildMember | null;
-
-	/**
-	 * Whether or not this message is a partial
-	 */
-	public readonly partial: false;
-
-	/**
-	 * Utilities for command responding.
-	 */
-	public util!: CommandUtil<AkairoMessage>;
 
 	/**
 	 * The url to jump to this message

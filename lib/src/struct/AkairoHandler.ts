@@ -3,20 +3,62 @@ import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
 import url from "url";
-import AkairoError from "../util/AkairoError";
-import Category from "../util/Category";
-import { AkairoHandlerEvents } from "../util/Constants";
-import AkairoClient from "./AkairoClient";
-import AkairoModule from "./AkairoModule";
+import AkairoError from "../util/AkairoError.js";
+import Category from "../util/Category.js";
+import { AkairoHandlerEvents } from "../util/Constants.js";
+import type AkairoClient from "./AkairoClient.js";
+import AkairoModule from "./AkairoModule.js";
 
 export type Static<M> = { (): M };
 
 /**
  * Base class for handling modules.
- * @param client - The Akairo client.
- * @param options - Options for module loading and handling.
  */
 export default class AkairoHandler extends EventEmitter {
+	/**
+	 * Whether or not to automate category names.
+	 */
+	public declare automateCategories: boolean;
+
+	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public declare categories: Collection<string, Category<string, AkairoModule>>;
+
+	/**
+	 * Class to handle.
+	 */
+	public declare classToHandle: typeof AkairoModule;
+
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * The main directory to modules.
+	 */
+	public declare directory: string;
+
+	/**
+	 * File extensions to load.
+	 */
+	public declare extensions: Set<string>;
+
+	/**
+	 * Function that filters files when loading.
+	 */
+	public declare loadFilter: LoadPredicate;
+
+	/**
+	 * Modules loaded, mapped by ID to AkairoModule.
+	 */
+	public declare modules: Collection<string, AkairoModule>;
+
+	/**
+	 * @param client - The Akairo client.
+	 * @param options - Options for module loading and handling.
+	 */
 	public constructor(
 		client: AkairoClient,
 		{
@@ -38,46 +80,6 @@ export default class AkairoHandler extends EventEmitter {
 		this.modules = new Collection();
 		this.categories = new Collection();
 	}
-
-	/**
-	 * Whether or not to automate category names.
-	 */
-	public automateCategories: boolean;
-
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public categories: Collection<string, Category<string, AkairoModule>>;
-
-	/**
-	 * Class to handle.
-	 */
-	public classToHandle: typeof AkairoModule;
-
-	/**
-	 * The Akairo client.
-	 */
-	public client: AkairoClient;
-
-	/**
-	 * The main directory to modules.
-	 */
-	public directory: string;
-
-	/**
-	 * File extensions to load.
-	 */
-	public extensions: Set<string>;
-
-	/**
-	 * Function that filters files when loading.
-	 */
-	public loadFilter: LoadPredicate;
-
-	/**
-	 * Modules loaded, mapped by ID to AkairoModule.
-	 */
-	public modules: Collection<string, AkairoModule>;
 
 	/**
 	 * Deregisters a module.
@@ -235,7 +237,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * Reads files recursively from a directory.
 	 * @param directory - Directory to read.
 	 */
-	static readdirRecursive(directory: string): string[] {
+	public static readdirRecursive(directory: string): string[] {
 		const result = [];
 
 		(function read(dir) {
@@ -267,13 +269,19 @@ export type LoadPredicate = (filepath: string) => boolean;
  * Options for module loading and handling.
  */
 export interface AkairoHandlerOptions {
-	/** Whether or not to set each module's category to its parent directory name. */
+	/**
+	 * Whether or not to set each module's category to its parent directory name.
+	 */
 	automateCategories?: boolean;
 
-	/** Only classes that extends this class can be handled. */
+	/**
+	 * Only classes that extends this class can be handled.
+	 */
 	classToHandle?: typeof AkairoModule;
 
-	/** Directory to modules. */
+	/**
+	 * Directory to modules.
+	 */
 	directory?: string;
 
 	/**

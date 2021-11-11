@@ -1,24 +1,26 @@
-import { Message } from "discord.js";
-import AkairoError from "../../../util/AkairoError";
-import { ArgumentMatches } from "../../../util/Constants";
-import Command, { ArgumentGenerator } from "../Command";
-import { ContentParserResult } from "../ContentParser";
-import Flag from "../Flag";
-import Argument, { ArgumentOptions } from "./Argument";
+import type { Message } from "discord.js";
+import AkairoError from "../../../util/AkairoError.js";
+import { ArgumentMatches } from "../../../util/Constants.js";
+import Command, { ArgumentGenerator } from "../Command.js";
+import type { ContentParserResult } from "../ContentParser.js";
+import Flag from "../Flag.js";
+import Argument, { ArgumentOptions } from "./Argument.js";
 
 /**
  * Runs arguments.
- * @param command - Command to run for.
  */
 export default class ArgumentRunner {
-	public constructor(command: Command) {
-		this.command = command;
-	}
-
 	/**
 	 * The command the arguments are being run for
 	 */
-	public command: Command;
+	public declare command: Command;
+
+	/**
+	 * @param command - Command to run for.
+	 */
+	public constructor(command: Command) {
+		this.command = command;
+	}
 
 	/**
 	 * The Akairo client.
@@ -421,12 +423,18 @@ export default class ArgumentRunner {
  * State for the argument runner.
  */
 export interface ArgumentRunnerState {
-	/** Index in terms of the raw strings. */
+	/**
+	 * Index in terms of the raw strings.
+	 */
 	index: number;
 
-	/** Index in terms of phrases. */
+	/**
+	 * Index in terms of phrases.
+	 */
 	phraseIndex: number;
 
-	/** Indices already used for unordered match. */
+	/**
+	 * Indices already used for unordered match.
+	 */
 	usedIndices: Set<number>;
 }

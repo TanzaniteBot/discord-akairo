@@ -1,12 +1,12 @@
-import { ClientEvents, CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
-import AkairoModule from "../struct/AkairoModule";
-import Command from "../struct/commands/Command";
-import ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand";
-import Inhibitor from "../struct/inhibitors/Inhibitor";
-import Listener from "../struct/listeners/Listener";
-import Task from "../struct/tasks/Task";
-import AkairoMessage from "../util/AkairoMessage";
-import { BuiltInReasons } from "../util/Constants";
+import type { ClientEvents, CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
+import type AkairoModule from "../struct/AkairoModule.js";
+import type Command from "../struct/commands/Command.js";
+import type ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand.js";
+import type Inhibitor from "../struct/inhibitors/Inhibitor.js";
+import type Listener from "../struct/listeners/Listener.js";
+import type Task from "../struct/tasks/Task.js";
+import type AkairoMessage from "../util/AkairoMessage.js";
+import type { BuiltInReasons } from "../util/Constants.js";
 
 export interface AkairoHandlerEvents {
 	/**
@@ -15,6 +15,7 @@ export interface AkairoHandlerEvents {
 	 * @param isReload - Whether or not this was a reload.
 	 */
 	load: [mod: AkairoModule, isReload: boolean];
+
 	/**
 	 * Emitted when a module is removed.
 	 * @param mod - Module removed.

@@ -1,23 +1,15 @@
-import EventEmitter from "events";
-import AkairoError from "../../util/AkairoError";
-import Category from "../../util/Category";
-import AkairoClient from "../AkairoClient";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule";
-import ListenerHandler from "./ListenerHandler";
+/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
+import type EventEmitter from "events";
+import AkairoError from "../../util/AkairoError.js";
+import type Category from "../../util/Category.js";
+import type AkairoClient from "../AkairoClient.js";
+import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
+import type ListenerHandler from "./ListenerHandler.js";
 
 /**
  * Represents a listener.
- * @param id - Listener ID.
- * @param options - Options for the listener.
  */
 export default abstract class Listener extends AkairoModule {
-	public constructor(id: string, { category, emitter, event, type = "on" }: ListenerOptions) {
-		super(id, { category });
-		this.emitter = emitter;
-		this.event = event;
-		this.type = type;
-	}
-
 	/**
 	 * The category of this listener.
 	 */
@@ -31,12 +23,12 @@ export default abstract class Listener extends AkairoModule {
 	/**
 	 * The event emitter.
 	 */
-	public emitter: string | EventEmitter;
+	public declare emitter: string | EventEmitter;
 
 	/**
 	 * The event name listened to.
 	 */
-	public event: string;
+	public declare event: string;
 
 	/**
 	 * The filepath.
@@ -51,30 +43,40 @@ export default abstract class Listener extends AkairoModule {
 	/**
 	 * Type of listener.
 	 */
-	public type: ListenerType;
+	public declare type: ListenerType;
+
+	/**
+	 * @param id - Listener ID.
+	 * @param options - Options for the listener.
+	 */
+	public constructor(id: string, options: ListenerOptions) {
+		const { category, emitter, event, type = "on" } = options;
+
+		super(id, { category });
+		this.emitter = emitter;
+		this.event = event;
+		this.type = type;
+	}
 
 	/**
 	 * Executes the listener.
 	 * @param args - Arguments.
 	 */
-	// eslint-disable-next-line func-names, @typescript-eslint/no-unused-vars
 	public exec(...args: any[]): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
+}
 
+export default interface Listener {
 	/**
 	 * Reloads the listener.
 	 */
-	public override reload(): Promise<Listener> {
-		return super.reload() as Promise<Listener>;
-	}
+	reload(): Promise<Listener>;
 
 	/**
 	 * Removes the listener.
 	 */
-	public override remove(): Listener {
-		return super.remove() as Listener;
-	}
+	remove(): Listener;
 }
 
 /**

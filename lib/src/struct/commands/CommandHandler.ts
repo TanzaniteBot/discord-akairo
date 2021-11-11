@@ -16,21 +16,21 @@ import {
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import _ from "lodash";
-import { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
-import AkairoError from "../../util/AkairoError";
-import AkairoMessage from "../../util/AkairoMessage";
-import Category from "../../util/Category";
-import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants";
-import Util from "../../util/Util";
-import AkairoClient from "../AkairoClient";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler";
-import AkairoModule from "../AkairoModule";
-import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler";
-import InhibitorHandler from "../inhibitors/InhibitorHandler";
-import ListenerHandler from "../listeners/ListenerHandler";
-import TaskHandler from "../tasks/TaskHandler";
-import { DefaultArgumentOptions } from "./arguments/Argument";
-import TypeResolver from "./arguments/TypeResolver";
+import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
+import AkairoError from "../../util/AkairoError.js";
+import AkairoMessage from "../../util/AkairoMessage.js";
+import type Category from "../../util/Category.js";
+import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
+import Util from "../../util/Util.js";
+import AkairoClient from "../AkairoClient.js";
+import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import type AkairoModule from "../AkairoModule.js";
+import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler.js";
+import type InhibitorHandler from "../inhibitors/InhibitorHandler.js";
+import type ListenerHandler from "../listeners/ListenerHandler.js";
+import type TaskHandler from "../tasks/TaskHandler.js";
+import type { DefaultArgumentOptions } from "./arguments/Argument.js";
+import TypeResolver from "./arguments/TypeResolver.js";
 import Command, {
 	AkairoApplicationCommandChannelOptionData,
 	AkairoApplicationCommandChoicesData,
@@ -39,18 +39,188 @@ import Command, {
 	AkairoApplicationCommandSubGroupData,
 	KeySupplier
 } from "./Command";
-import CommandUtil from "./CommandUtil";
-import Flag from "./Flag";
+import CommandUtil from "./CommandUtil.js";
+import Flag from "./Flag.js";
 
 /**
  * Loads commands and handles messages.
- * @param client - The Akairo client.
- * @param options - Options.
  */
 export default class CommandHandler extends AkairoHandler {
-	public constructor(
-		client: AkairoClient,
-		{
+	/**
+	 * Collection of command aliases.
+	 */
+	public declare aliases: Collection<string, string>;
+
+	/**
+	 * Regular expression to automatically make command aliases for.
+	 */
+	public declare aliasReplacement?: RegExp;
+
+	/**
+	 * Whether or not mentions are allowed for prefixing.
+	 */
+	public declare allowMention: boolean | MentionPrefixPredicate;
+
+	/**
+	 * Default argument options.
+	 */
+	public declare argumentDefaults: DefaultArgumentOptions;
+
+	/**
+	 * Automatically defer messages "BotName is thinking".
+	 */
+	public declare autoDefer: boolean;
+
+	/**
+	 * Specify whether to register all slash commands when starting the client
+	 */
+	public declare autoRegisterSlashCommands: boolean;
+
+	/**
+	 * Whether or not to block bots.
+	 */
+	public declare blockBots: boolean;
+
+	/**
+	 * Whether or not to block self.
+	 */
+	public declare blockClient: boolean;
+
+	/**
+	 * Categories, mapped by ID to Category.
+	 */
+	public declare categories: Collection<string, Category<string, Command>>;
+
+	/**
+	 * Class to handle
+	 */
+	public declare classToHandle: typeof Command;
+
+	/**
+	 * The Akairo client.
+	 */
+	public declare client: AkairoClient;
+
+	/**
+	 * Whether or not `message.util` is assigned.
+	 */
+	public declare commandUtil: boolean;
+
+	/**
+	 * Milliseconds a message should exist for before its command util instance is marked for removal.
+	 */
+	public declare commandUtilLifetime: number;
+
+	/**
+	 * Collection of CommandUtils.
+	 */
+	public declare commandUtils: Collection<string, CommandUtil<Message | AkairoMessage>>;
+
+	/**
+	 * Time interval in milliseconds for sweeping command util instances.
+	 */
+	public declare commandUtilSweepInterval: number;
+
+	/**
+	 * Collection of cooldowns.
+	 * <info>The elements in the collection are objects with user IDs as keys
+	 * and {@link CooldownData} objects as values</info>
+	 */
+	public declare cooldowns: Collection<string, { [id: string]: CooldownData }>;
+
+	/**
+	 * Default cooldown for commands.
+	 */
+	public declare defaultCooldown: number;
+
+	/**
+	 * Directory to commands.
+	 */
+	public declare directory: string;
+
+	/**
+	 * Whether or not to require the use of execSlash for slash commands.
+	 */
+	public declare execSlash: boolean;
+
+	/**
+	 * Whether or not members are fetched on each message author from a guild.
+	 */
+	public declare fetchMembers: boolean;
+
+	/**
+	 * Whether or not edits are handled.
+	 */
+	public declare handleEdits: boolean;
+
+	/**
+	 * ID of user(s) to ignore cooldown or a function to ignore.
+	 */
+	public declare ignoreCooldown: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
+	 */
+	public declare ignorePermissions: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * Inhibitor handler to use.
+	 */
+	public declare inhibitorHandler: InhibitorHandler | null;
+
+	/**
+	 * Commands loaded, mapped by ID to Command.
+	 */
+	public declare modules: Collection<string, Command>;
+
+	/**
+	 * The prefix(es) for command parsing.
+	 */
+	public declare prefix: string | string[] | PrefixSupplier;
+
+	/**
+	 * Collection of prefix overwrites to commands.
+	 */
+	public declare prefixes: Collection<string | PrefixSupplier, Set<string>>;
+
+	/**
+	 * Collection of sets of ongoing argument prompts.
+	 */
+	public declare prompts: Collection<string, Set<string>>;
+
+	/**
+	 * The type resolver.
+	 */
+	public declare resolver: TypeResolver;
+
+	/**
+	 * Whether or not to store messages in CommandUtil.
+	 */
+	public declare storeMessages: boolean;
+
+	/**
+	 * Show "BotName is typing" information message on the text channels when a command is running.
+	 */
+	public declare typing: boolean;
+
+	/**
+	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
+	 */
+	public declare skipBuiltInPostInhibitors: boolean;
+
+	/**
+	 * Use slash command permissions for owner only commands
+	 *
+	 * Warning: this is experimental
+	 */
+	public declare useSlashPermissions: boolean;
+
+	/**
+	 * @param client - The Akairo client.
+	 * @param options - Options.
+	 */
+	public constructor(client: AkairoClient, options: CommandHandlerOptions = {}) {
+		const {
 			directory,
 			classToHandle = Command,
 			extensions = [".js", ".ts"],
@@ -77,8 +247,8 @@ export default class CommandHandler extends AkairoHandler {
 			execSlash = false,
 			skipBuiltInPostInhibitors = false,
 			useSlashPermissions = false
-		}: CommandHandlerOptions = {}
-	) {
+		} = options;
+
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Command.name);
 		}
@@ -144,174 +314,6 @@ export default class CommandHandler extends AkairoHandler {
 		this.useSlashPermissions = Boolean(useSlashPermissions);
 		this.setup();
 	}
-
-	/**
-	 * Collection of command aliases.
-	 */
-	public aliases: Collection<string, string>;
-
-	/**
-	 * Regular expression to automatically make command aliases for.
-	 */
-	public aliasReplacement?: RegExp;
-
-	/**
-	 * Whether or not mentions are allowed for prefixing.
-	 */
-	public allowMention: boolean | MentionPrefixPredicate;
-
-	/**
-	 * Default argument options.
-	 */
-	public argumentDefaults: DefaultArgumentOptions;
-
-	/**
-	 * Automatically defer messages "BotName is thinking".
-	 */
-	public autoDefer: boolean;
-
-	/**
-	 * Specify whether to register all slash commands when starting the client
-	 */
-	public autoRegisterSlashCommands: boolean;
-
-	/**
-	 * Whether or not to block bots.
-	 */
-	public blockBots: boolean;
-
-	/**
-	 * Whether or not to block self.
-	 */
-	public blockClient: boolean;
-
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, Command>>;
-
-	/**
-	 * Class to handle
-	 */
-	public declare classToHandle: typeof Command;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Whether or not `message.util` is assigned.
-	 */
-	public commandUtil: boolean;
-
-	/**
-	 * Milliseconds a message should exist for before its command util instance is marked for removal.
-	 */
-	public commandUtilLifetime: number;
-
-	/**
-	 * Collection of CommandUtils.
-	 */
-	public commandUtils: Collection<string, CommandUtil<Message | AkairoMessage>>;
-
-	/**
-	 * Time interval in milliseconds for sweeping command util instances.
-	 */
-	public commandUtilSweepInterval: number;
-
-	/**
-	 * Collection of cooldowns.
-	 * <info>The elements in the collection are objects with user IDs as keys
-	 * and {@link CooldownData} objects as values</info>
-	 */
-	public cooldowns: Collection<string, { [id: string]: CooldownData }>;
-
-	/**
-	 * Default cooldown for commands.
-	 */
-	public defaultCooldown: number;
-
-	/**
-	 * Directory to commands.
-	 */
-	public declare directory: string;
-
-	/**
-	 * Whether or not to use execSlash for slash commands.
-	 */
-	public execSlash: boolean;
-
-	/**
-	 * Whether or not members are fetched on each message author from a guild.
-	 */
-	public fetchMembers: boolean;
-
-	/**
-	 * Whether or not edits are handled.
-	 */
-	public handleEdits: boolean;
-
-	/**
-	 * ID of user(s) to ignore cooldown or a function to ignore.
-	 */
-	public ignoreCooldown: Snowflake | Snowflake[] | IgnoreCheckPredicate;
-
-	/**
-	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
-	 */
-	public ignorePermissions: Snowflake | Snowflake[] | IgnoreCheckPredicate;
-
-	/**
-	 * Inhibitor handler to use.
-	 */
-	public inhibitorHandler: InhibitorHandler | null;
-
-	/**
-	 * Commands loaded, mapped by ID to Command.
-	 */
-	public declare modules: Collection<string, Command>;
-
-	/**
-	 * The prefix(es) for command parsing.
-	 */
-	public prefix: string | string[] | PrefixSupplier;
-
-	/**
-	 * Collection of prefix overwrites to commands.
-	 */
-	public prefixes: Collection<string | PrefixSupplier, Set<string>>;
-
-	/**
-	 * Collection of sets of ongoing argument prompts.
-	 */
-	public prompts: Collection<string, Set<string>>;
-
-	/**
-	 * The type resolver.
-	 */
-	public resolver: TypeResolver;
-
-	/**
-	 * Whether or not to store messages in CommandUtil.
-	 */
-	public storeMessages: boolean;
-
-	/**
-	 * Show "BotName is typing" information message on the text channels when a command is running.
-	 */
-	public typing: boolean;
-
-	/**
-	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
-	 */
-	public skipBuiltInPostInhibitors: boolean;
-
-	/**
-	 * Use slash command permissions for owner only commands
-	 * Warning: this is experimental
-	 */
-	public useSlashPermissions: boolean;
 
 	/**
 	 * Set up the command handler
@@ -1490,66 +1492,48 @@ export default class CommandHandler extends AkairoHandler {
 
 		return this;
 	}
+}
 
+type Events = CommandHandlerEventsType;
+
+export default interface CommandHandler {
 	/**
 	 * Loads a command.
 	 * @param thing - Module or path to module.
 	 */
-	public override load(thing: string | Command): Promise<Command> {
-		return super.load(thing) as Promise<Command>;
-	}
+	load(thing: string | Command): Promise<Command>;
 
 	/**
 	 * Reads all commands from the directory and loads them.
 	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
 	 * @param filter - Filter for files, where true means it should be loaded.
 	 */
-	public override loadAll(directory?: string, filter?: LoadPredicate): Promise<CommandHandler> {
-		return super.loadAll(directory, filter) as Promise<CommandHandler>;
-	}
+	loadAll(directory?: string, filter?: LoadPredicate): Promise<CommandHandler>;
 
 	/**
 	 * Removes a command.
 	 * @param id - ID of the command.
 	 */
-	public override remove(id: string): Command {
-		return super.remove(id) as Command;
-	}
+	remove(id: string): Command;
 
 	/**
 	 * Removes all commands.
 	 */
-	public override removeAll(): CommandHandler {
-		return super.removeAll() as CommandHandler;
-	}
+	removeAll(): CommandHandler;
 
 	/**
 	 * Reloads a command.
 	 * @param id - ID of the command.
 	 */
-	public override reload(id: string): Promise<Command> {
-		return super.reload(id) as Promise<Command>;
-	}
+	reload(id: string): Promise<Command>;
 
 	/**
 	 * Reloads all commands.
 	 */
-	public override reloadAll(): Promise<CommandHandler> {
-		return super.reloadAll() as Promise<CommandHandler>;
-	}
+	reloadAll(): Promise<CommandHandler>;
 
-	public override on<K extends keyof CommandHandlerEventsType>(
-		event: K,
-		listener: (...args: CommandHandlerEventsType[K][]) => Awaitable<void>
-	): this {
-		return super.on(event, listener);
-	}
-	public override once<K extends keyof CommandHandlerEventsType>(
-		event: K,
-		listener: (...args: CommandHandlerEventsType[K][]) => Awaitable<void>
-	): this {
-		return super.once(event, listener);
-	}
+	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }
 
 export interface CommandHandlerOptions extends AkairoHandlerOptions {
@@ -1648,7 +1632,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	typing?: boolean;
 
 	/**
-	 * Whether or not to use execSlash for slash commands.
+	 * Whether or not to require the use of execSlash for slash commands.
 	 */
 	execSlash?: boolean;
 
@@ -1659,6 +1643,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 
 	/**
 	 * Use slash command permissions for owner only commands
+	 *
 	 * Warning: this is experimental
 	 */
 	useSlashPermissions?: boolean;
@@ -1774,5 +1759,7 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["message"]>;
 };
 
-// eslint-disable-next-line no-unused-expressions, no-constant-condition
-if (false) CommandInteractionOptionResolver;
+/**
+ * @typedef {CommandInteractionOptionResolver} VSCodePleaseStopRemovingMyImports
+ * @internal
+ */
