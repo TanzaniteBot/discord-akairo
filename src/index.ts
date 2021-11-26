@@ -12,6 +12,7 @@ import Argument, {
 	ArgumentType,
 	ArgumentTypeCaster,
 	ArgumentTypeCaster_,
+	BaseArgumentType,
 	DefaultArgumentOptions,
 	DefaultValueSupplier,
 	FailureData,
@@ -21,6 +22,7 @@ import Argument, {
 	PromptContentModifier,
 	PromptContentSupplier
 } from "./struct/commands/arguments/Argument";
+import ArgumentRunner, { ArgumentRunnerState } from "./struct/commands/arguments/ArgumentRunner";
 import TypeResolver from "./struct/commands/arguments/TypeResolver";
 import Command, {
 	AkairoApplicationCommandAutocompleteOption,
@@ -38,7 +40,8 @@ import Command, {
 	KeySupplier,
 	MissingPermissionSupplier,
 	RegexSupplier,
-	SlashOption
+	SlashOption,
+	SlashPermissionsSupplier
 } from "./struct/commands/Command";
 import CommandHandler, {
 	CommandHandlerOptions,
@@ -50,12 +53,18 @@ import CommandHandler, {
 	SlashResolveTypes
 } from "./struct/commands/CommandHandler";
 import CommandUtil from "./struct/commands/CommandUtil";
+import ContentParser, {
+	ContentParserOptions,
+	ContentParserResult,
+	ExtractedFlags,
+	StringData
+} from "./struct/commands/ContentParser";
 import Flag from "./struct/commands/Flag";
 import ContextMenuCommand, { ContextMenuCommandOptions } from "./struct/contextMenuCommands/ContextMenuCommand";
 import ContextMenuCommandHandler from "./struct/contextMenuCommands/ContextMenuCommandHandler";
 import Inhibitor, { InhibitorOptions } from "./struct/inhibitors/Inhibitor";
 import InhibitorHandler from "./struct/inhibitors/InhibitorHandler";
-import Listener, { ListenerOptions } from "./struct/listeners/Listener";
+import Listener, { ListenerOptions, ListenerType } from "./struct/listeners/Listener";
 import ListenerHandler from "./struct/listeners/ListenerHandler";
 import Task, { TaskOptions } from "./struct/tasks/Task";
 import TaskHandler from "./struct/tasks/TaskHandler";
@@ -63,6 +72,7 @@ import type {
 	AkairoClientEvents,
 	AkairoHandlerEvents,
 	CommandHandlerEvents,
+	ContextMenuCommandHandlerEvents,
 	InhibitorHandlerEvents,
 	ListenerHandlerEvents,
 	TaskHandlerEvents
@@ -73,6 +83,7 @@ import AkairoMessage from "./util/AkairoMessage";
 import Category from "./util/Category";
 import * as Constants from "./util/Constants";
 import Util from "./util/Util";
+
 const version = packageJSON.version;
 
 declare module "discord.js" {
@@ -95,12 +106,16 @@ export {
 	AkairoMessage,
 	AkairoModule,
 	Argument,
+	ArgumentRunner,
+	ArgumentRunnerState,
 	Category,
 	ClientUtil,
 	Command,
 	CommandHandler,
 	CommandUtil,
 	Constants,
+	ContentParser,
+	ContentParserResult,
 	ContextMenuCommand,
 	ContextMenuCommandHandler,
 	Flag,
@@ -116,12 +131,12 @@ export {
 	version
 };
 export type {
+	AkairoApplicationCommandAutocompleteOption,
 	AkairoApplicationCommandChannelOptionData,
 	AkairoApplicationCommandChoicesData,
 	AkairoApplicationCommandNonOptionsData,
-	AkairoApplicationCommandOptionData,
-	AkairoApplicationCommandAutocompleteOption,
 	AkairoApplicationCommandNumericOptionData,
+	AkairoApplicationCommandOptionData,
 	AkairoApplicationCommandSubCommandData,
 	AkairoApplicationCommandSubGroupData,
 	AkairoClientEvents,
@@ -137,15 +152,19 @@ export type {
 	ArgumentType,
 	ArgumentTypeCaster_,
 	ArgumentTypeCaster,
+	BaseArgumentType,
 	BeforeAction,
 	CommandHandlerEvents,
 	CommandHandlerOptions,
 	CommandOptions,
+	ContentParserOptions,
+	ContextMenuCommandHandlerEvents,
 	ContextMenuCommandOptions,
 	CooldownData,
 	DefaultArgumentOptions,
 	DefaultValueSupplier,
 	ExecutionPredicate,
+	ExtractedFlags,
 	FailureData,
 	GuildTextBasedChannels,
 	IgnoreCheckPredicate,
@@ -154,6 +173,7 @@ export type {
 	KeySupplier,
 	ListenerHandlerEvents,
 	ListenerOptions,
+	ListenerType,
 	LoadPredicate,
 	MentionPrefixPredicate,
 	MissingPermissionSupplier,
@@ -165,7 +185,9 @@ export type {
 	PromptContentSupplier,
 	RegexSupplier,
 	SlashOption,
+	SlashPermissionsSupplier,
 	SlashResolveTypes,
+	StringData,
 	TaskHandlerEvents,
 	TaskOptions
 };

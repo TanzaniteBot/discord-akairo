@@ -5,6 +5,7 @@ node_modules
 !.vscode/settings.json
 
 dist
+docs
 
 tsconfig.tsbuildinfo
 yarn-error.log
