@@ -17,8 +17,8 @@
 	"editor.insertSpaces": false,
 	"editor.wordWrap": "on",
 	"editor.tabSize": 2,
-	"prettier.configPath": "lib/package.json",
-	"prettier.prettierPath": "lib/node_modules/prettier",
+	"prettier.configPath": "package.json",
+	"prettier.prettierPath": "node_modules/prettier",
 	"prettier.withNodeModules": true,
 	"prettier.useEditorConfig": false
 }

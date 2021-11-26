@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Task } from "discord-akairo";
+import { Task } from "#discord-akairo";
 
 export default class CountTask extends Task {
 	public constructor() {

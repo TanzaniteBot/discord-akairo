@@ -14,9 +14,6 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: lib
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -26,8 +23,6 @@ jobs:
           node-version: 16.x
       - name: Yarn Cache
         uses: c-hive/gha-yarn-cache@v2
-        with:
-          directory: lib
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - name: ESLint
@@ -38,9 +33,6 @@ jobs:
   check-formatting:
     name: Check formatting
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: lib
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -53,8 +45,6 @@ jobs:
           node-version: 16.x
       - name: Yarn Cache
         uses: c-hive/gha-yarn-cache@v2
-        with:
-          directory: lib
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - name: Configure Git

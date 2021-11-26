@@ -7,9 +7,6 @@ jobs:
   npm:
     name: npm
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: lib
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -28,8 +25,6 @@ jobs:
       - name: Yarn Cache
         if: steps.pre-release.outputs.release == 'true'
         uses: c-hive/gha-yarn-cache@v2
-        with:
-          directory: lib
       - name: Install Dependencies
         if: steps.pre-release.outputs.release == 'true'
         run: yarn install

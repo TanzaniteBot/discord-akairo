@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { AkairoMessage, Command } from "discord-akairo";
+import { AkairoMessage, Command } from "#discord-akairo";
 import { Formatters, Message } from "discord.js";
 import util from "util";
 

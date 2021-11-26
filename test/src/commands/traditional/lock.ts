@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Command } from "discord-akairo";
+import { Command } from "#discord-akairo";
 import { Message } from "discord.js";
 import { promisify } from "util";
 

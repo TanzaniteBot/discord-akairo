@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { Listener } from "discord-akairo";
+import { Listener } from "#discord-akairo";
 import { Message } from "discord.js";
 
 export default class MessageListener extends Listener {

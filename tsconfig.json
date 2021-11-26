@@ -14,8 +14,8 @@
 		"declarationMap": true,
 		"declaration": true,
 		"sourceMap": true,
-		"noEmitHelpers": true,
-		"importHelpers": true
+		"noEmitHelpers": false,
+		"importHelpers": false
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]

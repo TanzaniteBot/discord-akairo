@@ -7,9 +7,6 @@ jobs:
   auto-deprecate:
     name: Auto Deprecate
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: lib
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -19,8 +16,6 @@ jobs:
           node-version: 16
       - name: Yarn Cache
         uses: c-hive/gha-yarn-cache@v2
-        with:
-          directory: lib
       - name: Install dependencies
         run: yarn install
       - name: Deprecate versions

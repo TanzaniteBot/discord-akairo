@@ -10,6 +10,13 @@
 		"strict": true,
 		"noImplicitOverride": true
 	},
-  "include": ["lib/src/**/*.ts"],
-  "exclude": ["lib/node_modules", "lib/dist"]
+	"include": [
+		"src/**/*.ts",
+		"test/**/*.ts",
+		"test/**/*.js"
+	],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
 }

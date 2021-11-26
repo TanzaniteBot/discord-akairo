@@ -1,4 +1,4 @@
-import { ContextMenuCommand } from "discord-akairo";
+import { ContextMenuCommand } from "#discord-akairo";
 import { ContextMenuInteraction, Formatters } from "discord.js";
 import { inspect } from "util";
 

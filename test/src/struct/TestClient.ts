@@ -5,7 +5,7 @@ import {
 	InhibitorHandler,
 	ListenerHandler,
 	TaskHandler
-} from "discord-akairo";
+} from "#discord-akairo";
 import { Intents } from "discord.js";
 import path from "path";
 
