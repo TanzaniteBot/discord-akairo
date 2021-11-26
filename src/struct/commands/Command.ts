@@ -1,8 +1,10 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import {
+	ApplicationCommandAutocompleteOption,
 	ApplicationCommandChannelOptionData,
 	ApplicationCommandChoicesData,
 	ApplicationCommandNonOptionsData,
+	ApplicationCommandNumericOptionData,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
 	Message,
@@ -578,6 +580,24 @@ export interface AkairoApplicationCommandChoicesData extends ApplicationCommandC
 	resolve?: SlashResolveTypes;
 }
 
+export interface AkairoApplicationCommandAutocompleteOption extends ApplicationCommandAutocompleteOption {
+	/**
+	 * Allows you to get a discord resolved object
+	 *
+	 * ex. get the resolved member object when the type is `USER`
+	 */
+	resolve?: SlashResolveTypes;
+}
+
+export interface AkairoApplicationCommandNumericOptionData extends ApplicationCommandNumericOptionData {
+	/**
+	 * Allows you to get a discord resolved object
+	 *
+	 * ex. get the resolved member object when the type is `USER`
+	 */
+	resolve?: SlashResolveTypes;
+}
+
 export interface AkairoApplicationCommandNonOptionsData extends ApplicationCommandNonOptionsData {
 	/**
 	 * Allows you to get a discord resolved object
@@ -601,6 +621,8 @@ export type AkairoApplicationCommandOptionData =
 	| AkairoApplicationCommandNonOptionsData
 	| AkairoApplicationCommandChannelOptionData
 	| AkairoApplicationCommandChoicesData
+	| AkairoApplicationCommandAutocompleteOption
+	| AkairoApplicationCommandNumericOptionData
 	| AkairoApplicationCommandSubCommandData;
 
 export type SlashOption = AkairoApplicationCommandOptionData & {

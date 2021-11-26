@@ -23,9 +23,11 @@ import Argument, {
 } from "./struct/commands/arguments/Argument";
 import TypeResolver from "./struct/commands/arguments/TypeResolver";
 import Command, {
+	AkairoApplicationCommandAutocompleteOption,
 	AkairoApplicationCommandChannelOptionData,
 	AkairoApplicationCommandChoicesData,
 	AkairoApplicationCommandNonOptionsData,
+	AkairoApplicationCommandNumericOptionData,
 	AkairoApplicationCommandOptionData,
 	AkairoApplicationCommandSubCommandData,
 	AkairoApplicationCommandSubGroupData,
@@ -118,6 +120,8 @@ export type {
 	AkairoApplicationCommandChoicesData,
 	AkairoApplicationCommandNonOptionsData,
 	AkairoApplicationCommandOptionData,
+	AkairoApplicationCommandAutocompleteOption,
+	AkairoApplicationCommandNumericOptionData,
 	AkairoApplicationCommandSubCommandData,
 	AkairoApplicationCommandSubGroupData,
 	AkairoClientEvents,
