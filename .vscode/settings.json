@@ -5,7 +5,7 @@
 	"files.exclude": {
 		"**/node_modules": true,
 		"**/*js.map": true,
-		"**/*d.ts.map": true,
+		"**/*d.ts.map": true
 	},
 	"editor.codeActionsOnSave": {
 		"source.organizeImports": true,
