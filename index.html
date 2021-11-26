@@ -1,0 +1,124 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@notenoughupdates/discord-akairo</title><meta name="description" content="Documentation for @notenoughupdates/discord-akairo"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@notenoughupdates/discord-akairo</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@notenoughupdates/discord-akairo</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography"><!-- markdownlint-disable MD041 MD033 MD001 MD026 -->
+<div align="center">
+  <br />
+  <p>
+    <a href="https://github.com/NotEnoughUpdates/discord-akairo/wiki"><img src="https://discord-akairo.github.io/static/logo.svg" width="546" alt="discord-akairo" /></a>
+  </p>
+  <br />
+  <p>
+    <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://img.shields.io/npm/v/@notenoughupdates/discord-akairo.svg?maxAge=3600" alt="NPM version" /></a>
+    <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://img.shields.io/npm/dt/@notenoughupdates/discord-akairo.svg?maxAge=3600" alt="NPM downloads" /></a>
+    <a href="https://github.com/NotEnoughUpdates/discord-akairo/actions"><img src="https://img.shields.io/github/workflow/status/NotEnoughUpdates/discord-akairo/Test/master" alt="Build status" /></a>
+  </p>
+  <p>
+    <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://nodeico.herokuapp.com/@notenoughupdates/discord-akairo.svg" alt="npm installnfo" /></a>
+  </p>
+</div>
+
+
+<a href="#changes-in-this-fork-of-akairo" id="changes-in-this-fork-of-akairo" style="color: inherit; text-decoration: none;">
+  <h3>Changes in this fork of akairo</h3>
+</a>
+<p>Please see <a href="/docs/general/updates.md">this file</a> for a list of changes in this fork vs normal akairo.
+If you have any questions related to this fork please contact <code>IRONM00N#0001</code> in the akairo server or join my <a href="https://discord.gg/7FpsYp2c47">bot&#39;s discord</a>.</p>
+
+<a href="#features" id="features" style="color: inherit; text-decoration: none;">
+  <h2>Features</h2>
+</a>
+
+<a href="#completely-modular-commands-inhibitors-and-listeners" id="completely-modular-commands-inhibitors-and-listeners" style="color: inherit; text-decoration: none;">
+  <h4>Completely modular commands, inhibitors, and listeners.</h4>
+</a>
+<ul>
+<li>Reading files recursively from directories.</li>
+<li>Adding, removing, and reloading modules.</li>
+<li>Creating your own handlers and module types.</li>
+</ul>
+
+<a href="#flexible-command-handling-and-creation" id="flexible-command-handling-and-creation" style="color: inherit; text-decoration: none;">
+  <h4>Flexible command handling and creation.</h4>
+</a>
+<ul>
+<li>Command aliases.</li>
+<li>Command throttling and cooldowns.</li>
+<li>Client and user permission checks.</li>
+<li>Running commands on edits and editing previous responses.</li>
+<li>Multiple prefixes and mention prefixes.</li>
+<li>Regular expression and conditional triggers.</li>
+</ul>
+
+<a href="#complex-and-highly-customizable-arguments" id="complex-and-highly-customizable-arguments" style="color: inherit; text-decoration: none;">
+  <h4>Complex and highly customizable arguments.</h4>
+</a>
+<ul>
+<li>Support for quoted arguments.</li>
+<li>Arguments based on previous arguments.</li>
+<li>Several ways to match arguments, such as flag arguments.</li>
+<li>Casting input into certain types.<ul>
+<li>Simple types such as string, integer, float, url, date, etc.</li>
+<li>Discord-related types such as user, member, message, etc.</li>
+<li>Types that you can add yourself.</li>
+<li>Asynchronous type casting.</li>
+</ul>
+</li>
+<li>Prompting for input for arguments.<ul>
+<li>Customizable prompts with embeds, files, etc.</li>
+<li>Easily include dynamic data such as the incorrect input.</li>
+<li>Infinite argument prompting.</li>
+</ul>
+</li>
+</ul>
+
+<a href="#blocking-and-monitoring-messages-with-inhibitors" id="blocking-and-monitoring-messages-with-inhibitors" style="color: inherit; text-decoration: none;">
+  <h4>Blocking and monitoring messages with inhibitors.</h4>
+</a>
+<ul>
+<li>Run at various stages of command handling.<ul>
+<li>On all messages.</li>
+<li>On messages that are from valid users.</li>
+<li>On messages before commands.</li>
+</ul>
+</li>
+</ul>
+
+<a href="#helpful-events-and-modular-listeners" id="helpful-events-and-modular-listeners" style="color: inherit; text-decoration: none;">
+  <h4>Helpful events and modular listeners.</h4>
+</a>
+<ul>
+<li>Events for handlers, such as loading modules.</li>
+<li>Events for various stages of command handling.</li>
+<li>Reloadable listeners to easily separate your event handling.</li>
+</ul>
+
+<a href="#useful-utilities" id="useful-utilities" style="color: inherit; text-decoration: none;">
+  <h4>Useful utilities.</h4>
+</a>
+<ul>
+<li>Resolvers for members, users, and others that can filter by name.</li>
+<li>Shortcut methods for making embeds and collections.</li>
+</ul>
+
+<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+  <h2>Installation</h2>
+</a>
+
+<a href="#requires-node-16-and-discordjs-v13" id="requires-node-16-and-discordjs-v13" style="color: inherit; text-decoration: none;">
+  <h5>Requires Node 16+ and Discord.js v13.</h5>
+</a>
+<p><strong>discord-akairo</strong><br /><code>yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@dev</code><br /><code>npm i discord-akairo@npm:@notenoughupdates/discord-akairo</code><br /></p>
+<p><strong>discord.js fork</strong><br /><em>optional you can use regular discord.js instead if you want</em><br /><code>yarn add discord.js@npm:@notenoughupdates/discord.js@dev</code><br /><code>npm i discord.js@npm:@notenoughupdates/discord.js</code><br /></p>
+
+<a href="#links" id="links" style="color: inherit; text-decoration: none;">
+  <h2>Links</h2>
+</a>
+<ul>
+<li><a href="https://github.com/NotEnoughUpdates/discord-akairo/wiki">Website</a></li>
+<li><a href="https://github.com/NotEnoughUpdates/discord-akairo">Repository</a></li>
+<li><a href="https://discord.gg/7FpsYp2c47">Discord</a><!-- - [Changelog](https://github.com/discord-akairo/discord-akairo/releases) --></li>
+</ul>
+
+<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
+  <h2>Contributing</h2>
+</a>
+<p>Open an issue or a pull request!<br>Everyone is welcome to do so.<br>Make sure to run <code>yarn test</code> before committing.</p>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li><li class=" tsd-kind-namespace"><a href="modules/Constants.html">Constants</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/AkairoClient.html" class="tsd-kind-icon">Akairo<wbr/>Client</a></li><li class="tsd-kind-class"><a href="classes/AkairoError.html" class="tsd-kind-icon">Akairo<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/AkairoHandler.html" class="tsd-kind-icon">Akairo<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/AkairoMessage.html" class="tsd-kind-icon">Akairo<wbr/>Message</a></li><li class="tsd-kind-class"><a href="classes/AkairoModule.html" class="tsd-kind-icon">Akairo<wbr/>Module</a></li><li class="tsd-kind-class"><a href="classes/Argument.html" class="tsd-kind-icon">Argument</a></li><li class="tsd-kind-class"><a href="classes/ArgumentRunner.html" class="tsd-kind-icon">Argument<wbr/>Runner</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/Category.html" class="tsd-kind-icon">Category</a></li><li class="tsd-kind-class"><a href="classes/ClientUtil.html" class="tsd-kind-icon">Client<wbr/>Util</a></li><li class="tsd-kind-class"><a href="classes/Command.html" class="tsd-kind-icon">Command</a></li><li class="tsd-kind-class"><a href="classes/CommandHandler.html" class="tsd-kind-icon">Command<wbr/>Handler</a></li><li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/CommandUtil.html" class="tsd-kind-icon">Command<wbr/>Util</a></li><li class="tsd-kind-class"><a href="classes/ContentParser.html" class="tsd-kind-icon">Content<wbr/>Parser</a></li><li class="tsd-kind-class"><a href="classes/ContextMenuCommand.html" class="tsd-kind-icon">Context<wbr/>Menu<wbr/>Command</a></li><li class="tsd-kind-class"><a href="classes/ContextMenuCommandHandler.html" class="tsd-kind-icon">Context<wbr/>Menu<wbr/>Command<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/Flag.html" class="tsd-kind-icon">Flag</a></li><li class="tsd-kind-class"><a href="classes/Inhibitor.html" class="tsd-kind-icon">Inhibitor</a></li><li class="tsd-kind-class"><a href="classes/InhibitorHandler.html" class="tsd-kind-icon">Inhibitor<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/Listener.html" class="tsd-kind-icon">Listener</a></li><li class="tsd-kind-class"><a href="classes/ListenerHandler.html" class="tsd-kind-icon">Listener<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/Task.html" class="tsd-kind-icon">Task</a></li><li class="tsd-kind-class"><a href="classes/TaskHandler.html" class="tsd-kind-icon">Task<wbr/>Handler</a></li><li class="tsd-kind-class"><a href="classes/TypeResolver.html" class="tsd-kind-icon">Type<wbr/>Resolver</a></li><li class="tsd-kind-class"><a href="classes/Util.html" class="tsd-kind-icon">Util</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandAutocompleteOption.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Autocomplete<wbr/>Option</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandChannelOptionData.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Channel<wbr/>Option<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandChoicesData.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Choices<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandNonOptionsData.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Non<wbr/>Options<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandNumericOptionData.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Numeric<wbr/>Option<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandSubCommandData.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Sub<wbr/>Command<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoApplicationCommandSubGroupData.html" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Sub<wbr/>Group<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoClientEvents.html" class="tsd-kind-icon">Akairo<wbr/>Client<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoHandlerEvents.html" class="tsd-kind-icon">Akairo<wbr/>Handler<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoHandlerOptions.html" class="tsd-kind-icon">Akairo<wbr/>Handler<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoModuleOptions.html" class="tsd-kind-icon">Akairo<wbr/>Module<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/AkairoOptions.html" class="tsd-kind-icon">Akairo<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ArgumentOptions.html" class="tsd-kind-icon">Argument<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ArgumentPromptData.html" class="tsd-kind-icon">Argument<wbr/>Prompt<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/ArgumentPromptOptions.html" class="tsd-kind-icon">Argument<wbr/>Prompt<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ArgumentRunnerState.html" class="tsd-kind-icon">Argument<wbr/>Runner<wbr/>State</a></li><li class="tsd-kind-interface"><a href="interfaces/CommandHandlerEvents.html" class="tsd-kind-icon">Command<wbr/>Handler<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/CommandHandlerOptions.html" class="tsd-kind-icon">Command<wbr/>Handler<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/CommandOptions.html" class="tsd-kind-icon">Command<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ContentParserOptions.html" class="tsd-kind-icon">Content<wbr/>Parser<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ContentParserResult.html" class="tsd-kind-icon">Content<wbr/>Parser<wbr/>Result</a></li><li class="tsd-kind-interface"><a href="interfaces/ContextMenuCommandHandlerEvents.html" class="tsd-kind-icon">Context<wbr/>Menu<wbr/>Command<wbr/>Handler<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/ContextMenuCommandOptions.html" class="tsd-kind-icon">Context<wbr/>Menu<wbr/>Command<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/CooldownData.html" class="tsd-kind-icon">Cooldown<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/DefaultArgumentOptions.html" class="tsd-kind-icon">Default<wbr/>Argument<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ExtractedFlags.html" class="tsd-kind-icon">Extracted<wbr/>Flags</a></li><li class="tsd-kind-interface"><a href="interfaces/FailureData.html" class="tsd-kind-icon">Failure<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/InhibitorHandlerEvents.html" class="tsd-kind-icon">Inhibitor<wbr/>Handler<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/InhibitorOptions.html" class="tsd-kind-icon">Inhibitor<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ListenerHandlerEvents.html" class="tsd-kind-icon">Listener<wbr/>Handler<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/ListenerOptions.html" class="tsd-kind-icon">Listener<wbr/>Options</a></li><li class="tsd-kind-interface"><a href="interfaces/ParsedComponentData.html" class="tsd-kind-icon">Parsed<wbr/>Component<wbr/>Data</a></li><li class="tsd-kind-interface"><a href="interfaces/TaskHandlerEvents.html" class="tsd-kind-icon">Task<wbr/>Handler<wbr/>Events</a></li><li class="tsd-kind-interface"><a href="interfaces/TaskOptions.html" class="tsd-kind-icon">Task<wbr/>Options</a></li><li class="tsd-kind-type-alias"><a href="modules.html#AkairoApplicationCommandOptionData" class="tsd-kind-icon">Akairo<wbr/>Application<wbr/>Command<wbr/>Option<wbr/>Data</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ArgumentGenerator" class="tsd-kind-icon">Argument<wbr/>Generator</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ArgumentMatch" class="tsd-kind-icon">Argument<wbr/>Match</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ArgumentType" class="tsd-kind-icon">Argument<wbr/>Type</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ArgumentTypeCaster" class="tsd-kind-icon">Argument<wbr/>Type<wbr/>Caster</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ArgumentTypeCaster_" class="tsd-kind-icon">Argument<wbr/>Type<wbr/>Caster_</a></li><li class="tsd-kind-type-alias"><a href="modules.html#BaseArgumentType" class="tsd-kind-icon">Base<wbr/>Argument<wbr/>Type</a></li><li class="tsd-kind-type-alias"><a href="modules.html#BeforeAction" class="tsd-kind-icon">Before<wbr/>Action</a></li><li class="tsd-kind-type-alias"><a href="modules.html#DefaultValueSupplier" class="tsd-kind-icon">Default<wbr/>Value<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ExecutionPredicate" class="tsd-kind-icon">Execution<wbr/>Predicate</a></li><li class="tsd-kind-type-alias"><a href="modules.html#GuildTextBasedChannels" class="tsd-kind-icon">Guild<wbr/>Text<wbr/>Based<wbr/>Channels</a></li><li class="tsd-kind-type-alias"><a href="modules.html#IgnoreCheckPredicate" class="tsd-kind-icon">Ignore<wbr/>Check<wbr/>Predicate</a></li><li class="tsd-kind-type-alias"><a href="modules.html#KeySupplier" class="tsd-kind-icon">Key<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ListenerType" class="tsd-kind-icon">Listener<wbr/>Type</a></li><li class="tsd-kind-type-alias"><a href="modules.html#LoadPredicate" class="tsd-kind-icon">Load<wbr/>Predicate</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MentionPrefixPredicate" class="tsd-kind-icon">Mention<wbr/>Prefix<wbr/>Predicate</a></li><li class="tsd-kind-type-alias"><a href="modules.html#MissingPermissionSupplier" class="tsd-kind-icon">Missing<wbr/>Permission<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#OtherwiseContentModifier" class="tsd-kind-icon">Otherwise<wbr/>Content<wbr/>Modifier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#OtherwiseContentSupplier" class="tsd-kind-icon">Otherwise<wbr/>Content<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#ParsedValuePredicate" class="tsd-kind-icon">Parsed<wbr/>Value<wbr/>Predicate</a></li><li class="tsd-kind-type-alias"><a href="modules.html#PrefixSupplier" class="tsd-kind-icon">Prefix<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#PromptContentModifier" class="tsd-kind-icon">Prompt<wbr/>Content<wbr/>Modifier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#PromptContentSupplier" class="tsd-kind-icon">Prompt<wbr/>Content<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#RegexSupplier" class="tsd-kind-icon">Regex<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#SlashOption" class="tsd-kind-icon">Slash<wbr/>Option</a></li><li class="tsd-kind-type-alias"><a href="modules.html#SlashPermissionsSupplier" class="tsd-kind-icon">Slash<wbr/>Permissions<wbr/>Supplier</a></li><li class="tsd-kind-type-alias"><a href="modules.html#SlashResolveTypes" class="tsd-kind-icon">Slash<wbr/>Resolve<wbr/>Types</a></li><li class="tsd-kind-type-alias"><a href="modules.html#StringData" class="tsd-kind-icon">String<wbr/>Data</a></li><li class="tsd-kind-variable"><a href="modules.html#version" class="tsd-kind-icon">version</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li><li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>
