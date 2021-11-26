@@ -7,6 +7,7 @@ import {
 	CommandInteraction,
 	CommandInteractionOption,
 	CommandInteractionOptionResolver,
+	Guild,
 	GuildApplicationCommandPermissionData,
 	GuildResolvable,
 	Message,
@@ -391,7 +392,7 @@ export default class CommandHandler extends AkairoHandler {
 					return temp as ApplicationCommandOptionData;
 				}),
 				guilds: data.slashGuilds ?? [],
-				defaultPermission: !(data.ownerOnly || /* data.superUserOnly || */ false),
+				defaultPermission: data.slashDefaultPermission,
 				type: "CHAT_INPUT"
 			});
 		}
@@ -478,39 +479,48 @@ export default class CommandHandler extends AkairoHandler {
 		owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */
 	) {
 		const mapCom = (
-			value: ApplicationCommand<{
-				guild: GuildResolvable;
-			}>
-		): { id: string; permissions: { id: string; type: "USER"; permission: boolean }[] } => {
+			value: ApplicationCommand<{ guild: GuildResolvable }>,
+			guild: Guild
+		): GuildApplicationCommandPermissionData => {
 			const command = this.modules.find(mod => mod.aliases[0] === value.name);
-			let allowedUsers: string[] = [];
-			/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
-			if (command?.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
-			allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
 
-			return {
-				id: value.id,
-				permissions: allowedUsers.map(u => ({
-					id: u,
-					type: "USER",
-					permission: true
-				}))
-			};
+			if (!command?.slashPermissions) {
+				let allowedUsers: string[] = [];
+				/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
+				if (command?.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
+				allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
+
+				return {
+					id: value.id,
+					permissions: allowedUsers.map(u => ({
+						id: u,
+						type: "USER",
+						permission: true
+					}))
+				};
+			} else {
+				return {
+					id: value.id,
+					permissions:
+						typeof command.slashPermissions === "function" ? command.slashPermissions(guild) : command.slashPermissions
+				};
+			}
 		};
 
 		const globalCommands = (await this.client.application?.commands.fetch())?.filter(value =>
 			Boolean(this.modules.find(mod => mod.aliases[0] === value.name))
 		);
-		const fullPermissions: GuildApplicationCommandPermissionData[] | undefined = globalCommands
+		const fullPermissions = globalCommands
 			?.filter(value => !value.defaultPermission)
-			.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)))
-			.map(value => mapCom(value));
+			.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)));
 
 		const promises = this.client.guilds.cache.map(async guild => {
-			const perms = new Array(...(fullPermissions ?? []));
+			const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
 			await guild.commands.fetch();
 			if (guild.commands.cache.size)
-				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value)));
+				perms.push(
+					...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild))
+				);
 			if (guild.available)
 				return guild.commands.permissions.set({
 					fullPermissions: perms

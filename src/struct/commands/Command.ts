@@ -5,9 +5,11 @@ import {
 	ApplicationCommandChoicesData,
 	ApplicationCommandNonOptionsData,
 	ApplicationCommandNumericOptionData,
+	ApplicationCommandPermissionData,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
 	AutocompleteInteraction,
+	Guild,
 	Message,
 	PermissionResolvable,
 	Snowflake
@@ -33,9 +35,19 @@ export default abstract class Command extends AkairoModule {
 	public declare aliases: string[];
 
 	/**
+	 * Argument options or generator.
+	 */
+	public declare _args?: ArgumentOptions[] | ArgumentGenerator;
+
+	/**
 	 * Default prompt options.
 	 */
 	public declare argumentDefaults: DefaultArgumentOptions;
+
+	/**
+	 * The argument runner.
+	 */
+	public declare argumentRunner: ArgumentRunner;
 
 	/**
 	 * Category the command belongs to.
@@ -60,12 +72,17 @@ export default abstract class Command extends AkairoModule {
 	/**
 	 * Cooldown in milliseconds.
 	 */
-	public declare cooldown?: number;
+	public declare cooldown: number | null;
+
+	/**
+	 * The content parser.
+	 */
+	public declare contentParser: ContentParser;
 
 	/**
 	 * Description of the command.
 	 */
-	public declare description: any;
+	public declare description: string | any | any[];
 
 	/**
 	 * Whether or not this command can be ran by an edit.
@@ -143,6 +160,13 @@ export default abstract class Command extends AkairoModule {
 	public declare slash?: boolean;
 
 	/**
+	 * The default permission to set when creating the slash command.
+	 *
+	 * **Note:** Requires the useSlashPermissions to be enabled in the command handler
+	 */
+	public declare slashDefaultPermission: boolean;
+
+	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
 	 */
 	public declare slashEphemeral?: boolean;
@@ -153,14 +177,19 @@ export default abstract class Command extends AkairoModule {
 	public declare slashGuilds?: Snowflake[];
 
 	/**
-	 *
-	 */
-	public declare slashPermissions?: unknown;
-
-	/**
 	 * Options for using the slash command.
 	 */
 	public declare slashOptions?: SlashOption[];
+
+	/**
+	 * The slash permissions to set in each guild for this command.
+	 */
+	public declare slashPermissions?: ApplicationCommandPermissionData[] | SlashPermissionsSupplier;
+
+	/**
+	 * Only allows this command to be executed as a slash command.
+	 */
+	public declare slashOnly: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
@@ -178,26 +207,6 @@ export default abstract class Command extends AkairoModule {
 	public declare userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
-	 * Argument options or generator.
-	 */
-	public declare _args?: ArgumentOptions[] | ArgumentGenerator;
-
-	/**
-	 * The content parser.
-	 */
-	public declare contentParser: ContentParser;
-
-	/**
-	 * The argument runner.
-	 */
-	public declare argumentRunner: ArgumentRunner;
-
-	/**
-	 * Only allows this command to be executed as a slash command.
-	 */
-	public declare slashOnly: boolean;
-
-	/**
 	 * Generator for arguments.
 	 */
 	public declare argumentGenerator: ArgumentGenerator;
@@ -210,36 +219,38 @@ export default abstract class Command extends AkairoModule {
 		super(id, { category: options?.category });
 
 		const {
-			onlyNsfw = false,
 			aliases = [],
 			args = this._args || this.args || [],
-			quoted = true,
-			separator,
-			channel = null!,
-			ownerOnly = false,
-			superUserOnly = false,
-			editable = true,
-			typing = false,
-			cooldown = null!,
-			ratelimit = 1,
 			argumentDefaults = {},
-			description = "",
-			prefix = this.prefix,
-			clientPermissions = this.clientPermissions,
-			userPermissions = this.userPermissions,
-			regex = this.regex,
-			condition = this.condition || (() => false),
 			before = this.before || (() => undefined),
-			lock,
+			channel = null,
+			clientPermissions = this.clientPermissions,
+			condition = this.condition || (() => false),
+			cooldown = null,
+			description = "",
+			editable = true,
+			flags = [],
 			ignoreCooldown,
 			ignorePermissions,
-			flags = [],
+			lock,
+			onlyNsfw = false,
 			optionFlags = [],
+			ownerOnly = false,
+			prefix = this.prefix,
+			quoted = true,
+			ratelimit = 1,
+			regex = this.regex,
+			separator,
 			slash = false,
-			slashOptions,
+			slashDefaultPermission = this.handler.useSlashPermissions ? !this.ownerOnly : true,
 			slashEphemeral = false,
 			slashGuilds = [],
-			slashOnly = false
+			slashOnly = false,
+			slashOptions,
+			slashPermissions,
+			superUserOnly = false,
+			typing = false,
+			userPermissions = this.userPermissions
 		} = options;
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
@@ -257,23 +268,23 @@ export default abstract class Command extends AkairoModule {
 				? ArgumentRunner.fromArguments(args.map(arg => [arg.id!, new Argument(this, arg)]))
 				: args.bind(this)
 		) as ArgumentGenerator;
-		this.onlyNsfw = Boolean(onlyNsfw);
-		this.channel = channel!;
-		this.ownerOnly = Boolean(ownerOnly);
-		this.superUserOnly = Boolean(superUserOnly);
-		this.editable = Boolean(editable);
-		this.typing = Boolean(typing);
-		this.cooldown = cooldown!;
-		this.ratelimit = ratelimit;
 		this.argumentDefaults = argumentDefaults;
-		this.description = Array.isArray(description) ? description.join("\n") : description;
-		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
-		this.clientPermissions = typeof clientPermissions === "function" ? clientPermissions.bind(this) : clientPermissions;
-		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
-		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
-		this.condition = condition.bind(this);
 		this.before = before.bind(this);
+		this.channel = channel!;
+		this.clientPermissions = typeof clientPermissions === "function" ? clientPermissions.bind(this) : clientPermissions;
+		this.condition = condition.bind(this);
+		this.cooldown = cooldown!;
+		this.description = Array.isArray(description) ? description.join("\n") : description;
+		this.editable = Boolean(editable);
 		this.lock = lock;
+		this.onlyNsfw = Boolean(onlyNsfw);
+		this.ownerOnly = Boolean(ownerOnly);
+		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
+		this.ratelimit = ratelimit;
+		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
+		this.superUserOnly = Boolean(superUserOnly);
+		this.typing = Boolean(typing);
+		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
 		if (typeof lock === "string") {
 			this.lock = {
 				guild: (message: Message | AkairoMessage): string => message.guild! && message.guild.id!,
@@ -284,11 +295,13 @@ export default abstract class Command extends AkairoModule {
 		if (this.lock) this.locker = new Set();
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
-		this.slashOptions = slashOptions;
-		this.slashEphemeral = slashEphemeral;
 		this.slash = slash;
+		this.slashDefaultPermission = slashDefaultPermission;
+		this.slashEphemeral = slashEphemeral;
 		this.slashGuilds = slashGuilds;
 		this.slashOnly = slashOnly;
+		this.slashOptions = slashOptions;
+		this.slashPermissions = typeof slashPermissions === "function" ? slashPermissions.bind(this) : slashPermissions;
 	}
 
 	/**
@@ -376,56 +389,67 @@ export default interface Command {
 export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * Command names.
+	 * @default []
 	 */
 	aliases?: string[];
 
 	/**
 	 * Argument options or generator.
+	 * @default this._args || this.args || []
 	 */
 	args?: ArgumentOptions[] | ArgumentGenerator;
 
 	/**
 	 * The default argument options.
+	 * @default {}
 	 */
 	argumentDefaults?: DefaultArgumentOptions;
 
 	/**
 	 * Function to run before argument parsing and execution.
+	 * @default this.before || (() => undefined)
 	 */
 	before?: BeforeAction;
 
 	/**
 	 * Restricts channel to either 'guild' or 'dm'.
+	 * @default null
 	 */
 	channel?: "guild" | "dm";
 
 	/**
 	 * Permissions required by the client to run this command.
+	 * @default this.clientPermissions
 	 */
 	clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 
 	/**
 	 * Whether or not to run on messages that are not directly commands.
+	 * @default this.condition || (() => false)
 	 */
 	condition?: ExecutionPredicate;
 
 	/**
 	 * The command cooldown in milliseconds.
+	 * @default null
 	 */
 	cooldown?: number;
 
 	/**
 	 * Description of the command.
+	 * @default ""
 	 */
 	description?: string | any | any[];
 
 	/**
 	 * Whether or not message edits will run this command.
+	 * @default true
 	 */
 	editable?: boolean;
 
 	/**
 	 * Flags to use when using an ArgumentGenerator
+	 * @default []
 	 */
 	flags?: string[];
 
@@ -446,36 +470,43 @@ export interface CommandOptions extends AkairoModuleOptions {
 
 	/**
 	 * Whether or not to only allow the command to be run in NSFW channels.
+	 * @default false
 	 */
 	onlyNsfw?: boolean;
 
 	/**
 	 * Option flags to use when using an ArgumentGenerator.
+	 * @default []
 	 */
 	optionFlags?: string[];
 
 	/**
 	 * Whether or not to allow client owner(s) only.
+	 * @default false
 	 */
 	ownerOnly?: boolean;
 
 	/**
 	 * The prefix(es) to overwrite the global one for this command.
+	 * @default this.prefix
 	 */
 	prefix?: string | string[] | PrefixSupplier;
 
 	/**
 	 * Whether or not to consider quotes.
+	 * @default true
 	 */
 	quoted?: boolean;
 
 	/**
 	 * Amount of command uses allowed until cooldown.
+	 * @default 1
 	 */
 	ratelimit?: number;
 
 	/**
 	 * A regex to match in messages that are not directly commands. The args object will have `match` and `matches` properties.
+	 * @default this.regex
 	 */
 	regex?: RegExp | RegexSupplier;
 
@@ -486,16 +517,27 @@ export interface CommandOptions extends AkairoModuleOptions {
 
 	/**
 	 * Mark command as slash command and set information.
+	 * @default false
 	 */
 	slash?: boolean;
 
 	/**
+	 * The default permission to set when creating the slash command.
+	 *
+	 * **Note:** Requires `useSlashPermissions` to be enabled in the command handler
+	 * @default this.handler.useSlashPermissions ? !this.ownerOnly : true
+	 */
+	slashDefaultPermission?: boolean;
+
+	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
+	 * @default false
 	 */
 	slashEphemeral?: boolean;
 
 	/**
 	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only to the chosen servers.
+	 * @default []
 	 */
 	slashGuilds?: string[];
 
@@ -505,24 +547,32 @@ export interface CommandOptions extends AkairoModuleOptions {
 	slashOptions?: SlashOption[];
 
 	/**
-	 * Whether or not to allow client superUsers(s) only.
+	 * The slash permissions to set in each guild for this command.
 	 */
-	superUserOnly?: boolean;
-
-	/**
-	 * Whether or not to type in channel during execution.
-	 */
-	typing?: boolean;
-
-	/**
-	 * Permissions required by the user to run this command.
-	 */
-	userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	slashPermissions?: ApplicationCommandPermissionData[] | SlashPermissionsSupplier;
 
 	/**
 	 * Only allow this command to be used as a slash command. Also makes `slash` `true`
 	 */
 	slashOnly?: boolean;
+
+	/**
+	 * Whether or not to allow client superUsers(s) only.
+	 * @default false
+	 */
+	superUserOnly?: boolean;
+
+	/**
+	 * Whether or not to type in channel during execution.
+	 * @default false
+	 */
+	typing?: boolean;
+
+	/**
+	 * Permissions required by the user to run this command.
+	 * @default this.userPermissions
+	 */
+	userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
 }
 
 /**
@@ -550,6 +600,12 @@ export type ExecutionPredicate = (message: Message) => boolean | Promise<boolean
  * @param message - Message that triggered the command.
  */
 export type MissingPermissionSupplier = (message: Message | AkairoMessage) => Promise<any> | any;
+
+/**
+ * A function used to create slash permissions depending on the guild.
+ * @param guild The guild to create slash permissions for.
+ */
+export type SlashPermissionsSupplier = (guild: Guild) => ApplicationCommandPermissionData[];
 
 /**
  * A function used to return a regular expression.
