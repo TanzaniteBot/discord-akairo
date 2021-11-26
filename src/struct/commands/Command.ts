@@ -7,6 +7,7 @@ import {
 	ApplicationCommandNumericOptionData,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
+	AutocompleteInteraction,
 	Message,
 	PermissionResolvable,
 	Snowflake
@@ -150,6 +151,11 @@ export default abstract class Command extends AkairoModule {
 	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
 	public declare slashGuilds?: Snowflake[];
+
+	/**
+	 *
+	 */
+	public declare slashPermissions?: unknown;
 
 	/**
 	 * Options for using the slash command.
@@ -334,6 +340,12 @@ export default abstract class Command extends AkairoModule {
 			throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "execSlash");
 		}
 	}
+
+	/**
+	 * Respond to autocomplete interactions for this command.
+	 * @param interaction The autocomplete interaction
+	 */
+	public autocomplete(interaction: AutocompleteInteraction): any {}
 
 	/**
 	 * Parses content using the command's arguments.

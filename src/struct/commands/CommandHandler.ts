@@ -1,6 +1,7 @@
 import {
 	ApplicationCommand,
 	ApplicationCommandOptionData,
+	AutocompleteInteraction,
 	Awaitable,
 	Collection,
 	CommandInteraction,
@@ -342,8 +343,8 @@ export default class CommandHandler extends AkairoHandler {
 				});
 			}
 			this.client.on("interactionCreate", i => {
-				if (!i.isCommand()) return;
-				this.handleSlash(i);
+				if (i.isCommand()) this.handleSlash(i);
+				if (i.isAutocomplete()) this.handleAutocomplete(i);
 			});
 		});
 	}
@@ -855,6 +856,17 @@ export default class CommandHandler extends AkairoHandler {
 			this.emitError(err, message, commandModule);
 			return null;
 		}
+	}
+
+	public handleAutocomplete(interaction: AutocompleteInteraction): void {
+		const commandModule = this.findCommand(interaction.commandName);
+
+		if (!commandModule) {
+			this.emit(CommandHandlerEvents.SLASH_NOT_FOUND, interaction);
+			return;
+		}
+
+		commandModule.autocomplete(interaction);
 	}
 
 	/**
