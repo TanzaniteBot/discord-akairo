@@ -548,6 +548,9 @@ export default class CommandHandler extends AkairoHandler {
 	public override register(command: Command, filepath?: string): void {
 		super.register(command, filepath);
 
+		if (command.slashDefaultPermission === undefined)
+			command.slashDefaultPermission = this.useSlashPermissions ? !command.ownerOnly : true;
+
 		for (let alias of command.aliases) {
 			const conflict = this.aliases.get(alias.toLowerCase());
 			if (conflict) throw new AkairoError("ALIAS_CONFLICT", alias, command.id, conflict);

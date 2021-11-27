@@ -242,7 +242,7 @@ export default abstract class Command extends AkairoModule {
 			regex = this.regex,
 			separator,
 			slash = false,
-			slashDefaultPermission = this.handler.useSlashPermissions ? !this.ownerOnly : true,
+			slashDefaultPermission,
 			slashEphemeral = false,
 			slashGuilds = [],
 			slashOnly = false,
@@ -296,7 +296,7 @@ export default abstract class Command extends AkairoModule {
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
 		this.slash = slash;
-		this.slashDefaultPermission = slashDefaultPermission;
+		this.slashDefaultPermission = slashDefaultPermission!;
 		this.slashEphemeral = slashEphemeral;
 		this.slashGuilds = slashGuilds;
 		this.slashOnly = slashOnly;
