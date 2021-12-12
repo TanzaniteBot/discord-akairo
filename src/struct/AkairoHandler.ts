@@ -59,16 +59,14 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param client - The Akairo client.
 	 * @param options - Options for module loading and handling.
 	 */
-	public constructor(
-		client: AkairoClient,
-		{
+	public constructor(client: AkairoClient, options?: AkairoHandlerOptions) {
+		const {
 			directory,
 			classToHandle = AkairoModule,
 			extensions = [".js", ".json", ".ts"],
 			automateCategories = false,
 			loadFilter = () => true
-		}: AkairoHandlerOptions
-	) {
+		} = options ?? {};
 		super();
 
 		this.client = client;

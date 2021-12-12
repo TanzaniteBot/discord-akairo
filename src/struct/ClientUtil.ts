@@ -9,6 +9,7 @@ import {
 	MessageEmbed,
 	MessageEmbedOptions,
 	Permissions,
+	PermissionString,
 	Role,
 	Snowflake,
 	User
@@ -246,8 +247,8 @@ export default class ClientUtil {
 	/**
 	 * Array of permission names.
 	 */
-	public permissionNames(): string[] {
-		return Object.keys(Permissions.FLAGS);
+	public permissionNames(): PermissionString[] {
+		return Object.keys(Permissions.FLAGS) as (keyof typeof Permissions.FLAGS)[];
 	}
 
 	/**

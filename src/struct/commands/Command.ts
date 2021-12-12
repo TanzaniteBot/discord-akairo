@@ -215,7 +215,7 @@ export default abstract class Command extends AkairoModule {
 	 * @param id - Command ID.
 	 * @param options - Options for the command.
 	 */
-	constructor(id: string, options: CommandOptions = {}) {
+	constructor(id: string, options?: CommandOptions) {
 		super(id, { category: options?.category });
 
 		const {
@@ -251,7 +251,7 @@ export default abstract class Command extends AkairoModule {
 			superUserOnly = false,
 			typing = false,
 			userPermissions = this.userPermissions
-		} = options;
+		} = options ?? {};
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
 			? ContentParser.getFlags(args)

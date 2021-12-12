@@ -56,8 +56,8 @@ export default abstract class Inhibitor extends AkairoModule {
 	 * @param id - Inhibitor ID.
 	 * @param options - Options for the inhibitor.
 	 */
-	public constructor(id: string, options: InhibitorOptions = {}) {
-		const { category, reason = "", type = "post", priority = 0 } = options;
+	public constructor(id: string, options?: InhibitorOptions) {
+		const { category, reason = "", type = "post", priority = 0 } = options ?? {};
 
 		super(id, { category });
 

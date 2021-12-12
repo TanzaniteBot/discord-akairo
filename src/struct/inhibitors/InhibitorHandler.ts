@@ -42,14 +42,14 @@ export default class InhibitorHandler extends AkairoHandler {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions = {}) {
+	public constructor(client: AkairoClient, options?: AkairoHandlerOptions) {
 		const {
 			directory,
 			classToHandle = Inhibitor,
 			extensions = [".js", ".ts"],
 			automateCategories,
 			loadFilter
-		} = options;
+		} = options ?? {};
 
 		if (!(classToHandle.prototype instanceof Inhibitor || classToHandle === Inhibitor)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Inhibitor.name);

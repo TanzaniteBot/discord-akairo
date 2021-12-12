@@ -78,7 +78,7 @@ export default class TypeResolver {
 	 * Adds built-in types.
 	 */
 	public addBuiltInTypes(): void {
-		const builtins = {
+		const builtIns = {
 			[ArgumentTypes.STRING]: (_message: Message, phrase: string) => {
 				return phrase || null;
 			},
@@ -565,7 +565,7 @@ export default class TypeResolver {
 			}
 		};
 
-		for (const [key, value] of Object.entries(builtins)) {
+		for (const [key, value] of Object.entries(builtIns)) {
 			this.types.set(key, value);
 		}
 	}

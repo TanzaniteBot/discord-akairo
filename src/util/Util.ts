@@ -1,23 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import type EventEmitter from "events";
 
 /**
  * Akairo Utilities.
  */
 export default class Util {
-	/**
-	 * Choose the first non-null element in an array
-	 * @param xs
-	 */
-	public static choice<T>(...xs: T[]): T | null {
-		for (const x of xs) {
-			if (x != null) {
-				return x;
-			}
-		}
-
-		return null;
-	}
-
 	/**
 	 * Deep assign properties to an object.
 	 * @param target
@@ -116,5 +103,38 @@ export default class Util {
 		if (typeof aKey === "function") return 1;
 		if (typeof bKey === "function") return -1;
 		return aKey.length === bKey.length ? aKey.localeCompare(bKey) : bKey.length - aKey.length;
+	}
+
+	/**
+	 * Compares each property of two objects to determine if they are equal.
+	 * @param a - First value.
+	 * @param b - Second value.
+	 * @returns Whether the two values are equal.
+	 */
+	public static deepEquals(a: any, b: any): boolean {
+		if (a === b) return true;
+		if (typeof a !== "object" || typeof b !== "object") throw new TypeError("Not objects");
+		for (const key in a) {
+			if (!(key in b)) return false;
+			if (typeof a[key] === "object" && typeof b[key] === "object") {
+				if (!Util.deepEquals(a[key], b[key])) return false;
+			} else if (a[key] !== b[key]) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Converts a string in snake_case to camelCase.
+	 * @param str The string to convert.
+	 */
+	public static snakeToCamelCase(str: string): string {
+		return str
+			.toUpperCase()
+			.split("_")
+			.map((word, index) => {
+				if (index !== 1) return word.charAt(0).toUpperCase() + word.slice(1);
+				return word;
+			})
+			.join("");
 	}
 }

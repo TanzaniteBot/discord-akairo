@@ -28,12 +28,10 @@ export default class AkairoClient<Ready extends boolean = boolean> extends Clien
 	public constructor(options: AkairoOptions & ClientOptions);
 	public constructor(options: AkairoOptions, clientOptions: ClientOptions);
 	public constructor(options: (AkairoOptions & ClientOptions) | AkairoOptions, clientOptions?: ClientOptions) {
-		Object.assign(options, clientOptions);
-		super(options as AkairoOptions & ClientOptions);
-		const { ownerID = "" } = options;
-		const { superUserID = "" } = options;
-		this.ownerID = ownerID;
-		this.superUserID = superUserID;
+		const combinedOptions = { ...options, ...clientOptions };
+		super(combinedOptions as AkairoOptions & ClientOptions);
+		this.ownerID = combinedOptions.ownerID ?? [];
+		this.superUserID = combinedOptions.superUserID ?? [];
 		this.util = new ClientUtil(this);
 	}
 

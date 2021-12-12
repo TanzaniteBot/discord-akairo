@@ -47,14 +47,14 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions = {}) {
+	public constructor(client: AkairoClient, options?: AkairoHandlerOptions) {
 		const {
 			directory,
 			classToHandle = ContextMenuCommand,
 			extensions = [".js", ".ts"],
 			automateCategories,
 			loadFilter
-		} = options;
+		} = options ?? {};
 
 		if (!(classToHandle.prototype instanceof ContextMenuCommand || classToHandle === ContextMenuCommand)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, ContextMenuCommand.name);

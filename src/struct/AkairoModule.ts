@@ -40,7 +40,9 @@ export default abstract class AkairoModule {
 	 * @param id - ID of module.
 	 * @param options - Options.
 	 */
-	public constructor(id: string, { category = "default" }: AkairoModuleOptions = {}) {
+	public constructor(id: string, options?: AkairoModuleOptions) {
+		const { category = "default" } = options ?? {};
+
 		this.id = id;
 		this.categoryID = category;
 		this.category = null!;

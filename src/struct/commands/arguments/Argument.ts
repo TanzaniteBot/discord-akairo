@@ -303,20 +303,17 @@ export default class Argument {
 	public async process(message: Message, phrase: string): Promise<Flag | any> {
 		const commandDefs = this.command.argumentDefaults;
 		const handlerDefs = this.handler.argumentDefaults;
-		const optional = Util.choice(
-			typeof this.prompt === "object" && this.prompt && this.prompt.optional,
-			commandDefs.prompt && commandDefs.prompt.optional,
-			handlerDefs.prompt && handlerDefs.prompt.optional
-		);
+		const optional =
+			(typeof this.prompt === "object" && this.prompt && this.prompt.optional) ??
+			(commandDefs.prompt && commandDefs.prompt.optional) ??
+			(handlerDefs.prompt && handlerDefs.prompt.optional) ??
+			null;
 
 		const doOtherwise = async (failure: (Flag & { value: any }) | null | undefined) => {
-			const otherwise = Util.choice(this.otherwise, commandDefs.otherwise, handlerDefs.otherwise);
+			const otherwise = this.otherwise ?? commandDefs.otherwise ?? handlerDefs.otherwise ?? null;
 
-			const modifyOtherwise = Util.choice(
-				this.modifyOtherwise,
-				commandDefs.modifyOtherwise,
-				handlerDefs.modifyOtherwise
-			);
+			const modifyOtherwise =
+				this.modifyOtherwise ?? commandDefs.modifyOtherwise ?? handlerDefs.modifyOtherwise ?? null;
 
 			let text = await Util.intoCallable(otherwise).call(this, message, {
 				phrase,

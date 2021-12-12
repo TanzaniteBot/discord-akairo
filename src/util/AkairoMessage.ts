@@ -96,21 +96,18 @@ export default class AkairoMessage extends Base {
 		this.member = interaction.member;
 		this.partial = false;
 
+		const options = interaction.options as CommandInteractionOptionResolver;
 		if (interaction.command?.type === "CHAT_INPUT") {
-			if ((interaction.options as CommandInteractionOptionResolver)["_group"])
-				this.content += `group: ${(interaction.options as CommandInteractionOptionResolver)["_group"]}`;
-			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
-				this.content += `subcommand: ${(interaction.options as CommandInteractionOptionResolver)["_subcommand"]}`;
-			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
+			if (options["_group"]) this.content += `group: ${options["_group"]}`;
+			if (options["_subcommand"]) this.content += `subcommand: ${options["_subcommand"]}`;
+			for (const option of options["_hoistedOptions"]) {
 				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
-				this.content += ` ${option.name}: ${interaction.options.get(option.name, false)?.value}`;
+				this.content += ` ${option.name}: ${options.get(option.name, false)?.value}`;
 			}
 		} else if (interaction.command?.type === "MESSAGE") {
-			this.content += ` message: ${
-				(interaction.options as CommandInteractionOptionResolver).getMessage("message")!.id
-			}`;
+			this.content += ` message: ${options.getMessage("message")!.id}`;
 		} else if (interaction.command?.type === "USER") {
-			this.content += ` message: ${interaction.options.getUser("user")!.id}`;
+			this.content += ` message: ${options.getUser("user")!.id}`;
 		}
 	}
 

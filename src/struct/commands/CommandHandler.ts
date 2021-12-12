@@ -7,6 +7,7 @@ import {
 	CommandInteraction,
 	CommandInteractionOption,
 	CommandInteractionOptionResolver,
+	DiscordAPIError,
 	Guild,
 	GuildApplicationCommandPermissionData,
 	GuildResolvable,
@@ -17,7 +18,6 @@ import {
 	User
 } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
-import _ from "lodash";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError.js";
 import AkairoMessage from "../../util/AkairoMessage.js";
@@ -221,7 +221,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options: CommandHandlerOptions = {}) {
+	public constructor(client: AkairoClient, options?: CommandHandlerOptions) {
 		const {
 			directory,
 			classToHandle = Command,
@@ -249,7 +249,7 @@ export default class CommandHandler extends AkairoHandler {
 			execSlash = false,
 			skipBuiltInPostInhibitors = false,
 			useSlashPermissions = false
-		} = options;
+		} = options ?? {};
 
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Command.name);
@@ -420,9 +420,13 @@ export default class CommandHandler extends AkairoHandler {
 		/* Global */
 		const slashCommandsApp = parsedSlashCommands
 			.filter(({ guilds }) => !guilds.length)
-			.map(({ name, description, options, defaultPermission, type }) => {
-				return { name, description, options, defaultPermission, type };
-			});
+			.map(({ name, description, options, defaultPermission, type }) => ({
+				name,
+				description: description!,
+				options: options!,
+				defaultPermission,
+				type
+			}));
 		const currentGlobalCommands = (await this.client.application?.commands.fetch())!.map(value1 => ({
 			name: value1.name,
 			description: value1.description,
@@ -431,16 +435,12 @@ export default class CommandHandler extends AkairoHandler {
 			type: value1.type
 		}));
 
-		if (!_.isEqual(currentGlobalCommands, slashCommandsApp)) {
-			await this.client.application?.commands.set(
-				slashCommandsApp as {
-					name: string;
-					description: string;
-					options: ApplicationCommandOptionData[] | undefined;
-					defaultPermission: boolean;
-					type: "CHAT_INPUT" | "MESSAGE" | "USER";
-				}[]
-			);
+		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
+			await this.client.application?.commands.set(slashCommandsApp).catch(error => {
+				if (error instanceof DiscordAPIError)
+					throw new RegisterInteractionCommandError(error, "global", slashCommandsApp);
+				else throw error;
+			});
 		}
 
 		/* Guilds */
@@ -465,8 +465,12 @@ export default class CommandHandler extends AkairoHandler {
 					type: value1.type
 				}));
 
-				if (!_.isEqual(currentGuildCommands, value)) {
-					await guild.commands.set(value);
+				if (!Util.deepEquals(currentGuildCommands, value)) {
+					await guild.commands.set(value).catch(error => {
+						if (error instanceof DiscordAPIError)
+							throw new RegisterInteractionCommandError(error, "guild", value, guild);
+						else throw error;
+					});
 				}
 			});
 		}
@@ -762,10 +766,11 @@ export default class CommandHandler extends AkairoHandler {
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
 				convertedOptions[option.name] = interaction.options[
-					_.camelCase(`GET_${originalOption?.resolve ?? option.type}`) as GetFunctions
+					Util.snakeToCamelCase(`GET_${originalOption?.resolve ?? option.type}`) as GetFunctions
 				](option.name, false);
 			}
 
+			// Makes options that are not found to be null so that it matches the behavior normal commands.
 			(() => {
 				type SubCommand = AkairoApplicationCommandSubCommandData;
 				type SubCommandGroup = AkairoApplicationCommandSubGroupData;
@@ -871,6 +876,10 @@ export default class CommandHandler extends AkairoHandler {
 		}
 	}
 
+	/**
+	 * Handles autocomplete interactions.
+	 * @param interaction The interaction to handle.
+	 */
 	public handleAutocomplete(interaction: AutocompleteInteraction): void {
 		const commandModule = this.findCommand(interaction.commandName);
 
@@ -1334,7 +1343,7 @@ export default class CommandHandler extends AkairoHandler {
 			return prefixes.map(p => [p, cmds]);
 		});
 
-		const pairs = Util.flatMap(await Promise.all(promises), (x: any) => x);
+		const pairs = (await Promise.all(promises)).flat(1);
 		pairs.sort(([a]: any, [b]: any) => Util.prefixCompare(a, b));
 		return this.parseMultiplePrefixes(message, pairs as [string, Set<string>][]);
 	}
@@ -1559,6 +1568,29 @@ export default interface CommandHandler {
 
 	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+}
+
+export type InteractionArgs = {
+	name: string;
+	description: string;
+	options: ApplicationCommandOptionData[];
+	defaultPermission: boolean;
+	type: "CHAT_INPUT" | "MESSAGE" | "USER";
+}[];
+
+export class RegisterInteractionCommandError extends Error {
+	original: DiscordAPIError;
+	type: "guild" | "global";
+	data: InteractionArgs;
+	guild: Guild | null;
+
+	constructor(original: DiscordAPIError, type: "guild" | "global", data: InteractionArgs, guild: Guild | null = null) {
+		super("Failed to register interaction commands.");
+		this.original = original;
+		this.type = type;
+		this.data = data;
+		this.guild = guild;
+	}
 }
 
 export interface CommandHandlerOptions extends AkairoHandlerOptions {

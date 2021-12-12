@@ -47,9 +47,11 @@ import CommandHandler, {
 	CommandHandlerOptions,
 	CooldownData,
 	IgnoreCheckPredicate,
+	InteractionArgs,
 	MentionPrefixPredicate,
 	ParsedComponentData,
 	PrefixSupplier,
+	RegisterInteractionCommandError,
 	SlashResolveTypes
 } from "./struct/commands/CommandHandler";
 import CommandUtil from "./struct/commands/CommandUtil";
@@ -124,6 +126,7 @@ export {
 	Listener,
 	ListenerHandler,
 	PromptContentModifier,
+	RegisterInteractionCommandError,
 	Task,
 	TaskHandler,
 	TypeResolver,
@@ -170,6 +173,7 @@ export type {
 	IgnoreCheckPredicate,
 	InhibitorHandlerEvents,
 	InhibitorOptions,
+	InteractionArgs,
 	KeySupplier,
 	ListenerHandlerEvents,
 	ListenerOptions,
