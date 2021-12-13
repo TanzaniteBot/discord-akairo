@@ -1301,12 +1301,12 @@ export default class CommandHandler extends AkairoHandler {
 			this.emit(CommandHandlerEvents.COMMAND_INVALID, message, command);
 			return;
 		}
-		let typing;
-		if (command.typing || this.typing) {
-			typing = setInterval(() => {
-				if (command.typing || this.typing) message.channel.sendTyping();
-			}, 9000);
-		}
+		const typing =
+			command.typing || this.typing
+				? setInterval(() => {
+						if (command.typing || this.typing) message.channel.sendTyping();
+				  }, 9000)
+				: undefined;
 
 		try {
 			this.emit(CommandHandlerEvents.COMMAND_STARTED, message, command, args);

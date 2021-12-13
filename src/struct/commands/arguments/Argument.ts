@@ -1,7 +1,34 @@
-import type { Message, MessageOptions, MessagePayload } from "discord.js";
+import type {
+	BaseGuildVoiceChannel,
+	CategoryChannel,
+	Collection,
+	Emoji,
+	Guild,
+	GuildChannel,
+	GuildEmoji,
+	GuildMember,
+	Invite,
+	Message,
+	MessageOptions,
+	MessagePayload,
+	NewsChannel,
+	Role,
+	StageChannel,
+	StoreChannel,
+	TextChannel,
+	ThreadChannel,
+	User,
+	VoiceChannel
+} from "discord.js";
+import type { URL } from "url";
+import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels.js";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
 import Util from "../../../util/Util.js";
 import type AkairoClient from "../../AkairoClient.js";
+import ContextMenuCommand from "../../contextMenuCommands/ContextMenuCommand.js";
+import Inhibitor from "../../inhibitors/Inhibitor.js";
+import Listener from "../../listeners/Listener.js";
+import Task from "../../tasks/Task.js";
 import type Command from "../Command.js";
 import type CommandHandler from "../CommandHandler.js";
 import Flag from "../Flag.js";
@@ -129,7 +156,7 @@ export default class Argument {
 	 * @param phrase - Phrase to process.
 	 */
 	public cast(message: Message, phrase: string): Promise<any> {
-		return Argument.cast(this.type, this.handler.resolver, message, phrase);
+		return Argument.cast(this.type as any, this.handler.resolver, message, phrase);
 	}
 
 	/**
@@ -375,8 +402,20 @@ export default class Argument {
 	 * @param message - Message that called the command.
 	 * @param phrase - Phrase to process.
 	 */
-	public static async cast(
-		type: ArgumentType | ArgumentTypeCaster,
+	public static cast<T extends ArgumentTypeCaster>(
+		type: T,
+		resolver: TypeResolver,
+		message: Message,
+		phrase: string
+	): Promise<ArgumentTypeCasterReturn<T>>;
+	public static cast<T extends keyof BaseArgumentType>(
+		type: T,
+		resolver: TypeResolver,
+		message: Message,
+		phrase: string
+	): Promise<BaseArgumentType[T]>;
+	public static async cast<T extends ArgumentTypeCaster | keyof BaseArgumentType>(
+		type: T,
 		resolver: TypeResolver,
 		message: Message,
 		phrase: string
@@ -432,12 +471,15 @@ export default class Argument {
 	 * If any of the types fails, the entire composition fails.
 	 * @param types - Types to use.
 	 */
-	public static compose(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static compose<T extends ArgumentTypeCaster>(...types: T[]): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static compose<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static compose<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
+	public static compose(...types: (keyof ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
-			let acc = phrase;
+			let acc: any = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				acc = await Argument.cast(entry, this.handler.resolver, message, acc);
+				acc = await Argument.cast(entry as any, this.handler.resolver, message, acc);
 				if (Argument.isFailure(acc)) return acc;
 			}
 
@@ -450,12 +492,19 @@ export default class Argument {
 	 * If any of the types fails, the composition still continues with the failure passed on.
 	 * @param types - Types to use.
 	 */
+	public static composeWithFailure<T extends ArgumentTypeCaster>(
+		...types: T[]
+	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static composeWithFailure<T extends keyof BaseArgumentType>(
+		...types: T[]
+	): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static composeWithFailure<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
 	public static composeWithFailure(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
-			let acc = phrase;
+			let acc: any = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				acc = await Argument.cast(entry, this.handler.resolver, message, acc);
+				acc = await Argument.cast(entry as any, this.handler.resolver, message, acc);
 			}
 
 			return acc;
@@ -475,12 +524,15 @@ export default class Argument {
 	 * Only inputs where each type resolves with a non-void value are valid.
 	 * @param types - Types to use.
 	 */
+	public static product<T extends ArgumentTypeCaster>(...types: T[]): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static product<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static product<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
 	public static product(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			const results = [];
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
+				const res = await Argument.cast(entry as any, this.handler.resolver, message, phrase);
 				if (Argument.isFailure(res)) return res;
 				results.push(res);
 			}
@@ -496,13 +548,31 @@ export default class Argument {
 	 * @param max - Maximum value.
 	 * @param inclusive - Whether or not to be inclusive on the upper bound.
 	 */
+	public static range<T extends ArgumentTypeCaster>(
+		type: T,
+		min: number,
+		max: number,
+		inclusive?: boolean
+	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static range<T extends keyof BaseArgumentType>(
+		type: T,
+		min: number,
+		max: number,
+		inclusive?: boolean
+	): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static range<T extends ArgumentType>(
+		type: T,
+		min: number,
+		max: number,
+		inclusive?: boolean
+	): ArgumentTypeCaster;
 	public static range(
 		type: ArgumentType | ArgumentTypeCaster,
 		min: number,
 		max: number,
 		inclusive = false
 	): ArgumentTypeCaster {
-		return Argument.validate(type, (msg, p, x) => {
+		return Argument.validate(type as any, (msg, p, x) => {
 			const o =
 				typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
 
@@ -516,10 +586,16 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
+	public static tagged<T extends ArgumentTypeCaster>(
+		type: T,
+		tag?: any
+	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static tagged<T extends keyof BaseArgumentType>(type: T, tag?: any): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static tagged<T extends ArgumentType>(type: T, tag?: any): ArgumentTypeCaster;
 	public static tagged(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ tag, value: res });
 			}
@@ -534,10 +610,15 @@ export default class Argument {
 	 * Each type will also be tagged using `tagged` with themselves.
 	 * @param types - Types to use.
 	 */
+	public static taggedUnion<T extends ArgumentTypeCaster>(
+		...types: T[]
+	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static taggedUnion<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static taggedUnion<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
 	public static taggedUnion(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
-				entry = Argument.tagged(entry);
+				entry = Argument.tagged(entry as any);
 				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (!Argument.isFailure(res)) return res;
 			}
@@ -552,10 +633,19 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
+	public static taggedWithInput<T extends ArgumentTypeCaster>(
+		type: T,
+		tag?: any
+	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static taggedWithInput<T extends keyof BaseArgumentType>(
+		type: T,
+		tag?: any
+	): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static taggedWithInput<T extends ArgumentType>(type: T, tag?: any): ArgumentTypeCaster;
 	public static taggedWithInput(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ tag, input: phrase, value: res });
 			}
@@ -569,7 +659,10 @@ export default class Argument {
 	 * The first type that resolves to a non-void value is used.
 	 * @param types - Types to use.
 	 */
-	public static union(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static union<T extends ArgumentTypeCaster>(...types: T[]): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static union<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static union<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
+	public static union(...types: (keyof ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -587,7 +680,19 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param predicate - The predicate function.
 	 */
-	public static validate(type: ArgumentType | ArgumentTypeCaster, predicate: ParsedValuePredicate): ArgumentTypeCaster {
+	public static validate<T extends ArgumentTypeCaster>(
+		type: T,
+		predicate: ParsedValuePredicate
+	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static validate<T extends keyof BaseArgumentType>(
+		type: T,
+		predicate: ParsedValuePredicate
+	): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static validate<T extends ArgumentType>(type: T, predicate: ParsedValuePredicate): ArgumentTypeCaster;
+	public static validate(
+		type: keyof ArgumentType | ArgumentTypeCaster,
+		predicate: ParsedValuePredicate
+	): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
@@ -602,10 +707,13 @@ export default class Argument {
 	 * Result is in an object `{ input, value }` and wrapped in `Flag.fail` when failed.
 	 * @param type - The type to use.
 	 */
+	public static withInput<T extends ArgumentTypeCaster>(type: T): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+	public static withInput<T extends keyof BaseArgumentType>(type: T): ArgumentTypeCaster<BaseArgumentType[T]>;
+	public static withInput<T extends ArgumentType>(type: T): ArgumentTypeCaster;
 	public static withInput(type: ArgumentType | ArgumentTypeCaster): ArgumentTypeCaster {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ input: phrase, value: res });
 			}
@@ -862,7 +970,7 @@ export type ArgumentMatch =
 	| "none";
 
 /**
- *  * - `string` does not cast to any type.
+ * - `string` does not cast to any type.
  * - `lowercase` makes the input lowercase.
  * - `uppercase` makes the input uppercase.
  * - `charCodes` transforms the input to an array of char codes.
@@ -907,61 +1015,62 @@ export type ArgumentMatch =
  * - `roleMention` matches a mention of a role.
  * - `emojiMention` matches a mention of an emoji.
  */
-export type BaseArgumentType =
-	| "string"
-	| "lowercase"
-	| "uppercase"
-	| "charCodes"
-	| "number"
-	| "integer"
-	| "bigint"
-	| "emojint"
-	| "url"
-	| "date"
-	| "color"
-	| "user"
-	| "users"
-	| "member"
-	| "members"
-	| "relevant"
-	| "relevants"
-	| "channel"
-	| "channels"
-	| "textChannel"
-	| "textChannels"
-	| "voiceChannel"
-	| "voiceChannels"
-	| "categoryChannel"
-	| "categoryChannels"
-	| "newsChannel"
-	| "newsChannels"
-	| "storeChannel"
-	| "storeChannels"
-	| "stageChannel"
-	| "stageChannels"
-	| "threadChannel"
-	| "threadChannels"
-	| "role"
-	| "roles"
-	| "emoji"
-	| "emojis"
-	| "guild"
-	| "guilds"
-	| "message"
-	| "guildMessage"
-	| "relevantMessage"
-	| "invite"
-	| "userMention"
-	| "memberMention"
-	| "channelMention"
-	| "roleMention"
-	| "emojiMention"
-	| "commandAlias"
-	| "command"
-	| "inhibitor"
-	| "listener"
-	| "task"
-	| "contextMenuCommand";
+export interface BaseArgumentType {
+	string: string | null;
+	lowercase: string | null;
+	uppercase: string | null;
+	charCodes: number[] | null;
+	number: number | null;
+	integer: number | null;
+	bigint: bigint | null;
+	emojint: number | null;
+	url: URL | null;
+	date: Date | null;
+	color: number | null;
+	user: User | null;
+	users: Collection<string, User> | null;
+	member: GuildMember | null;
+	members: Collection<string, GuildMember> | null;
+	relevant: User | GuildMember | null;
+	relevants: Collection<string, User> | Collection<string, GuildMember> | null;
+	channel: GuildTextBasedChannels | BaseGuildVoiceChannel | null;
+	channels: Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel> | null;
+	textChannel: TextChannel | null;
+	textChannels: Collection<string, TextChannel>;
+	voiceChannel: VoiceChannel;
+	voiceChannels: Collection<string, VoiceChannel>;
+	categoryChannel: CategoryChannel;
+	categoryChannels: Collection<string, CategoryChannel>;
+	newsChannel: NewsChannel;
+	newsChannels: Collection<string, NewsChannel>;
+	storeChannel: StoreChannel;
+	storeChannels: Collection<string, StoreChannel>;
+	stageChannel: StageChannel;
+	stageChannels: Collection<string, StageChannel>;
+	threadChannel: ThreadChannel;
+	threadChannels: Collection<string, ThreadChannel>;
+	role: Role | null;
+	roles: Collection<string, Role> | null;
+	emoji: Emoji | null;
+	emojis: Collection<string, Emoji> | null;
+	guild: Guild | null;
+	guilds: Collection<string, Guild> | null;
+	message: Message | null;
+	guildMessage: Message | null;
+	relevantMessage: Message | null;
+	invite: Invite | null;
+	userMention: User | null;
+	memberMention: GuildMember | null;
+	channelMention: ThreadChannel | GuildChannel | null;
+	roleMention: Role | null;
+	emojiMention: GuildEmoji | null;
+	commandAlias: Command | null;
+	command: Command | null;
+	inhibitor: Inhibitor | null;
+	listener: Listener | null;
+	task: Task | null;
+	contextMenuCommand: ContextMenuCommand | null;
+}
 
 /**
  * The type that the argument should be cast to.
@@ -973,7 +1082,7 @@ export type BaseArgumentType =
  * A regular expression can also be used.
  * The evaluated argument will be an object containing the `match` and `matches` if global.
  */
-export type ArgumentType = BaseArgumentType | (string | string[])[] | RegExp | string;
+export type ArgumentType = keyof BaseArgumentType | (string | string[])[] | RegExp | string;
 
 /**
  * A function for processing user input to use as an argument.
@@ -983,15 +1092,12 @@ export type ArgumentType = BaseArgumentType | (string | string[])[] | RegExp | s
  * @param message - Message that triggered the command.
  * @param phrase - The user input.
  */
-export type ArgumentTypeCaster = (message: Message, phrase: string) => any;
+export type ArgumentTypeCaster<R = unknown> = (message: Message, phrase: string) => R;
 
 /**
- * A function for processing some value to use as an argument.
- * This is mainly used in composing argument types.
- * @param message - Message that triggered the command.
- * @param value - Some value.
+ * The return type of an argument.
  */
-export type ArgumentTypeCaster_ = (message: Message, value: any) => any;
+type ArgumentTypeCasterReturn<R> = R extends ArgumentTypeCaster<infer S> ? S : R;
 
 /**
  * Data passed to functions that run when things failed.

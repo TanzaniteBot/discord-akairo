@@ -1,16 +1,17 @@
 import {
-	BaseGuildVoiceChannel,
+	CategoryChannel,
 	Collection,
 	DMChannel,
 	GuildMember,
 	Message,
 	NewsChannel,
-	Snowflake,
+	StageChannel,
+	StoreChannel,
 	TextChannel,
-	ThreadChannel
+	ThreadChannel,
+	VoiceChannel
 } from "discord.js";
 import { URL } from "url";
-import type { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels.js";
 import { ArgumentTypes } from "../../../util/Constants.js";
 import type AkairoClient from "../../AkairoClient.js";
 import type ContextMenuCommandHandler from "../../contextMenuCommands/ContextMenuCommandHandler.js";
@@ -18,7 +19,7 @@ import type InhibitorHandler from "../../inhibitors/InhibitorHandler.js";
 import type ListenerHandler from "../../listeners/ListenerHandler.js";
 import type TaskHandler from "../../tasks/TaskHandler.js";
 import type CommandHandler from "../CommandHandler.js";
-import type { ArgumentTypeCaster } from "./Argument.js";
+import type { ArgumentTypeCaster, BaseArgumentType } from "./Argument.js";
 
 /**
  * Type resolver for command arguments.
@@ -166,22 +167,21 @@ export default class TypeResolver {
 
 			[ArgumentTypes.MEMBER]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				return this.client.util.resolveMember(phrase, message.guild.members.cache);
 			},
 
 			[ArgumentTypes.MEMBERS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				const members = this.client.util.resolveMembers(phrase, message.guild.members.cache);
 				return members.size ? members : null;
 			},
 
 			[ArgumentTypes.RELEVANT]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
 
-				const person = message.guild
+				const person = message.inGuild()
 					? this.client.util.resolveMember(phrase, message.guild.members.cache)
 					: this.client.util.resolveUser(
 							phrase,
@@ -197,7 +197,7 @@ export default class TypeResolver {
 
 			[ArgumentTypes.RELEVANTS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				const persons = message.guild
+				const persons = message.inGuild()
 					? this.client.util.resolveMembers(phrase, message.guild.members.cache)
 					: this.client.util.resolveUsers(
 							phrase,
@@ -208,224 +208,178 @@ export default class TypeResolver {
 					  );
 
 				if (!persons.size) return null;
-				return message.guild ? (persons as Collection<string, GuildMember>).map(member => member.user) : persons;
+				return message.inGuild()
+					? (persons as Collection<string, GuildMember>).mapValues(member => member.user)
+					: persons;
 			},
 
 			[ArgumentTypes.CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				return this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				return this.client.util.resolveChannel(phrase, message.guild.channels.cache);
 			},
 
 			[ArgumentTypes.CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				return channels.size ? channels : null;
 			},
 
 			[ArgumentTypes.TEXT_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
 				if (!channel || channel.type !== "GUILD_TEXT") return null;
 
-				return channel;
+				return channel as TextChannel;
 			},
 
 			[ArgumentTypes.TEXT_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
 				const textChannels = channels.filter(c => c.type === "GUILD_TEXT");
-				return textChannels.size ? textChannels : null;
+				return textChannels.size ? (textChannels as Collection<string, TextChannel>) : null;
 			},
 
 			[ArgumentTypes.VOICE_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
-				if (!channel || !channel.isVoice()) return null;
-				return channel;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (!channel || channel.type !== "GUILD_VOICE") return null;
+				return channel as VoiceChannel;
 			},
 
 			[ArgumentTypes.VOICE_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
 				const voiceChannels = channels.filter(c => c.type === "GUILD_VOICE");
-				return voiceChannels.size ? voiceChannels : null;
+				return voiceChannels.size ? (voiceChannels as Collection<string, VoiceChannel>) : null;
 			},
 
 			[ArgumentTypes.CATEGORY_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
-				if (!channel || channel.type !== "GUILD_CATEGORY") return null;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (channel?.type !== "GUILD_CATEGORY") return null;
 
-				return channel;
+				return channel as CategoryChannel;
 			},
 
 			[ArgumentTypes.CATEGORY_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
 				const categoryChannels = channels.filter(c => c.type === "GUILD_CATEGORY");
-				return categoryChannels.size ? categoryChannels : null;
+				return categoryChannels.size ? (categoryChannels as Collection<string, CategoryChannel>) : null;
 			},
 
 			[ArgumentTypes.NEWS_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
-				if (!channel || channel.type !== "GUILD_NEWS") return null;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (channel?.type !== "GUILD_NEWS") return null;
 
-				return channel;
+				return channel as NewsChannel;
 			},
 
 			[ArgumentTypes.NEWS_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
 				const newsChannels = channels.filter(c => c.type === "GUILD_NEWS");
-				return newsChannels.size ? newsChannels : null;
+				return newsChannels.size ? (newsChannels as Collection<string, NewsChannel>) : null;
 			},
 
 			[ArgumentTypes.STORE_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
-				if (!channel || channel.type !== "GUILD_STORE") return null;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (channel?.type !== "GUILD_STORE") return null;
 
-				return channel;
+				return channel as StoreChannel;
 			},
 
 			[ArgumentTypes.STORE_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
 				const storeChannels = channels.filter(c => c.type === "GUILD_STORE");
-				return storeChannels.size ? storeChannels : null;
+				return storeChannels.size ? (storeChannels as Collection<string, StoreChannel>) : null;
 			},
 
 			[ArgumentTypes.STAGE_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
-				if (!channel || channel.type !== "GUILD_STAGE_VOICE") return null;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (channel?.type !== "GUILD_STAGE_VOICE") return null;
 
-				return channel;
+				return channel as StageChannel;
 			},
 
 			[ArgumentTypes.STAGE_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
 				const storeChannels = channels.filter(c => c.type === "GUILD_STAGE_VOICE");
-				return storeChannels.size ? storeChannels : null;
+				return storeChannels.size ? (storeChannels as Collection<string, StageChannel>) : null;
 			},
 
 			[ArgumentTypes.THREAD_CHANNEL]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channel = this.client.util.resolveChannel(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
-				if (!channel || !channel.type.includes("THREAD")) return null;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (!channel || !channel.isThread()) return null;
 
-				return channel;
+				return channel as ThreadChannel;
 			},
 
 			[ArgumentTypes.THREAD_CHANNELS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
-				const channels = this.client.util.resolveChannels(
-					phrase,
-					message.guild.channels.cache as Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel>
-				);
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const storeChannels = channels.filter(c => c.type.includes("THREAD"));
-				return storeChannels.size ? storeChannels : null;
+				const storeChannels = channels.filter(c => c.isThread());
+				return storeChannels.size ? (storeChannels as Collection<string, ThreadChannel>) : null;
 			},
 
 			[ArgumentTypes.ROLE]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				return this.client.util.resolveRole(phrase, message.guild.roles.cache);
 			},
 
 			[ArgumentTypes.ROLES]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				const roles = this.client.util.resolveRoles(phrase, message.guild.roles.cache);
 				return roles.size ? roles : null;
 			},
 
 			[ArgumentTypes.EMOJI]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				return this.client.util.resolveEmoji(phrase, message.guild.emojis.cache);
 			},
 
 			[ArgumentTypes.EMOJIS]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				const emojis = this.client.util.resolveEmojis(phrase, message.guild.emojis.cache);
 				return emojis.size ? emojis : null;
 			},
@@ -444,7 +398,7 @@ export default class TypeResolver {
 			[ArgumentTypes.MESSAGE]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
 				try {
-					return message.channel.messages.fetch(phrase as Snowflake);
+					return message.channel.messages.fetch(phrase);
 				} catch (e) {
 					return null;
 				}
@@ -452,11 +406,11 @@ export default class TypeResolver {
 
 			[ArgumentTypes.GUILD_MESSAGE]: async (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				for (const channel of message.guild.channels.cache.values()) {
-					if (channel.type !== "GUILD_TEXT") continue;
+					if (!channel.isText()) continue;
 					try {
-						return await (channel as TextChannel | NewsChannel | ThreadChannel).messages.fetch(phrase as Snowflake);
+						return await channel.messages.fetch(phrase);
 					} catch (err) {
 						if (/^Invalid Form Body/.test(err.message)) return null;
 					}
@@ -467,16 +421,16 @@ export default class TypeResolver {
 
 			[ArgumentTypes.RELEVANT_MESSAGE]: async (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				const hereMsg = await message.channel.messages.fetch(phrase as Snowflake).catch(() => null);
+				const hereMsg = await message.channel.messages.fetch(phrase).catch(() => null);
 				if (hereMsg) {
 					return hereMsg;
 				}
 
-				if (message.guild) {
+				if (message.inGuild()) {
 					for (const channel of message.guild.channels.cache.values()) {
-						if (channel.type !== "GUILD_TEXT") continue;
+						if (!channel.isText()) continue;
 						try {
-							return await (channel as TextChannel | NewsChannel | ThreadChannel).messages.fetch(phrase as Snowflake);
+							return await channel.messages.fetch(phrase);
 						} catch (err) {
 							if (/^Invalid Form Body/.test(err.message)) return null;
 						}
@@ -499,23 +453,23 @@ export default class TypeResolver {
 				if (!phrase) return null;
 				const id = phrase.match(/<@!?(\d{17,19})>/);
 				if (!id) return null;
-				return this.client.users.cache.get(id[1] as Snowflake) || null;
+				return this.client.users.cache.get(id[1]) ?? null;
 			},
 
 			[ArgumentTypes.MEMBER_MENTION]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				const id = phrase.match(/<@!?(\d{17,19})>/);
 				if (!id) return null;
-				return message.guild.members.cache.get(id[1] as Snowflake) || null;
+				return message.guild.members.cache.get(id[1]) ?? null;
 			},
 
 			[ArgumentTypes.CHANNEL_MENTION]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				const id = phrase.match(/<#(\d{17,19})>/);
 				if (!id) return null;
-				return message.guild.channels.cache.get(id[1] as Snowflake) || null;
+				return message.guild.channels.cache.get(id[1]) ?? null;
 			},
 
 			[ArgumentTypes.ROLE_MENTION]: (message: Message, phrase: string) => {
@@ -523,45 +477,45 @@ export default class TypeResolver {
 				if (!message.guild) return null;
 				const id = phrase.match(/<@&(\d{17,19})>/);
 				if (!id) return null;
-				return message.guild.roles.cache.get(id[1] as Snowflake) || null;
+				return message.guild.roles.cache.get(id[1]) ?? null;
 			},
 
 			[ArgumentTypes.EMOJI_MENTION]: (message: Message, phrase: string) => {
 				if (!phrase) return null;
-				if (!message.guild) return null;
+				if (!message.inGuild()) return null;
 				const id = phrase.match(/<a?:[a-zA-Z0-9_]+:(\d{17,19})>/);
 				if (!id) return null;
-				return message.guild.emojis.cache.get(id[1] as Snowflake) || null;
+				return message.guild.emojis.cache.get(id[1]) ?? null;
 			},
 
 			[ArgumentTypes.COMMAND_ALIAS]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
-				return this.commandHandler.findCommand(phrase) || null;
+				return this.commandHandler.findCommand(phrase) ?? null;
 			},
 
 			[ArgumentTypes.COMMAND]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
-				return this.commandHandler.modules.get(phrase) || null;
+				return this.commandHandler.modules.get(phrase) ?? null;
 			},
 
 			[ArgumentTypes.INHIBITOR]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
-				return this.inhibitorHandler?.modules.get(phrase) || null;
+				return this.inhibitorHandler?.modules.get(phrase) ?? null;
 			},
 
 			[ArgumentTypes.LISTENER]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
-				return this.listenerHandler?.modules.get(phrase) || null;
+				return this.listenerHandler?.modules.get(phrase) ?? null;
 			},
 
 			[ArgumentTypes.TASK]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
-				return this.taskHandler?.modules.get(phrase) || null;
+				return this.taskHandler?.modules.get(phrase) ?? null;
 			},
 
 			[ArgumentTypes.CONTEXT_MENU_COMMAND]: (_message: Message, phrase: string) => {
 				if (!phrase) return null;
-				return this.contextMenuCommandHandler?.modules.get(phrase) || null;
+				return this.contextMenuCommandHandler?.modules.get(phrase) ?? null;
 			}
 		};
 
@@ -574,6 +528,8 @@ export default class TypeResolver {
 	 * Gets the resolver function for a type.
 	 * @param name - Name of type.
 	 */
+	public type(name: keyof BaseArgumentType): ArgumentTypeCaster;
+	public type(name: string): ArgumentTypeCaster | undefined;
 	public type(name: string): ArgumentTypeCaster | undefined {
 		return this.types.get(name);
 	}

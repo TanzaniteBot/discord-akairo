@@ -1,9 +1,9 @@
 import {
-	BaseGuildVoiceChannel,
 	BufferResolvable,
 	Collection,
 	Emoji,
 	Guild,
+	GuildChannel,
 	GuildMember,
 	MessageAttachment,
 	MessageEmbed,
@@ -12,10 +12,10 @@ import {
 	PermissionString,
 	Role,
 	Snowflake,
+	ThreadChannel,
 	User
 } from "discord.js";
 import type { Stream } from "stream";
-import type { GuildTextBasedChannels } from "../typings/guildTextBasedChannels.js";
 import type AkairoClient from "./AkairoClient.js";
 
 /**
@@ -50,9 +50,9 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes checking by name case sensitive.
 	 * @param wholeWord - Makes checking by name match full word only.
 	 */
-	public checkChannel(
+	public checkChannel<C extends ThreadChannel | GuildChannel>(
 		text: string,
-		channel: GuildTextBasedChannels | BaseGuildVoiceChannel,
+		channel: C,
 		caseSensitive = false,
 		wholeWord = false
 	): boolean {
@@ -258,15 +258,14 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveChannel(
+	public resolveChannel<C extends ThreadChannel | GuildChannel>(
 		text: string,
-		channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
+		channels: Collection<Snowflake, C>,
 		caseSensitive = false,
 		wholeWord = false
-	): GuildTextBasedChannels | BaseGuildVoiceChannel | undefined {
+	): C | null {
 		return (
-			channels.get(text as Snowflake) ||
-			channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord))
+			channels.get(text) ?? channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord)) ?? null
 		);
 	}
 
@@ -277,12 +276,12 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveChannels(
+	public resolveChannels<C extends ThreadChannel | GuildChannel>(
 		text: string,
-		channels: Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel>,
+		channels: Collection<Snowflake, C>,
 		caseSensitive = false,
 		wholeWord = false
-	): Collection<Snowflake, GuildTextBasedChannels | BaseGuildVoiceChannel> {
+	): Collection<Snowflake, C> {
 		return channels.filter(channel => this.checkChannel(text, channel, caseSensitive, wholeWord));
 	}
 
@@ -298,10 +297,8 @@ export default class ClientUtil {
 		emojis: Collection<Snowflake, Emoji>,
 		caseSensitive = false,
 		wholeWord = false
-	): Emoji | undefined {
-		return (
-			emojis.get(text as Snowflake) || emojis.find(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord))
-		);
+	): Emoji | null {
+		return emojis.get(text) ?? emojis.find(emoji => this.checkEmoji(text, emoji, caseSensitive, wholeWord)) ?? null;
 	}
 
 	/**
@@ -332,10 +329,8 @@ export default class ClientUtil {
 		guilds: Collection<Snowflake, Guild>,
 		caseSensitive = false,
 		wholeWord = false
-	): Guild | undefined {
-		return (
-			guilds.get(text as Snowflake) || guilds.find(guild => this.checkGuild(text, guild, caseSensitive, wholeWord))
-		);
+	): Guild | null {
+		return guilds.get(text) ?? guilds.find(guild => this.checkGuild(text, guild, caseSensitive, wholeWord)) ?? null;
 	}
 
 	/**
@@ -366,9 +361,9 @@ export default class ClientUtil {
 		members: Collection<Snowflake, GuildMember>,
 		caseSensitive = false,
 		wholeWord = false
-	): GuildMember | undefined {
+	): GuildMember | null {
 		return (
-			members.get(text as Snowflake) || members.find(member => this.checkMember(text, member, caseSensitive, wholeWord))
+			members.get(text) ?? members.find(member => this.checkMember(text, member, caseSensitive, wholeWord)) ?? null
 		);
 	}
 
@@ -414,8 +409,8 @@ export default class ClientUtil {
 		roles: Collection<Snowflake, Role>,
 		caseSensitive = false,
 		wholeWord = false
-	): Role | undefined {
-		return roles.get(text as Snowflake) || roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord));
+	): Role | null {
+		return roles.get(text) ?? roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord)) ?? null;
 	}
 
 	/**
@@ -446,8 +441,8 @@ export default class ClientUtil {
 		users: Collection<Snowflake, User>,
 		caseSensitive = false,
 		wholeWord = false
-	): User | undefined {
-		return users.get(text as Snowflake) || users.find(user => this.checkUser(text, user, caseSensitive, wholeWord));
+	): User | null {
+		return users.get(text) ?? users.find(user => this.checkUser(text, user, caseSensitive, wholeWord)) ?? null;
 	}
 
 	/**
