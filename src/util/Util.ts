@@ -129,7 +129,7 @@ export default class Util {
 	 */
 	public static snakeToCamelCase(str: string): string {
 		return str
-			.toUpperCase()
+			.toLowerCase()
 			.split("_")
 			.map((word, index) => {
 				if (index !== 1) return word.charAt(0).toUpperCase() + word.slice(1);
