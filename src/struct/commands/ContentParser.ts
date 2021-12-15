@@ -304,9 +304,7 @@ class Parser {
 		}
 
 		throw new Error(
-			`Unexpected token ${this.tokens[this.position].value} of type ${
-				this.tokens[this.position].type
-			} (this should never happen)`
+			`Unexpected token ${this.tokens[this.position].value} of type ${this.tokens[this.position].type} (this should never happen)`
 		);
 	}
 

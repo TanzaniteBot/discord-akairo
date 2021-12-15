@@ -87,12 +87,7 @@ export default class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param arg - Current argument.
 	 */
-	public runOne(
-		message: Message,
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState,
-		arg: Argument
-	): Promise<Flag | any> {
+	public runOne(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState, arg: Argument): Promise<Flag | any> {
 		const cases = {
 			[ArgumentMatches.PHRASE]: this.runPhrase,
 			[ArgumentMatches.FLAG]: this.runFlag,
@@ -237,17 +232,10 @@ export default class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param arg - Current argument.
 	 */
-	public runFlag(
-		message: Message,
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState,
-		arg: Argument
-	): Promise<Flag> | any {
+	public runFlag(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState, arg: Argument): Promise<Flag> | any {
 		const names = Array.isArray(arg.flag) ? arg.flag : [arg.flag];
 		if (arg.multipleFlags) {
-			const amount = parsed.flags.filter(flag =>
-				names.some(name => name?.toLowerCase() === flag.key.toLowerCase())
-			).length;
+			const amount = parsed.flags.filter(flag => names.some(name => name?.toLowerCase() === flag.key.toLowerCase())).length;
 
 			return amount;
 		}
@@ -285,9 +273,7 @@ export default class ArgumentRunner {
 			return res;
 		}
 
-		const foundFlag = parsed.optionFlags.find(flag =>
-			names.some(name => name?.toLowerCase() === flag.key.toLowerCase())
-		);
+		const foundFlag = parsed.optionFlags.find(flag => names.some(name => name?.toLowerCase() === flag.key.toLowerCase()));
 
 		return arg.process(message, foundFlag != null ? foundFlag.value : "");
 	}
@@ -299,12 +285,7 @@ export default class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param arg - Current argument.
 	 */
-	public runText(
-		message: Message,
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState,
-		arg: Argument
-	): Promise<Flag | any> {
+	public runText(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState, arg: Argument): Promise<Flag | any> {
 		const index = arg.index == null ? 0 : arg.index;
 		const text = parsed.phrases
 			.slice(index, index + arg.limit)
@@ -370,12 +351,7 @@ export default class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param arg - Current argument.
 	 */
-	public runNone(
-		message: Message,
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState,
-		arg: Argument
-	): Promise<Flag | any> {
+	public runNone(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState, arg: Argument): Promise<Flag | any> {
 		return arg.process(message, "");
 	}
 

@@ -86,9 +86,7 @@ export default class AkairoMessage extends Base {
 		this.author = interaction.user;
 		this.applicationId = interaction.applicationId;
 		this.channelId = interaction.channelId;
-		this.content = `${!interaction.command || interaction.command.type === "CHAT_INPUT" ? "/" : ""}${
-			interaction.commandName
-		}`;
+		this.content = `${!interaction.command || interaction.command.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
 		this.createdTimestamp = interaction.createdTimestamp;
 		this.guildId = interaction.guildId;
 		this.id = interaction.id;

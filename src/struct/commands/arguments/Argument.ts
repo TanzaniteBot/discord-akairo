@@ -34,6 +34,36 @@ import type CommandHandler from "../CommandHandler.js";
 import Flag from "../Flag.js";
 import type TypeResolver from "./TypeResolver.js";
 
+/** ```ts
+ * <R = unknown> = ArgumentTypeCaster<R>
+ * ``` */
+type ATC<R = unknown> = ArgumentTypeCaster<R>;
+/** ```ts
+ * BaseArgumentType
+ * ``` */
+type KBAT = keyof BaseArgumentType;
+/** ```ts
+ * <R> = ArgumentTypeCasterReturn<R>
+ * ``` */
+type ATCR<R> = ArgumentTypeCasterReturn<R>;
+/** ```ts
+ * KBAT | string
+ * ``` */
+type AT = KBAT | string;
+/** ```ts
+ * BaseArgumentType
+ * ``` */
+type BAT = BaseArgumentType;
+
+/** ```ts
+ * <T extends ArgumentTypeCaster> = ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>
+ * ``` */
+type ATCATCR<T extends ArgumentTypeCaster> = ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
+/** ```ts
+ * <T extends keyof BaseArgumentType> = ArgumentTypeCaster<BaseArgumentType[T]>
+ * ``` */
+type ATCBAT<T extends keyof BaseArgumentType> = ArgumentTypeCaster<BaseArgumentType[T]>;
+
 /**
  * Represents an argument for a command.
  */
@@ -339,8 +369,7 @@ export default class Argument {
 		const doOtherwise = async (failure: (Flag & { value: any }) | null | undefined) => {
 			const otherwise = this.otherwise ?? commandDefs.otherwise ?? handlerDefs.otherwise ?? null;
 
-			const modifyOtherwise =
-				this.modifyOtherwise ?? commandDefs.modifyOtherwise ?? handlerDefs.modifyOtherwise ?? null;
+			const modifyOtherwise = this.modifyOtherwise ?? commandDefs.modifyOtherwise ?? handlerDefs.modifyOtherwise ?? null;
 
 			let text = await Util.intoCallable(otherwise).call(this, message, {
 				phrase,
@@ -402,24 +431,10 @@ export default class Argument {
 	 * @param message - Message that called the command.
 	 * @param phrase - Phrase to process.
 	 */
-	public static cast<T extends ArgumentTypeCaster>(
-		type: T,
-		resolver: TypeResolver,
-		message: Message,
-		phrase: string
-	): Promise<ArgumentTypeCasterReturn<T>>;
-	public static cast<T extends keyof BaseArgumentType>(
-		type: T,
-		resolver: TypeResolver,
-		message: Message,
-		phrase: string
-	): Promise<BaseArgumentType[T]>;
-	public static async cast<T extends ArgumentTypeCaster | keyof BaseArgumentType>(
-		type: T,
-		resolver: TypeResolver,
-		message: Message,
-		phrase: string
-	): Promise<any> {
+	public static cast<T extends ATC>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<ATCR<T>>;
+	public static cast<T extends KBAT>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<BAT[T]>;
+	public static cast<T extends AT>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<any>;
+	public static async cast(type: ATC | AT, resolver: TypeResolver, message: Message, phrase: string): Promise<any> {
 		if (Array.isArray(type)) {
 			for (const entry of type) {
 				if (Array.isArray(entry)) {
@@ -440,16 +455,16 @@ export default class Argument {
 			return res;
 		}
 
-		if (type instanceof RegExp) {
+		if ((type as any) instanceof RegExp) {
 			const match = phrase.match(type);
 			if (!match) return null;
 
 			const matches = [];
 
-			if (type.global) {
+			if ((type as any).global) {
 				let matched;
 
-				while ((matched = type.exec(phrase)) != null) {
+				while ((matched = (type as any).exec(phrase)) != null) {
 					matches.push(matched);
 				}
 			}
@@ -471,10 +486,10 @@ export default class Argument {
 	 * If any of the types fails, the entire composition fails.
 	 * @param types - Types to use.
 	 */
-	public static compose<T extends ArgumentTypeCaster>(...types: T[]): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static compose<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static compose<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
-	public static compose(...types: (keyof ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static compose<T extends ATC>(...types: T[]): ATCATCR<T>;
+	public static compose<T extends KBAT>(...types: T[]): ATCBAT<T>;
+	public static compose<T extends AT>(...types: T[]): ATC;
+	public static compose(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			let acc: any = phrase;
 			for (let entry of types) {
@@ -492,14 +507,10 @@ export default class Argument {
 	 * If any of the types fails, the composition still continues with the failure passed on.
 	 * @param types - Types to use.
 	 */
-	public static composeWithFailure<T extends ArgumentTypeCaster>(
-		...types: T[]
-	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static composeWithFailure<T extends keyof BaseArgumentType>(
-		...types: T[]
-	): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static composeWithFailure<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
-	public static composeWithFailure(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static composeWithFailure<T extends ATC>(...types: T[]): ATCATCR<T>;
+	public static composeWithFailure<T extends KBAT>(...types: T[]): ATCBAT<T>;
+	public static composeWithFailure<T extends AT>(...types: T[]): ATC;
+	public static composeWithFailure(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			let acc: any = phrase;
 			for (let entry of types) {
@@ -524,10 +535,10 @@ export default class Argument {
 	 * Only inputs where each type resolves with a non-void value are valid.
 	 * @param types - Types to use.
 	 */
-	public static product<T extends ArgumentTypeCaster>(...types: T[]): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static product<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static product<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
-	public static product(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static product<T extends ATC>(...types: T[]): ATCATCR<T>;
+	public static product<T extends KBAT>(...types: T[]): ATCBAT<T>;
+	public static product<T extends AT>(...types: T[]): ATC;
+	public static product(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			const results = [];
 			for (let entry of types) {
@@ -548,33 +559,12 @@ export default class Argument {
 	 * @param max - Maximum value.
 	 * @param inclusive - Whether or not to be inclusive on the upper bound.
 	 */
-	public static range<T extends ArgumentTypeCaster>(
-		type: T,
-		min: number,
-		max: number,
-		inclusive?: boolean
-	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static range<T extends keyof BaseArgumentType>(
-		type: T,
-		min: number,
-		max: number,
-		inclusive?: boolean
-	): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static range<T extends ArgumentType>(
-		type: T,
-		min: number,
-		max: number,
-		inclusive?: boolean
-	): ArgumentTypeCaster;
-	public static range(
-		type: ArgumentType | ArgumentTypeCaster,
-		min: number,
-		max: number,
-		inclusive = false
-	): ArgumentTypeCaster {
+	public static range<T extends ATC>(type: T, min: number, max: number, inclusive?: boolean): ATCATCR<T>;
+	public static range<T extends KBAT>(type: T, min: number, max: number, inclusive?: boolean): ATCBAT<T>;
+	public static range<T extends AT>(type: T, min: number, max: number, inclusive?: boolean): ATC;
+	public static range(type: AT | ATC, min: number, max: number, inclusive = false): ATC {
 		return Argument.validate(type as any, (msg, p, x) => {
-			const o =
-				typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
+			const o = typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
 
 			return o >= min && (inclusive ? o <= max : o < max);
 		});
@@ -586,13 +576,10 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
-	public static tagged<T extends ArgumentTypeCaster>(
-		type: T,
-		tag?: any
-	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static tagged<T extends keyof BaseArgumentType>(type: T, tag?: any): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static tagged<T extends ArgumentType>(type: T, tag?: any): ArgumentTypeCaster;
-	public static tagged(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
+	public static tagged<T extends ATC>(type: T, tag?: any): ATCATCR<T>;
+	public static tagged<T extends KBAT>(type: T, tag?: any): ATCBAT<T>;
+	public static tagged<T extends AT>(type: T, tag?: any): ATC;
+	public static tagged(type: AT | ATC, tag: any = type): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
@@ -610,12 +597,10 @@ export default class Argument {
 	 * Each type will also be tagged using `tagged` with themselves.
 	 * @param types - Types to use.
 	 */
-	public static taggedUnion<T extends ArgumentTypeCaster>(
-		...types: T[]
-	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static taggedUnion<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static taggedUnion<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
-	public static taggedUnion(...types: (ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static taggedUnion<T extends ATC>(...types: T[]): ATCATCR<T>;
+	public static taggedUnion<T extends KBAT>(...types: T[]): ATCBAT<T>;
+	public static taggedUnion<T extends AT>(...types: T[]): ATC;
+	public static taggedUnion(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
 				entry = Argument.tagged(entry as any);
@@ -633,16 +618,10 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param tag - Tag to add. Defaults to the `type` argument, so useful if it is a string.
 	 */
-	public static taggedWithInput<T extends ArgumentTypeCaster>(
-		type: T,
-		tag?: any
-	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static taggedWithInput<T extends keyof BaseArgumentType>(
-		type: T,
-		tag?: any
-	): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static taggedWithInput<T extends ArgumentType>(type: T, tag?: any): ArgumentTypeCaster;
-	public static taggedWithInput(type: ArgumentType | ArgumentTypeCaster, tag: any = type): ArgumentTypeCaster {
+	public static taggedWithInput<T extends ATC>(type: T, tag?: any): ATCATCR<T>;
+	public static taggedWithInput<T extends KBAT>(type: T, tag?: any): ATCBAT<T>;
+	public static taggedWithInput<T extends AT>(type: T, tag?: any): ATC;
+	public static taggedWithInput(type: AT | ATC, tag: any = type): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
@@ -659,14 +638,14 @@ export default class Argument {
 	 * The first type that resolves to a non-void value is used.
 	 * @param types - Types to use.
 	 */
-	public static union<T extends ArgumentTypeCaster>(...types: T[]): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static union<T extends keyof BaseArgumentType>(...types: T[]): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static union<T extends ArgumentType>(...types: T[]): ArgumentTypeCaster;
-	public static union(...types: (keyof ArgumentType | ArgumentTypeCaster)[]): ArgumentTypeCaster {
+	public static union<T extends ATC>(...types: T[]): ATCATCR<T>;
+	public static union<T extends KBAT>(...types: T[]): ATCBAT<T>;
+	public static union<T extends AT>(...types: T[]): ATC;
+	public static union(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
+				const res = await Argument.cast(entry as any, this.handler.resolver, message, phrase);
 				if (!Argument.isFailure(res)) return res;
 			}
 
@@ -680,22 +659,13 @@ export default class Argument {
 	 * @param type - The type to use.
 	 * @param predicate - The predicate function.
 	 */
-	public static validate<T extends ArgumentTypeCaster>(
-		type: T,
-		predicate: ParsedValuePredicate
-	): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static validate<T extends keyof BaseArgumentType>(
-		type: T,
-		predicate: ParsedValuePredicate
-	): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static validate<T extends ArgumentType>(type: T, predicate: ParsedValuePredicate): ArgumentTypeCaster;
-	public static validate(
-		type: keyof ArgumentType | ArgumentTypeCaster,
-		predicate: ParsedValuePredicate
-	): ArgumentTypeCaster {
+	public static validate<T extends ATC>(type: T, predicate: ParsedValuePredicate): ATCATCR<T>;
+	public static validate<T extends KBAT>(type: T, predicate: ParsedValuePredicate): ATCBAT<T>;
+	public static validate<T extends AT>(type: T, predicate: ParsedValuePredicate): ATC;
+	public static validate(type: AT | ATC, predicate: ParsedValuePredicate): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) return res;
 			if (!predicate.call(this, message, phrase, res)) return null;
 			return res;
@@ -707,10 +677,10 @@ export default class Argument {
 	 * Result is in an object `{ input, value }` and wrapped in `Flag.fail` when failed.
 	 * @param type - The type to use.
 	 */
-	public static withInput<T extends ArgumentTypeCaster>(type: T): ArgumentTypeCaster<ArgumentTypeCasterReturn<T>>;
-	public static withInput<T extends keyof BaseArgumentType>(type: T): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public static withInput<T extends ArgumentType>(type: T): ArgumentTypeCaster;
-	public static withInput(type: ArgumentType | ArgumentTypeCaster): ArgumentTypeCaster {
+	public static withInput<T extends ATC>(type: T): ATC<ATCR<T>>;
+	public static withInput<T extends KBAT>(type: T): ATCBAT<T>;
+	public static withInput<T extends AT>(type: T): ATC;
+	public static withInput(type: AT | ATC): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
@@ -958,16 +928,7 @@ export interface ArgumentPromptOptions {
  * It preserves the original whitespace between phrases and the quotes around phrases.
  * - `none` matches nothing at all and an empty string will be used for type operations.
  */
-export type ArgumentMatch =
-	| "phrase"
-	| "flag"
-	| "option"
-	| "rest"
-	| "separate"
-	| "text"
-	| "content"
-	| "restContent"
-	| "none";
+export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" | "text" | "content" | "restContent" | "none";
 
 /**
  * - `string` does not cast to any type.

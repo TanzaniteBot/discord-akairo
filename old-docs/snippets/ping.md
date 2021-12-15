@@ -14,11 +14,7 @@ export default class PingCommand extends Command {
   async exec(message: Message): Promise<Message> {
     const sent = await message.util.reply("Pong!");
     const timeDiff = (sent.editedAt || sent.createdAt) - (message.editedAt || message.createdAt);
-    return message.util.reply([
-      "Pong!",
-      `🔂 **RTT**: ${timeDiff} ms`,
-      `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`
-    ]);
+    return message.util.reply(["Pong!", `🔂 **RTT**: ${timeDiff} ms`, `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`]);
   }
 }
 ```

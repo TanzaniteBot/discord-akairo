@@ -145,9 +145,7 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 */
 	public async send(options: string | MessagePayload | MessageOptions): Promise<Message>;
 	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
-	public async send(
-		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
-	): Promise<Message | APIMessage> {
+	public async send(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message | APIMessage> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files?.length > 0;
 		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!this.isSlashMessage(this.message)) {

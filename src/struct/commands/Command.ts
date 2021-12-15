@@ -264,9 +264,7 @@ export default abstract class Command extends AkairoModule {
 		});
 		this.argumentRunner = new ArgumentRunner(this);
 		this.argumentGenerator = (
-			Array.isArray(args)
-				? ArgumentRunner.fromArguments(args.map(arg => [arg.id!, new Argument(this, arg)]))
-				: args.bind(this)
+			Array.isArray(args) ? ArgumentRunner.fromArguments(args.map(arg => [arg.id!, new Argument(this, arg)])) : args.bind(this)
 		) as ArgumentGenerator;
 		this.argumentDefaults = argumentDefaults;
 		this.before = before.bind(this);

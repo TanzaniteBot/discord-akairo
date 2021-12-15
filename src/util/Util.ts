@@ -34,11 +34,10 @@ export default class Util {
 	 * @param iterable - the object to map and flatten
 	 * @param filter - the filter to map with
 	 */
-	public static flatMap<
-		Type,
-		Ret extends { [Symbol.iterator](): Iterator<unknown> },
-		Func extends (...args: any[]) => Ret
-	>(iterable: Iterable<Type>, filter: Func): Type {
+	public static flatMap<Type, Ret extends { [Symbol.iterator](): Iterator<unknown> }, Func extends (...args: any[]) => Ret>(
+		iterable: Iterable<Type>,
+		filter: Func
+	): Type {
 		const result = [];
 		for (const x of iterable) {
 			result.push(...filter(x));
@@ -92,10 +91,7 @@ export default class Util {
 	 * @param aKey - First prefix.
 	 * @param bKey - Second prefix.
 	 */
-	public static prefixCompare(
-		aKey: string | ((...args: any[]) => any),
-		bKey: string | ((...args: any[]) => any)
-	): number {
+	public static prefixCompare(aKey: string | ((...args: any[]) => any), bKey: string | ((...args: any[]) => any)): number {
 		if (aKey === "" && bKey === "") return 0;
 		if (aKey === "") return 1;
 		if (bKey === "") return -1;

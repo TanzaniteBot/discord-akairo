@@ -264,9 +264,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): C | null {
-		return (
-			channels.get(text) ?? channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord)) ?? null
-		);
+		return channels.get(text) ?? channels.find(channel => this.checkChannel(text, channel, caseSensitive, wholeWord)) ?? null;
 	}
 
 	/**
@@ -362,9 +360,7 @@ export default class ClientUtil {
 		caseSensitive = false,
 		wholeWord = false
 	): GuildMember | null {
-		return (
-			members.get(text) ?? members.find(member => this.checkMember(text, member, caseSensitive, wholeWord)) ?? null
-		);
+		return members.get(text) ?? members.find(member => this.checkMember(text, member, caseSensitive, wholeWord)) ?? null;
 	}
 
 	/**
@@ -404,12 +400,7 @@ export default class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveRole(
-		text: string,
-		roles: Collection<Snowflake, Role>,
-		caseSensitive = false,
-		wholeWord = false
-	): Role | null {
+	public resolveRole(text: string, roles: Collection<Snowflake, Role>, caseSensitive = false, wholeWord = false): Role | null {
 		return roles.get(text) ?? roles.find(role => this.checkRole(text, role, caseSensitive, wholeWord)) ?? null;
 	}
 

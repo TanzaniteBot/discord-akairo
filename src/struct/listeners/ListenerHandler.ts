@@ -48,13 +48,7 @@ export default class ListenerHandler extends AkairoHandler {
 	 * @param options - Options.
 	 */
 	public constructor(client: AkairoClient, options?: AkairoHandlerOptions) {
-		const {
-			directory,
-			classToHandle = Listener,
-			extensions = [".js", ".ts"],
-			automateCategories,
-			loadFilter
-		} = options ?? {};
+		const { directory, classToHandle = Listener, extensions = [".js", ".ts"], automateCategories, loadFilter } = options ?? {};
 
 		if (!(classToHandle.prototype instanceof Listener || classToHandle === Listener)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Listener.name);

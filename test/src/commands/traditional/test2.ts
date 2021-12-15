@@ -14,10 +14,7 @@ export default class Test2Command extends Command {
 				{
 					id: "y",
 					match: "rest",
-					type: Argument.compose(
-						(m, s) => s.replace(/\s/g, ""),
-						Argument.range(Argument.union("integer", "emojint"), 0, 50)
-					)
+					type: Argument.compose((m, s) => s.replace(/\s/g, ""), Argument.range(Argument.union("integer", "emojint"), 0, 50))
 				}
 			]
 		});

@@ -279,8 +279,7 @@ export default class CommandHandler extends AkairoHandler {
 		if ((this.handleEdits || this.storeMessages) && !this.commandUtil) throw new AkairoError("COMMAND_UTIL_EXPLICIT");
 		this.commandUtilLifetime = commandUtilLifetime;
 		this.commandUtilSweepInterval = commandUtilSweepInterval;
-		if (this.commandUtilSweepInterval > 0)
-			setInterval(() => this.sweepCommandUtil(), this.commandUtilSweepInterval).unref();
+		if (this.commandUtilSweepInterval > 0) setInterval(() => this.sweepCommandUtil(), this.commandUtilSweepInterval).unref();
 		this.commandUtils = new Collection();
 		this.cooldowns = new Collection();
 		this.defaultCooldown = defaultCooldown;
@@ -324,8 +323,7 @@ export default class CommandHandler extends AkairoHandler {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands)
 				this.registerInteractionCommands().then(() => {
-					if (this.useSlashPermissions)
-						this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
+					if (this.useSlashPermissions) this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
 				});
 
 			this.client.on("messageCreate", async m => {
@@ -400,9 +398,7 @@ export default class CommandHandler extends AkairoHandler {
 		let contextCommandHandler: ContextMenuCommandHandler | undefined;
 		for (const key in this.client) {
 			if (this.client[key as keyof AkairoClient] instanceof ContextMenuCommandHandler) {
-				contextCommandHandler = this.client[key as keyof AkairoClient] as unknown as
-					| ContextMenuCommandHandler
-					| undefined;
+				contextCommandHandler = this.client[key as keyof AkairoClient] as unknown as ContextMenuCommandHandler | undefined;
 				break;
 			}
 		}
@@ -437,8 +433,7 @@ export default class CommandHandler extends AkairoHandler {
 
 		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			await this.client.application?.commands.set(slashCommandsApp).catch(error => {
-				if (error instanceof DiscordAPIError)
-					throw new RegisterInteractionCommandError(error, "global", slashCommandsApp);
+				if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "global", slashCommandsApp);
 				else throw error;
 			});
 		}
@@ -467,8 +462,7 @@ export default class CommandHandler extends AkairoHandler {
 
 				if (!Util.deepEquals(currentGuildCommands, value)) {
 					await guild.commands.set(value).catch(error => {
-						if (error instanceof DiscordAPIError)
-							throw new RegisterInteractionCommandError(error, "guild", value, guild);
+						if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "guild", value, guild);
 						else throw error;
 					});
 				}
@@ -479,9 +473,7 @@ export default class CommandHandler extends AkairoHandler {
 	/**
 	 * updates interaction permissions
 	 */
-	protected async updateInteractionPermissions(
-		owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */
-	) {
+	protected async updateInteractionPermissions(owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */) {
 		const mapCom = (
 			value: ApplicationCommand<{ guild: GuildResolvable }>,
 			guild: Guild
@@ -505,8 +497,7 @@ export default class CommandHandler extends AkairoHandler {
 			} else {
 				return {
 					id: value.id,
-					permissions:
-						typeof command.slashPermissions === "function" ? command.slashPermissions(guild) : command.slashPermissions
+					permissions: typeof command.slashPermissions === "function" ? command.slashPermissions(guild) : command.slashPermissions
 				};
 			}
 		};
@@ -522,9 +513,7 @@ export default class CommandHandler extends AkairoHandler {
 			const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
 			await guild.commands.fetch();
 			if (guild.commands.cache.size)
-				perms.push(
-					...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild))
-				);
+				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild)));
 			if (guild.available)
 				return guild.commands.permissions.set({
 					fullPermissions: perms
@@ -566,8 +555,7 @@ export default class CommandHandler extends AkairoHandler {
 
 				if (replacement !== alias) {
 					const replacementConflict = this.aliases.get(replacement);
-					if (replacementConflict)
-						throw new AkairoError("ALIAS_CONFLICT", replacement, command.id, replacementConflict);
+					if (replacementConflict) throw new AkairoError("ALIAS_CONFLICT", replacement, command.id, replacementConflict);
 					this.aliases.set(replacement, command.id);
 				}
 			}
@@ -1180,11 +1168,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param command - Command to cooldown.
 	 * @param slash - Whether or not the command is a slash command.
 	 */
-	public async runPermissionChecks(
-		message: Message | AkairoMessage,
-		command: Command,
-		slash: boolean = false
-	): Promise<boolean> {
+	public async runPermissionChecks(message: Message | AkairoMessage, command: Command, slash: boolean = false): Promise<boolean> {
 		const event = slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS;
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
@@ -1360,10 +1344,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param message - Message to parse.
 	 * @param pairs - Pairs of prefix to associated commands. That is, `[string, Set<string> | null][]`.
 	 */
-	public parseMultiplePrefixes(
-		message: Message | AkairoMessage,
-		pairs: [string, Set<string> | null][]
-	): ParsedComponentData {
+	public parseMultiplePrefixes(message: Message | AkairoMessage, pairs: [string, Set<string> | null][]): ParsedComponentData {
 		const parses = pairs.map(([prefix, cmds]) => this.parseWithPrefix(message, prefix, cmds));
 		const result = parses.find(parsed => parsed.command);
 		if (result) {

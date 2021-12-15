@@ -208,9 +208,7 @@ export default class TypeResolver {
 					  );
 
 				if (!persons.size) return null;
-				return message.inGuild()
-					? (persons as Collection<string, GuildMember>).mapValues(member => member.user)
-					: persons;
+				return message.inGuild() ? (persons as Collection<string, GuildMember>).mapValues(member => member.user) : persons;
 			},
 
 			[ArgumentTypes.CHANNEL]: (message: Message, phrase: string) => {

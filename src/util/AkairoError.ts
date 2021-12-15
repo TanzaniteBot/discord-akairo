@@ -4,12 +4,10 @@ const Messages = {
 	MODULE_NOT_FOUND: (constructor: string, id: string) => `${constructor} '${id}' does not exist`,
 	ALREADY_LOADED: (constructor: string, id: string) => `${constructor} '${id}' is already loaded`,
 	NOT_RELOADABLE: (constructor: string, id: string) => `${constructor} '${id}' is not reloadable`,
-	INVALID_CLASS_TO_HANDLE: (given: string, expected: string) =>
-		`Class to handle ${given} is not a subclass of ${expected}`,
+	INVALID_CLASS_TO_HANDLE: (given: string, expected: string) => `Class to handle ${given} is not a subclass of ${expected}`,
 
 	// Command-related
-	ALIAS_CONFLICT: (alias: string, id: string, conflict: string) =>
-		`Alias '${alias}' of '${id}' already exists on '${conflict}'`,
+	ALIAS_CONFLICT: (alias: string, id: string, conflict: string) => `Alias '${alias}' of '${id}' already exists on '${conflict}'`,
 
 	// Options-related
 	COMMAND_UTIL_EXPLICIT:
@@ -19,8 +17,7 @@ const Messages = {
 	// Generic errors
 	NOT_INSTANTIABLE: (constructor: string) => `${constructor} is not instantiable`,
 	NOT_IMPLEMENTED: (constructor: string, method: string) => `${constructor}#${method} has not been implemented`,
-	INVALID_TYPE: (name: string, expected: string, vowel = false) =>
-		`Value of '${name}' was not ${vowel ? "an" : "a"} ${expected}`
+	INVALID_TYPE: (name: string, expected: string, vowel = false) => `Value of '${name}' was not ${vowel ? "an" : "a"} ${expected}`
 };
 
 interface MessageArgs {
@@ -52,8 +49,7 @@ export default class AkairoError<K extends keyof typeof Messages> extends Error 
 	 */
 	public constructor(key: K, ...args: MessageArgs[K]) {
 		if (Messages[key] == null) throw new TypeError(`Error key '${key}' does not exist`);
-		const message =
-			typeof Messages[key] === "function" ? (Messages[key] as (...a: any[]) => any)(...args) : Messages[key];
+		const message = typeof Messages[key] === "function" ? (Messages[key] as (...a: any[]) => any)(...args) : Messages[key];
 
 		super(message);
 		this.code = key;
