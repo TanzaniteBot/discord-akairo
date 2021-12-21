@@ -305,6 +305,7 @@ export default class TypeResolver {
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
 				if (channel?.type !== "GUILD_STORE") return null;
 
+				// eslint-disable-next-line deprecation/deprecation
 				return channel as StoreChannel;
 			},
 
@@ -315,6 +316,7 @@ export default class TypeResolver {
 				if (!channels.size) return null;
 
 				const storeChannels = channels.filter(c => c.type === "GUILD_STORE");
+				// eslint-disable-next-line deprecation/deprecation
 				return storeChannels.size ? (storeChannels as Collection<string, StoreChannel>) : null;
 			},
 

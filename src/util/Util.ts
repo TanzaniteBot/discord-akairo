@@ -128,7 +128,7 @@ export default class Util {
 			.toLowerCase()
 			.split("_")
 			.map((word, index) => {
-				if (index !== 1) return word.charAt(0).toUpperCase() + word.slice(1);
+				if (index !== 0) return word.charAt(0).toUpperCase() + word.slice(1);
 				return word;
 			})
 			.join("");

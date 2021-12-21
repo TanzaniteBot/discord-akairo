@@ -50,10 +50,15 @@
     "@types/node" "*"
     form-data "^3.0.0"
 
-"@types/node@*", "@types/node@^16.11.13":
-  version "16.11.13"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.13.tgz#6b71641b81a98c6a538d89892440c06f147edddc"
-  integrity sha512-eUXZzHLHoZqj1frtUetNkUetYoJ6X55UmrVnFD4DMhVeAmwLjniZhtBmsRiemQh4uq4G3vUra/Ws/hs9vEvL3Q==
+"@types/node@*":
+  version "17.0.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.2.tgz#a4c07d47ff737e8ee7e586fe636ff0e1ddff070a"
+  integrity sha512-JepeIUPFDARgIs0zD/SKPgFsJEAF0X5/qO80llx59gOxFTboS9Amv3S+QfB7lqBId5sFXJ99BN0J6zFRvL9dDA==
+
+"@types/node@^16.11.13":
+  version "16.11.15"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.15.tgz#724da13bc1ba99fe8190d0f5cd35cb53c67db942"
+  integrity sha512-LMGR7iUjwZRxoYnfc9+YELxwqkaLmkJlo4/HUvOMyGvw9DaHO0gtAbH2FUdoFE6PXBTYZIT7x610r7kdo8o1fQ==
 
 "@types/ws@^8.2.2":
   version "8.2.2"
@@ -159,9 +164,9 @@ discord-api-types@^0.25.2:
   integrity sha512-O243LXxb5gLLxubu5zgoppYQuolapGVWPw3ll0acN0+O8TnPUE2kFp9Bt3sTRYodw8xFIknOVxjSeyWYBpVcEQ==
 
 "discord.js@npm:@notenoughupdates/discord.js@dev":
-  version "13.4.0-dev.1639483717.4d0cb81"
-  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.4.0-dev.1639483717.4d0cb81.tgz#6574676a8121f0d1cee4f23b162c9a5cdb91b584"
-  integrity sha512-DPk33uKC7Vf+OdMXhPzxsG2Y8WZ6RS/NrVW/4fpO9ucalKvanxd49ho9EvpkITwjuCDmSlcmdL/IuKK1Hrv16Q==
+  version "13.4.0-dev.1640088545.d9880cf"
+  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-13.4.0-dev.1640088545.d9880cf.tgz#0ed45124e0a53e67e024628b025c4fd5f63796ed"
+  integrity sha512-HWzqQ0wFIQt6QKj+7NbrQp51dt8pVjqFnZMHj+25FOXsZ66IQrF37P3ABHBF3zeeEI78Pkcqrk8+PvjmI3D+7Q==
   dependencies:
     "@discordjs/builders" "^0.9.0"
     "@discordjs/collection" "^0.3.2"
@@ -432,9 +437,9 @@ wrappy@1:
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
 ws@^8.3.0:
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-8.3.0.tgz#7185e252c8973a60d57170175ff55fdbd116070d"
-  integrity sha512-Gs5EZtpqZzLvmIM59w4igITU57lrtYVFneaa434VROv4thzJyV6UjIL3D42lslWlI+D4KzLYnxSwtfuiO79sNw==
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.4.0.tgz#f05e982a0a88c604080e8581576e2a063802bed6"
+  integrity sha512-IHVsKe2pjajSUIl4KYMQOdlyliovpEPquKkqbwswulszzI7r0SfQrxnXdWAEqOlDCLrVSJzo+O1hAwdog2sKSQ==
 
 xtend@~4.0.1:
   version "4.0.2"

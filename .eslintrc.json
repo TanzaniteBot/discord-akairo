@@ -1,6 +1,16 @@
 {
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
-	"ignorePatterns": ["dist"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"prettier"
+	],
+	"plugins": [
+		"@typescript-eslint",
+		"deprecation"
+	],
+	"ignorePatterns": [
+		"dist"
+	],
 	"parserOptions": {
 		"ecmaVersion": 12,
 		"sourceType": "module",
@@ -16,9 +26,15 @@
 		"no-unsafe-negation": "error",
 		"accessor-pairs": "warn",
 		"array-callback-return": "error",
-		"complexity": ["warn", 25],
+		"complexity": [
+			"warn",
+			25
+		],
 		"consistent-return": "error",
-		"eqeqeq": ["error", "smart"],
+		"eqeqeq": [
+			"error",
+			"smart"
+		],
 		"no-console": "warn",
 		"no-empty-function": "off",
 		"no-implied-eval": "error",
@@ -48,7 +64,10 @@
 		"no-mixed-requires": "error",
 		"no-new-require": "error",
 		"no-path-concat": "error",
-		"consistent-this": ["error", "$this"],
+		"consistent-this": [
+			"error",
+			"$this"
+		],
 		"func-names": "error",
 		"func-name-matching": "error",
 		"func-style": [
@@ -58,7 +77,10 @@
 				"allowArrowFunctions": true
 			}
 		],
-		"max-depth": ["error", 7],
+		"max-depth": [
+			"error",
+			7
+		],
 		"max-nested-callbacks": [
 			"error",
 			{
@@ -100,6 +122,7 @@
 		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/no-inferrable-types": "off",
 		"@typescript-eslint/no-empty-function": "off",
-		"@typescript-eslint/no-non-null-assertion": "off"
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"deprecation/deprecation": "warn"
 	}
 }

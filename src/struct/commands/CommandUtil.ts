@@ -12,6 +12,7 @@ import {
 	WebhookEditMessageOptions
 } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage.js";
+import AkairoClient from "../AkairoClient.js";
 import type ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import CommandHandler, { ParsedComponentData } from "./CommandHandler.js";
 
@@ -19,6 +20,8 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler.js";
  * Command utilities.
  */
 export default class CommandUtil<MessageType extends AkairoMessage | Message> {
+	public static deletedMessages = new Set<Snowflake>();
+
 	/**
 	 * The command handler.
 	 */
@@ -55,6 +58,13 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 	public declare shouldEdit: boolean;
 
 	/**
+	 * Whether or not `this.message` has been deleted.
+	 */
+	public get deleted(): boolean {
+		return this.isSlash ? false : CommandUtil.deletedMessages.has(this.message.id);
+	}
+
+	/**
 	 * @param handler - The command handler.
 	 * @param message - Message that triggered the command.
 	 */
@@ -66,6 +76,19 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 		this.lastResponse = null;
 		this.messages = this.handler instanceof CommandHandler && this.handler.storeMessages ? new Collection() : null;
 		this.isSlash = this.message instanceof AkairoMessage;
+		this.setUpDeletedMessageHandler(handler.client);
+	}
+
+	/**
+	 * Sets up the deleted message handler.
+	 * @param client The client of the command handler
+	 */
+	private setUpDeletedMessageHandler(client: AkairoClient) {
+		client.on("messageDelete", message => {
+			if (message.inGuild()) {
+				CommandUtil.deletedMessages.add(message.id);
+			}
+		});
 	}
 
 	/**
@@ -125,12 +148,7 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 	): Promise<Message | APIMessage> {
 		const newOptions = (typeof options === "string" ? { content: options } : options) as ReplyMessageOptions;
 
-		if (
-			!this.isSlashMessage(this.message) &&
-			!this.shouldEdit &&
-			!(newOptions instanceof MessagePayload) &&
-			!(this.message as Message).deleted
-		) {
+		if (!this.isSlashMessage(this.message) && !this.shouldEdit && !(newOptions instanceof MessagePayload) && !this.deleted) {
 			(newOptions as MessageOptions).reply = {
 				messageReference: this.message,
 				failIfNotExists: newOptions.failIfNotExists ?? this.handler.client.options.failIfNotExists
@@ -150,7 +168,12 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!this.isSlashMessage(this.message)) {
 			(newOptions as InteractionReplyOptions).ephemeral = undefined;
-			if (this.shouldEdit && !hasFiles && !this.lastResponse!.deleted && !this.lastResponse!.attachments.size) {
+			if (
+				this.shouldEdit &&
+				!hasFiles &&
+				!CommandUtil.deletedMessages.has(this.lastResponse!.id) &&
+				!this.lastResponse!.attachments.size
+			) {
 				return this.lastResponse!.edit(newOptions);
 			}
 			const sent = await this.message.channel?.send(newOptions);

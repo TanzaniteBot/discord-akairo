@@ -1004,7 +1004,9 @@ export interface BaseArgumentType {
 	categoryChannels: Collection<string, CategoryChannel>;
 	newsChannel: NewsChannel;
 	newsChannels: Collection<string, NewsChannel>;
+	// eslint-disable-next-line deprecation/deprecation
 	storeChannel: StoreChannel;
+	// eslint-disable-next-line deprecation/deprecation
 	storeChannels: Collection<string, StoreChannel>;
 	stageChannel: StageChannel;
 	stageChannels: Collection<string, StageChannel>;
