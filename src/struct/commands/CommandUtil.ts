@@ -12,7 +12,6 @@ import {
 	WebhookEditMessageOptions
 } from "discord.js";
 import AkairoMessage from "../../util/AkairoMessage.js";
-import AkairoClient from "../AkairoClient.js";
 import type ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import CommandHandler, { ParsedComponentData } from "./CommandHandler.js";
 
@@ -20,6 +19,9 @@ import CommandHandler, { ParsedComponentData } from "./CommandHandler.js";
  * Command utilities.
  */
 export default class CommandUtil<MessageType extends AkairoMessage | Message> {
+	/**
+	 * Saved deleted message ids.
+	 */
 	public static deletedMessages = new Set<Snowflake>();
 
 	/**
@@ -76,19 +78,6 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 		this.lastResponse = null;
 		this.messages = this.handler instanceof CommandHandler && this.handler.storeMessages ? new Collection() : null;
 		this.isSlash = this.message instanceof AkairoMessage;
-		this.setUpDeletedMessageHandler(handler.client);
-	}
-
-	/**
-	 * Sets up the deleted message handler.
-	 * @param client The client of the command handler
-	 */
-	private setUpDeletedMessageHandler(client: AkairoClient) {
-		client.on("messageDelete", message => {
-			if (message.inGuild()) {
-				CommandUtil.deletedMessages.add(message.id);
-			}
-		});
 	}
 
 	/**

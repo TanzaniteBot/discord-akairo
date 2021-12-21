@@ -346,6 +346,13 @@ export default class CommandHandler extends AkairoHandler {
 				if (i.isAutocomplete()) this.handleAutocomplete(i);
 			});
 		});
+
+		if (this.commandUtil)
+			this.client.on("messageDelete", message => {
+				if (message.inGuild()) {
+					CommandUtil.deletedMessages.add(message.id);
+				}
+			});
 	}
 
 	/**
