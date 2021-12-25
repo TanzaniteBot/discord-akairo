@@ -132,7 +132,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 
 type Events = ContextMenuCommandHandlerEvents;
 
-export default interface ContextMenuCommandHandler {
+export default interface ContextMenuCommandHandler extends AkairoHandler {
 	/**
 	 * Deregisters a module.
 	 * @param contextMenuCommand - Module to use.

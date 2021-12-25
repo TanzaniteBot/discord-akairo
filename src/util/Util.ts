@@ -107,6 +107,7 @@ export default class Util {
 	 * @param b - Second value.
 	 * @returns Whether the two values are equal.
 	 */
+	public static deepEquals<T>(a: unknown, b: T): a is T;
 	public static deepEquals(a: any, b: any): boolean {
 		if (a === b) return true;
 		if (typeof a !== "object" || typeof b !== "object") throw new TypeError("Not objects");

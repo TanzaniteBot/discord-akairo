@@ -80,7 +80,7 @@ export default abstract class Inhibitor extends AkairoModule {
 	}
 }
 
-export default interface Inhibitor {
+export default interface Inhibitor extends AkairoModule {
 	/**
 	 * Reloads the inhibitor.
 	 */

@@ -75,7 +75,7 @@ export default class TaskHandler extends AkairoHandler {
 
 type Events = TaskHandlerEvents;
 
-export default interface TaskHandler {
+export default interface TaskHandler extends AkairoHandler {
 	/**
 	 * Deregisters a task.
 	 * @param task - Task to use.

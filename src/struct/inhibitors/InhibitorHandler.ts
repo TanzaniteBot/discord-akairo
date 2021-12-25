@@ -98,7 +98,7 @@ export default class InhibitorHandler extends AkairoHandler {
 
 type Events = InhibitorHandlerEvents;
 
-export default interface InhibitorHandler {
+export default interface InhibitorHandler extends AkairoHandler {
 	/**
 	 * Deregisters an inhibitor.
 	 * @param inhibitor - Inhibitor to use.

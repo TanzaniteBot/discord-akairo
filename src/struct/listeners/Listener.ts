@@ -67,7 +67,7 @@ export default abstract class Listener extends AkairoModule {
 	}
 }
 
-export default interface Listener {
+export default interface Listener extends AkairoModule {
 	/**
 	 * Reloads the listener.
 	 */

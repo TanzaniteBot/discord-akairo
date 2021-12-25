@@ -1525,7 +1525,7 @@ export default class CommandHandler extends AkairoHandler {
 
 type Events = CommandHandlerEventsType;
 
-export default interface CommandHandler {
+export default interface CommandHandler extends AkairoHandler {
 	/**
 	 * Loads a command.
 	 * @param thing - Module or path to module.

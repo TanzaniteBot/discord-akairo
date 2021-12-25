@@ -98,12 +98,27 @@ export default class TestClient extends AkairoClient {
 			contextMenuCommandHandler: this.contextMenuCommandHandler
 		});
 
-		await Promise.all([
-			this.commandHandler.loadAll().then(() => console.log("Loaded commands")),
-			this.contextMenuCommandHandler.loadAll().then(() => console.log("Loaded context menu commands")),
-			this.listenerHandler.loadAll().then(() => console.log("Loaded listeners")),
-			this.inhibitorHandler.loadAll().then(() => console.log("Loaded inhibitors")),
-			this.taskHandler.loadAll().then(() => console.log("Loaded tasks"))
+		const handlers = await Promise.allSettled([
+			this.commandHandler
+				.loadAll()
+				.then(() => console.log("Loaded commands"))
+				.catch(console.error),
+			this.contextMenuCommandHandler
+				.loadAll()
+				.then(() => console.log("Loaded context menu commands"))
+				.catch(console.error),
+			this.listenerHandler
+				.loadAll()
+				.then(() => console.log("Loaded listeners"))
+				.catch(console.error),
+			this.inhibitorHandler
+				.loadAll()
+				.then(() => console.log("Loaded inhibitors"))
+				.catch(console.error),
+			this.taskHandler
+				.loadAll()
+				.then(() => console.log("Loaded tasks"))
+				.catch(console.error)
 		]);
 
 		const resolver = this.commandHandler.resolver;
@@ -113,6 +128,10 @@ export default class TestClient extends AkairoClient {
 			if (num < 1 || num > 10) return null;
 			return num;
 		});
+
+		if (handlers.some(h => h.status === "rejected")) {
+			throw new Error("At least one handler failed to load.");
+		}
 	}
 
 	public async start(token: string) {

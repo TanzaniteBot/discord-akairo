@@ -60,7 +60,7 @@ export default abstract class Task extends AkairoModule {
 	}
 }
 
-export default interface Task {
+export default interface Task extends AkairoModule {
 	/**
 	 * Reloads the task.
 	 */

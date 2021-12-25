@@ -60,7 +60,7 @@ export default class AkairoClient<Ready extends boolean = boolean> extends Clien
 
 type Event = AkairoClientEvents;
 
-export default interface AkairoClient {
+export default interface AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
 	on<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
 	on<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
 

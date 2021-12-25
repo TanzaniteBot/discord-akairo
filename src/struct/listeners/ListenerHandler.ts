@@ -136,7 +136,7 @@ export default class ListenerHandler extends AkairoHandler {
 
 type Events = ListenerHandlerEvents;
 
-export default interface ListenerHandler {
+export default interface ListenerHandler extends AkairoHandler {
 	/**
 	 * Finds a category by name.
 	 * @param name - Name to find with.

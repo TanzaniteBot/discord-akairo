@@ -79,7 +79,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	}
 }
 
-export default interface ContextMenuCommand {
+export default interface ContextMenuCommand extends AkairoModule {
 	/**
 	 * Reloads the context menu command.
 	 */

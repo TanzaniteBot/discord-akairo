@@ -367,7 +367,7 @@ export default abstract class Command extends AkairoModule {
 	}
 }
 
-export default interface Command {
+export default interface Command extends AkairoModule {
 	/**
 	 * Reloads the command.
 	 */
