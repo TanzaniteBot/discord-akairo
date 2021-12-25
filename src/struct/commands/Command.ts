@@ -347,9 +347,7 @@ export default abstract class Command extends AkairoModule {
 	 * @param args - Slash command options
 	 */
 	public execSlash(message: AkairoMessage, ...args: any[]): any {
-		if (this.slash) {
-			throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "execSlash");
-		}
+		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "execSlash");
 	}
 
 	/**

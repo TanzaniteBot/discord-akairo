@@ -27,6 +27,8 @@
 	"homepage": "https://github.com/NotEnoughUpdates/discord-akairo/wiki",
 	"scripts": {
 		"lint": "yarn eslint ./src",
+		"test": "yarn build && cd ./test && yarn && yarn test && cd ../",
+		"test:all": "yarn lint && yarn test",
 		"format": "yarn prettier . --write",
 		"build": "yarn rimraf dist && yarn tsc",
 		"build:no-emit": "yarn tsc --noEmit",

@@ -95,7 +95,7 @@ export interface ListenerOptions extends AkairoModuleOptions {
 
 	/**
 	 * Type of listener, either 'on' or 'once'.
-	 * Defaults to `on`
+	 * @default "on"
 	 */
 	type?: ListenerType;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
 	AkairoClient,
 	CommandHandler,
@@ -83,7 +84,7 @@ export default class TestClient extends AkairoClient {
 		this.setup();
 	}
 
-	public setup() {
+	public async setup() {
 		this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.commandHandler.useTaskHandler(this.taskHandler);
@@ -97,11 +98,13 @@ export default class TestClient extends AkairoClient {
 			contextMenuCommandHandler: this.contextMenuCommandHandler
 		});
 
-		this.commandHandler.loadAll();
-		this.inhibitorHandler.loadAll();
-		this.listenerHandler.loadAll();
-		this.taskHandler.loadAll();
-		this.contextMenuCommandHandler.loadAll();
+		await Promise.all([
+			this.commandHandler.loadAll().then(() => console.log("Loaded commands")),
+			this.contextMenuCommandHandler.loadAll().then(() => console.log("Loaded context menu commands")),
+			this.listenerHandler.loadAll().then(() => console.log("Loaded listeners")),
+			this.inhibitorHandler.loadAll().then(() => console.log("Loaded inhibitors")),
+			this.taskHandler.loadAll().then(() => console.log("Loaded tasks"))
+		]);
 
 		const resolver = this.commandHandler.resolver;
 		resolver.addType("1-10", (_, phrase) => {

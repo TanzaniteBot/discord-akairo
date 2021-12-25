@@ -88,6 +88,7 @@ export interface TaskOptions extends AkairoModuleOptions {
 
 	/**
 	 * Whether or not the task runs on start.
+	 * @default false
 	 */
 	runOnStart?: boolean;
 }

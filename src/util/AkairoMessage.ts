@@ -9,7 +9,7 @@ import {
 	Message,
 	MessagePayload,
 	Snowflake,
-	TextBasedChannels,
+	TextBasedChannel,
 	User,
 	Util
 } from "discord.js";
@@ -112,7 +112,7 @@ export default class AkairoMessage extends Base {
 	/**
 	 * The channel that the interaction was sent in.
 	 */
-	public get channel(): TextBasedChannels | null {
+	public get channel(): TextBasedChannel | null {
 		return this.interaction.channel;
 	}
 

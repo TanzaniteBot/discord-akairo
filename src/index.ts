@@ -78,7 +78,6 @@ import type {
 	ListenerHandlerEvents,
 	TaskHandlerEvents
 } from "./typings/events";
-import type { GuildTextBasedChannels } from "./typings/guildTextBasedChannels";
 import AkairoError from "./util/AkairoError";
 import AkairoMessage from "./util/AkairoMessage";
 import Category from "./util/Category";
@@ -167,7 +166,6 @@ export type {
 	ExecutionPredicate,
 	ExtractedFlags,
 	FailureData,
-	GuildTextBasedChannels,
 	IgnoreCheckPredicate,
 	InhibitorHandlerEvents,
 	InhibitorOptions,

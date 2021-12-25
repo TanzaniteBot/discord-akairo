@@ -47,7 +47,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options?: AkairoHandlerOptions) {
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions) {
 		const {
 			directory,
 			classToHandle = ContextMenuCommand,

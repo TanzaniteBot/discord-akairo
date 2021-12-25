@@ -59,7 +59,7 @@ export default class AkairoHandler extends EventEmitter {
 	 * @param client - The Akairo client.
 	 * @param options - Options for module loading and handling.
 	 */
-	public constructor(client: AkairoClient, options?: AkairoHandlerOptions) {
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions) {
 		const {
 			directory,
 			classToHandle = AkairoModule,
@@ -70,7 +70,7 @@ export default class AkairoHandler extends EventEmitter {
 		super();
 
 		this.client = client;
-		this.directory = directory!;
+		this.directory = directory;
 		this.classToHandle = classToHandle;
 		this.extensions = new Set(extensions);
 		this.automateCategories = Boolean(automateCategories);
@@ -269,28 +269,31 @@ export type LoadPredicate = (filepath: string) => boolean;
 export interface AkairoHandlerOptions {
 	/**
 	 * Whether or not to set each module's category to its parent directory name.
+	 * @default false
 	 */
 	automateCategories?: boolean;
 
 	/**
 	 * Only classes that extends this class can be handled.
+	 * @default AkairoModule
 	 */
 	classToHandle?: typeof AkairoModule;
 
 	/**
 	 * Directory to modules.
 	 */
-	directory?: string;
+	directory: string;
 
 	/**
 	 * File extensions to load.
-	 * By default this is .js, .json, and .ts files.
+	 * @default [".js", ".json", ".ts"]
 	 */
 	extensions?: string[] | Set<string>;
 
 	/**
 	 * Filter for files to be loaded.
 	 * Can be set individually for each handler by overriding the `loadAll` method.
+	 * @default () => true
 	 */
 	loadFilter?: LoadPredicate;
 }

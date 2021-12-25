@@ -64,10 +64,9 @@ class Tokenizer {
 	public declare state: number;
 	public declare tokens: any[];
 
-	public constructor(
-		content: string,
-		{ flagWords = [], optionFlagWords = [], quoted = true, separator }: ContentParserOptions = {}
-	) {
+	public constructor(content: string, options?: ContentParserOptions) {
+		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options ?? {};
+
 		this.content = content;
 		this.flagWords = flagWords;
 		this.optionFlagWords = optionFlagWords;
@@ -475,10 +474,8 @@ export default class ContentParser {
 	public constructor({ flagWords = [], optionFlagWords = [], quoted = true, separator }: ContentParserOptions = {}) {
 		this.flagWords = flagWords;
 		this.flagWords.sort((a, b) => b.length - a.length);
-
 		this.optionFlagWords = optionFlagWords;
 		this.optionFlagWords.sort((a, b) => b.length - a.length);
-
 		this.quoted = Boolean(quoted);
 		this.separator = separator;
 	}
@@ -529,16 +526,19 @@ export default class ContentParser {
 export interface ContentParserOptions {
 	/**
 	 * Words considered flags.
+	 * @default []
 	 */
 	flagWords?: string[];
 
 	/**
 	 * Words considered option flags.
+	 * @default []
 	 */
 	optionFlagWords?: string[];
 
 	/**
-	 * Whether to parse quotes. Defaults to `true`.
+	 * Whether to parse quotes.
+	 * @default true
 	 */
 	quoted?: boolean;
 

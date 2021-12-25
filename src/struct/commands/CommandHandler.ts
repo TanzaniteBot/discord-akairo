@@ -13,7 +13,7 @@ import {
 	GuildResolvable,
 	Message,
 	Snowflake,
-	TextBasedChannels,
+	TextBasedChannel,
 	TextChannel,
 	User
 } from "discord.js";
@@ -221,7 +221,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options?: CommandHandlerOptions) {
+	public constructor(client: AkairoClient, options: CommandHandlerOptions) {
 		const {
 			directory,
 			classToHandle = Command,
@@ -1443,7 +1443,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param channel - Channel to add to.
 	 * @param user - User to add.
 	 */
-	public addPrompt(channel: TextBasedChannels, user: User): void {
+	public addPrompt(channel: TextBasedChannel, user: User): void {
 		let users = this.prompts.get(channel.id);
 		if (!users) this.prompts.set(channel.id, new Set());
 		users = this.prompts.get(channel.id);
@@ -1455,7 +1455,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param channel - Channel to remove from.
 	 * @param user - User to remove.
 	 */
-	public removePrompt(channel: TextBasedChannels, user: User): void {
+	public removePrompt(channel: TextBasedChannel, user: User): void {
 		const users = this.prompts.get(channel.id);
 		if (!users) return;
 		users.delete(user.id);
@@ -1467,7 +1467,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param channel - Channel to check.
 	 * @param user - User to check.
 	 */
-	public hasPrompt(channel: TextBasedChannels, user: User): boolean {
+	public hasPrompt(channel: TextBasedChannel, user: User): boolean {
 		const users = this.prompts.get(channel.id);
 		if (!users) return false;
 		return users.has(user.id);
@@ -1603,6 +1603,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 
 	/**
 	 * Default argument options.
+	 * @default {}
 	 */
 	argumentDefaults?: DefaultArgumentOptions;
 
@@ -1613,16 +1614,19 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 
 	/**
 	 * Specify whether to register all slash commands when starting the client.
+	 * @default false
 	 */
 	autoRegisterSlashCommands?: boolean;
 
 	/**
 	 * Whether or not to block bots.
+	 * @default true
 	 */
 	blockBots?: boolean;
 
 	/**
 	 * Whether or not to block self.
+	 * @default true
 	 */
 	blockClient?: boolean;
 
@@ -1633,63 +1637,75 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 
 	/**
 	 * Milliseconds a message should exist for before its command util instance is marked for removal.
-	 * If 0, CommandUtil instances will never be removed and will cause memory to increase indefinitely.
+	 * If `0`, CommandUtil instances will never be removed and will cause memory to increase indefinitely.
+	 * @default 300_000 // 5 minutes
 	 */
 	commandUtilLifetime?: number;
 
 	/**
 	 * Time interval in milliseconds for sweeping command util instances.
-	 * If 0, CommandUtil instances will never be removed and will cause memory to increase indefinitely.
+	 * If `0`, CommandUtil instances will never be removed and will cause memory to increase indefinitely.
+	 * @default 300_000 // 5 minutes
 	 */
 	commandUtilSweepInterval?: number;
 
 	/**
 	 * Default cooldown for commands.
+	 * @default 0
 	 */
 	defaultCooldown?: number;
 
 	/**
 	 * Whether or not members are fetched on each message author from a guild.
+	 * @default false
 	 */
 	fetchMembers?: boolean;
 
 	/**
 	 * Whether or not to handle edited messages using CommandUtil.
+	 * @default false
 	 */
 	handleEdits?: boolean;
 
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore. Defaults to the client owner(s).
+	 * @default client.ownerID
 	 */
 	ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
+	 * @default []
 	 */
 	ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
 
 	/**
 	 * The prefix(es) for command parsing.
+	 * @default "!"
 	 */
 	prefix?: string | string[] | PrefixSupplier;
 
 	/**
 	 * Whether or not to store messages in CommandUtil.
+	 * @default false
 	 */
 	storeMessages?: boolean;
 
 	/**
 	 * Show "BotName is typing" information message on the text channels when a command is running.
+	 * @default false
 	 */
 	typing?: boolean;
 
 	/**
 	 * Whether or not to require the use of execSlash for slash commands.
+	 * @default false
 	 */
 	execSlash?: boolean;
 
 	/**
 	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
+	 * @default false
 	 */
 	skipBuiltInPostInhibitors?: boolean;
 
@@ -1697,6 +1713,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	 * Use slash command permissions for owner only commands
 	 *
 	 * Warning: this is experimental
+	 * @default false
 	 */
 	useSlashPermissions?: boolean;
 }

@@ -83,11 +83,13 @@ export default interface AkairoClient {
 export interface AkairoOptions {
 	/**
 	 * Discord ID of the client owner(s).
+	 * @default []
 	 */
 	ownerID?: Snowflake | Snowflake[];
 
 	/**
 	 * Discord ID of the client superUsers(s).
+	 * @default []
 	 */
 	superUserID?: Snowflake | Snowflake[];
 }

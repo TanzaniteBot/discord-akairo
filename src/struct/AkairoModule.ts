@@ -76,7 +76,7 @@ export default abstract class AkairoModule {
 export interface AkairoModuleOptions {
 	/**
 	 * Category ID for organization purposes.
-	 * Defaults to `default`.
+	 * @default "default"
 	 */
 	category?: string;
 }

@@ -4,6 +4,7 @@ import type {
 	Collection,
 	Emoji,
 	Guild,
+	GuildBasedChannel,
 	GuildChannel,
 	GuildEmoji,
 	GuildMember,
@@ -21,7 +22,6 @@ import type {
 	VoiceChannel
 } from "discord.js";
 import type { URL } from "url";
-import { GuildTextBasedChannels } from "../../../typings/guildTextBasedChannels.js";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
 import Util from "../../../util/Util.js";
 import type AkairoClient from "../../AkairoClient.js";
@@ -39,7 +39,7 @@ import type TypeResolver from "./TypeResolver.js";
  * ``` */
 type ATC<R = unknown> = ArgumentTypeCaster<R>;
 /** ```ts
- * BaseArgumentType
+ * keyof BaseArgumentType
  * ``` */
 type KBAT = keyof BaseArgumentType;
 /** ```ts
@@ -47,9 +47,9 @@ type KBAT = keyof BaseArgumentType;
  * ``` */
 type ATCR<R> = ArgumentTypeCasterReturn<R>;
 /** ```ts
- * KBAT | string
+ * ArgumentType
  * ``` */
-type AT = KBAT | string;
+type AT = ArgumentType;
 /** ```ts
  * BaseArgumentType
  * ``` */
@@ -433,7 +433,7 @@ export default class Argument {
 	 */
 	public static cast<T extends ATC>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<ATCR<T>>;
 	public static cast<T extends KBAT>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<BAT[T]>;
-	public static cast<T extends AT>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<any>;
+	public static cast(type: AT | ATC, resolver: TypeResolver, message: Message, phrase: string): Promise<any>;
 	public static async cast(type: ATC | AT, resolver: TypeResolver, message: Message, phrase: string): Promise<any> {
 		if (Array.isArray(type)) {
 			for (const entry of type) {
@@ -472,8 +472,8 @@ export default class Argument {
 			return { match, matches };
 		}
 
-		if (resolver.type(type)) {
-			let res = resolver.type(type)?.call(this, message, phrase);
+		if (resolver.type(type as any)) {
+			let res = resolver.type(type as any)?.call(this, message, phrase);
 			if (Util.isPromise(res)) res = await res;
 			return res;
 		}
@@ -488,7 +488,7 @@ export default class Argument {
 	 */
 	public static compose<T extends ATC>(...types: T[]): ATCATCR<T>;
 	public static compose<T extends KBAT>(...types: T[]): ATCBAT<T>;
-	public static compose<T extends AT>(...types: T[]): ATC;
+	public static compose(...types: (AT | ATC)[]): ATC;
 	public static compose(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			let acc: any = phrase;
@@ -509,7 +509,7 @@ export default class Argument {
 	 */
 	public static composeWithFailure<T extends ATC>(...types: T[]): ATCATCR<T>;
 	public static composeWithFailure<T extends KBAT>(...types: T[]): ATCBAT<T>;
-	public static composeWithFailure<T extends AT>(...types: T[]): ATC;
+	public static composeWithFailure(...types: (AT | ATC)[]): ATC;
 	public static composeWithFailure(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			let acc: any = phrase;
@@ -537,7 +537,7 @@ export default class Argument {
 	 */
 	public static product<T extends ATC>(...types: T[]): ATCATCR<T>;
 	public static product<T extends KBAT>(...types: T[]): ATCBAT<T>;
-	public static product<T extends AT>(...types: T[]): ATC;
+	public static product(...types: (AT | ATC)[]): ATC;
 	public static product(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			const results = [];
@@ -561,7 +561,7 @@ export default class Argument {
 	 */
 	public static range<T extends ATC>(type: T, min: number, max: number, inclusive?: boolean): ATCATCR<T>;
 	public static range<T extends KBAT>(type: T, min: number, max: number, inclusive?: boolean): ATCBAT<T>;
-	public static range<T extends AT>(type: T, min: number, max: number, inclusive?: boolean): ATC;
+	public static range(type: AT | ATC, min: number, max: number, inclusive?: boolean): ATC;
 	public static range(type: AT | ATC, min: number, max: number, inclusive = false): ATC {
 		return Argument.validate(type as any, (msg, p, x) => {
 			const o = typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
@@ -578,7 +578,7 @@ export default class Argument {
 	 */
 	public static tagged<T extends ATC>(type: T, tag?: any): ATCATCR<T>;
 	public static tagged<T extends KBAT>(type: T, tag?: any): ATCBAT<T>;
-	public static tagged<T extends AT>(type: T, tag?: any): ATC;
+	public static tagged(type: AT | ATC, tag?: any): ATC;
 	public static tagged(type: AT | ATC, tag: any = type): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
@@ -599,7 +599,7 @@ export default class Argument {
 	 */
 	public static taggedUnion<T extends ATC>(...types: T[]): ATCATCR<T>;
 	public static taggedUnion<T extends KBAT>(...types: T[]): ATCBAT<T>;
-	public static taggedUnion<T extends AT>(...types: T[]): ATC;
+	public static taggedUnion(...types: (AT | ATC)[]): ATC;
 	public static taggedUnion(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
@@ -620,7 +620,7 @@ export default class Argument {
 	 */
 	public static taggedWithInput<T extends ATC>(type: T, tag?: any): ATCATCR<T>;
 	public static taggedWithInput<T extends KBAT>(type: T, tag?: any): ATCBAT<T>;
-	public static taggedWithInput<T extends AT>(type: T, tag?: any): ATC;
+	public static taggedWithInput(type: AT | ATC, tag?: any): ATC;
 	public static taggedWithInput(type: AT | ATC, tag: any = type): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
@@ -640,7 +640,7 @@ export default class Argument {
 	 */
 	public static union<T extends ATC>(...types: T[]): ATCATCR<T>;
 	public static union<T extends KBAT>(...types: T[]): ATCBAT<T>;
-	public static union<T extends AT>(...types: T[]): ATC;
+	public static union(...types: (AT | ATC)[]): ATC;
 	public static union(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
@@ -661,7 +661,7 @@ export default class Argument {
 	 */
 	public static validate<T extends ATC>(type: T, predicate: ParsedValuePredicate): ATCATCR<T>;
 	public static validate<T extends KBAT>(type: T, predicate: ParsedValuePredicate): ATCBAT<T>;
-	public static validate<T extends AT>(type: T, predicate: ParsedValuePredicate): ATC;
+	public static validate(type: AT | ATC, predicate: ParsedValuePredicate): ATC;
 	public static validate(type: AT | ATC, predicate: ParsedValuePredicate): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
@@ -679,7 +679,7 @@ export default class Argument {
 	 */
 	public static withInput<T extends ATC>(type: T): ATC<ATCR<T>>;
 	public static withInput<T extends KBAT>(type: T): ATCBAT<T>;
-	public static withInput<T extends AT>(type: T): ATC;
+	public static withInput(type: AT | ATC): ATC;
 	public static withInput(type: AT | ATC): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
@@ -727,12 +727,13 @@ export interface ArgumentOptions {
 	/**
 	 * Amount of phrases to match when matching more than one.
 	 * Applicable to text, content, rest, or separate match only.
-	 * Defaults to infinity.
+	 * @default Infinity.
 	 */
 	limit?: number;
 
 	/**
 	 * Method to match text. Defaults to 'phrase'.
+	 * @default ArgumentMatches.PHRASE
 	 */
 	match?: ArgumentMatch;
 
@@ -745,6 +746,7 @@ export interface ArgumentOptions {
 	 * Whether or not to have flags process multiple inputs.
 	 * For option flags, this works like the separate match; the limit option will also work here.
 	 * For flags, this will count the number of occurrences.
+	 * @default false
 	 */
 	multipleFlags?: boolean;
 
@@ -760,6 +762,7 @@ export interface ArgumentOptions {
 
 	/**
 	 * Type to cast to.
+	 * @default ArgumentTypes.STRING
 	 */
 	type?: ArgumentType | ArgumentTypeCaster;
 
@@ -771,6 +774,7 @@ export interface ArgumentOptions {
 	 * If there is a match, that index is considered used and future unordered args will not check that index again.
 	 * If there is no match, then the prompting or default value is used.
 	 * Applicable to phrase match only.
+	 * @default false
 	 */
 	unordered?: boolean | number | number[];
 }
@@ -994,24 +998,24 @@ export interface BaseArgumentType {
 	members: Collection<string, GuildMember> | null;
 	relevant: User | GuildMember | null;
 	relevants: Collection<string, User> | Collection<string, GuildMember> | null;
-	channel: GuildTextBasedChannels | BaseGuildVoiceChannel | null;
-	channels: Collection<string, GuildTextBasedChannels | BaseGuildVoiceChannel> | null;
+	channel: GuildBasedChannel | BaseGuildVoiceChannel | null;
+	channels: Collection<string, GuildBasedChannel | BaseGuildVoiceChannel> | null;
 	textChannel: TextChannel | null;
-	textChannels: Collection<string, TextChannel>;
-	voiceChannel: VoiceChannel;
-	voiceChannels: Collection<string, VoiceChannel>;
-	categoryChannel: CategoryChannel;
-	categoryChannels: Collection<string, CategoryChannel>;
-	newsChannel: NewsChannel;
-	newsChannels: Collection<string, NewsChannel>;
+	textChannels: Collection<string, TextChannel> | null;
+	voiceChannel: VoiceChannel | null;
+	voiceChannels: Collection<string, VoiceChannel> | null;
+	categoryChannel: CategoryChannel | null;
+	categoryChannels: Collection<string, CategoryChannel> | null;
+	newsChannel: NewsChannel | null;
+	newsChannels: Collection<string, NewsChannel> | null;
 	// eslint-disable-next-line deprecation/deprecation
-	storeChannel: StoreChannel;
+	storeChannel: StoreChannel | null;
 	// eslint-disable-next-line deprecation/deprecation
-	storeChannels: Collection<string, StoreChannel>;
-	stageChannel: StageChannel;
-	stageChannels: Collection<string, StageChannel>;
-	threadChannel: ThreadChannel;
-	threadChannels: Collection<string, ThreadChannel>;
+	storeChannels: Collection<string, StoreChannel> | null;
+	stageChannel: StageChannel | null;
+	stageChannels: Collection<string, StageChannel> | null;
+	threadChannel: ThreadChannel | null;
+	threadChannels: Collection<string, ThreadChannel> | null;
 	role: Role | null;
 	roles: Collection<string, Role> | null;
 	emoji: Emoji | null;
@@ -1060,16 +1064,20 @@ export type ArgumentTypeCaster<R = unknown> = (message: Message, phrase: string)
 /**
  * The return type of an argument.
  */
-type ArgumentTypeCasterReturn<R> = R extends ArgumentTypeCaster<infer S> ? S : R;
+export type ArgumentTypeCasterReturn<R> = R extends ArgumentTypeCaster<infer S> ? S : R;
 
 /**
  * Data passed to functions that run when things failed.
  */
 export interface FailureData {
-	/** The input phrase that failed if there was one, otherwise an empty string. */
+	/**
+	 * The input phrase that failed if there was one, otherwise an empty string.
+	 */
 	phrase: string;
 
-	/** The value that failed if there was one, otherwise null. */
+	/**
+	 * The value that failed if there was one, otherwise null.
+	 */
 	failure: void | (Flag & { value: any });
 }
 

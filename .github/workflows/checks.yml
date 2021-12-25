@@ -25,10 +25,14 @@ jobs:
         uses: c-hive/gha-yarn-cache@v2
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
+      - name: Make Pseudo Auth File
+        run: cp test/example_auth.json test/auth.json
       - name: ESLint
         run: yarn lint
-      - name: Lint
-        run: yarn lint
+      - name: TSC
+        run: yarn build
+      - name: Dry Run Test Bot
+        run: yarn test
 
   check-formatting:
     name: Check formatting
