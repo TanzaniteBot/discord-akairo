@@ -359,6 +359,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * Registers interaction commands.
 	 */
 	protected async registerInteractionCommands() {
+		this.client.emit("akairoDebug", `[registerInteractionCommands] Started registering interaction commands...`);
 		const parsedSlashCommands: {
 			name: string;
 			description?: string;
@@ -439,10 +440,13 @@ export default class CommandHandler extends AkairoHandler {
 		}));
 
 		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
+			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
 			await this.client.application?.commands.set(slashCommandsApp).catch(error => {
 				if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "global", slashCommandsApp);
 				else throw error;
 			});
+		} else {
+			this.client.emit("akairoDebug", "[registerInteractionCommands]Global interaction commands are up to date.");
 		}
 
 		/* Guilds */
@@ -468,10 +472,13 @@ export default class CommandHandler extends AkairoHandler {
 				}));
 
 				if (!Util.deepEquals(currentGuildCommands, value)) {
+					this.client.emit("akairoDebug", `[registerInteractionCommands] Updating guild commands for ${guild.name}.`, value);
 					await guild.commands.set(value).catch(error => {
 						if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "guild", value, guild);
 						else throw error;
 					});
+				} else {
+					this.client.emit("akairoDebug", `[registerInteractionCommands] No changes needed for ${guild.name}.`);
 				}
 			});
 		}
@@ -531,11 +538,13 @@ export default class CommandHandler extends AkairoHandler {
 		try {
 			await Promise.all(promises);
 		} catch (e) {
-			/* eslint-disable no-console */
-			console.debug(promises);
-			console.debug(globalCommands);
-			console.debug(fullPermissions);
-			/* eslint-enable no-console */
+			this.client.emit(
+				"akairoDebug",
+				"Error updating interaction permissions, here are the promises, globalCommands, and fullPermissions",
+				promises,
+				globalCommands,
+				fullPermissions
+			);
 			throw e;
 		}
 	}
@@ -883,6 +892,7 @@ export default class CommandHandler extends AkairoHandler {
 			return;
 		}
 
+		this.client.emit("akairoDebug", `Autocomplete started for ${interaction.commandName}`);
 		commandModule.autocomplete(interaction);
 	}
 

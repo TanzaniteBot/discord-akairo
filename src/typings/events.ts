@@ -299,5 +299,5 @@ export interface AkairoClientEvents extends ClientEvents {
 	/**
 	 * Emitted for akairo debugging information.
 	 */
-	akairoDebug: [message: string];
+	akairoDebug: [message: string, ...other: any[]];
 }
