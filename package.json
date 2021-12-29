@@ -28,6 +28,7 @@
 	"scripts": {
 		"lint": "yarn eslint ./src",
 		"test": "yarn build && cd ./test && yarn && yarn test && cd ../",
+		"test:run": "yarn build && cd ./test && yarn && yarn start && cd ../",
 		"test:all": "yarn lint && yarn test",
 		"format": "yarn prettier . --write",
 		"build": "yarn rimraf dist && yarn tsc",
