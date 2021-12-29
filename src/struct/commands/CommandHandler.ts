@@ -426,8 +426,8 @@ export default class CommandHandler extends AkairoHandler {
 			.filter(({ guilds }) => !guilds.length)
 			.map(({ name, description, options, defaultPermission, type }) => ({
 				name,
-				description: description!,
-				options: options!,
+				description: description ?? "",
+				options: options ?? [],
 				defaultPermission,
 				type
 			}));
@@ -446,7 +446,7 @@ export default class CommandHandler extends AkairoHandler {
 				else throw error;
 			});
 		} else {
-			this.client.emit("akairoDebug", "[registerInteractionCommands]Global interaction commands are up to date.");
+			this.client.emit("akairoDebug", "[registerInteractionCommands] Global interaction commands are up to date.");
 		}
 
 		/* Guilds */
@@ -540,7 +540,7 @@ export default class CommandHandler extends AkairoHandler {
 		} catch (e) {
 			this.client.emit(
 				"akairoDebug",
-				"Error updating interaction permissions, here are the promises, globalCommands, and fullPermissions",
+				"[updateInteractionPermissions] Error updating interaction permissions, here are the promises, globalCommands, and fullPermissions",
 				promises,
 				globalCommands,
 				fullPermissions
@@ -786,12 +786,12 @@ export default class CommandHandler extends AkairoHandler {
 				if (convertedOptions.subcommand || convertedOptions.subcommandGroup) {
 					const usedSubcommandOrGroup = commandModule.slashOptions?.find(o => o.name === convertedOptions.subcommand);
 					if (!usedSubcommandOrGroup) {
-						this.client.emit("akairoDebug", `Unable to find subcommand`);
+						this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
 						return;
 					}
 					if ([ApplicationCommandOptionTypes.SUB_COMMAND, "SUB_COMMAND"].includes(usedSubcommandOrGroup.type)) {
 						if (!(usedSubcommandOrGroup as SubCommand).options) {
-							this.client.emit("akairoDebug", `Unable to find subcommand options`);
+							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
 							return;
 						}
 						handleOptions((usedSubcommandOrGroup as SubCommand).options!);
@@ -802,16 +802,16 @@ export default class CommandHandler extends AkairoHandler {
 							subcommand => subcommand.name === convertedOptions.subcommand
 						);
 						if (!usedSubCommand) {
-							this.client.emit("akairoDebug", `Unable to find subcommand`);
+							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
 							return;
 						} else if (!usedSubCommand.options) {
-							this.client.emit("akairoDebug", `Unable to find subcommand options`);
+							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
 							return;
 						}
 
 						handleOptions(usedSubCommand.options);
 					} else {
-						throw new Error(`Unexpected command type ${usedSubcommandOrGroup.type}`);
+						throw new AkairoError("UNEXPECTED_SLASH_COMMAND_TYPE", usedSubcommandOrGroup.type);
 					}
 				} else {
 					handleOptions((commandModule.slashOptions ?? []) as NonSubSlashOptions[]);
@@ -819,22 +819,20 @@ export default class CommandHandler extends AkairoHandler {
 
 				function handleOptions(options: NonSubSlashOptions[]) {
 					for (const option of options) {
-						if (!Reflect.has(convertedOptions, option.name) || convertedOptions[option.name] === undefined) {
-							switch (option.type) {
-								case "BOOLEAN" || ApplicationCommandOptionTypes.BOOLEAN:
-									convertedOptions[option.name] = false;
-									break;
-								case "CHANNEL" || ApplicationCommandOptionTypes.CHANNEL:
-								case "INTEGER" || ApplicationCommandOptionTypes.INTEGER:
-								case "MENTIONABLE" || ApplicationCommandOptionTypes.MENTIONABLE:
-								case "NUMBER" || ApplicationCommandOptionTypes.NUMBER:
-								case "ROLE" || ApplicationCommandOptionTypes.ROLE:
-								case "STRING" || ApplicationCommandOptionTypes.STRING:
-								case "USER" || ApplicationCommandOptionTypes.USER:
-								default:
-									convertedOptions[option.name] = null;
-									break;
-							}
+						switch (option.type) {
+							case "BOOLEAN" || ApplicationCommandOptionTypes.BOOLEAN:
+								convertedOptions[option.name] ??= false;
+								break;
+							case "CHANNEL" || ApplicationCommandOptionTypes.CHANNEL:
+							case "INTEGER" || ApplicationCommandOptionTypes.INTEGER:
+							case "MENTIONABLE" || ApplicationCommandOptionTypes.MENTIONABLE:
+							case "NUMBER" || ApplicationCommandOptionTypes.NUMBER:
+							case "ROLE" || ApplicationCommandOptionTypes.ROLE:
+							case "STRING" || ApplicationCommandOptionTypes.STRING:
+							case "USER" || ApplicationCommandOptionTypes.USER:
+							default:
+								convertedOptions[option.name] ??= null;
+								break;
 						}
 					}
 				}
@@ -892,7 +890,7 @@ export default class CommandHandler extends AkairoHandler {
 			return;
 		}
 
-		this.client.emit("akairoDebug", `Autocomplete started for ${interaction.commandName}`);
+		this.client.emit("akairoDebug", `[handleAutocomplete] Autocomplete started for ${interaction.commandName}`);
 		commandModule.autocomplete(interaction);
 	}
 

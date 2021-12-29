@@ -13,7 +13,7 @@ export default class UserCommand extends Command {
 			slashOptions: [
 				{
 					name: "user",
-					description: "user aaaaaaa",
+					description: "user",
 					type: "USER",
 					required: true,
 					resolve: "member"

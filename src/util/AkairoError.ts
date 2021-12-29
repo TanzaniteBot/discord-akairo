@@ -1,3 +1,5 @@
+import { SlashOption } from "../struct/commands/Command";
+
 const Messages = {
 	// Module-related
 	FILE_NOT_FOUND: (filename: string) => `File '${filename}' not found`,
@@ -8,6 +10,8 @@ const Messages = {
 
 	// Command-related
 	ALIAS_CONFLICT: (alias: string, id: string, conflict: string) => `Alias '${alias}' of '${id}' already exists on '${conflict}'`,
+	UNEXPECTED_SLASH_COMMAND_TYPE: (type: SlashOption["type"]) =>
+		`Unexpected slash command type '${type}', where there is a subcommand and or subcommandGroup.`,
 
 	// Options-related
 	COMMAND_UTIL_EXPLICIT:
@@ -27,6 +31,7 @@ interface MessageArgs {
 	NOT_RELOADABLE: [constructor: string, id: string];
 	INVALID_CLASS_TO_HANDLE: [given: string, expected: string];
 	ALIAS_CONFLICT: [alias: string, id: string, conflict: string];
+	UNEXPECTED_SLASH_COMMAND_TYPE: [type: SlashOption["type"]];
 	COMMAND_UTIL_EXPLICIT: [];
 	UNKNOWN_MATCH_TYPE: [match: string];
 	NOT_INSTANTIABLE: [constructor: string];

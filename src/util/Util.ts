@@ -82,6 +82,7 @@ export default class Util {
 	 * Checks if the supplied value is a promise.
 	 * @param value - Value to check.
 	 */
+	public static isPromise<T>(value: T | Promise<T>): value is Promise<T>;
 	public static isPromise(value: any): value is Promise<any> {
 		return value && typeof value.then === "function" && typeof value.catch === "function";
 	}
@@ -105,16 +106,18 @@ export default class Util {
 	 * Compares each property of two objects to determine if they are equal.
 	 * @param a - First value.
 	 * @param b - Second value.
+	 * @param ignoreUndefined - Whether to ignore undefined properties.
 	 * @returns Whether the two values are equal.
 	 */
-	public static deepEquals<T>(a: unknown, b: T): a is T;
-	public static deepEquals(a: any, b: any): boolean {
+	public static deepEquals<T>(a: unknown, b: T, ignoreUndefined?: boolean): a is T;
+	public static deepEquals(a: any, b: any, ignoreUndefined = true): boolean {
 		if (a === b) return true;
 		if (typeof a !== "object" || typeof b !== "object") throw new TypeError("Not objects");
 		for (const key in a) {
+			if (ignoreUndefined && a[key] === undefined && b[key] === undefined) continue;
 			if (!(key in b)) return false;
 			if (typeof a[key] === "object" && typeof b[key] === "object") {
-				if (!Util.deepEquals(a[key], b[key])) return false;
+				if (!this.deepEquals(a[key], b[key], ignoreUndefined)) return false;
 			} else if (a[key] !== b[key]) return false;
 		}
 		return true;
