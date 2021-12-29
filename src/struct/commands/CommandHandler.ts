@@ -430,14 +430,17 @@ export default class CommandHandler extends AkairoHandler {
 				options: options ?? [],
 				defaultPermission,
 				type
-			}));
-		const currentGlobalCommands = (await this.client.application?.commands.fetch())!.map(value1 => ({
-			name: value1.name,
-			description: value1.description,
-			options: value1.options,
-			defaultPermission: value1.defaultPermission,
-			type: value1.type
-		}));
+			}))
+			.sort((a, b) => a.name.localeCompare(b.name));
+		const currentGlobalCommands = (await this.client.application?.commands.fetch())!
+			.map(value1 => ({
+				name: value1.name,
+				description: value1.description,
+				options: value1.options,
+				defaultPermission: value1.defaultPermission,
+				type: value1.type
+			}))
+			.sort((a, b) => a.name.localeCompare(b.name));
 
 		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
@@ -458,23 +461,33 @@ export default class CommandHandler extends AkairoHandler {
 				]);
 			}
 		}
+
 		if (guildSlashCommandsParsed.size) {
 			guildSlashCommandsParsed.each(async (value, key) => {
 				const guild = this.client.guilds.cache.get(key);
 				if (!guild) return;
 
-				const currentGuildCommands = (await guild.commands.fetch()).map(value1 => ({
-					name: value1.name,
-					description: value1.description,
-					options: value1.options,
-					defaultPermission: value1.defaultPermission,
-					type: value1.type
-				}));
+				const sortedCommands = value.sort((a, b) => a.name.localeCompare(b.name));
 
-				if (!Util.deepEquals(currentGuildCommands, value)) {
-					this.client.emit("akairoDebug", `[registerInteractionCommands] Updating guild commands for ${guild.name}.`, value);
-					await guild.commands.set(value).catch(error => {
-						if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "guild", value, guild);
+				const currentGuildCommands = (await guild.commands.fetch())
+					.map(value1 => ({
+						name: value1.name,
+						description: value1.description,
+						options: value1.options,
+						defaultPermission: value1.defaultPermission,
+						type: value1.type
+					}))
+					.sort((a, b) => a.name.localeCompare(b.name));
+
+				if (!Util.deepEquals(currentGuildCommands, sortedCommands)) {
+					this.client.emit(
+						"akairoDebug",
+						`[registerInteractionCommands] Updating guild commands for ${guild.name}.`,
+						sortedCommands
+					);
+					await guild.commands.set(sortedCommands).catch(error => {
+						if (error instanceof DiscordAPIError)
+							throw new RegisterInteractionCommandError(error, "guild", sortedCommands, guild);
 						else throw error;
 					});
 				} else {
