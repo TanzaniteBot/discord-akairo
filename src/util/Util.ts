@@ -110,26 +110,29 @@ export default class Util {
 	 * @returns Whether the two values are equal.
 	 */
 	public static deepEquals<T>(a: unknown, b: T, ignoreUndefined?: boolean): a is T;
-	public static deepEquals(_a: any, _b: any, _ignoreUndefined = true): boolean {
-		function deepEquals(a: any, b: any, ignoreUndefined?: boolean) {
-			if (a === b) return true;
-			if (typeof a !== "object" || typeof b !== "object") throw new TypeError("Not objects");
-			for (const key in a) {
-				if (ignoreUndefined && a[key] === undefined && b[key] === undefined) continue;
-				if (!(key in b)) return false;
-				if (typeof a[key] === "object" && typeof b[key] === "object") {
-					if (!(/* this. */ deepEquals(a[key], b[key], ignoreUndefined))) return false;
-				} else if (a[key] !== b[key]) return false;
+	public static deepEquals(a: any, b: any, ignoreUndefined = true): boolean {
+		if (a === b) return true;
+		if (typeof a !== "object" || typeof b !== "object") throw new TypeError("Not objects");
+		for (const key in a) {
+			if (ignoreUndefined && a[key] === undefined && b[key] === undefined) continue;
+			if (!(key in b)) {
+				console.log("======================================");
+				console.dir(a, { depth: 4 });
+				console.dir(b, { depth: 4 });
+				return false;
 			}
-			return true;
+			if (typeof a[key] === "object" && typeof b[key] === "object") {
+				if (!this.deepEquals(a[key], b[key], ignoreUndefined)) return false;
+			} else if (a[key] !== b[key]) {
+				console.log("======================================");
+				console.dir(a[key], { depth: 4 });
+				console.dir(a, { depth: 4 });
+				console.dir(b[key], { depth: 4 });
+				console.dir(b, { depth: 4 });
+				return false;
+			}
 		}
-
-		const result = deepEquals(_a, _b, _ignoreUndefined);
-		if (result === false) {
-			console.dir(_a, { depth: 3 });
-			console.dir(_b, { depth: 3 });
-		}
-		return result;
+		return true;
 	}
 
 	/**

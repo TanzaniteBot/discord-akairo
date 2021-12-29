@@ -431,7 +431,11 @@ export default class CommandHandler extends AkairoHandler {
 				defaultPermission,
 				type
 			}))
-			.sort((a, b) => a.name.localeCompare(b.name));
+			.sort((a, b) => {
+				if (a.name < b.name) return -1;
+				if (a.name > b.name) return 1;
+				return 0;
+			});
 		const currentGlobalCommands = (await this.client.application?.commands.fetch())!
 			.map(value1 => ({
 				name: value1.name,
@@ -440,7 +444,11 @@ export default class CommandHandler extends AkairoHandler {
 				defaultPermission: value1.defaultPermission,
 				type: value1.type
 			}))
-			.sort((a, b) => a.name.localeCompare(b.name));
+			.sort((a, b) => {
+				if (a.name < b.name) return -1;
+				if (a.name > b.name) return 1;
+				return 0;
+			});
 
 		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
@@ -467,7 +475,11 @@ export default class CommandHandler extends AkairoHandler {
 				const guild = this.client.guilds.cache.get(key);
 				if (!guild) return;
 
-				const sortedCommands = value.sort((a, b) => a.name.localeCompare(b.name));
+				const sortedCommands = value.sort((a, b) => {
+					if (a.name < b.name) return -1;
+					if (a.name > b.name) return 1;
+					return 0;
+				});
 
 				const currentGuildCommands = (await guild.commands.fetch())
 					.map(value1 => ({
@@ -477,7 +489,11 @@ export default class CommandHandler extends AkairoHandler {
 						defaultPermission: value1.defaultPermission,
 						type: value1.type
 					}))
-					.sort((a, b) => a.name.localeCompare(b.name));
+					.sort((a, b) => {
+						if (a.name < b.name) return -1;
+						if (a.name > b.name) return 1;
+						return 0;
+					});
 
 				if (!Util.deepEquals(currentGuildCommands, sortedCommands)) {
 					this.client.emit(
