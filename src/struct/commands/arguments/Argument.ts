@@ -361,9 +361,9 @@ export default class Argument {
 		const commandDefs = this.command.argumentDefaults;
 		const handlerDefs = this.handler.argumentDefaults;
 		const optional =
-			(typeof this.prompt === "object" && this.prompt && this.prompt.optional) ??
-			(commandDefs.prompt && commandDefs.prompt.optional) ??
-			(handlerDefs.prompt && handlerDefs.prompt.optional) ??
+			(typeof this.prompt === "object" && this.prompt?.optional) ??
+			commandDefs.prompt?.optional ??
+			handlerDefs.prompt?.optional ??
 			null;
 
 		const doOtherwise = async (failure: (Flag & { value: any }) | null | undefined) => {
@@ -806,7 +806,7 @@ export interface ArgumentPromptData {
 	/**
 	 * The value that failed if there was one, otherwise null.
 	 */
-	failure: void | (Flag & { value: any });
+	failure: null | (Flag & { value: any });
 }
 
 /**
