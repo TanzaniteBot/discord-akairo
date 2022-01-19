@@ -1,5 +1,5 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import type { ContextMenuInteraction, Snowflake } from "discord.js";
+import type { ContextMenuCommandInteraction, Snowflake } from "discord.js";
 import AkairoError from "../../util/AkairoError.js";
 import type Category from "../../util/Category.js";
 import type AkairoClient from "../AkairoClient.js";
@@ -33,7 +33,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	/**
 	 * The type of the context menu command.
 	 */
-	public declare type: "USER" | "MESSAGE";
+	public declare type: "User" | "Message";
 
 	/**
 	 * The category of this context menu command.
@@ -74,7 +74,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	 * Executes the context menu command.
 	 * @param interaction - The context menu command interaction.
 	 */
-	public exec(interaction: ContextMenuInteraction): any {
+	public exec(interaction: ContextMenuCommandInteraction): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
 }
@@ -118,5 +118,5 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	/**
 	 * The type of the context menu command.
 	 */
-	type: "USER" | "MESSAGE";
+	type: "User" | "Message";
 }

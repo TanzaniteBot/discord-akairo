@@ -14,9 +14,9 @@ export default class UserCommand extends Command {
 				{
 					name: "user",
 					description: "user",
-					type: "USER",
+					type: "User",
 					required: true,
-					resolve: "member"
+					resolve: "Member"
 				}
 			],
 			slashGuilds: ["786417336978112582"]

@@ -143,6 +143,14 @@ export default class Util {
 			})
 			.join("");
 	}
+
+	/**
+	 * Converts a string in PascalCase to camelCase.
+	 * @param str The string to convert.
+	 */
+	public static pascalToCamelCase(str: string): string {
+		return str.charAt(0).toLowerCase() + str.slice(1);
+	}
 }
 
 export interface DeepEqualsOptions {

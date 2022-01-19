@@ -1,10 +1,11 @@
 import {
 	ApplicationCommand,
 	ApplicationCommandOptionData,
+	ApplicationCommandOptionType,
 	AutocompleteInteraction,
 	Awaitable,
+	ChatInputCommandInteraction,
 	Collection,
-	CommandInteraction,
 	CommandInteractionOption,
 	CommandInteractionOptionResolver,
 	DiscordAPIError,
@@ -17,7 +18,6 @@ import {
 	TextChannel,
 	User
 } from "discord.js";
-import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import AkairoError from "../../util/AkairoError.js";
 import AkairoMessage from "../../util/AkairoMessage.js";
@@ -342,7 +342,7 @@ export default class CommandHandler extends AkairoHandler {
 				});
 			}
 			this.client.on("interactionCreate", i => {
-				if (i.isCommand()) this.handleSlash(i);
+				if (i.isChatInputCommand()) this.handleSlash(i);
 				if (i.isAutocomplete()) this.handleAutocomplete(i);
 			});
 		});
@@ -366,7 +366,7 @@ export default class CommandHandler extends AkairoHandler {
 			options?: ApplicationCommandOptionData[];
 			guilds: Snowflake[];
 			defaultPermission: boolean;
-			type: "CHAT_INPUT" | "MESSAGE" | "USER";
+			type: "ChatInput" | "Message" | "User";
 		}[] = [];
 		const guildSlashCommandsParsed: Collection<
 			Snowflake,
@@ -375,7 +375,7 @@ export default class CommandHandler extends AkairoHandler {
 				description: string;
 				options: ApplicationCommandOptionData[];
 				defaultPermission: boolean;
-				type: "CHAT_INPUT" | "MESSAGE" | "USER";
+				type: "ChatInput" | "Message" | "User";
 			}[]
 		> = new Collection();
 		const parseDescriptionCommand = (description: { content: () => any }) => {
@@ -399,7 +399,7 @@ export default class CommandHandler extends AkairoHandler {
 				}),
 				guilds: data.slashGuilds ?? [],
 				defaultPermission: data.slashDefaultPermission,
-				type: "CHAT_INPUT"
+				type: "ChatInput"
 			});
 		}
 
@@ -533,7 +533,7 @@ export default class CommandHandler extends AkairoHandler {
 					id: value.id,
 					permissions: allowedUsers.map(u => ({
 						id: u,
-						type: "USER",
+						type: "User",
 						permission: true
 					}))
 				};
@@ -741,7 +741,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param interaction - Interaction to handle.
 	 */
 	// eslint-disable-next-line complexity
-	public async handleSlash(interaction: CommandInteraction): Promise<boolean | null> {
+	public async handleSlash(interaction: ChatInputCommandInteraction): Promise<boolean | null> {
 		const commandModule = this.findCommand(interaction.commandName);
 
 		if (!commandModule) {
@@ -795,12 +795,12 @@ export default class CommandHandler extends AkairoHandler {
 			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
 				convertedOptions["subcommand"] = (interaction.options as CommandInteractionOptionResolver)["_subcommand"];
 			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
-				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
+				if (option.type === "Subcommand" || option.type === "SubcommandGroup") continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				convertedOptions[option.name] = interaction.options[
-					Util.snakeToCamelCase(`GET_${originalOption?.resolve ?? option.type}`) as GetFunctions
-				](option.name, false);
+				const func = Util.pascalToCamelCase(`Get${originalOption?.resolve ?? option.type}`) as GetFunctions;
+
+				convertedOptions[option.name] = interaction.options[func](option.name, false);
 			}
 
 			// Makes options that are not found to be null so that it matches the behavior normal commands.
@@ -818,16 +818,20 @@ export default class CommandHandler extends AkairoHandler {
 						this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
 						return;
 					}
-					if ([ApplicationCommandOptionTypes.SUB_COMMAND, "SUB_COMMAND"].includes(usedSubcommandOrGroup.type)) {
-						if (!(usedSubcommandOrGroup as SubCommand).options) {
+					if (
+						usedSubcommandOrGroup.type === ApplicationCommandOptionType.Subcommand ||
+						usedSubcommandOrGroup.type === "Subcommand"
+					) {
+						if (!(<SubCommand>usedSubcommandOrGroup).options) {
 							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
 							return;
 						}
-						handleOptions((usedSubcommandOrGroup as SubCommand).options!);
+						handleOptions((<SubCommand>usedSubcommandOrGroup).options!);
 					} else if (
-						[ApplicationCommandOptionTypes.SUB_COMMAND_GROUP, "SUB_COMMAND_GROUP"].includes(usedSubcommandOrGroup.type)
+						usedSubcommandOrGroup.type === ApplicationCommandOptionType.SubcommandGroup ||
+						usedSubcommandOrGroup.type === "SubcommandGroup"
 					) {
-						const usedSubCommand = (usedSubcommandOrGroup as SubCommandGroup).options?.find(
+						const usedSubCommand = (<SubCommandGroup>usedSubcommandOrGroup).options?.find(
 							subcommand => subcommand.name === convertedOptions.subcommand
 						);
 						if (!usedSubCommand) {
@@ -849,16 +853,16 @@ export default class CommandHandler extends AkairoHandler {
 				function handleOptions(options: NonSubSlashOptions[]) {
 					for (const option of options) {
 						switch (option.type) {
-							case "BOOLEAN" || ApplicationCommandOptionTypes.BOOLEAN:
+							case "Boolean" || ApplicationCommandOptionType.Boolean:
 								convertedOptions[option.name] ??= false;
 								break;
-							case "CHANNEL" || ApplicationCommandOptionTypes.CHANNEL:
-							case "INTEGER" || ApplicationCommandOptionTypes.INTEGER:
-							case "MENTIONABLE" || ApplicationCommandOptionTypes.MENTIONABLE:
-							case "NUMBER" || ApplicationCommandOptionTypes.NUMBER:
-							case "ROLE" || ApplicationCommandOptionTypes.ROLE:
-							case "STRING" || ApplicationCommandOptionTypes.STRING:
-							case "USER" || ApplicationCommandOptionTypes.USER:
+							case "Channel" || ApplicationCommandOptionType.Channel:
+							case "Integer" || ApplicationCommandOptionType.Integer:
+							case "Mentionable" || ApplicationCommandOptionType.Mentionable:
+							case "Number" || ApplicationCommandOptionType.Number:
+							case "Role" || ApplicationCommandOptionType.Role:
+							case "String" || ApplicationCommandOptionType.String:
+							case "User" || ApplicationCommandOptionType.User:
 							default:
 								convertedOptions[option.name] ??= null;
 								break;
@@ -1607,7 +1611,7 @@ export type InteractionArgs = {
 	description: string;
 	options: ApplicationCommandOptionData[];
 	defaultPermission: boolean;
-	type: "CHAT_INPUT" | "MESSAGE" | "USER";
+	type: "ChatInput" | "Message" | "User";
 }[];
 
 export class RegisterInteractionCommandError extends Error {
@@ -1828,16 +1832,16 @@ export type PrefixSupplier = (message: Message) => string | string[] | Promise<s
  * Calls the corresponding get function on the {@link CommandInteractionOptionResolver}
  */
 export type SlashResolveTypes =
-	| "boolean"
-	| "channel"
-	| "string"
-	| "integer"
-	| "number"
-	| "user"
-	| "member"
-	| "role"
-	| "mentionable"
-	| "message";
+	| "Boolean"
+	| "Channel"
+	| "String"
+	| "Integer"
+	| "Number"
+	| "User"
+	| "Member"
+	| "Role"
+	| "Mentionable"
+	| "Message";
 
 type GetFunctions =
 	| "getBoolean"

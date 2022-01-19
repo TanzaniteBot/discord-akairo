@@ -1,8 +1,9 @@
 import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
 	Base,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	CommandInteractionOptionResolver,
+	ContextMenuCommandInteraction,
 	Guild,
 	GuildMember,
 	InteractionReplyOptions,
@@ -58,7 +59,7 @@ export default class AkairoMessage extends Base {
 	/**
 	 * The command interaction.
 	 */
-	public declare interaction: CommandInteraction;
+	public declare interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
@@ -80,13 +81,13 @@ export default class AkairoMessage extends Base {
 	 * @param client - AkairoClient
 	 * @param interaction - CommandInteraction
 	 */
-	public constructor(client: AkairoClient, interaction: CommandInteraction) {
+	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) {
 		super(client);
 
 		this.author = interaction.user;
 		this.applicationId = interaction.applicationId;
 		this.channelId = interaction.channelId;
-		this.content = `${!interaction.command || interaction.command.type === "CHAT_INPUT" ? "/" : ""}${interaction.commandName}`;
+		this.content = interaction.isChatInputCommand() ? interaction.toString() : interaction.commandName;
 		this.createdTimestamp = interaction.createdTimestamp;
 		this.guildId = interaction.guildId;
 		this.id = interaction.id;
@@ -95,17 +96,10 @@ export default class AkairoMessage extends Base {
 		this.partial = false;
 
 		const options = interaction.options as CommandInteractionOptionResolver;
-		if (interaction.command?.type === "CHAT_INPUT") {
-			if (options["_group"]) this.content += `group: ${options["_group"]}`;
-			if (options["_subcommand"]) this.content += `subcommand: ${options["_subcommand"]}`;
-			for (const option of options["_hoistedOptions"]) {
-				if (["SUB_COMMAND", "SUB_COMMAND_GROUP"].includes(option.type)) continue;
-				this.content += ` ${option.name}: ${options.get(option.name, false)?.value}`;
-			}
-		} else if (interaction.command?.type === "MESSAGE") {
-			this.content += ` message: ${options.getMessage("message")!.id}`;
-		} else if (interaction.command?.type === "USER") {
-			this.content += ` message: ${options.getUser("user")!.id}`;
+		if (interaction.isMessageContextMenuCommand()) {
+			this.content += `${options.getMessage("message")!.id}`;
+		} else if (interaction.isUserContextMenuCommand()) {
+			this.content += `${options.getUser("user")!.id}`;
 		}
 	}
 
