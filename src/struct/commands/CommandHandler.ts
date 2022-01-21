@@ -2,8 +2,10 @@ import {
 	ApplicationCommand,
 	ApplicationCommandOptionData,
 	ApplicationCommandOptionType,
+	ApplicationCommandPermissionType,
 	AutocompleteInteraction,
 	Awaitable,
+	ChannelType,
 	ChatInputCommandInteraction,
 	Collection,
 	CommandInteractionOption,
@@ -533,7 +535,7 @@ export default class CommandHandler extends AkairoHandler {
 					id: value.id,
 					permissions: allowedUsers.map(u => ({
 						id: u,
-						type: "User",
+						type: ApplicationCommandPermissionType.User,
 						permission: true
 					}))
 				};
@@ -795,7 +797,11 @@ export default class CommandHandler extends AkairoHandler {
 			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
 				convertedOptions["subcommand"] = (interaction.options as CommandInteractionOptionResolver)["_subcommand"];
 			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
-				if (option.type === "Subcommand" || option.type === "SubcommandGroup") continue;
+				if (
+					option.type === ApplicationCommandOptionType.Subcommand ||
+					option.type === ApplicationCommandOptionType.SubcommandGroup
+				)
+					continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
 				const func = Util.pascalToCamelCase(`Get${originalOption?.resolve ?? option.type}`) as GetFunctions;
@@ -853,16 +859,16 @@ export default class CommandHandler extends AkairoHandler {
 				function handleOptions(options: NonSubSlashOptions[]) {
 					for (const option of options) {
 						switch (option.type) {
-							case "Boolean" || ApplicationCommandOptionType.Boolean:
+							case ApplicationCommandOptionType.Boolean:
 								convertedOptions[option.name] ??= false;
 								break;
-							case "Channel" || ApplicationCommandOptionType.Channel:
-							case "Integer" || ApplicationCommandOptionType.Integer:
-							case "Mentionable" || ApplicationCommandOptionType.Mentionable:
-							case "Number" || ApplicationCommandOptionType.Number:
-							case "Role" || ApplicationCommandOptionType.Role:
-							case "String" || ApplicationCommandOptionType.String:
-							case "User" || ApplicationCommandOptionType.User:
+							case ApplicationCommandOptionType.Channel:
+							case ApplicationCommandOptionType.Integer:
+							case ApplicationCommandOptionType.Mentionable:
+							case ApplicationCommandOptionType.Number:
+							case ApplicationCommandOptionType.Role:
+							case ApplicationCommandOptionType.String:
+							case ApplicationCommandOptionType.User:
 							default:
 								convertedOptions[option.name] ??= null;
 								break;
@@ -1228,7 +1234,7 @@ export default class CommandHandler extends AkairoHandler {
 					return true;
 				}
 			} else if (message.guild) {
-				if (message.channel?.type === "DM") return false;
+				if (message.channel?.type === ChannelType.DM) return false;
 				const missing = message.channel?.permissionsFor(message.guild.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(event, message, command, "client", missing);
@@ -1255,7 +1261,7 @@ export default class CommandHandler extends AkairoHandler {
 						return true;
 					}
 				} else if (message.guild) {
-					if (message.channel?.type === "DM") return false;
+					if (message.channel?.type === ChannelType.DM) return false;
 					const missing = message.channel?.permissionsFor(message.author)?.missing(command.userPermissions);
 					if (missing?.length) {
 						this.emit(event, message, command, "user", missing);
