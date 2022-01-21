@@ -6,6 +6,7 @@ import {
 	ContextMenuCommandInteraction,
 	Guild,
 	GuildMember,
+	GuildTextBasedChannel,
 	InteractionReplyOptions,
 	Message,
 	MessagePayload,
@@ -144,7 +145,7 @@ export default class AkairoMessage extends Base {
 	/**
 	 * Indicates whether this interaction is received from a guild.
 	 */
-	public inGuild(): this is this & { guild: Guild; member: GuildMember } {
+	public inGuild(): this is AkairoMessageInGuild & this {
 		return Boolean(this.guildId && this.member);
 	}
 
@@ -162,4 +163,9 @@ export default class AkairoMessage extends Base {
 	public reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage> {
 		return this.util.reply(options);
 	}
+}
+
+export interface AkairoMessageInGuild {
+	guild: Guild;
+	channel: GuildTextBasedChannel;
 }
