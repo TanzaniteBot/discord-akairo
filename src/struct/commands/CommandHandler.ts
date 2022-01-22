@@ -1,8 +1,10 @@
 import {
 	ApplicationCommand,
+	ApplicationCommandData,
 	ApplicationCommandOptionData,
 	ApplicationCommandOptionType,
 	ApplicationCommandPermissionType,
+	ApplicationCommandType,
 	AutocompleteInteraction,
 	Awaitable,
 	ChannelType,
@@ -362,24 +364,8 @@ export default class CommandHandler extends AkairoHandler {
 	 */
 	protected async registerInteractionCommands() {
 		this.client.emit("akairoDebug", `[registerInteractionCommands] Started registering interaction commands...`);
-		const parsedSlashCommands: {
-			name: string;
-			description?: string;
-			options?: ApplicationCommandOptionData[];
-			guilds: Snowflake[];
-			defaultPermission: boolean;
-			type: "ChatInput" | "Message" | "User";
-		}[] = [];
-		const guildSlashCommandsParsed: Collection<
-			Snowflake,
-			{
-				name: string;
-				description: string;
-				options: ApplicationCommandOptionData[];
-				defaultPermission: boolean;
-				type: "ChatInput" | "Message" | "User";
-			}[]
-		> = new Collection();
+		const parsedSlashCommands: (ApplicationCommandData & { guilds: Snowflake[] })[] = [];
+		const guildSlashCommandsParsed: Collection<Snowflake, ApplicationCommandData[]> = new Collection();
 		const parseDescriptionCommand = (description: { content: () => any }) => {
 			if (typeof description === "object") {
 				if (typeof description.content === "function") return description.content();
@@ -394,14 +380,13 @@ export default class CommandHandler extends AkairoHandler {
 				name: data.aliases[0]?.toLowerCase() || data.id?.toLowerCase(),
 				description: parseDescriptionCommand(data.description) || "No description provided.",
 				options: data.slashOptions?.map(o => {
-					// this may not be necessary but im not sure
-					const temp = Object.assign({}, o);
+					const temp = { ...o };
 					delete temp.resolve;
 					return temp as ApplicationCommandOptionData;
 				}),
 				guilds: data.slashGuilds ?? [],
 				defaultPermission: data.slashDefaultPermission,
-				type: "ChatInput"
+				type: ApplicationCommandType.ChatInput
 			});
 		}
 
@@ -426,18 +411,18 @@ export default class CommandHandler extends AkairoHandler {
 		/* Global */
 		const slashCommandsApp = parsedSlashCommands
 			.filter(({ guilds }) => !guilds.length)
-			.map(({ name, description, options, defaultPermission, type }) => ({
-				name,
-				description: description ?? "",
-				options: options ?? [],
-				defaultPermission,
-				type
+			.map(options => ({
+				name: options.name,
+				description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
+				options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
+				defaultPermission: options.defaultPermission,
+				type: options.type
 			}))
 			.sort((a, b) => {
 				if (a.name < b.name) return -1;
 				if (a.name > b.name) return 1;
 				return 0;
-			});
+			}) as ApplicationCommandData[];
 		const currentGlobalCommands = (await this.client.application?.commands.fetch())!
 			.map(value1 => ({
 				name: value1.name,
@@ -450,7 +435,7 @@ export default class CommandHandler extends AkairoHandler {
 				if (a.name < b.name) return -1;
 				if (a.name > b.name) return 1;
 				return 0;
-			});
+			}) as ApplicationCommandData[];
 
 		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
@@ -463,11 +448,17 @@ export default class CommandHandler extends AkairoHandler {
 		}
 
 		/* Guilds */
-		for (const { name, description, options, guilds, defaultPermission, type } of parsedSlashCommands) {
-			for (const guildId of guilds) {
+		for (const options of parsedSlashCommands) {
+			for (const guildId of options.guilds) {
 				guildSlashCommandsParsed.set(guildId, [
 					...(guildSlashCommandsParsed.get(guildId) ?? []),
-					{ name, description: description!, options: options!, defaultPermission, type }
+					{
+						name: options.name,
+						description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
+						options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
+						defaultPermission: options.defaultPermission,
+						type: options.type
+					} as ApplicationCommandData
 				]);
 			}
 		}
@@ -1612,21 +1603,13 @@ export default interface CommandHandler extends AkairoHandler {
 	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }
 
-export type InteractionArgs = {
-	name: string;
-	description: string;
-	options: ApplicationCommandOptionData[];
-	defaultPermission: boolean;
-	type: "ChatInput" | "Message" | "User";
-}[];
-
 export class RegisterInteractionCommandError extends Error {
 	original: DiscordAPIError;
 	type: "guild" | "global";
-	data: InteractionArgs;
+	data: ApplicationCommandData[];
 	guild: Guild | null;
 
-	constructor(original: DiscordAPIError, type: "guild" | "global", data: InteractionArgs, guild: Guild | null = null) {
+	constructor(original: DiscordAPIError, type: "guild" | "global", data: ApplicationCommandData[], guild: Guild | null = null) {
 		super("Failed to register interaction commands.");
 		this.original = original;
 		this.type = type;

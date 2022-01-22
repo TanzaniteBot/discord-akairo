@@ -133,9 +133,9 @@
   integrity sha512-v+wCC2q9DK3OhG7Vcdt/8A/INAYiyhlMD5snakmXGBN1usLBwSGJVJBjDHv4VGI5C9YYl4UdW5Ovr3arvYsJXQ==
 
 "@sapphire/utilities@^3.0.1":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@sapphire/utilities/-/utilities-3.2.0.tgz#6222cff196272852d20d7bcfd490a45a4ea9ad4b"
-  integrity sha512-UTQZgm+tbf9DZZOzxAS4q5qsUIM0yAVGJsEX4U06ho4XktYRM1A2SxhnHNjeNeoM3v4qHzajqRhGrBLSQb9A+A==
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@sapphire/utilities/-/utilities-3.2.1.tgz#dbbffef1daf0fdc29481881aaac940a87341067e"
+  integrity sha512-y00aaBzKNwCIVE2a444zdPvHZmStpbVXE7iRC1NsbF1USXnQtNhgAGxq0PWZkBzHxpD9boKsUNS2Z+XzTXZvvQ==
 
 "@sindresorhus/is@^4.2.1":
   version "4.3.0"
@@ -531,9 +531,9 @@ discord-api-types@^0.24.0:
   integrity sha512-X0uA2a92cRjowUEXpLZIHWl4jiX1NsUpDhcEOpa1/hpO1vkaokgZ8kkPtPih9hHth5UVQ3mHBu/PpB4qjyfJ4A==
 
 "discord.js@npm:@notenoughupdates/discord.js@dev":
-  version "14.0.0-dev.1642739692.4d677d9"
-  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-14.0.0-dev.1642739692.4d677d9.tgz#abc7a2698b5b5f196da35380271381a9dc36b0da"
-  integrity sha512-ig4xqRT8YOabFzCMLvxoK/djI4l4myeNVxMhRumnrAa65ft99yuuSAUFWcqomfbwlOuiPFwa/FnkhqUONDuLsw==
+  version "14.0.0-dev.1642817907.2125cd5"
+  resolved "https://registry.yarnpkg.com/@notenoughupdates/discord.js/-/discord.js-14.0.0-dev.1642817907.2125cd5.tgz#df84bb7cf0e8b5de0a68a6272f74242959d26c93"
+  integrity sha512-Nvxdqmf8znm5Q0XmB1aKG6I9iK2mro8E1aSYciDDPFZuluAzmE2UISblWqBVoW9Lcmb27qVGgmmS2IKxvuCi3g==
   dependencies:
     "@discordjs/builders" "npm:@notenoughupdates/discord.js-builders@latest"
     "@discordjs/collection" "^0.4.0"
