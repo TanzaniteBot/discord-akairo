@@ -151,6 +151,28 @@ export default class Util {
 	public static pascalToCamelCase(str: string): string {
 		return str.charAt(0).toLowerCase() + str.slice(1);
 	}
+
+	/**
+	 * Checks if `array` is an array and its elements are typeof of `type`
+	 * @param array The array to check.
+	 * @param type The type to check the elements' type against.
+	 * @returns Whether the array is an array and its elements are typeof of `type`.
+	 */
+	public static isArrayOf<T>(
+		array: T[],
+		type: "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "object" | "function"
+	): boolean {
+		if (!Array.isArray(array)) return false;
+		return array.every(item => typeof item === type);
+	}
+}
+
+/**
+ * Checks if a value is a string, an array of strings, or a function
+ * @internal
+ */
+export function isStringArrayStringOrFunc(value: any): value is string | string[] | ((...args: any[]) => any) {
+	return typeof value === "string" || typeof value === "function" || Util.isArrayOf(value, "string");
 }
 
 export interface DeepEqualsOptions {

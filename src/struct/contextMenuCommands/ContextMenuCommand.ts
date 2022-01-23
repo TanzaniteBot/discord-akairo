@@ -1,7 +1,8 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import type { ApplicationCommandType, ContextMenuCommandInteraction, Snowflake } from "discord.js";
+import { ApplicationCommandType, type ContextMenuCommandInteraction, type Snowflake } from "discord.js";
 import AkairoError from "../../util/AkairoError.js";
 import type Category from "../../util/Category.js";
+import Util from "../../util/Util.js";
 import type AkairoClient from "../AkairoClient.js";
 import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
 import type ContextMenuCommandHandler from "./ContextMenuCommandHandler.js";
@@ -62,7 +63,16 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	public constructor(id: string, options: ContextMenuCommandOptions) {
 		const { category, guilds, name, ownerOnly, superUserOnly, type } = options;
 
+		if (category !== undefined && typeof category !== "string") throw new TypeError("options.category must be a string.");
+		if (guilds !== undefined && !Util.isArrayOf(guilds, "string"))
+			throw new TypeError("options.guilds must be an array of strings.");
+		if (name !== undefined && typeof name !== "string") throw new TypeError("options.name must be a string.");
+		if (ownerOnly !== undefined && typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean");
+		if (type !== ApplicationCommandType.User && type !== ApplicationCommandType.Message)
+			throw new TypeError("options.type must be either ApplicationCommandType.User or ApplicationCommandType.Message.");
+
 		super(id, { category });
+
 		this.guilds = guilds;
 		this.name = name;
 		this.ownerOnly = ownerOnly;

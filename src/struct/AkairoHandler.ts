@@ -6,6 +6,7 @@ import url from "url";
 import AkairoError from "../util/AkairoError.js";
 import Category from "../util/Category.js";
 import { AkairoHandlerEvents } from "../util/Constants.js";
+import Util from "../util/Util.js";
 import type AkairoClient from "./AkairoClient.js";
 import AkairoModule from "./AkairoModule.js";
 
@@ -67,6 +68,15 @@ export default class AkairoHandler extends EventEmitter {
 			automateCategories = false,
 			loadFilter = () => true
 		} = options ?? {};
+
+		if (typeof directory !== "string") throw new TypeError("options.directory must be a string.");
+		if (classToHandle !== AkairoModule && !(classToHandle.prototype instanceof AkairoModule))
+			throw new TypeError("options.classToHandle must be a class that extends AkairoModule.");
+		if (!(extensions instanceof Set) && !Util.isArrayOf(extensions, "string"))
+			throw new TypeError("options.extensions must be an array of strings or a Set.");
+		if (typeof automateCategories !== "boolean") throw new TypeError("options.automateCategories must be a boolean.");
+		if (typeof loadFilter !== "function") throw new TypeError("options.loadFilter must be a function.");
+
 		super();
 
 		this.client = client;

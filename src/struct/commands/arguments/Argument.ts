@@ -23,7 +23,7 @@ import type {
 } from "discord.js";
 import type { URL } from "url";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
-import Util from "../../../util/Util.js";
+import Util, { isStringArrayStringOrFunc } from "../../../util/Util.js";
 import type AkairoClient from "../../AkairoClient.js";
 import ContextMenuCommand from "../../contextMenuCommands/ContextMenuCommand.js";
 import Inhibitor from "../../inhibitors/Inhibitor.js";
@@ -91,7 +91,7 @@ export default class Argument {
 	/**
 	 * The index to start from.
 	 */
-	public declare index?: number;
+	public declare index: number | null;
 
 	/**
 	 * The amount of phrases to match for rest, separate, content, or text match.
@@ -106,7 +106,7 @@ export default class Argument {
 	/**
 	 * Function to modify otherwise content.
 	 */
-	public declare modifyOtherwise: OtherwiseContentModifier;
+	public declare modifyOtherwise: OtherwiseContentModifier | null;
 
 	/**
 	 * Whether to process multiple option flags instead of just the first.
@@ -116,12 +116,12 @@ export default class Argument {
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public declare otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
+	public declare otherwise: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
 
 	/**
 	 * The prompt options.
 	 */
-	public declare prompt?: ArgumentPromptOptions | boolean;
+	public declare prompt: ArgumentPromptOptions | boolean | null;
 
 	/**
 	 * The type to cast to or a function to use to cast.
@@ -141,29 +141,49 @@ export default class Argument {
 		const {
 			match = ArgumentMatches.PHRASE,
 			type = ArgumentTypes.STRING,
-			flag = null!,
+			flag = null,
 			multipleFlags = false,
-			index = null!,
+			index = null,
 			unordered = false,
 			limit = Infinity,
-			prompt = null!,
+			prompt = null,
 			default: defaultValue = null,
-			otherwise = null!,
-			modifyOtherwise = null!
+			otherwise = null,
+			modifyOtherwise = null
 		} = options;
+
+		if (!Object.values(ArgumentMatches).includes(match))
+			throw new TypeError(
+				`options.match must one of ${Object.values(ArgumentMatches)
+					.map(v => `"${v}"`)
+					.join(", ")}.`
+			);
+		if (flag !== null && !isStringArrayStringOrFunc(isStringArrayStringOrFunc))
+			throw new TypeError("options.flag must be a null, a string, or an array of strings.");
+		if (typeof multipleFlags !== "boolean") throw new TypeError("options.multipleFlags must be a boolean.");
+		if (index !== null && typeof index !== "number") throw new TypeError("options.index must be a number or null.");
+		if (typeof unordered !== "boolean" && typeof unordered !== "number" && !Util.isArrayOf(unordered, "number"))
+			throw new TypeError("options.unordered must be a boolean, number, or array of numbers.");
+		if (typeof limit !== "number") throw new TypeError("options.limit must be a number.");
+		if (prompt !== null && typeof prompt !== "boolean" && typeof prompt !== "object")
+			throw new TypeError("options.prompt must be a boolean, object, or null.");
+		if (otherwise !== null && typeof otherwise !== "string" && typeof otherwise !== "function" && typeof otherwise !== "object")
+			throw new TypeError("options.otherwise must be a string, function, object, or null.");
+		if (modifyOtherwise !== null && typeof modifyOtherwise !== "function")
+			throw new TypeError("options.modifyOtherwise must be a function or null.");
 
 		this.command = command;
 		this.match = match;
 		this.type = typeof type === "function" ? type.bind(this) : type;
 		this.flag = flag;
 		this.multipleFlags = multipleFlags;
-		this.index = index!;
+		this.index = index;
 		this.unordered = unordered;
 		this.limit = limit;
-		this.prompt = prompt!;
+		this.prompt = prompt;
 		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue;
-		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise!;
-		this.modifyOtherwise = modifyOtherwise!;
+		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
+		this.modifyOtherwise = modifyOtherwise;
 	}
 
 	/**

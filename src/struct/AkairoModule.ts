@@ -43,6 +43,8 @@ export default abstract class AkairoModule {
 	public constructor(id: string, options?: AkairoModuleOptions) {
 		const { category = "default" } = options ?? {};
 
+		if (typeof category !== "string") throw new TypeError("options.category must be a string.");
+
 		this.id = id;
 		this.categoryID = category;
 		this.category = null!;

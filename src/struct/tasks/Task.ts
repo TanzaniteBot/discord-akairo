@@ -43,8 +43,11 @@ export default abstract class Task extends AkairoModule {
 	 * @param id - Task ID.
 	 * @param options - Options for the task.
 	 */
-	public constructor(id: string, options?: TaskOptions) {
-		const { category, delay, runOnStart = false } = options ?? {};
+	public constructor(id: string, options: TaskOptions = {}) {
+		const { category, delay, runOnStart = false } = options;
+
+		if (delay !== undefined && typeof delay !== "number") throw new TypeError("options.delay must be a number.");
+		if (typeof runOnStart !== "boolean") throw new TypeError("options.runOnStart must be a boolean.");
 
 		super(id, { category });
 		this.delay = delay;

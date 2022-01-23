@@ -27,7 +27,7 @@ import AkairoError from "../../util/AkairoError.js";
 import AkairoMessage from "../../util/AkairoMessage.js";
 import type Category from "../../util/Category.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
-import Util from "../../util/Util.js";
+import Util, { isStringArrayStringOrFunc } from "../../util/Util.js";
 import AkairoClient from "../AkairoClient.js";
 import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
 import type AkairoModule from "../AkairoModule.js";
@@ -225,6 +225,7 @@ export default class CommandHandler extends AkairoHandler {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
+	// eslint-disable-next-line complexity
 	public constructor(client: AkairoClient, options: CommandHandlerOptions) {
 		const {
 			directory,
@@ -237,7 +238,7 @@ export default class CommandHandler extends AkairoHandler {
 			fetchMembers = false,
 			handleEdits = false,
 			storeMessages = false,
-			commandUtil,
+			commandUtil = false,
 			commandUtilLifetime = 3e5,
 			commandUtilSweepInterval = 3e5,
 			defaultCooldown = 0,
@@ -258,6 +259,34 @@ export default class CommandHandler extends AkairoHandler {
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Command.name);
 		}
+		if (typeof blockClient !== "boolean") throw new TypeError("options.blockClient must be a boolean.");
+		if (typeof blockBots !== "boolean") throw new TypeError("options.blockBots must be a boolean.");
+		if (typeof fetchMembers !== "boolean") throw new TypeError("options.fetchMembers must be a boolean.");
+		if (typeof handleEdits !== "boolean") throw new TypeError("options.handleEdits must be a boolean.");
+		if (typeof storeMessages !== "boolean") throw new TypeError("options.storeMessages must be a boolean.");
+		if (typeof commandUtil !== "boolean") throw new TypeError("options.commandUtil must be a boolean.");
+		if (typeof commandUtilLifetime !== "number") throw new TypeError("options.commandUtilLifetime must be a number.");
+		if (typeof commandUtilSweepInterval !== "number") throw new TypeError("options.commandUtilSweepInterval must be a number.");
+		if (typeof defaultCooldown !== "number") throw new TypeError("options.defaultCooldown must be a number.");
+		if (!isStringArrayStringOrFunc(ignoreCooldown))
+			throw new TypeError("options.ignoreCooldown must be a string, an array of strings, or a function.");
+		if (!isStringArrayStringOrFunc(ignorePermissions))
+			throw new TypeError("options.ignorePermissions must be a string, an array of strings, or a function.");
+		if (typeof argumentDefaults !== "object") throw new TypeError("options.argumentDefaults must be an object.");
+		if (!isStringArrayStringOrFunc(prefix))
+			throw new TypeError("options.prefix must be a string, an array of strings, or a function.");
+		if (typeof allowMention !== "boolean" && typeof allowMention !== "function")
+			throw new TypeError("options.allowMention must be a boolean.");
+		if (aliasReplacement !== undefined && !(aliasReplacement instanceof RegExp))
+			throw new TypeError("options.aliasReplacement must be a RegExp.");
+		if (typeof autoDefer !== "boolean") throw new TypeError("options.autoDefer must be a boolean.");
+		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");
+		if (typeof autoRegisterSlashCommands !== "boolean")
+			throw new TypeError("options.autoRegisterSlashCommands must be a boolean.");
+		if (typeof execSlash !== "boolean") throw new TypeError("options.execSlash must be a boolean.");
+		if (typeof skipBuiltInPostInhibitors !== "boolean")
+			throw new TypeError("options.skipBuiltInPostInhibitors must be a boolean.");
+		if (typeof useSlashPermissions !== "boolean") throw new TypeError("options.useSlashPermissions must be a boolean.");
 
 		super(client, {
 			directory,
@@ -274,12 +303,12 @@ export default class CommandHandler extends AkairoHandler {
 		this.aliases = new Collection();
 		this.aliasReplacement = aliasReplacement;
 		this.prefixes = new Collection();
-		this.blockClient = Boolean(blockClient);
-		this.blockBots = Boolean(blockBots);
-		this.fetchMembers = Boolean(fetchMembers);
-		this.handleEdits = Boolean(handleEdits);
-		this.storeMessages = Boolean(storeMessages);
-		this.commandUtil = Boolean(commandUtil);
+		this.blockClient = blockClient;
+		this.blockBots = blockBots;
+		this.fetchMembers = fetchMembers;
+		this.handleEdits = handleEdits;
+		this.storeMessages = storeMessages;
+		this.commandUtil = commandUtil;
 		if ((this.handleEdits || this.storeMessages) && !this.commandUtil) throw new AkairoError("COMMAND_UTIL_EXPLICIT");
 		this.commandUtilLifetime = commandUtilLifetime;
 		this.commandUtilSweepInterval = commandUtilSweepInterval;
@@ -795,8 +824,23 @@ export default class CommandHandler extends AkairoHandler {
 					continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				const func = Util.pascalToCamelCase(`Get${originalOption?.resolve ?? option.type}`) as GetFunctions;
-
+				const func = `get${originalOption?.resolve ?? AkairoApplicationCommandOptionType[option.type]}` as GetFunction;
+				if (
+					!(
+						[
+							"getBoolean",
+							"getChannel",
+							"getString",
+							"getInteger",
+							"getNumber",
+							"getUser",
+							"getMember",
+							"getRole",
+							"getMentionable"
+						] as const
+					).includes(func)
+				)
+					throw new Error(` ${option.type}`);
 				convertedOptions[option.name] = interaction.options[func](option.name, false);
 			}
 
@@ -1662,6 +1706,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 
 	/**
 	 * Whether or not to assign `message.util`.
+	 * @default false
 	 */
 	commandUtil?: boolean;
 
@@ -1820,29 +1865,11 @@ export type PrefixSupplier = (message: Message) => string | string[] | Promise<s
 /**
  * Calls the corresponding get function on the {@link CommandInteractionOptionResolver}
  */
-export type SlashResolveTypes =
-	| "Boolean"
-	| "Channel"
-	| "String"
-	| "Integer"
-	| "Number"
-	| "User"
-	| "Member"
-	| "Role"
-	| "Mentionable"
-	| "Message";
 
-type GetFunctions =
-	| "getBoolean"
-	| "getChannel"
-	| "getString"
-	| "getInteger"
-	| "getNumber"
-	| "getUser"
-	| "getMember"
-	| "getRole"
-	| "getMentionable";
-// | "getMessage";
+const slashResolvable = ["Boolean", "Channel", "String", "Integer", "Number", "User", "Member", "Role", "Mentionable"] as const;
+export type SlashResolveType = typeof slashResolvable[number];
+
+type GetFunction = `get${SlashResolveType}`;
 
 type ConvertedOptionsType = {
 	[key: string]:
@@ -1857,6 +1884,24 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
 		| NonNullable<CommandInteractionOption["message"]>;
 };
+
+/**
+ * Used for reverse mapping since discord exports its enums as const enums.
+ * @internal
+ */
+enum AkairoApplicationCommandOptionType {
+	Subcommand = ApplicationCommandOptionType.Subcommand,
+	SubcommandGroup = ApplicationCommandOptionType.SubcommandGroup,
+	String = ApplicationCommandOptionType.String,
+	Integer = ApplicationCommandOptionType.Integer,
+	Boolean = ApplicationCommandOptionType.Boolean,
+	// eslint-disable-next-line @typescript-eslint/no-shadow
+	User = ApplicationCommandOptionType.User,
+	Channel = ApplicationCommandOptionType.Channel,
+	Role = ApplicationCommandOptionType.Role,
+	Mentionable = ApplicationCommandOptionType.Mentionable,
+	Number = ApplicationCommandOptionType.Number
+}
 
 /**
  * @typedef {CommandInteractionOptionResolver} VSCodePleaseStopRemovingMyImports

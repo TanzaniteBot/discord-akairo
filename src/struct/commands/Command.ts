@@ -5,6 +5,7 @@ import {
 	ApplicationCommandChoicesData,
 	ApplicationCommandNonOptionsData,
 	ApplicationCommandNumericOptionData,
+	ApplicationCommandOptionType,
 	ApplicationCommandPermissionData,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
@@ -17,11 +18,12 @@ import {
 import AkairoError from "../../util/AkairoError.js";
 import type AkairoMessage from "../../util/AkairoMessage.js";
 import type Category from "../../util/Category.js";
+import Util, { isStringArrayStringOrFunc } from "../../util/Util.js";
 import type AkairoClient from "../AkairoClient.js";
 import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
 import Argument, { ArgumentOptions, DefaultArgumentOptions } from "./arguments/Argument.js";
 import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
-import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveTypes } from "./CommandHandler.js";
+import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
 import ContentParser, { ContentParserResult } from "./ContentParser.js";
 import type Flag from "./Flag.js";
 
@@ -215,6 +217,7 @@ export default abstract class Command extends AkairoModule {
 	 * @param id - Command ID.
 	 * @param options - Options for the command.
 	 */
+	// eslint-disable-next-line complexity
 	constructor(id: string, options?: CommandOptions) {
 		super(id, { category: options?.category });
 
@@ -252,6 +255,47 @@ export default abstract class Command extends AkairoModule {
 			typing = false,
 			userPermissions = this.userPermissions
 		} = options ?? {};
+
+		if (!Util.isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
+		if (typeof args !== "function" && !Util.isArrayOf(args, "object"))
+			throw new TypeError("options.args must be an array of argument objects or a function.");
+		if (typeof argumentDefaults !== "object") throw new TypeError("options.argumentDefaults must be an object.");
+		if (typeof before !== "function") throw new TypeError("options.before must be a function.");
+		if (!(["guild", "dm", null] as const).includes(channel))
+			throw new TypeError('options.channel must be either "guild" or "dm" or null.');
+		if (typeof condition !== "function") throw new TypeError("options.condition must be a function.");
+		if (typeof cooldown !== "number" && cooldown !== null) throw new TypeError("options.cooldown must be a number or null.");
+		if (typeof editable !== "boolean") throw new TypeError("options.editable must be a boolean.");
+		if (!Util.isArrayOf(flags, "string")) throw new TypeError("options.flags must be an array of strings.");
+		if (ignoreCooldown !== undefined && !isStringArrayStringOrFunc(ignoreCooldown))
+			throw new TypeError("options.ignoreCooldown must be a string, function, or array of strings.");
+		if (ignorePermissions !== undefined && !isStringArrayStringOrFunc(ignorePermissions))
+			throw new TypeError("options.ignorePermissions must be a string, function, or array of strings.");
+		if (lock !== undefined && typeof lock !== "function" && !(["channel", "guild", "user"] as const).includes(lock))
+			throw new TypeError("options.lock must be a function or a string with a value of 'channel', 'guild', or 'user'.");
+		if (typeof onlyNsfw !== "boolean") throw new TypeError("options.onlyNsfw must be a boolean.");
+		if (!Util.isArrayOf(optionFlags, "string")) throw new TypeError("options.optionFlags must be an array of strings.");
+		if (typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean.");
+		if (prefix !== undefined && !isStringArrayStringOrFunc(prefix))
+			throw new TypeError("options.prefix must be a string, function, or array of strings.");
+		if (typeof quoted !== "boolean") throw new TypeError("options.quoted must be a boolean.");
+		if (typeof ratelimit !== "number") throw new TypeError("options.ratelimit must be a number.");
+		if (regex !== undefined && typeof regex !== "function" && !(regex instanceof RegExp))
+			throw new TypeError("options.regex must be a function or a RegExp.");
+		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
+		if (typeof slash !== "boolean") throw new TypeError("options.slash must be a boolean.");
+		if (slashDefaultPermission && typeof slashDefaultPermission !== "boolean")
+			throw new TypeError("options.slashDefaultPermission must be a boolean.");
+		if (typeof slashEphemeral !== "boolean") throw new TypeError("options.slashEphemeral must be a boolean.");
+		if (!Util.isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
+		if (typeof slashOnly !== "boolean") throw new TypeError("options.slashOnly must be a boolean.");
+		if (slashOptions !== undefined && !Util.isArrayOf(slashOptions, "object"))
+			throw new TypeError("options.slashOptions must be an array of objects.");
+		if (slashPermissions !== undefined && typeof slashPermissions !== "function" && !Util.isArrayOf(slashPermissions, "object"))
+			throw new TypeError("options.slashPermissions must be an array of objects or a function.");
+		if (typeof superUserOnly !== "boolean") throw new TypeError("options.superUserOnly must be a boolean.");
+		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");
+
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
 			? ContentParser.getFlags(args)
@@ -639,45 +683,45 @@ export interface AkairoApplicationCommandChoicesData extends ApplicationCommandC
 	/**
 	 * Allows you to get a discord resolved object
 	 *
-	 * ex. get the resolved member object when the type is `USER`
+	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
 	 */
-	resolve?: SlashResolveTypes;
+	resolve?: SlashResolveType;
 }
 
 export interface AkairoApplicationCommandAutocompleteOption extends ApplicationCommandAutocompleteOption {
 	/**
 	 * Allows you to get a discord resolved object
 	 *
-	 * ex. get the resolved member object when the type is `USER`
+	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
 	 */
-	resolve?: SlashResolveTypes;
+	resolve?: SlashResolveType;
 }
 
 export interface AkairoApplicationCommandNumericOptionData extends ApplicationCommandNumericOptionData {
 	/**
 	 * Allows you to get a discord resolved object
 	 *
-	 * ex. get the resolved member object when the type is `USER`
+	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
 	 */
-	resolve?: SlashResolveTypes;
+	resolve?: SlashResolveType;
 }
 
 export interface AkairoApplicationCommandNonOptionsData extends ApplicationCommandNonOptionsData {
 	/**
 	 * Allows you to get a discord resolved object
 	 *
-	 * ex. get the resolved member object when the type is `USER`
+	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
 	 */
-	resolve?: SlashResolveTypes;
+	resolve?: SlashResolveType;
 }
 
 export interface AkairoApplicationCommandChannelOptionData extends ApplicationCommandChannelOptionData {
 	/**
 	 * Allows you to get a discord resolved object
 	 *
-	 * ex. get the resolved member object when the type is `USER`
+	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
 	 */
-	resolve?: SlashResolveTypes;
+	resolve?: SlashResolveType;
 }
 
 export type AkairoApplicationCommandOptionData =
@@ -693,7 +737,12 @@ export type SlashOption = AkairoApplicationCommandOptionData & {
 	/**
 	 * Allows you to get a discord resolved object
 	 *
-	 * ex. get the resolved member object when the type is `USER`
+	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
 	 */
-	resolve?: SlashResolveTypes;
+	resolve?: SlashResolveType;
 };
+
+/**
+ * @typedef {ApplicationCommandOptionType} VSCodePleaseStopRemovingMyImports
+ * @internal
+ */

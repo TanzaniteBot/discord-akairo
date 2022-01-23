@@ -59,6 +59,12 @@ export default abstract class Inhibitor extends AkairoModule {
 	public constructor(id: string, options?: InhibitorOptions) {
 		const { category, reason = "", type = "post", priority = 0 } = options ?? {};
 
+		if (reason !== undefined && typeof reason !== "string") throw new TypeError("options.reason must be a string.");
+		if (typeof reason !== "string") throw new TypeError("options.type must be a string.");
+		if (!(["post", "all", "pre"] as const).includes(type))
+			throw new TypeError('options.type must be either "post", "all" or "pre".');
+		if (typeof priority !== "number") throw new TypeError("options.priority must be a number.");
+
 		super(id, { category });
 
 		this.reason = reason;

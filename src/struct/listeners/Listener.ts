@@ -1,5 +1,5 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import type EventEmitter from "events";
+import EventEmitter from "events";
 import AkairoError from "../../util/AkairoError.js";
 import type Category from "../../util/Category.js";
 import type AkairoClient from "../AkairoClient.js";
@@ -52,6 +52,12 @@ export default abstract class Listener extends AkairoModule {
 	public constructor(id: string, options: ListenerOptions) {
 		const { category, emitter, event, type = "on" } = options;
 
+		if (typeof emitter !== "string" && !(emitter instanceof EventEmitter))
+			throw new TypeError("options.emitter must be a string or an EventEmitter.");
+		if (typeof event !== "string") throw new TypeError("options.event must be a string.");
+		if (!listenersTypes.includes(type))
+			throw new TypeError(`options.type must be one of ${listenersTypes.map(v => `"${v}"`).join(", ")}.`);
+
 		super(id, { category });
 		this.emitter = emitter;
 		this.event = event;
@@ -100,4 +106,5 @@ export interface ListenerOptions extends AkairoModuleOptions {
 	type?: ListenerType;
 }
 
-export type ListenerType = "on" | "once" | "prependListener" | "prependOnceListener";
+const listenersTypes = ["on", "once", "prependListener", "prependOnceListener"] as const;
+export type ListenerType = typeof listenersTypes[number];

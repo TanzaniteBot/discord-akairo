@@ -50,7 +50,7 @@ import CommandHandler, {
 	ParsedComponentData,
 	PrefixSupplier,
 	RegisterInteractionCommandError,
-	SlashResolveTypes
+	SlashResolveType
 } from "./struct/commands/CommandHandler";
 import CommandUtil from "./struct/commands/CommandUtil";
 import ContentParser, {
@@ -184,7 +184,7 @@ export type {
 	RegexSupplier,
 	SlashOption,
 	SlashPermissionsSupplier,
-	SlashResolveTypes,
+	SlashResolveType as SlashResolveTypes,
 	StringData,
 	TaskHandlerEvents,
 	TaskOptions

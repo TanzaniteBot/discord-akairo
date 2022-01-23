@@ -1,4 +1,5 @@
 import { ArgumentMatches } from "../../util/Constants.js";
+import Util from "../../util/Util.js";
 import type { ArgumentOptions } from "./arguments/Argument.js";
 
 /*
@@ -61,11 +62,11 @@ class Tokenizer {
 	public declare quoted: boolean;
 	public declare separator?: string;
 	public declare position: number;
-	public declare state: number;
+	public declare state: TokenizerState;
 	public declare tokens: any[];
 
-	public constructor(content: string, options?: ContentParserOptions) {
-		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options ?? {};
+	public constructor(content: string, options: ContentParserOptions = {}) {
+		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
 
 		this.content = content;
 		this.flagWords = flagWords;
@@ -73,8 +74,7 @@ class Tokenizer {
 		this.quoted = quoted;
 		this.separator = separator;
 		this.position = 0;
-		// 0 -> Default, 1 -> Quotes (""), 2 -> Special Quotes (“”)
-		this.state = 0;
+		this.state = TokenizerState.Default;
 		this.tokens = [];
 	}
 
@@ -129,7 +129,7 @@ class Tokenizer {
 	}
 
 	public runFlags() {
-		if (this.state === 0) {
+		if (this.state === TokenizerState.Default) {
 			for (const word of this.flagWords) {
 				if (this.startsWith(word)) {
 					this.addToken("FlagWord", this.slice(0, word.length));
@@ -143,7 +143,7 @@ class Tokenizer {
 	}
 
 	public runOptionFlags() {
-		if (this.state === 0) {
+		if (this.state === TokenizerState.Default) {
 			for (const word of this.optionFlagWords) {
 				if (this.startsWith(word)) {
 					this.addToken("OptionFlagWord", this.slice(0, word.length));
@@ -158,10 +158,10 @@ class Tokenizer {
 
 	public runQuote() {
 		if (this.separator == null && this.quoted && this.startsWith('"')) {
-			if (this.state === 1) {
-				this.state = 0;
-			} else if (this.state === 0) {
-				this.state = 1;
+			if (this.state === TokenizerState.Quotes) {
+				this.state = TokenizerState.Default;
+			} else if (this.state === TokenizerState.Default) {
+				this.state = TokenizerState.Quotes;
 			}
 
 			this.addToken("Quote", '"');
@@ -174,8 +174,8 @@ class Tokenizer {
 
 	public runOpenQuote() {
 		if (this.separator == null && this.quoted && this.startsWith('"')) {
-			if (this.state === 0) {
-				this.state = 2;
+			if (this.state === TokenizerState.Default) {
+				this.state = TokenizerState.SpecialQuotes;
 			}
 
 			this.addToken("OpenQuote", '"');
@@ -188,8 +188,8 @@ class Tokenizer {
 
 	public runEndQuote() {
 		if (this.separator == null && this.quoted && this.startsWith("”")) {
-			if (this.state === 2) {
-				this.state = 0;
+			if (this.state === TokenizerState.SpecialQuotes) {
+				this.state = TokenizerState.Default;
 			}
 
 			this.addToken("EndQuote", "”");
@@ -211,7 +211,8 @@ class Tokenizer {
 	}
 
 	public runWord() {
-		const wordRegex = this.state === 0 ? /^\S+/ : this.state === 1 ? /^[^\s"]+/ : /^[^\s”]+/;
+		const wordRegex =
+			this.state === TokenizerState.Default ? /^\S+/ : this.state === TokenizerState.Quotes ? /^[^\s"]+/ : /^[^\s”]+/;
 
 		const wordMatch = this.match(wordRegex);
 		if (wordMatch) {
@@ -253,6 +254,14 @@ class Tokenizer {
 	}
 }
 
+const enum TokenizerState {
+	Default = 0,
+	/** ("") */
+	Quotes = 1,
+	/** (“”) */
+	SpecialQuotes = 1
+}
+
 class Parser {
 	public declare tokens: any;
 	public declare separated: any;
@@ -271,7 +280,9 @@ class Parser {
 		optionFlags: any[];
 	};
 
-	public constructor(tokens: any[], { separated }: { separated: boolean }) {
+	public constructor(tokens: any[], options: ParserOptions) {
+		const { separated } = options;
+
 		this.tokens = tokens;
 		this.separated = separated;
 		this.position = 0;
@@ -444,6 +455,10 @@ class Parser {
 	}
 }
 
+export interface ParserOptions {
+	separated: boolean;
+}
+
 /**
  * Parses content.
  */
@@ -459,7 +474,8 @@ export default class ContentParser {
 	public declare optionFlagWords: string[];
 
 	/**
-	 * Whether to parse quotes. Defaults to `true`.
+	 * Whether to parse quotes.
+	 * @default true
 	 */
 	public declare quoted: boolean;
 
@@ -471,7 +487,14 @@ export default class ContentParser {
 	/**
 	 * @param options - Options.
 	 */
-	public constructor({ flagWords = [], optionFlagWords = [], quoted = true, separator }: ContentParserOptions = {}) {
+	public constructor(options: ContentParserOptions = {}) {
+		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
+
+		if (!Util.isArrayOf(flagWords, "string")) throw new TypeError("options.flagWords must be an array of strings.");
+		if (!Util.isArrayOf(optionFlagWords, "string")) throw new TypeError("options.optionFlagWords must be an array of strings.");
+		if (typeof quoted !== "boolean") throw new TypeError("options.quoted must be a boolean.");
+		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
+
 		this.flagWords = flagWords;
 		this.flagWords.sort((a, b) => b.length - a.length);
 		this.optionFlagWords = optionFlagWords;
