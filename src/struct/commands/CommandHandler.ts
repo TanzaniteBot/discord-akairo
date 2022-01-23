@@ -574,18 +574,20 @@ export default class CommandHandler extends AkairoHandler {
 			?.filter(value => !value.defaultPermission)
 			.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)));
 
-		const promises = this.client.guilds.cache.map(async guild => {
-			const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
-			await guild.commands.fetch();
-			if (guild.commands.cache.size)
-				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild)));
-			if (guild.available)
-				return guild.commands.permissions.set({
-					fullPermissions: perms
-				});
-			// Return empty promise if guild is unavailable
-			return Promise.resolve();
-		});
+		const promises = this.client.guilds.cache.map(
+			/* async */ guild => {
+				const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
+				// await guild.commands.fetch();
+				if (guild.commands.cache.size)
+					perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild)));
+				if (guild.available)
+					return guild.commands.permissions.set({
+						fullPermissions: perms
+					});
+				// Return empty promise if guild is unavailable
+				return Promise.resolve();
+			}
+		);
 		try {
 			await Promise.all(promises);
 		} catch (e) {
