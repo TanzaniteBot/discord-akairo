@@ -21,11 +21,11 @@ import type Category from "../../util/Category.js";
 import Util, { isStringArrayStringOrFunc } from "../../util/Util.js";
 import type AkairoClient from "../AkairoClient.js";
 import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
-import Argument, { ArgumentOptions, DefaultArgumentOptions } from "./arguments/Argument.js";
+import Argument, { ArgumentOptions, ArgumentTypeCasterReturn, DefaultArgumentOptions } from "./arguments/Argument.js";
 import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
 import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
 import ContentParser, { ContentParserResult } from "./ContentParser.js";
-import type Flag from "./Flag.js";
+import { type default as Flag } from "./Flag.js";
 
 /**
  * Represents a command.
@@ -307,9 +307,9 @@ export default abstract class Command extends AkairoModule {
 			separator
 		});
 		this.argumentRunner = new ArgumentRunner(this);
-		this.argumentGenerator = (
-			Array.isArray(args) ? ArgumentRunner.fromArguments(args.map(arg => [arg.id!, new Argument(this, arg)])) : args.bind(this)
-		) as ArgumentGenerator;
+		this.argumentGenerator = Array.isArray(args)
+			? ArgumentRunner.fromArguments(args.map(arg => [arg.id!, new Argument(this, arg)]))
+			: args.bind(this);
 		this.argumentDefaults = argumentDefaults;
 		this.before = before.bind(this);
 		this.channel = channel!;
@@ -354,11 +354,8 @@ export default abstract class Command extends AkairoModule {
 	 * @param parsed - Parsed content.
 	 * @param state - Argument processing state.
 	 */
-	public *args(
-		message: Message,
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState
-	): IterableIterator<ArgumentOptions | Flag> {}
+	// @ts-expect-error
+	public *args(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn {}
 
 	/**
 	 * Runs before argument parsing and execution.
@@ -665,7 +662,13 @@ export type ArgumentGenerator = (
 	message: Message,
 	parsed: ContentParserResult,
 	state: ArgumentRunnerState
-) => IterableIterator<ArgumentOptions | Flag>;
+) => ArgumentGeneratorReturn;
+
+export type ArgumentGeneratorReturn = Generator<
+	ArgumentOptions | Argument | Flag,
+	{ [args: string]: ArgumentTypeCasterReturn<unknown> } | Flag,
+	Flag | any
+>;
 
 export interface AkairoApplicationCommandSubGroupData extends ApplicationCommandSubGroupData {
 	options?: AkairoApplicationCommandSubCommandData[];

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { ArgumentOptions, Command, Flag } from "#discord-akairo";
+import { ArgumentGeneratorReturn, Command, Flag } from "#discord-akairo";
 import { Formatters, Message } from "discord.js";
 import util from "util";
 
@@ -11,7 +11,7 @@ export default class GenerateCommand extends Command {
 		});
 	}
 
-	public override *args(): IterableIterator<ArgumentOptions | Flag> {
+	public override *args(): ArgumentGeneratorReturn {
 		const x = yield {
 			type: ["1", "2"],
 			otherwise: "Type 1 or 2!"

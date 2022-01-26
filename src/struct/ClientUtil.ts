@@ -1,14 +1,14 @@
+import { APIEmbed } from "discord-api-types";
 import {
 	ActivityType,
 	BufferResolvable,
 	Collection,
+	Embed,
 	Emoji,
 	Guild,
 	GuildChannel,
 	GuildMember,
 	MessageAttachment,
-	MessageEmbed,
-	MessageEmbedOptions,
 	Permissions,
 	PermissionString,
 	Role,
@@ -227,11 +227,11 @@ export default class ClientUtil {
 	}
 
 	/**
-	 * Makes a MessageEmbed.
+	 * Makes a Embed.
 	 * @param data - Embed data.
 	 */
-	public embed(data?: MessageEmbed | MessageEmbedOptions): MessageEmbed {
-		return new MessageEmbed(data);
+	public embed(data?: Embed | APIEmbed): Embed {
+		return new Embed(data);
 	}
 
 	/**

@@ -1,10 +1,10 @@
 import type { Message } from "discord.js";
 import AkairoError from "../../../util/AkairoError.js";
 import { ArgumentMatches } from "../../../util/Constants.js";
-import Command, { ArgumentGenerator } from "../Command.js";
+import Command, { ArgumentGenerator, ArgumentGeneratorReturn } from "../Command.js";
 import type { ContentParserResult } from "../ContentParser.js";
-import Flag from "../Flag.js";
-import Argument, { ArgumentOptions } from "./Argument.js";
+import Flag, { FlagType } from "../Flag.js";
+import Argument, { ArgumentOptions, ArgumentTypeCasterReturn } from "./Argument.js";
 
 /**
  * Runs arguments.
@@ -42,7 +42,16 @@ export default class ArgumentRunner {
 	 * @param parsed - Parsed data from ContentParser.
 	 * @param generator - Argument generator.
 	 */
-	public async run(message: Message, parsed: ContentParserResult, generator: ArgumentGenerator): Promise<Flag | any> {
+	public async run(
+		message: Message,
+		parsed: ContentParserResult,
+		generator: ArgumentGenerator
+	): Promise<
+		| Flag
+		| {
+				[args: string]: unknown;
+		  }
+	> {
 		const state = {
 			usedIndices: new Set<number>(),
 			phraseIndex: 0,
@@ -50,8 +59,8 @@ export default class ArgumentRunner {
 		};
 
 		const augmentRest = (val: Flag | ArgumentOptions) => {
-			if (Flag.is(val, "continue")) {
-				(val as any).rest = parsed.all
+			if (Flag.is(val, FlagType.Continue)) {
+				val.rest = parsed.all
 					.slice(state.index)
 					.map(x => x.raw)
 					.join("");
@@ -211,7 +220,7 @@ export default class ArgumentRunner {
 		for (const phrase of phrases) {
 			const response = await arg.process(message, phrase.value);
 
-			if (Flag.is(response, "cancel")) {
+			if (Flag.is(response, FlagType.Cancel)) {
 				return response;
 			}
 
@@ -375,8 +384,8 @@ export default class ArgumentRunner {
 	 * Checks if something is a flag that short circuits.
 	 * @param value - A value.
 	 */
-	public static isShortCircuit(value: any): boolean {
-		return Flag.is(value, "cancel") || Flag.is(value, "retry") || Flag.is(value, "continue");
+	public static isShortCircuit(value: unknown): value is Flag<FlagType.Cancel> | Flag<FlagType.Retry> | Flag<FlagType.Continue> {
+		return Flag.is(value, FlagType.Cancel) || Flag.is(value, FlagType.Retry) || Flag.is(value, FlagType.Continue);
 	}
 
 	/**
@@ -384,8 +393,8 @@ export default class ArgumentRunner {
 	 * @param args - Argument options.
 	 */
 	public static fromArguments(args: [id: string, argument: Argument][]) {
-		return function* generate(): Generator<Argument, { [x: string]: any }, Argument> {
-			const res: { [key: string]: any } = {};
+		return function* generate(): ArgumentGeneratorReturn {
+			const res: { [args: string]: ArgumentTypeCasterReturn<unknown> } = {};
 			for (const [id, arg] of args) {
 				res[id] = yield arg;
 			}

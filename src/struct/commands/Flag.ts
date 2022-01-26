@@ -3,17 +3,56 @@ import type { Message } from "discord.js";
 /**
  * Represents a special return value during command execution or argument parsing.
  */
-export default class Flag {
+export default class Flag<T extends FlagType = FlagType> {
 	/**
 	 * The type of flag.
 	 */
-	public declare type: string;
+	public declare type: T;
+
+	/**
+	 * Message to handle.
+	 *
+	 * Only exists if {@link type} is {@link FlagType.Retry}.
+	 */
+	public declare message: T extends FlagType.Retry ? Message : unknown;
+
+	/**
+	 * The extra data for the failure.
+	 *
+	 * Only exists if {@link type} is {@link FlagType.Fail}.
+	 */
+	public declare value: T extends FlagType.Fail ? any : unknown;
+
+	/**
+	 * Command ID.
+	 *
+	 * Only exists if {@link type} is {@link FlagType.Continue}.
+	 */
+	public declare command: T extends FlagType.Continue ? string : never;
+
+	/**
+	 * Whether or not to ignore permission checks.
+	 *
+	 * Only exists if {@link type} is {@link FlagType.Continue}.
+	 */
+	public declare ignore: T extends FlagType.Continue ? boolean : never;
+
+	/**
+	 *  The rest of the arguments. If this is not set, the argument handler will automatically use the rest of the content.
+	 *
+	 * Only exists if {@link type} is {@link FlagType.Continue}.
+	 */
+	public declare rest: T extends FlagType.Continue ? string | null : never;
 
 	/**
 	 * @param type - Type of flag.
 	 * @param data - Extra data.
 	 */
-	constructor(type: string, data: any = {}) {
+	private constructor(type: T & FlagType.Cancel);
+	private constructor(type: T & FlagType.Retry, data?: FlagRetryData);
+	private constructor(type: T & FlagType.Fail, data?: FlagFailData);
+	private constructor(type: T & FlagType.Continue, data?: FlagContinueData);
+	private constructor(type: T, data: Record<string, never> | FlagRetryData | FlagFailData | FlagContinueData = {}) {
 		this.type = type;
 		Object.assign(this, data);
 	}
@@ -21,24 +60,24 @@ export default class Flag {
 	/**
 	 * Creates a flag that cancels the command.
 	 */
-	public static cancel(): Flag {
-		return new Flag("cancel");
+	public static cancel(): Flag<FlagType.Cancel> {
+		return new Flag(FlagType.Cancel);
 	}
 
 	/**
 	 * Creates a flag that retries with another input.
 	 * @param message - Message to handle.
 	 */
-	public static retry(message: Message): Flag {
-		return new Flag("retry", { message });
+	public static retry(message: Message): Flag<FlagType.Retry> {
+		return new Flag(FlagType.Retry, { message });
 	}
 
 	/**
 	 * Creates a flag that acts as argument cast failure with extra data.
 	 * @param value - The extra data for the failure.
 	 */
-	public static fail(value: any): Flag {
-		return new Flag("fail", { value });
+	public static fail(value: any): Flag<FlagType.Fail> {
+		return new Flag(FlagType.Fail, { value });
 	}
 
 	/**
@@ -47,8 +86,8 @@ export default class Flag {
 	 * @param ignore - Whether or not to ignore permission checks.
 	 * @param rest - The rest of the arguments. If this is not set, the argument handler will automatically use the rest of the content.
 	 */
-	public static continue(command: string, ignore: boolean = false, rest: string | null = null): Flag {
-		return new Flag("continue", { command, ignore, rest });
+	public static continue(command: string, ignore: boolean = false, rest: string | null = null): Flag<FlagType.Continue> {
+		return new Flag(FlagType.Continue, { command, ignore, rest });
 	}
 
 	/**
@@ -56,7 +95,32 @@ export default class Flag {
 	 * @param value - Value to check.
 	 * @param type - Type of flag.
 	 */
-	public static is(value: any, type: string): boolean {
+	public static is(value: unknown, type: FlagType.Cancel): value is Flag<FlagType.Cancel>;
+	public static is(value: unknown, type: FlagType.Continue): value is Flag<FlagType.Continue>;
+	public static is(value: unknown, type: FlagType.Fail): value is Flag<FlagType.Fail>;
+	public static is(value: unknown, type: FlagType.Retry): value is Flag<FlagType.Retry>;
+	public static is(value: unknown, type: FlagType): value is Flag<typeof type> {
 		return value instanceof Flag && value.type === type;
 	}
+}
+
+export enum FlagType {
+	Cancel = "cancel",
+	Retry = "retry",
+	Fail = "fail",
+	Continue = "continue"
+}
+
+interface FlagRetryData {
+	message: Message;
+}
+
+interface FlagFailData {
+	value: any;
+}
+
+interface FlagContinueData {
+	command: string;
+	ignore: boolean;
+	rest: string | null;
 }

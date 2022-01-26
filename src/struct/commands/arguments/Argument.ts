@@ -31,7 +31,7 @@ import Listener from "../../listeners/Listener.js";
 import Task from "../../tasks/Task.js";
 import type Command from "../Command.js";
 import type CommandHandler from "../CommandHandler.js";
-import Flag from "../Flag.js";
+import Flag, { FlagType } from "../Flag.js";
 import type TypeResolver from "./TypeResolver.js";
 
 /** ```ts
@@ -137,20 +137,20 @@ export default class Argument {
 	 * @param command - Command of the argument.
 	 * @param options - Options for the argument.
 	 */
+	// eslint-disable-next-line complexity
 	public constructor(command: Command, options: ArgumentOptions = {}) {
-		const {
-			match = ArgumentMatches.PHRASE,
-			type = ArgumentTypes.STRING,
-			flag = null,
-			multipleFlags = false,
-			index = null,
-			unordered = false,
-			limit = Infinity,
-			prompt = null,
-			default: defaultValue = null,
-			otherwise = null,
-			modifyOtherwise = null
-		} = options;
+		// doing this instead of object deconstruction so its valid to pass null values
+		const match = options.match ?? ArgumentMatches.PHRASE,
+			type = options.type ?? ArgumentTypes.STRING,
+			flag = options.flag ?? null,
+			multipleFlags = options.multipleFlags ?? false,
+			index = options.index ?? null,
+			unordered = options.unordered ?? false,
+			limit = options.limit ?? Infinity,
+			prompt = options.prompt ?? null,
+			defaultValue = options.default ?? null,
+			otherwise = options.otherwise ?? null,
+			modifyOtherwise = options.modifyOtherwise ?? null;
 
 		if (!Object.values(ArgumentMatches).includes(match))
 			throw new TypeError(
@@ -206,7 +206,7 @@ export default class Argument {
 	 * @param phrase - Phrase to process.
 	 */
 	public cast(message: Message, phrase: string): Promise<any> {
-		return Argument.cast(this.type as any, this.handler.resolver, message, phrase);
+		return Argument.cast(this.type, this.handler.resolver, message, phrase);
 	}
 
 	/**
@@ -386,7 +386,7 @@ export default class Argument {
 			handlerDefs.prompt?.optional ??
 			null;
 
-		const doOtherwise = async (failure: (Flag & { value: any }) | null | undefined) => {
+		const doOtherwise = async (failure: Flag<FlagType.Fail> | null | undefined) => {
 			const otherwise = this.otherwise ?? commandDefs.otherwise ?? handlerDefs.otherwise ?? null;
 
 			const modifyOtherwise = this.modifyOtherwise ?? commandDefs.modifyOtherwise ?? handlerDefs.modifyOtherwise ?? null;
@@ -402,7 +402,7 @@ export default class Argument {
 			if (modifyOtherwise) {
 				text = await modifyOtherwise.call(this, message, text as string, {
 					phrase,
-					failure: failure as Flag & { value: any }
+					failure: failure ?? null
 				});
 				if (Array.isArray(text)) {
 					text = text.join("\n");
@@ -475,16 +475,16 @@ export default class Argument {
 			return res;
 		}
 
-		if ((type as any) instanceof RegExp) {
+		if (type instanceof RegExp) {
 			const match = phrase.match(type);
 			if (!match) return null;
 
 			const matches = [];
 
-			if ((type as any).global) {
+			if (type.global) {
 				let matched;
 
-				while ((matched = (type as any).exec(phrase)) != null) {
+				while ((matched = type.exec(phrase)) != null) {
 					matches.push(matched);
 				}
 			}
@@ -492,8 +492,8 @@ export default class Argument {
 			return { match, matches };
 		}
 
-		if (resolver.type(type as any)) {
-			let res = resolver.type(type as any)?.call(this, message, phrase);
+		if (resolver.type(type)) {
+			let res = resolver.type(type)?.call(this, message, phrase);
 			if (Util.isPromise(res)) res = await res;
 			return res;
 		}
@@ -514,7 +514,7 @@ export default class Argument {
 			let acc: any = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				acc = await Argument.cast(entry as any, this.handler.resolver, message, acc);
+				acc = await Argument.cast(entry, this.handler.resolver, message, acc);
 				if (Argument.isFailure(acc)) return acc;
 			}
 
@@ -535,7 +535,7 @@ export default class Argument {
 			let acc: any = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				acc = await Argument.cast(entry as any, this.handler.resolver, message, acc);
+				acc = await Argument.cast(entry, this.handler.resolver, message, acc);
 			}
 
 			return acc;
@@ -546,8 +546,8 @@ export default class Argument {
 	 * Checks if something is null, undefined, or a fail flag.
 	 * @param value - Value to check.
 	 */
-	public static isFailure(value: any): value is null | undefined | (Flag & { value: any }) {
-		return value == null || Flag.is(value, "fail");
+	public static isFailure(value: unknown): value is null | undefined | Flag<FlagType.Fail> {
+		return value == null || Flag.is(value, FlagType.Fail);
 	}
 
 	/**
@@ -563,7 +563,7 @@ export default class Argument {
 			const results = [];
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				const res = await Argument.cast(entry as any, this.handler.resolver, message, phrase);
+				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (Argument.isFailure(res)) return res;
 				results.push(res);
 			}
@@ -583,7 +583,7 @@ export default class Argument {
 	public static range<T extends KBAT>(type: T, min: number, max: number, inclusive?: boolean): ATCBAT<T>;
 	public static range(type: AT | ATC, min: number, max: number, inclusive?: boolean): ATC;
 	public static range(type: AT | ATC, min: number, max: number, inclusive = false): ATC {
-		return Argument.validate(type as any, (msg, p, x) => {
+		return Argument.validate(type, (msg, p, x) => {
 			const o = typeof x === "number" || typeof x === "bigint" ? x : x.length != null ? x.length : x.size != null ? x.size : x;
 
 			return o >= min && (inclusive ? o <= max : o < max);
@@ -602,7 +602,7 @@ export default class Argument {
 	public static tagged(type: AT | ATC, tag: any = type): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ tag, value: res });
 			}
@@ -623,7 +623,7 @@ export default class Argument {
 	public static taggedUnion(...types: (AT | ATC)[]): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
-				entry = Argument.tagged(entry as any);
+				entry = Argument.tagged(entry);
 				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (!Argument.isFailure(res)) return res;
 			}
@@ -644,7 +644,7 @@ export default class Argument {
 	public static taggedWithInput(type: AT | ATC, tag: any = type): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ tag, input: phrase, value: res });
 			}
@@ -665,7 +665,7 @@ export default class Argument {
 		return async function typeFn(this: any, message, phrase) {
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
-				const res = await Argument.cast(entry as any, this.handler.resolver, message, phrase);
+				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
 				if (!Argument.isFailure(res)) return res;
 			}
 
@@ -685,7 +685,7 @@ export default class Argument {
 	public static validate(type: AT | ATC, predicate: ParsedValuePredicate): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) return res;
 			if (!predicate.call(this, message, phrase, res)) return null;
 			return res;
@@ -703,7 +703,7 @@ export default class Argument {
 	public static withInput(type: AT | ATC): ATC {
 		return async function typeFn(this: any, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
-			const res = await Argument.cast(type as any, this.handler.resolver, message, phrase);
+			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
 				return Flag.fail({ input: phrase, value: res });
 			}
@@ -731,36 +731,36 @@ export interface ArgumentOptions {
 	/**
 	 * The string(s) to use as the flag for flag or option match.
 	 */
-	flag?: string | string[];
+	flag?: string | string[] | null;
 
 	/**
 	 * ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator.
 	 */
-	id?: string;
+	id?: string | null;
 
 	/**
 	 * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
 	 * Ignored when used with the unordered option.
 	 */
-	index?: number;
+	index?: number | null;
 
 	/**
 	 * Amount of phrases to match when matching more than one.
 	 * Applicable to text, content, rest, or separate match only.
 	 * @default Infinity.
 	 */
-	limit?: number;
+	limit?: number | null;
 
 	/**
 	 * Method to match text. Defaults to 'phrase'.
 	 * @default ArgumentMatches.PHRASE
 	 */
-	match?: ArgumentMatch;
+	match?: ArgumentMatch | null;
 
 	/**
 	 * Function to modify otherwise content.
 	 */
-	modifyOtherwise?: OtherwiseContentModifier;
+	modifyOtherwise?: OtherwiseContentModifier | null;
 
 	/**
 	 * Whether or not to have flags process multiple inputs.
@@ -768,23 +768,23 @@ export interface ArgumentOptions {
 	 * For flags, this will count the number of occurrences.
 	 * @default false
 	 */
-	multipleFlags?: boolean;
+	multipleFlags?: boolean | null;
 
 	/**
 	 * Text sent if argument parsing fails. This overrides the `default` option and all prompt options.
 	 */
-	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
+	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
 
 	/**
 	 * Prompt options for when user does not provide input.
 	 */
-	prompt?: ArgumentPromptOptions | boolean;
+	prompt?: ArgumentPromptOptions | boolean | null;
 
 	/**
 	 * Type to cast to.
 	 * @default ArgumentTypes.STRING
 	 */
-	type?: ArgumentType | ArgumentTypeCaster;
+	type?: ArgumentType | ArgumentTypeCaster | null;
 
 	/**
 	 * Marks the argument as unordered.
@@ -796,7 +796,7 @@ export interface ArgumentOptions {
 	 * Applicable to phrase match only.
 	 * @default false
 	 */
-	unordered?: boolean | number | number[];
+	unordered?: boolean | number | number[] | null;
 }
 
 /**
@@ -826,7 +826,7 @@ export interface ArgumentPromptData {
 	/**
 	 * The value that failed if there was one, otherwise null.
 	 */
-	failure: null | (Flag & { value: any });
+	failure: null | Flag<FlagType.Fail>;
 }
 
 /**
@@ -1098,7 +1098,7 @@ export interface FailureData {
 	/**
 	 * The value that failed if there was one, otherwise null.
 	 */
-	failure: void | (Flag & { value: any });
+	failure: null | Flag<FlagType.Fail>;
 }
 
 /**

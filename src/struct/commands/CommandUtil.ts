@@ -163,9 +163,9 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 				!CommandUtil.deletedMessages.has(this.lastResponse!.id) &&
 				!this.lastResponse!.attachments.size
 			) {
-				return this.lastResponse!.edit(newOptions);
+				return this.lastResponse!.edit(newOptions as MessageEditOptions);
 			}
-			const sent = await this.message.channel?.send(newOptions);
+			const sent = await this.message.channel?.send(newOptions as MessageOptions);
 
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
@@ -196,12 +196,14 @@ export default class CommandUtil<MessageType extends AkairoMessage | Message> {
 		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
 	): Promise<Message | APIMessage> {
 		if (!this.isSlashMessage(this.message)) {
-			const sent = await this.message.channel?.send(options);
+			const sent = await this.message.channel?.send(options as string | MessagePayload | MessageOptions);
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
 			return sent!;
 		} else {
-			const sent = (await this.message.interaction.followUp(options)) as Message;
+			const sent = (await this.message.interaction.followUp(
+				options as string | MessagePayload | InteractionReplyOptions
+			)) as Message;
 			this.setLastResponse(sent);
 			return sent;
 		}

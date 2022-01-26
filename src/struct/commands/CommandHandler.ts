@@ -46,7 +46,7 @@ import Command, {
 	KeySupplier
 } from "./Command";
 import CommandUtil from "./CommandUtil.js";
-import Flag from "./Flag.js";
+import Flag, { FlagType } from "./Flag.js";
 
 /**
  * Loads commands and handles messages.
@@ -861,19 +861,13 @@ export default class CommandHandler extends AkairoHandler {
 						this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
 						return;
 					}
-					if (
-						usedSubcommandOrGroup.type === ApplicationCommandOptionType.Subcommand ||
-						usedSubcommandOrGroup.type === "Subcommand"
-					) {
+					if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.Subcommand) {
 						if (!(<SubCommand>usedSubcommandOrGroup).options) {
 							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
 							return;
 						}
 						handleOptions((<SubCommand>usedSubcommandOrGroup).options!);
-					} else if (
-						usedSubcommandOrGroup.type === ApplicationCommandOptionType.SubcommandGroup ||
-						usedSubcommandOrGroup.type === "SubcommandGroup"
-					) {
+					} else if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.SubcommandGroup) {
 						const usedSubCommand = (<SubCommandGroup>usedSubcommandOrGroup).options?.find(
 							subcommand => subcommand.name === convertedOptions.subcommand
 						);
@@ -993,15 +987,15 @@ export default class CommandHandler extends AkairoHandler {
 			if (Util.isPromise(before)) await before;
 
 			const args = await command.parse(message, content);
-			if (Flag.is(args, "cancel")) {
+			if (Flag.is(args, FlagType.Cancel)) {
 				this.emit(CommandHandlerEvents.COMMAND_CANCELLED, message, command);
 				return true;
-			} else if (Flag.is(args, "retry")) {
+			} else if (Flag.is(args, FlagType.Retry)) {
 				this.emit(CommandHandlerEvents.COMMAND_BREAKOUT, message, command, args.message);
 				return this.handle(args.message);
-			} else if (Flag.is(args, "continue")) {
+			} else if (Flag.is(args, FlagType.Continue)) {
 				const continueCommand = this.modules.get(args.command)!;
-				return this.handleDirectCommand(message, args.rest, continueCommand, args.ignore);
+				return this.handleDirectCommand(message, args.rest!, continueCommand, args.ignore);
 			}
 
 			if (!ignore) {
