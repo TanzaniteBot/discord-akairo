@@ -9,8 +9,8 @@ import {
 	GuildChannel,
 	GuildMember,
 	MessageAttachment,
-	Permissions,
-	PermissionString,
+	PermissionFlagsBits,
+	PermissionsString,
 	Role,
 	Snowflake,
 	ThreadChannel,
@@ -248,8 +248,8 @@ export default class ClientUtil {
 	/**
 	 * Array of permission names.
 	 */
-	public permissionNames(): PermissionString[] {
-		return Object.keys(Permissions.FLAGS) as (keyof typeof Permissions.FLAGS)[];
+	public permissionNames(): PermissionsString[] {
+		return Object.keys(PermissionFlagsBits) as PermissionsString[];
 	}
 
 	/**
@@ -387,8 +387,8 @@ export default class ClientUtil {
 	public resolvePermissionNumber(number: number): string[] {
 		const resolved = [];
 
-		for (const key of Object.keys(Permissions.FLAGS)) {
-			if (BigInt(number) & Permissions.FLAGS[key as keyof typeof Permissions.FLAGS]) resolved.push(key);
+		for (const key of Object.keys(PermissionFlagsBits)) {
+			if (BigInt(number) & PermissionFlagsBits[key as PermissionsString]) resolved.push(key);
 		}
 
 		return resolved;
