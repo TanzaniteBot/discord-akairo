@@ -4,8 +4,8 @@
 	"main": "dist/bot.js",
 	"license": "MIT",
 	"scripts": {
-		"test": "yarn build && node --trace-warnings dist/bot.js",
-		"start": "yarn build && node --trace-warnings dist/bot.js start",
+		"test": "yarn build && node --enable-source-maps --trace-warnings dist/bot.js",
+		"start": "yarn build && node --enable-source-maps --trace-warnings dist/bot.js start",
 		"build": "yarn rimraf dist && mkdir dist && yarn copyfiles import.js dist && yarn tsc"
 	},
 	"dependencies": {
