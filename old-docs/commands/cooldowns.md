@@ -13,7 +13,7 @@ import { Message } from "discord.js";
 import exampleAPI from "example-api";
 
 export default class RequestCommand extends Command {
-  constructor() {
+  public constructor() {
     super("request", {
       aliases: ["request"],
       cooldown: 10000,
@@ -21,7 +21,7 @@ export default class RequestCommand extends Command {
     });
   }
 
-  async exec(message: Message): Promise<Message> {
+  public override async exec(message: Message): Promise<Message> {
     const info = await exampleAPI.fetchInfo();
     return message.reply(info);
   }

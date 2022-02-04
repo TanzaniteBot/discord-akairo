@@ -111,14 +111,14 @@ import { AkairoMessage, Command, Listener } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class CommandBlockedListener extends Listener {
-  constructor() {
+  public constructor() {
     super("commandBlocked", {
       emitter: "commandHandler",
       event: "commandBlocked"
     });
   }
 
-  exec(message: Message | AkairoMessage, command: Command, reason: string): void {
+  public override exec(message: Message | AkairoMessage, command: Command, reason: string): void {
     console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`);
   }
 }

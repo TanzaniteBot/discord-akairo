@@ -17,14 +17,14 @@ import { Message } from "discord.js";
 import globalBlacklist from "something";
 
 export default class GlobalBlacklistInhibitor extends Inhibitor {
-  constructor() {
+  public constructor() {
     super("globalBlacklist", {
       reason: "globalBlacklist",
       priority: 1
     });
   }
 
-  exec(message: Message): boolean {
+  public override exec(message: Message): boolean {
     return globalBlacklist.has(message.author.id);
   }
 }

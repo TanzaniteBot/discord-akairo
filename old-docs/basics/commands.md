@@ -68,13 +68,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PingCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ping", {
       aliases: ["ping"]
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply("Pong!");
   }
 }

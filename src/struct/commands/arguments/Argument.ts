@@ -189,14 +189,14 @@ export default class Argument {
 	/**
 	 * The client.
 	 */
-	get client(): AkairoClient {
+	public get client(): AkairoClient {
 		return this.command.client;
 	}
 
 	/**
 	 * The command handler.
 	 */
-	get handler(): CommandHandler {
+	public get handler(): CommandHandler {
 		return this.command.handler;
 	}
 

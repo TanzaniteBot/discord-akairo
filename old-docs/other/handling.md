@@ -11,14 +11,14 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PingCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ping", {
       aliases: ["ping"],
       category: "stuff"
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply("Pong!");
   }
 }
@@ -39,7 +39,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class ReloadCommand extends Command {
-  constructor() {
+  public constructor() {
     super("reload", {
       aliases: ["reload"],
       args: [
@@ -52,7 +52,7 @@ export default class ReloadCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { commandID: string }) {
+  public override exec(message: Message, args: { commandID: string }) {
     // `this` refers to the command object.
     this.handler.reload(args.commandID);
     return message.reply(`Reloaded command ${args.commandID}!`);

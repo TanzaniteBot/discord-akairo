@@ -24,14 +24,14 @@ Now, we can use a listener on the process:
 import { Listener } from "discord-akairo";
 
 export default class UnhandledRejectionListener extends Listener {
-  constructor() {
+  public constructor() {
     super("unhandledRejection", {
       event: "unhandledRejection",
       emitter: "process"
     });
   }
 
-  exec(error: Error): void {
+  public override exec(error: Error): void {
     console.error(error);
   }
 }

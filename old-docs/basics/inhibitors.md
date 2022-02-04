@@ -14,7 +14,7 @@ import { AkairoClient, CommandHandler, InhibitorHandler } from "discord-akairo";
 class MyClient extends AkairoClient {
   public commandHandler: CommandHandler;
   public inhibitorHandler: InhibitorHandler;
-  constructor() {
+  public constructor() {
     super({
       intents: [
         /* choose intents based on what you need your bot needs to do */
@@ -55,13 +55,13 @@ import { Inhibitor } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class BlacklistInhibitor extends Inhibitor {
-  constructor() {
+  public constructor() {
     super("blacklist", {
       reason: "blacklist"
     });
   }
 
-  exec(message: Message): boolean {
+  public override exec(message: Message): boolean {
     // He's a meanie!
     const blacklist = ["81440962496172032"];
     return blacklist.includes(message.author.id);

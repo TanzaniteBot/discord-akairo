@@ -218,7 +218,7 @@ export default abstract class Command extends AkairoModule {
 	 * @param options - Options for the command.
 	 */
 	// eslint-disable-next-line complexity
-	constructor(id: string, options?: CommandOptions) {
+	public constructor(id: string, options?: CommandOptions) {
 		super(id, { category: options?.category });
 
 		const {

@@ -24,7 +24,7 @@ import { Command } from "discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
-  constructor() {
+  public constructor() {
     super("highestRole", {
       aliases: ["highestRole"],
       args: [
@@ -38,7 +38,7 @@ export default class HighestRoleCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -53,7 +53,7 @@ import { Command } from "discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
-  constructor() {
+  public constructor() {
     super("highestRole", {
       aliases: ["highestRole"],
       args: [
@@ -70,7 +70,7 @@ export default class HighestRoleCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -138,7 +138,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class AddCommand extends Command {
-  constructor() {
+  public constructor() {
     super("add", {
       aliases: ["add"],
       args: [
@@ -165,7 +165,7 @@ export default class AddCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
+  public override exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
     const sum = args.numOne + args.numTwo + args.numThree;
     return message.reply(`The sum is ${sum}!`);
   }

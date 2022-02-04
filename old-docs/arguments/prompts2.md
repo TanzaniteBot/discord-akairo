@@ -12,7 +12,7 @@ import { Command } from "discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
-  constructor() {
+  public constructor() {
     super("highestRole", {
       aliases: ["highestRole"],
       args: [
@@ -31,7 +31,7 @@ export default class HighestRoleCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -53,7 +53,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {
-  constructor() {
+  public constructor() {
     super("pick", {
       aliases: ["pick"],
       args: [
@@ -73,7 +73,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { items }) {
+  public override exec(message: Message, args: { items }) {
     const picked = args.items[Math.floor(Math.random() * args.items.length)];
     return message.reply(`I picked ${picked.trim()}!`);
   }

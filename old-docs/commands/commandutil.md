@@ -30,13 +30,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class HelloCommand extends Command {
-  constructor() {
+  public constructor() {
     super("hello", {
       aliases: ["hello"]
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     // Also available: util.reply()
     return message.util.send("Hello!");
   }
@@ -61,13 +61,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class HelloCommand extends Command {
-  constructor() {
+  public constructor() {
     super("hello", {
       aliases: ["hello", "hi", "konnichiha", "bonjour", "heyo"]
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     if (message.util.parsed.alias === "konnichiha") {
       return message.util.send("こんにちは！");
     }

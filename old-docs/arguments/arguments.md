@@ -14,13 +14,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class AddCommand extends Command {
-  constructor() {
+  public constructor() {
     super("add", {
       aliases: ["add"]
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     // This doesn't work!
     return message.reply(a + b + c);
   }
@@ -35,7 +35,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class AddCommand extends Command {
-  constructor() {
+  public constructor() {
     super("add", {
       aliases: ["add"],
       args: [
@@ -58,7 +58,7 @@ export default class AddCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
+  public override exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
     const sum = args.numOne + args.numTwo + args.numThree;
     return message.reply(`The sum is ${sum}!`);
   }

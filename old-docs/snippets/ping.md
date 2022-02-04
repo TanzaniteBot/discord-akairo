@@ -5,13 +5,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PingCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ping", {
       aliases: ["ping", "hello"]
     });
   }
 
-  async exec(message: Message): Promise<Message> {
+  public override async exec(message: Message): Promise<Message> {
     const sent = await message.util.reply("Pong!");
     const timeDiff = (sent.editedAt || sent.createdAt) - (message.editedAt || message.createdAt);
     return message.util.reply(["Pong!", `🔂 **RTT**: ${timeDiff} ms`, `💟 **Heartbeat**: ${Math.round(this.client.ws.ping)} ms`]);

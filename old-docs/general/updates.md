@@ -29,7 +29,7 @@ Slash command example:
 
 ```ts
 import { AkairoMessage, Command } from "discord-akairo";
-import { GuildMember, Message } from "discord.js";
+import { ApplicationCommandOptionType, GuildMember, Message } from "discord.js";
 
 export default class GreetCommand extends Command {
   public constructor() {
@@ -40,7 +40,7 @@ export default class GreetCommand extends Command {
         {
           id: "member",
           type: "member",
-          match: "content"
+          match: "rest"
         }
       ],
       // Enable slash for this command
@@ -52,7 +52,8 @@ export default class GreetCommand extends Command {
         {
           name: "member",
           description: "The member you want to greet",
-          type: "USER",
+          type: ApplicationCommandOptionType.User,
+          resolve: "Member", // resolve the user to a GuildMember object
           required: true
         }
       ]
@@ -127,7 +128,8 @@ export default class extends Task {
       runOnStart: false
     });
   }
-  async exec() {
+
+  public override async exec() {
     console.log("hello from", this.client.user.username);
   }
 }
@@ -172,7 +174,7 @@ SuperUsers example:
 ```ts
 // bot.ts
 /* ... */
-constructor(config: Option) {
+public constructor(config: Option) {
   super({
     ownerID: config.owners,
     superUserID: config.superUsers,
@@ -184,7 +186,7 @@ constructor(config: Option) {
 ```ts
 // bot.ts
 /* ... */
-constructor(config: Option) {
+public constructor(config: Option) {
   super({
     ownerID: config.owners,
     // Owners aren't automatically added as superuser
@@ -231,7 +233,7 @@ Example
 import { Command } from "discord-akairo";
 
 export default class NsfwCommand extends Command {
-  constructor() {
+  public constructor() {
     super("nsfw", {
       aliases: ["nsfw"],
       category: "NSFW 🔞",

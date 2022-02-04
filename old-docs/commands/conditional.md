@@ -16,17 +16,17 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class ComplimentCommand extends Command {
-  constructor() {
+  public constructor() {
     super("compliment", {
       category: "random"
     });
   }
 
-  condition(message: Message): boolean {
+  public override condition(message: Message): boolean {
     return message.author.id === "126485019500871680";
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply("You are a great person!");
   }
 }

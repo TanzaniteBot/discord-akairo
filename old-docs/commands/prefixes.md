@@ -44,14 +44,14 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class SecretCommand extends Command {
-  constructor() {
+  public constructor() {
     super("secret", {
       aliases: ["secret"],
       prefix: "???"
     });
   }
 
-  exec(message: Message) {
+  public override exec(message: Message) {
     return message.reply("Woah! How did you find this!?");
   }
 }

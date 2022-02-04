@@ -29,7 +29,7 @@ As your bot gets more complicated, you may want to separate this client class fr
 import { AkairoClient } from "discord-akairo";
 
 class MyClient extends AkairoClient {
-  constructor() {
+  public constructor() {
     super({
       // Options for Akairo and discord.js go here.
     });
@@ -48,7 +48,7 @@ We want to use Discord.js's `allowedMentions` option too.
 import { AkairoClient } from "discord-akairo";
 
 class MyClient extends AkairoClient {
-  constructor() {
+  public constructor() {
     super({
       intents: [
         /* choose intents based on what you need your bot needs to do */

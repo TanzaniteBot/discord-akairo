@@ -13,7 +13,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {
-  constructor() {
+  public constructor() {
     super("pick", {
       aliases: ["pick"],
       args: [
@@ -25,7 +25,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { items: string }): Promise<Message> {
+  public override exec(message: Message, args: { items: string }): Promise<Message> {
     const picked = args.items; // ???
     return message.reply(`I picked ${picked}`);
   }
@@ -39,7 +39,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {
-  constructor() {
+  public constructor() {
     super("pick", {
       aliases: ["pick"],
       args: [
@@ -51,7 +51,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { items: string }): Promise<Message> {
+  public override exec(message: Message, args: { items: string }): Promise<Message> {
     const items = args.items.split("|");
     const picked = items[Math.floor(Math.random() * items.length)];
     return message.reply(`I picked ${picked.trim()}!`);
@@ -74,7 +74,7 @@ import { Message } from "discord.js";
 import exampleAPI from "example-api";
 
 export default class StatsCommand extends Command {
-  constructor() {
+  public constructor() {
     super("stats", {
       aliases: ["stats"],
       args: [
@@ -90,7 +90,7 @@ export default class StatsCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { username: string; advanced: boolean }): Promise<Message> {
+  public override exec(message: Message, args: { username: string; advanced: boolean }): Promise<Message> {
     const user = exampleAPI.getUser(args.username);
 
     if (args.advanced) {
@@ -118,7 +118,7 @@ import { Message } from "discord.js";
 import exampleAPI from "example-api";
 
 export default class StatsCommand extends Command {
-  constructor() {
+  public constructor() {
     super("stats", {
       aliases: ["stats"],
       args: [
@@ -135,7 +135,7 @@ export default class StatsCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { username: string; color: string }): Promise<Message> {
+  public override exec(message: Message, args: { username: string; color: string }): Promise<Message> {
     const team = exampleAPI.getTeam(args.color);
     const user = team.getUser(args.username);
 
@@ -172,7 +172,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {
-  constructor() {
+  public constructor() {
     super("pick", {
       aliases: ["pick"],
       separator: "|",
@@ -186,7 +186,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { items: number[] }): Promise<Message> {
+  public override exec(message: Message, args: { items: number[] }): Promise<Message> {
     const picked = args.items[Math.floor(Math.random() * args.items.length)];
     return message.reply(`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`);
   }

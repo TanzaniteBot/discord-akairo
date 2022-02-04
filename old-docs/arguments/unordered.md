@@ -12,7 +12,7 @@ import { Command } from "discord-akairo";
 import { GuildMember, Message, Role } from "discord.js";
 
 export default class AddRoleCommand extends Command {
-  constructor() {
+  public constructor() {
     super("addrole", {
       aliases: ["addrole"],
       args: [
@@ -32,7 +32,7 @@ export default class AddRoleCommand extends Command {
     });
   }
 
-  async exec(message: Message, args: { member: GuildMember; role: Role }) {
+  public override async exec(message: Message, args: { member: GuildMember; role: Role }) {
     await args.member.roles.add(args.role);
     return message.reply("Done!");
   }

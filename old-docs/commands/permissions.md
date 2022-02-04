@@ -13,7 +13,7 @@ import { Command } from "discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class BanCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ban", {
       aliases: ["ban"],
       args: [
@@ -22,13 +22,13 @@ export default class BanCommand extends Command {
           type: "member"
         }
       ],
-      clientPermissions: ["BAN_MEMBERS"],
-      userPermissions: ["BAN_MEMBERS"],
+      clientPermissions: ["BanMembers"],
+      userPermissions: ["BanMembers"],
       channel: "guild"
     });
   }
 
-  async exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override async exec(message: Message, args: { member: GuildMember }): Promise<Message> {
     if (!args.member) {
       return message.reply("No member found with that name.");
     }
@@ -66,7 +66,7 @@ export default class BanCommand extends Command {
           type: "member"
         }
       ],
-      clientPermissions: ["BAN_MEMBERS"],
+      clientPermissions: ["BanMembers"],
       channel: "guild"
     });
   }

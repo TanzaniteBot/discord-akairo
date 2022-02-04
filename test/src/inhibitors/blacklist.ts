@@ -8,7 +8,7 @@ export default class BlacklistInhibitor extends Inhibitor {
 		});
 	}
 
-	override exec(message: Message | AkairoMessage): boolean {
+	public override exec(message: Message | AkairoMessage): boolean {
 		if (message.author.id === "1234567890123456789") return true;
 		return false;
 	}

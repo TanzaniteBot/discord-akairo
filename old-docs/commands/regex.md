@@ -17,13 +17,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class AyyCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ayy", {
       regex: /^ayy$/i
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply("lmao");
   }
 }
@@ -42,18 +42,18 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class AyyCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ayy", {
       category: "random"
     });
   }
 
-  regex(message: Message) {
+  public override regex(message: Message) {
     // Do some code...
     return /^ayy$/i;
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply("lmao");
   }
 }

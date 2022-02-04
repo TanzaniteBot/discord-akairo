@@ -91,7 +91,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PokemonCommand extends Command {
-  constructor() {
+  public constructor() {
     super("pokemon", {
       aliases: ["pokemon"],
       args: [
@@ -104,7 +104,7 @@ export default class PokemonCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
+  public override exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
     if (args.option === "grass") return message.reply("bulbasaur");
     if (args.option === "fire") return message.reply("charmander");
     if (args.option === "water") return message.reply("squirtle");
@@ -124,7 +124,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class PokemonCommand extends Command {
-  constructor() {
+  public constructor() {
     super("pokemon", {
       aliases: ["pokemon"],
       args: [
@@ -142,7 +142,7 @@ export default class PokemonCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
+  public override exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
     if (args.option === "grass") return message.reply("bulbasaur");
     if (args.option === "fire") return message.reply("charmander");
     if (args.option === "water") return message.reply("squirtle");
@@ -163,7 +163,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class AskCommand extends Command {
-  constructor() {
+  public constructor() {
     super("ask", {
       aliases: ["ask"],
       args: [
@@ -175,7 +175,7 @@ export default class AskCommand extends Command {
     });
   }
 
-  exec(message: Message, args: { yesOrNo }) {
+  public override exec(message: Message, args: { yesOrNo }) {
     // {
     //   match: [...],
     //   matches: null

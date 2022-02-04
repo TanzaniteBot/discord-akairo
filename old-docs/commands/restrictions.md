@@ -11,13 +11,13 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class NicknameCommand extends Command {
-  constructor() {
+  public constructor() {
     super("nickname", {
       aliases: ["nickname"]
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply(`Your nickname is ${message.member.nickname}.`);
   }
 }
@@ -30,14 +30,14 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class NicknameCommand extends Command {
-  constructor() {
+  public constructor() {
     super("nickname", {
       aliases: ["nickname"],
       channel: "guild"
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     return message.reply(`Your nickname is ${message.member.nickname}.`);
   }
 }
@@ -57,7 +57,7 @@ import { Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class TokenCommand extends Command {
-  constructor() {
+  public constructor() {
     super("token", {
       aliases: ["token"],
       ownerOnly: true,
@@ -65,7 +65,7 @@ export default class TokenCommand extends Command {
     });
   }
 
-  exec(message: Message): Promise<Message> {
+  public override exec(message: Message): Promise<Message> {
     // Don't actually do this.
     return message.reply(this.client.token);
   }

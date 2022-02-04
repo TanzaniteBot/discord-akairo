@@ -19,7 +19,6 @@ import {
 	Message,
 	Snowflake,
 	TextBasedChannel,
-	TextChannel,
 	User
 } from "discord.js";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
@@ -1205,17 +1204,17 @@ export default class CommandHandler extends AkairoHandler {
 				}
 			}
 
-			if (command.channel === "guild" && !message.guild) {
+			if (command.channel === "guild" && !message.inGuild()) {
 				this.emit(event, message, command, BuiltInReasons.GUILD);
 				return true;
 			}
 
-			if (command.channel === "dm" && message.guild) {
+			if (command.channel === "dm" && message.inGuild()) {
 				this.emit(event, message, command, BuiltInReasons.DM);
 				return true;
 			}
 
-			if (command.onlyNsfw && !(message.channel as TextChannel)?.["nsfw"]) {
+			if (command.onlyNsfw && !("nsfw" in (message.channel ?? {}))) {
 				this.emit(event, message, command, BuiltInReasons.NOT_NSFW);
 				return true;
 			}
@@ -1644,12 +1643,17 @@ export default interface CommandHandler extends AkairoHandler {
 }
 
 export class RegisterInteractionCommandError extends Error {
-	original: DiscordAPIError;
-	type: "guild" | "global";
-	data: ApplicationCommandData[];
-	guild: Guild | null;
+	public original: DiscordAPIError;
+	public type: "guild" | "global";
+	public data: ApplicationCommandData[];
+	public guild: Guild | null;
 
-	constructor(original: DiscordAPIError, type: "guild" | "global", data: ApplicationCommandData[], guild: Guild | null = null) {
+	public constructor(
+		original: DiscordAPIError,
+		type: "guild" | "global",
+		data: ApplicationCommandData[],
+		guild: Guild | null = null
+	) {
 		super("Failed to register interaction commands.");
 		this.original = original;
 		this.type = type;
@@ -1858,13 +1862,12 @@ export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boo
  */
 export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
 
-/**
- * Calls the corresponding get function on the {@link CommandInteractionOptionResolver}
- */
-
 const slashResolvable = ["Boolean", "Channel", "String", "Integer", "Number", "User", "Member", "Role", "Mentionable"] as const;
 export type SlashResolveType = typeof slashResolvable[number];
 
+/**
+ * Calls the corresponding get function on the {@link CommandInteractionOptionResolver}
+ */
 type GetFunction = `get${SlashResolveType}`;
 
 type ConvertedOptionsType = {
@@ -1881,6 +1884,7 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["message"]>;
 };
 
+// todo: remove this once discord-api-types updates
 /**
  * Used for reverse mapping since discord exports its enums as const enums.
  * @internal

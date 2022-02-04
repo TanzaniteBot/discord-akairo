@@ -16,21 +16,21 @@ With this, you can do things such as:
 To get started, take this command:
 
 ```ts
-import { ArgumentOptions, Command, Flag } from "discord-akairo";
+import { ArgumentGeneratorReturn, Command } from "discord-akairo";
 import { Message } from "discord.js";
 
 export default class GeneratorCommand extends Command {
-  constructor() {
+  public constructor() {
     super("generator", {
       aliases: ["generator"]
     });
   }
 
-  *args(): IterableIterator<ArgumentOptions | Flag> {
+  public override *args(): ArgumentGeneratorReturn {
     // Here!
   }
 
-  exec(message: Message, args) {
+  public override exec(message: Message, args) {
     // Do whatever.
   }
 }
@@ -45,7 +45,7 @@ To run an argument:
 ```ts
 export default class ExampleCommand extends Command {
   /* ... */
-  *args(): IterableIterator<ArgumentOptions | Flag> {
+  public override *args(): IterableIterator<ArgumentOptions | Flag> {
     // Notice: no `id` necessary!
     // Also notice: `yield` must be used.
     const x = yield { type: "integer" };
@@ -68,7 +68,7 @@ But more things are possible because you have access to all of JavaScript's synt
 ```ts
 export default class ExampleCommand extends Command {
   /* ... */
-  *args(message: Message): IterableIterator<ArgumentOptions | Flag> {
+  public override *args(message: Message): IterableIterator<ArgumentOptions | Flag> {
     const x = yield { type: "integer" };
 
     // Use previous arguments by referring to the identifier.

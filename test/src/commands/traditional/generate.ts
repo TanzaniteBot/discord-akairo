@@ -24,7 +24,7 @@ export default class GenerateCommand extends Command {
 		return { x };
 	}
 
-	public override exec(message: Message, args: { x: "1" | "2" }) {
+	public override exec(message: Message, args: { x: "2" }) {
 		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
 	}
 }

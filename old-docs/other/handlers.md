@@ -13,13 +13,14 @@ import { AkairoModule } from "discord-akairo";
 
 export default class CustomModule extends AkairoModule {
   public color: string;
-  constructor(id, options = {}) {
+
+  public constructor(id, options = {}) {
     super(id, options);
 
     this.color = options.color || "red";
   }
 
-  exec() {
+  public override exec() {
     throw new Error("Not implemented!");
   }
 }
