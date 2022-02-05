@@ -2,8 +2,6 @@ import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9
 import {
 	Base,
 	ChatInputCommandInteraction,
-	CommandInteractionOptionResolver,
-	ContextMenuCommandInteraction,
 	Guild,
 	GuildMember,
 	GuildTextBasedChannel,
@@ -60,7 +58,7 @@ export default class AkairoMessage extends Base {
 	/**
 	 * The command interaction.
 	 */
-	public declare interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction;
+	public declare interaction: ChatInputCommandInteraction;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
@@ -82,26 +80,19 @@ export default class AkairoMessage extends Base {
 	 * @param client - AkairoClient
 	 * @param interaction - CommandInteraction
 	 */
-	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction | ContextMenuCommandInteraction) {
+	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction) {
 		super(client);
 
 		this.author = interaction.user;
 		this.applicationId = interaction.applicationId;
 		this.channelId = interaction.channelId;
-		this.content = interaction.isChatInputCommand() ? interaction.toString() : interaction.commandName;
+		this.content = interaction.toString();
 		this.createdTimestamp = interaction.createdTimestamp;
 		this.guildId = interaction.guildId;
 		this.id = interaction.id;
 		this.interaction = interaction;
 		this.member = interaction.member;
 		this.partial = false;
-
-		const options = interaction.options as CommandInteractionOptionResolver;
-		if (interaction.isMessageContextMenuCommand()) {
-			this.content += `${options.getMessage("message")!.id}`;
-		} else if (interaction.isUserContextMenuCommand()) {
-			this.content += `${options.getUser("user")!.id}`;
-		}
 	}
 
 	/**
