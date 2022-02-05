@@ -359,18 +359,21 @@ export default class CommandHandler extends AkairoHandler {
 				});
 
 			this.client.on("messageCreate", async m => {
-				if (m.partial) await m.fetch();
+				const message = m.partial ? await m.fetch().catch(() => null) : m;
+				if (!message) return;
 
 				this.handle(m);
 			});
 
 			if (this.handleEdits) {
 				this.client.on("messageUpdate", async (o, m) => {
-					if (o.partial) await o.fetch();
-					if (m.partial) await m.fetch();
-					if (o.content === m.content) return;
+					const message = m.partial ? await m.fetch().catch(() => null) : m;
+					if (!message) return;
+					const original = o.partial ? await o.fetch().catch(() => null) : o;
+					if (!original) return;
+					if (original.content === message.content) return;
 
-					if (this.handleEdits) this.handle(m as Message);
+					if (this.handleEdits) this.handle(message as Message);
 				});
 			}
 			this.client.on("interactionCreate", i => {
