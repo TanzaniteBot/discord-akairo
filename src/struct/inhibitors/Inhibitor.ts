@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Message } from "discord.js";
-import AkairoError from "../../util/AkairoError.js";
-import type AkairoMessage from "../../util/AkairoMessage.js";
-import type Category from "../../util/Category.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
-import type Command from "../commands/Command.js";
-import type InhibitorHandler from "./InhibitorHandler.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { AkairoMessage } from "../../util/AkairoMessage.js";
+import type { Category } from "../../util/Category.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import type { Command } from "../commands/Command.js";
+import type { InhibitorHandler } from "./InhibitorHandler.js";
 
 /**
  * Represents an inhibitor.
  */
-export default abstract class Inhibitor extends AkairoModule {
+export abstract class Inhibitor extends AkairoModule {
 	/**
 	 * The priority of the inhibitor.
 	 */
@@ -86,7 +86,7 @@ export default abstract class Inhibitor extends AkairoModule {
 	}
 }
 
-export default interface Inhibitor extends AkairoModule {
+export interface Inhibitor extends AkairoModule {
 	/**
 	 * Reloads the inhibitor.
 	 */

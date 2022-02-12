@@ -1,5 +1,5 @@
 import { ArgumentMatches } from "../../util/Constants.js";
-import Util from "../../util/Util.js";
+import { Util } from "../../util/Util.js";
 import type { ArgumentOptions } from "./arguments/Argument.js";
 
 /*
@@ -462,7 +462,7 @@ export interface ParserOptions {
 /**
  * Parses content.
  */
-export default class ContentParser {
+export class ContentParser {
 	/**
 	 * Words considered flags.
 	 */

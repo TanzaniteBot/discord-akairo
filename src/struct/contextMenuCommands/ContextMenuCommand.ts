@@ -1,16 +1,16 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import { ApplicationCommandType, type ContextMenuCommandInteraction, type Snowflake } from "discord.js";
-import AkairoError from "../../util/AkairoError.js";
-import type Category from "../../util/Category.js";
-import Util from "../../util/Util.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
-import type ContextMenuCommandHandler from "./ContextMenuCommandHandler.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { Category } from "../../util/Category.js";
+import { Util } from "../../util/Util.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
 
 /**
  * Represents a context menu command.
  */
-export default abstract class ContextMenuCommand extends AkairoModule {
+export abstract class ContextMenuCommand extends AkairoModule {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
@@ -89,7 +89,7 @@ export default abstract class ContextMenuCommand extends AkairoModule {
 	}
 }
 
-export default interface ContextMenuCommand extends AkairoModule {
+export interface ContextMenuCommand extends AkairoModule {
 	/**
 	 * Reloads the context menu command.
 	 */

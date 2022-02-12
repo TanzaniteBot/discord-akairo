@@ -23,16 +23,16 @@ import type {
 } from "discord.js";
 import type { URL } from "url";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
-import Util, { isStringArrayStringOrFunc } from "../../../util/Util.js";
-import type AkairoClient from "../../AkairoClient.js";
-import ContextMenuCommand from "../../contextMenuCommands/ContextMenuCommand.js";
-import Inhibitor from "../../inhibitors/Inhibitor.js";
-import Listener from "../../listeners/Listener.js";
-import Task from "../../tasks/Task.js";
-import type Command from "../Command.js";
-import type CommandHandler from "../CommandHandler.js";
-import Flag, { FlagType } from "../Flag.js";
-import type TypeResolver from "./TypeResolver.js";
+import { isStringArrayStringOrFunc, Util } from "../../../util/Util.js";
+import type { AkairoClient } from "../../AkairoClient.js";
+import { ContextMenuCommand } from "../../contextMenuCommands/ContextMenuCommand.js";
+import { Inhibitor } from "../../inhibitors/Inhibitor.js";
+import { Listener } from "../../listeners/Listener.js";
+import { Task } from "../../tasks/Task.js";
+import type { Command } from "../Command.js";
+import type { CommandHandler } from "../CommandHandler.js";
+import { Flag, FlagType } from "../Flag.js";
+import type { TypeResolver } from "./TypeResolver.js";
 
 /** ```ts
  * <R = unknown> = ArgumentTypeCaster<R>
@@ -67,7 +67,7 @@ type ATCBAT<T extends keyof BaseArgumentType> = ArgumentTypeCaster<BaseArgumentT
 /**
  * Represents an argument for a command.
  */
-export default class Argument {
+export class Argument {
 	/**
 	 * The command this argument belongs to.
 	 */

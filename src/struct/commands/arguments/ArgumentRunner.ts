@@ -1,15 +1,15 @@
 import type { Message } from "discord.js";
-import AkairoError from "../../../util/AkairoError.js";
+import { AkairoError } from "../../../util/AkairoError.js";
 import { ArgumentMatches } from "../../../util/Constants.js";
-import Command, { ArgumentGenerator, ArgumentGeneratorReturn } from "../Command.js";
+import { ArgumentGenerator, ArgumentGeneratorReturn, Command } from "../Command.js";
 import type { ContentParserResult } from "../ContentParser.js";
-import Flag, { FlagType } from "../Flag.js";
-import Argument, { ArgumentOptions, ArgumentTypeCasterReturn } from "./Argument.js";
+import { Flag, FlagType } from "../Flag.js";
+import { Argument, ArgumentOptions, ArgumentTypeCasterReturn } from "./Argument.js";
 
 /**
  * Runs arguments.
  */
-export default class ArgumentRunner {
+export class ArgumentRunner {
 	/**
 	 * The command the arguments are being run for
 	 */

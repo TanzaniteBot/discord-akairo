@@ -1,11 +1,11 @@
 import type { ChatInputCommandInteraction, ClientEvents, ContextMenuCommandInteraction, Message } from "discord.js";
-import type AkairoModule from "../struct/AkairoModule.js";
-import type Command from "../struct/commands/Command.js";
-import type ContextMenuCommand from "../struct/contextMenuCommands/ContextMenuCommand.js";
-import type Inhibitor from "../struct/inhibitors/Inhibitor.js";
-import type Listener from "../struct/listeners/Listener.js";
-import type Task from "../struct/tasks/Task.js";
-import type AkairoMessage from "../util/AkairoMessage.js";
+import type { AkairoModule } from "../struct/AkairoModule.js";
+import type { Command } from "../struct/commands/Command.js";
+import type { ContextMenuCommand } from "../struct/contextMenuCommands/ContextMenuCommand.js";
+import type { Inhibitor } from "../struct/inhibitors/Inhibitor.js";
+import type { Listener } from "../struct/listeners/Listener.js";
+import type { Task } from "../struct/tasks/Task.js";
+import type { AkairoMessage } from "../util/AkairoMessage.js";
 import type { BuiltInReasons } from "../util/Constants.js";
 
 export interface AkairoHandlerEvents {

@@ -1,10 +1,10 @@
 import { Collection } from "discord.js";
-import type AkairoModule from "../struct/AkairoModule.js";
+import type { AkairoModule } from "../struct/AkairoModule.js";
 
 /**
  * A group of modules.
  */
-export default class Category<K extends string, V extends AkairoModule> extends Collection<K, V> {
+export class Category<K extends string, V extends AkairoModule> extends Collection<K, V> {
 	/**
 	 * ID of the category.
 	 */

@@ -4,11 +4,11 @@ import type EventEmitter from "events";
 /**
  * Akairo Utilities.
  */
-export default class Util {
+export class Util {
 	/**
 	 * Deep assign properties to an object.
-	 * @param target
-	 * @param os
+	 * @param target The object to assign values to.
+	 * @param os The objects to assign from.
 	 */
 	public static deepAssign<A, B>(target: A, ...os: B[]) {
 		for (const o of os) {

@@ -42,7 +42,7 @@ interface MessageArgs {
 /**
  * Represents an error for Akairo.
  */
-export default class AkairoError<K extends keyof typeof Messages> extends Error {
+export class AkairoError<K extends keyof typeof Messages> extends Error {
 	/**
 	 * The error code.
 	 */

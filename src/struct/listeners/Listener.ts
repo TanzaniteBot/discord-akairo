@@ -1,15 +1,15 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import EventEmitter from "events";
-import AkairoError from "../../util/AkairoError.js";
-import type Category from "../../util/Category.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
-import type ListenerHandler from "./ListenerHandler.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { Category } from "../../util/Category.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import type { ListenerHandler } from "./ListenerHandler.js";
 
 /**
  * Represents a listener.
  */
-export default abstract class Listener extends AkairoModule {
+export abstract class Listener extends AkairoModule {
 	/**
 	 * The category of this listener.
 	 */
@@ -73,7 +73,7 @@ export default abstract class Listener extends AkairoModule {
 	}
 }
 
-export default interface Listener extends AkairoModule {
+export interface Listener extends AkairoModule {
 	/**
 	 * Reloads the listener.
 	 */

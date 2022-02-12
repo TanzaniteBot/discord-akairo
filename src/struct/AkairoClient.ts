@@ -1,11 +1,11 @@
 import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
 import type { AkairoClientEvents } from "../typings/events";
-import ClientUtil from "./ClientUtil.js";
+import { ClientUtil } from "./ClientUtil.js";
 
 /**
  * The Akairo framework client. Creates the handlers and sets them up.
  */
-export default class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
+export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
 	/**
 	 * The ID of the owner(s).
 	 */
@@ -60,7 +60,7 @@ export default class AkairoClient<Ready extends boolean = boolean> extends Clien
 
 type Event = AkairoClientEvents;
 
-export default interface AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
+export interface AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
 	on<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
 	on<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
 

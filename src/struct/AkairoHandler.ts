@@ -3,19 +3,19 @@ import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
 import url from "url";
-import AkairoError from "../util/AkairoError.js";
-import Category from "../util/Category.js";
+import { AkairoError } from "../util/AkairoError.js";
+import { Category } from "../util/Category.js";
 import { AkairoHandlerEvents } from "../util/Constants.js";
-import Util from "../util/Util.js";
-import type AkairoClient from "./AkairoClient.js";
-import AkairoModule from "./AkairoModule.js";
+import { Util } from "../util/Util.js";
+import type { AkairoClient } from "./AkairoClient.js";
+import { AkairoModule } from "./AkairoModule.js";
 
 export type Static<M> = { (): M };
 
 /**
  * Base class for handling modules.
  */
-export default class AkairoHandler extends EventEmitter {
+export class AkairoHandler extends EventEmitter {
 	/**
 	 * Whether or not to automate category names.
 	 */

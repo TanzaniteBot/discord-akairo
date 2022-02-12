@@ -17,12 +17,12 @@ import {
 	User
 } from "discord.js";
 import type { Stream } from "stream";
-import type AkairoClient from "./AkairoClient.js";
+import type { AkairoClient } from "./AkairoClient.js";
 
 /**
  * Client utilities to help with common tasks.
  */
-export default class ClientUtil {
+export class ClientUtil {
 	/**
 	 * The Akairo client.
 	 */

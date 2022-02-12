@@ -1,74 +1,80 @@
 import packageJSON from "../package.json";
-import AkairoClient, { AkairoOptions } from "./struct/AkairoClient";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "./struct/AkairoHandler";
-import AkairoModule, { AkairoModuleOptions } from "./struct/AkairoModule";
-import ClientUtil from "./struct/ClientUtil";
-import Argument, {
-	ArgumentMatch,
-	ArgumentOptions,
-	ArgumentPromptData,
-	ArgumentPromptOptions,
-	ArgumentType,
-	ArgumentTypeCaster,
-	BaseArgumentType,
-	DefaultArgumentOptions,
-	DefaultValueSupplier,
-	FailureData,
-	OtherwiseContentModifier,
-	OtherwiseContentSupplier,
-	ParsedValuePredicate,
-	PromptContentModifier,
-	PromptContentSupplier
+import { CommandUtil } from "./struct/commands/CommandUtil";
+import * as Constants from "./util/Constants";
+export { AkairoClient, type AkairoOptions } from "./struct/AkairoClient";
+export { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "./struct/AkairoHandler";
+export { AkairoModule, AkairoModuleOptions } from "./struct/AkairoModule";
+export { ClientUtil } from "./struct/ClientUtil";
+export {
+	Argument,
+	type ArgumentMatch,
+	type ArgumentOptions,
+	type ArgumentPromptData,
+	type ArgumentPromptOptions,
+	type ArgumentType,
+	type ArgumentTypeCaster,
+	type BaseArgumentType,
+	type DefaultArgumentOptions,
+	type DefaultValueSupplier,
+	type FailureData,
+	type OtherwiseContentModifier,
+	type OtherwiseContentSupplier,
+	type ParsedValuePredicate,
+	type PromptContentModifier,
+	type PromptContentSupplier
 } from "./struct/commands/arguments/Argument";
-import ArgumentRunner, { ArgumentRunnerState } from "./struct/commands/arguments/ArgumentRunner";
-import TypeResolver from "./struct/commands/arguments/TypeResolver";
-import Command, {
-	AkairoApplicationCommandAutocompleteOption,
-	AkairoApplicationCommandChannelOptionData,
-	AkairoApplicationCommandChoicesData,
-	AkairoApplicationCommandNonOptionsData,
-	AkairoApplicationCommandNumericOptionData,
-	AkairoApplicationCommandOptionData,
-	AkairoApplicationCommandSubCommandData,
-	AkairoApplicationCommandSubGroupData,
-	ArgumentGenerator,
-	ArgumentGeneratorReturn,
-	BeforeAction,
-	CommandOptions,
-	ExecutionPredicate,
-	KeySupplier,
-	MissingPermissionSupplier,
-	RegexSupplier,
-	SlashOption,
-	SlashPermissionsSupplier
+export { ArgumentRunner, type ArgumentRunnerState } from "./struct/commands/arguments/ArgumentRunner";
+export { TypeResolver } from "./struct/commands/arguments/TypeResolver";
+export {
+	Command,
+	type AkairoApplicationCommandAutocompleteOption,
+	type AkairoApplicationCommandChannelOptionData,
+	type AkairoApplicationCommandChoicesData,
+	type AkairoApplicationCommandNonOptionsData,
+	type AkairoApplicationCommandNumericOptionData,
+	type AkairoApplicationCommandOptionData,
+	type AkairoApplicationCommandSubCommandData,
+	type AkairoApplicationCommandSubGroupData,
+	type ArgumentGenerator,
+	type ArgumentGeneratorReturn,
+	type BeforeAction,
+	type CommandOptions,
+	type ExecutionPredicate,
+	type KeySupplier,
+	type MissingPermissionSupplier,
+	type RegexSupplier,
+	type SlashOption,
+	type SlashPermissionsSupplier
 } from "./struct/commands/Command";
-import CommandHandler, {
-	CommandHandlerOptions,
-	CooldownData,
-	IgnoreCheckPredicate,
-	MentionPrefixPredicate,
-	ParsedComponentData,
-	PrefixSupplier,
-	RegisterInteractionCommandError,
-	SlashResolveType
+export {
+	CommandHandler,
+	type CommandHandlerOptions,
+	type CooldownData,
+	type IgnoreCheckPredicate,
+	type MentionPrefixPredicate,
+	type ParsedComponentData,
+	type PrefixSupplier,
+	type RegisterInteractionCommandError,
+	type SlashResolveType
 } from "./struct/commands/CommandHandler";
-import CommandUtil from "./struct/commands/CommandUtil";
-import ContentParser, {
-	ContentParserOptions,
-	ContentParserResult,
-	ExtractedFlags,
-	StringData
+export { CommandUtil } from "./struct/commands/CommandUtil";
+export {
+	ContentParser,
+	type ContentParserOptions,
+	type ContentParserResult,
+	type ExtractedFlags,
+	type StringData
 } from "./struct/commands/ContentParser";
-import Flag from "./struct/commands/Flag";
-import ContextMenuCommand, { ContextMenuCommandOptions } from "./struct/contextMenuCommands/ContextMenuCommand";
-import ContextMenuCommandHandler from "./struct/contextMenuCommands/ContextMenuCommandHandler";
-import Inhibitor, { InhibitorOptions } from "./struct/inhibitors/Inhibitor";
-import InhibitorHandler from "./struct/inhibitors/InhibitorHandler";
-import Listener, { ListenerOptions, ListenerType } from "./struct/listeners/Listener";
-import ListenerHandler from "./struct/listeners/ListenerHandler";
-import Task, { TaskOptions } from "./struct/tasks/Task";
-import TaskHandler from "./struct/tasks/TaskHandler";
-import type {
+export { Flag } from "./struct/commands/Flag";
+export { ContextMenuCommand, type ContextMenuCommandOptions } from "./struct/contextMenuCommands/ContextMenuCommand";
+export { ContextMenuCommandHandler } from "./struct/contextMenuCommands/ContextMenuCommandHandler";
+export { Inhibitor, type InhibitorOptions } from "./struct/inhibitors/Inhibitor";
+export { InhibitorHandler } from "./struct/inhibitors/InhibitorHandler";
+export { Listener, type ListenerOptions, type ListenerType } from "./struct/listeners/Listener";
+export { ListenerHandler } from "./struct/listeners/ListenerHandler";
+export { Task, type TaskOptions } from "./struct/tasks/Task";
+export { TaskHandler } from "./struct/tasks/TaskHandler";
+export type {
 	AkairoClientEvents,
 	AkairoHandlerEvents,
 	CommandHandlerEvents,
@@ -77,13 +83,12 @@ import type {
 	ListenerHandlerEvents,
 	TaskHandlerEvents
 } from "./typings/events";
-import AkairoError from "./util/AkairoError";
-import AkairoMessage from "./util/AkairoMessage";
-import Category from "./util/Category";
-import * as Constants from "./util/Constants";
-import Util from "./util/Util";
-
-const version = packageJSON.version;
+export { AkairoError } from "./util/AkairoError";
+export { AkairoMessage } from "./util/AkairoMessage";
+export { Category } from "./util/Category";
+export { Util } from "./util/Util";
+export { Constants };
+export const { version } = packageJSON;
 
 declare module "discord.js" {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -97,96 +102,3 @@ declare module "discord.js" {
 		util?: CommandUtil<Message>;
 	}
 }
-
-export {
-	AkairoClient,
-	AkairoError,
-	AkairoHandler,
-	AkairoMessage,
-	AkairoModule,
-	Argument,
-	ArgumentRunner,
-	ArgumentRunnerState,
-	Category,
-	ClientUtil,
-	Command,
-	CommandHandler,
-	CommandUtil,
-	Constants,
-	ContentParser,
-	ContentParserResult,
-	ContextMenuCommand,
-	ContextMenuCommandHandler,
-	Flag,
-	Inhibitor,
-	InhibitorHandler,
-	Listener,
-	ListenerHandler,
-	PromptContentModifier,
-	RegisterInteractionCommandError,
-	Task,
-	TaskHandler,
-	TypeResolver,
-	Util,
-	version
-};
-export type {
-	AkairoApplicationCommandAutocompleteOption,
-	AkairoApplicationCommandChannelOptionData,
-	AkairoApplicationCommandChoicesData,
-	AkairoApplicationCommandNonOptionsData,
-	AkairoApplicationCommandNumericOptionData,
-	AkairoApplicationCommandOptionData,
-	AkairoApplicationCommandSubCommandData,
-	AkairoApplicationCommandSubGroupData,
-	AkairoClientEvents,
-	AkairoHandlerEvents,
-	AkairoHandlerOptions,
-	AkairoModuleOptions,
-	AkairoOptions,
-	ArgumentGenerator,
-	ArgumentGeneratorReturn,
-	ArgumentMatch,
-	ArgumentOptions,
-	ArgumentPromptData,
-	ArgumentPromptOptions,
-	ArgumentType,
-	ArgumentTypeCaster,
-	BaseArgumentType,
-	BeforeAction,
-	CommandHandlerEvents,
-	CommandHandlerOptions,
-	CommandOptions,
-	ContentParserOptions,
-	ContextMenuCommandHandlerEvents,
-	ContextMenuCommandOptions,
-	CooldownData,
-	DefaultArgumentOptions,
-	DefaultValueSupplier,
-	ExecutionPredicate,
-	ExtractedFlags,
-	FailureData,
-	IgnoreCheckPredicate,
-	InhibitorHandlerEvents,
-	InhibitorOptions,
-	KeySupplier,
-	ListenerHandlerEvents,
-	ListenerOptions,
-	ListenerType,
-	LoadPredicate,
-	MentionPrefixPredicate,
-	MissingPermissionSupplier,
-	OtherwiseContentModifier,
-	OtherwiseContentSupplier,
-	ParsedComponentData,
-	ParsedValuePredicate,
-	PrefixSupplier,
-	PromptContentSupplier,
-	RegexSupplier,
-	SlashOption,
-	SlashPermissionsSupplier,
-	SlashResolveType as SlashResolveTypes,
-	StringData,
-	TaskHandlerEvents,
-	TaskOptions
-};

@@ -1,17 +1,17 @@
 import { Awaitable, Collection } from "discord.js";
 import type EventEmitter from "events";
 import type { ListenerHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError.js";
-import type Category from "../../util/Category.js";
-import Util from "../../util/Util.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
-import Listener from "./Listener.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { Category } from "../../util/Category.js";
+import { Util } from "../../util/Util.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import { Listener } from "./Listener.js";
 
 /**
  * Loads listeners and registers them with EventEmitters.
  */
-export default class ListenerHandler extends AkairoHandler {
+export class ListenerHandler extends AkairoHandler {
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -136,7 +136,7 @@ export default class ListenerHandler extends AkairoHandler {
 
 type Events = ListenerHandlerEvents;
 
-export default interface ListenerHandler extends AkairoHandler {
+export interface ListenerHandler extends AkairoHandler {
 	/**
 	 * Finds a category by name.
 	 * @param name - Name to find with.

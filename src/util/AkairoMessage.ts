@@ -13,13 +13,13 @@ import {
 	User,
 	Util
 } from "discord.js";
-import type AkairoClient from "../struct/AkairoClient.js";
-import type CommandUtil from "../struct/commands/CommandUtil.js";
+import type { AkairoClient } from "../struct/AkairoClient.js";
+import type { CommandUtil } from "../struct/commands/CommandUtil.js";
 
 /**
  * A command interaction represented as a message.
  */
-export default class AkairoMessage extends Base {
+export class AkairoMessage extends Base {
 	/**
 	 * The author of the interaction.
 	 */

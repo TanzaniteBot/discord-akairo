@@ -1,18 +1,18 @@
 import type { Awaitable, Collection, ContextMenuCommandInteraction } from "discord.js";
 import type { ContextMenuCommandHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError.js";
-import type Category from "../../util/Category.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { Category } from "../../util/Category.js";
 import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
-import type AkairoModule from "../AkairoModule.js";
-import type InhibitorHandler from "../inhibitors/InhibitorHandler.js";
-import ContextMenuCommand from "./ContextMenuCommand.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import type { AkairoModule } from "../AkairoModule.js";
+import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
+import { ContextMenuCommand } from "./ContextMenuCommand.js";
 
 /**
  * Loads context menu commands and handles them.
  */
-export default class ContextMenuCommandHandler extends AkairoHandler {
+export class ContextMenuCommandHandler extends AkairoHandler {
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -132,7 +132,7 @@ export default class ContextMenuCommandHandler extends AkairoHandler {
 
 type Events = ContextMenuCommandHandlerEvents;
 
-export default interface ContextMenuCommandHandler extends AkairoHandler {
+export interface ContextMenuCommandHandler extends AkairoHandler {
 	/**
 	 * Deregisters a module.
 	 * @param contextMenuCommand - Module to use.

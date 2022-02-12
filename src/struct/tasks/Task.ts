@@ -1,14 +1,14 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import AkairoError from "../../util/AkairoError.js";
-import type Category from "../../util/Category.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
-import type TaskHandler from "./TaskHandler.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { Category } from "../../util/Category.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import type { TaskHandler } from "./TaskHandler.js";
 
 /**
  * Represents a task.
  */
-export default abstract class Task extends AkairoModule {
+export abstract class Task extends AkairoModule {
 	/**
 	 * The category of this task.
 	 */
@@ -63,7 +63,7 @@ export default abstract class Task extends AkairoModule {
 	}
 }
 
-export default interface Task extends AkairoModule {
+export interface Task extends AkairoModule {
 	/**
 	 * Reloads the task.
 	 */

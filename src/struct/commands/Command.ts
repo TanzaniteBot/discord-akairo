@@ -15,22 +15,22 @@ import {
 	PermissionResolvable,
 	Snowflake
 } from "discord.js";
-import AkairoError from "../../util/AkairoError.js";
-import type AkairoMessage from "../../util/AkairoMessage.js";
-import type Category from "../../util/Category.js";
-import Util, { isStringArrayStringOrFunc } from "../../util/Util.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoModule, { AkairoModuleOptions } from "../AkairoModule.js";
-import Argument, { ArgumentOptions, ArgumentTypeCasterReturn, DefaultArgumentOptions } from "./arguments/Argument.js";
-import ArgumentRunner, { ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
-import CommandHandler, { IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
-import ContentParser, { ContentParserResult } from "./ContentParser.js";
-import { type default as Flag } from "./Flag.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { AkairoMessage } from "../../util/AkairoMessage.js";
+import type { Category } from "../../util/Category.js";
+import { isStringArrayStringOrFunc, Util } from "../../util/Util.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import { Argument, ArgumentOptions, ArgumentTypeCasterReturn, DefaultArgumentOptions } from "./arguments/Argument.js";
+import { ArgumentRunner, ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
+import { CommandHandler, IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
+import { ContentParser, ContentParserResult } from "./ContentParser.js";
+import { Flag } from "./Flag.js";
 
 /**
  * Represents a command.
  */
-export default abstract class Command extends AkairoModule {
+export abstract class Command extends AkairoModule {
 	/**
 	 * Command names.
 	 */
@@ -408,7 +408,7 @@ export default abstract class Command extends AkairoModule {
 	}
 }
 
-export default interface Command extends AkairoModule {
+export interface Command extends AkairoModule {
 	/**
 	 * Reloads the command.
 	 */

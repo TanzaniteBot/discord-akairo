@@ -1,15 +1,15 @@
 import type { Awaitable, Collection } from "discord.js";
 import type { TaskHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError.js";
-import type Category from "../../util/Category.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
-import Task from "./Task.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { Category } from "../../util/Category.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import { Task } from "./Task.js";
 
 /**
  * Loads tasks.
  */
-export default class TaskHandler extends AkairoHandler {
+export class TaskHandler extends AkairoHandler {
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -75,7 +75,7 @@ export default class TaskHandler extends AkairoHandler {
 
 type Events = TaskHandlerEvents;
 
-export default interface TaskHandler extends AkairoHandler {
+export interface TaskHandler extends AkairoHandler {
 	/**
 	 * Deregisters a task.
 	 * @param task - Task to use.

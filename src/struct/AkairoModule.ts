@@ -1,11 +1,11 @@
-import type Category from "../util/Category.js";
-import type AkairoClient from "./AkairoClient.js";
-import type AkairoHandler from "./AkairoHandler.js";
+import type { Category } from "../util/Category.js";
+import type { AkairoClient } from "./AkairoClient.js";
+import type { AkairoHandler } from "./AkairoHandler.js";
 
 /**
  * Base class for a module.
  */
-export default abstract class AkairoModule {
+export abstract class AkairoModule {
 	/**
 	 * Category this belongs to.
 	 */

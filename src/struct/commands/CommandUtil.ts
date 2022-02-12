@@ -11,14 +11,14 @@ import {
 	Snowflake,
 	WebhookEditMessageOptions
 } from "discord.js";
-import AkairoMessage from "../../util/AkairoMessage.js";
-import type ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler.js";
-import CommandHandler, { ParsedComponentData } from "./CommandHandler.js";
+import { AkairoMessage } from "../../util/AkairoMessage.js";
+import type { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
+import { CommandHandler, ParsedComponentData } from "./CommandHandler.js";
 
 /**
  * Command utilities.
  */
-export default class CommandUtil<MessageType extends AkairoMessage | Message> {
+export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	/**
 	 * Saved deleted message ids.
 	 */

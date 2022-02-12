@@ -1,18 +1,18 @@
 import type { Awaitable, Collection, Message } from "discord.js";
 import type { InhibitorHandlerEvents } from "../../typings/events";
-import AkairoError from "../../util/AkairoError.js";
-import type AkairoMessage from "../../util/AkairoMessage.js";
-import type Category from "../../util/Category.js";
-import Util from "../../util/Util.js";
-import type AkairoClient from "../AkairoClient.js";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
-import type Command from "../commands/Command.js";
-import Inhibitor from "./Inhibitor.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import type { AkairoMessage } from "../../util/AkairoMessage.js";
+import type { Category } from "../../util/Category.js";
+import { Util } from "../../util/Util.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import type { Command } from "../commands/Command.js";
+import { Inhibitor } from "./Inhibitor.js";
 
 /**
  * Loads inhibitors and checks messages.
  */
-export default class InhibitorHandler extends AkairoHandler {
+export class InhibitorHandler extends AkairoHandler {
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
@@ -98,7 +98,7 @@ export default class InhibitorHandler extends AkairoHandler {
 
 type Events = InhibitorHandlerEvents;
 
-export default interface InhibitorHandler extends AkairoHandler {
+export interface InhibitorHandler extends AkairoHandler {
 	/**
 	 * Deregisters an inhibitor.
 	 * @param inhibitor - Inhibitor to use.

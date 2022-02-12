@@ -3,7 +3,7 @@ import type { Message } from "discord.js";
 /**
  * Represents a special return value during command execution or argument parsing.
  */
-export default class Flag<T extends FlagType = FlagType> {
+export class Flag<T extends FlagType = FlagType> {
 	/**
 	 * The type of flag.
 	 */

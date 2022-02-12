@@ -22,35 +22,36 @@ import {
 	User
 } from "discord.js";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
-import AkairoError from "../../util/AkairoError.js";
-import AkairoMessage from "../../util/AkairoMessage.js";
-import type Category from "../../util/Category.js";
+import { AkairoError } from "../../util/AkairoError.js";
+import { AkairoMessage } from "../../util/AkairoMessage.js";
+import type { Category } from "../../util/Category.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
-import Util, { isStringArrayStringOrFunc } from "../../util/Util.js";
-import AkairoClient from "../AkairoClient.js";
-import AkairoHandler, { AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
-import type AkairoModule from "../AkairoModule.js";
-import ContextMenuCommandHandler from "../contextMenuCommands/ContextMenuCommandHandler.js";
-import type InhibitorHandler from "../inhibitors/InhibitorHandler.js";
-import type ListenerHandler from "../listeners/ListenerHandler.js";
-import type TaskHandler from "../tasks/TaskHandler.js";
+import { isStringArrayStringOrFunc, Util } from "../../util/Util.js";
+import { AkairoClient } from "../AkairoClient.js";
+import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import type { AkairoModule } from "../AkairoModule.js";
+import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
+import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
+import type { ListenerHandler } from "../listeners/ListenerHandler.js";
+import type { TaskHandler } from "../tasks/TaskHandler.js";
 import type { DefaultArgumentOptions } from "./arguments/Argument.js";
-import TypeResolver from "./arguments/TypeResolver.js";
-import Command, {
+import { TypeResolver } from "./arguments/TypeResolver.js";
+import {
 	AkairoApplicationCommandChannelOptionData,
 	AkairoApplicationCommandChoicesData,
 	AkairoApplicationCommandNonOptionsData,
 	AkairoApplicationCommandSubCommandData,
 	AkairoApplicationCommandSubGroupData,
+	Command,
 	KeySupplier
 } from "./Command";
-import CommandUtil from "./CommandUtil.js";
-import Flag, { FlagType } from "./Flag.js";
+import { CommandUtil } from "./CommandUtil.js";
+import { Flag, FlagType } from "./Flag.js";
 
 /**
  * Loads commands and handles messages.
  */
-export default class CommandHandler extends AkairoHandler {
+export class CommandHandler extends AkairoHandler {
 	/**
 	 * Collection of command aliases.
 	 */
@@ -1605,7 +1606,7 @@ export default class CommandHandler extends AkairoHandler {
 
 type Events = CommandHandlerEventsType;
 
-export default interface CommandHandler extends AkairoHandler {
+export interface CommandHandler extends AkairoHandler {
 	/**
 	 * Loads a command.
 	 * @param thing - Module or path to module.

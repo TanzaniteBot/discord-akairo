@@ -13,19 +13,19 @@ import {
 } from "discord.js";
 import { URL } from "url";
 import { ArgumentTypes } from "../../../util/Constants.js";
-import type AkairoClient from "../../AkairoClient.js";
-import type ContextMenuCommandHandler from "../../contextMenuCommands/ContextMenuCommandHandler.js";
-import type InhibitorHandler from "../../inhibitors/InhibitorHandler.js";
-import type ListenerHandler from "../../listeners/ListenerHandler.js";
-import type TaskHandler from "../../tasks/TaskHandler.js";
-import type CommandHandler from "../CommandHandler.js";
+import type { AkairoClient } from "../../AkairoClient.js";
+import type { ContextMenuCommandHandler } from "../../contextMenuCommands/ContextMenuCommandHandler.js";
+import type { InhibitorHandler } from "../../inhibitors/InhibitorHandler.js";
+import type { ListenerHandler } from "../../listeners/ListenerHandler.js";
+import type { TaskHandler } from "../../tasks/TaskHandler.js";
+import type { CommandHandler } from "../CommandHandler.js";
 import type { ArgumentTypeCaster, BaseArgumentType } from "./Argument.js";
 
 /**
  * Type resolver for command arguments.
  * The types are documented under ArgumentType.
  */
-export default class TypeResolver {
+export class TypeResolver {
 	/**
 	 * The Akairo client.
 	 */
