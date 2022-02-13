@@ -930,7 +930,7 @@ export class CommandHandler extends AkairoHandler {
 			}
 
 			if (this.autoDefer || commandModule.slashEphemeral) {
-				await interaction.deferReply({ ephemeral: commandModule.slashEphemeral });
+				await message.interaction.deferReply({ ephemeral: commandModule.slashEphemeral });
 			}
 
 			try {
