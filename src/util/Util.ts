@@ -112,6 +112,13 @@ export class Util {
 				if (!this.deepEquals(newA[key], newB[key], { ignoreUndefined, ignoreArrayOrder })) return false;
 			} else if (newA[key] !== newB[key]) return false;
 		}
+		for (const key in newB) {
+			if (ignoreUndefined && newA[key] === undefined && newB[key] === undefined) continue;
+			if (!(key in newA)) return false;
+			if (typeof newB[key] === "object" && typeof newA[key] === "object") {
+				if (!this.deepEquals(newA[key], newB[key], { ignoreUndefined, ignoreArrayOrder })) return false;
+			} else if (newA[key] !== newB[key]) return false;
+		}
 		return true;
 	}
 

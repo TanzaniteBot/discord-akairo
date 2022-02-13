@@ -1422,7 +1422,7 @@ export class CommandHandler extends AkairoHandler {
 			return prefixes.map(p => [p, cmds]);
 		});
 
-		const pairs = (await Promise.all(promises)).flat(1);
+		const pairs = (await Promise.all(promises)).flatMap(x => x, 1);
 		pairs.sort(([a]: any, [b]: any) => Util.prefixCompare(a, b));
 		return this.parseMultiplePrefixes(message, pairs as [string, Set<string>][]);
 	}
