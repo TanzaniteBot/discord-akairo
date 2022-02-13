@@ -834,7 +834,9 @@ export class CommandHandler extends AkairoHandler {
 				if (option.type === "SUB_COMMAND" || option.type === "SUB_COMMAND_GROUP") continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				const func = `get${originalOption?.resolve ?? [Util.snakeToCamelCase(option.type)]}` as GetFunction;
+				const func = `get${
+					originalOption?.resolve ?? [option.type.charAt(0) + Util.snakeToCamelCase(option.type.substring(1))]
+				}` as GetFunction;
 				if (
 					!(
 						[
