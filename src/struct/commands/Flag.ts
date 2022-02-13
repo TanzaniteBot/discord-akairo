@@ -14,14 +14,14 @@ export class Flag<T extends FlagType = FlagType> {
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Retry}.
 	 */
-	public declare message: T extends FlagType.Retry ? Message : unknown;
+	public declare message: T extends FlagType.Retry ? Message : never;
 
 	/**
 	 * The extra data for the failure.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Fail}.
 	 */
-	public declare value: T extends FlagType.Fail ? any : unknown;
+	public declare value: T extends FlagType.Fail ? any : never;
 
 	/**
 	 * Command ID.

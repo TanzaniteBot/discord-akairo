@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import type EventEmitter from "events";
+import EventEmitter from "events";
+import type { PrefixSupplier } from "../struct/commands/CommandHandler";
 
 /**
  * Akairo Utilities.
@@ -10,7 +10,7 @@ export class Util {
 	 * @param target The object to assign values to.
 	 * @param os The objects to assign from.
 	 */
-	public static deepAssign<A, B>(target: A, ...os: B[]) {
+	public static deepAssign<A, B>(target: A, ...os: B[]): A {
 		for (const o of os) {
 			for (const [key, value] of Object.entries(o)) {
 				const valueIsObject = value && typeof value === "object";
@@ -30,23 +30,6 @@ export class Util {
 	}
 
 	/**
-	 * Map an iterable object and then flatten it it into an array
-	 * @param iterable - the object to map and flatten
-	 * @param filter - the filter to map with
-	 */
-	public static flatMap<Type, Ret extends { [Symbol.iterator](): Iterator<unknown> }, Func extends (...args: any[]) => Ret>(
-		iterable: Iterable<Type>,
-		filter: Func
-	): Type {
-		const result = [];
-		for (const x of iterable) {
-			result.push(...filter(x));
-		}
-
-		return result as unknown as Type;
-	}
-
-	/**
 	 * Converts the supplied value into an array if it is not already one.
 	 * @param x - Value to convert.
 	 */
@@ -61,6 +44,7 @@ export class Util {
 	/**
 	 * Converts something to become callable.
 	 * @param thing - What to turn into a callable.
+	 * @returns - The callable.
 	 */
 	public static intoCallable<T>(thing: T | ((...args: any[]) => T)): (...args: any[]) => T {
 		if (typeof thing === "function") {
@@ -73,26 +57,28 @@ export class Util {
 	/**
 	 * Checks if the supplied value is an event emitter.
 	 * @param value - Value to check.
+	 * @returns - Whether the value is an event emitter.
 	 */
-	public static isEventEmitter(value: any): value is EventEmitter {
-		return value && typeof value.on === "function" && typeof value.emit === "function";
+	public static isEventEmitter(value: unknown): value is EventEmitter {
+		return value instanceof EventEmitter;
 	}
 
 	/**
 	 * Checks if the supplied value is a promise.
 	 * @param value - Value to check.
+	 * @returns - Whether the value is a promise.
 	 */
-	public static isPromise<T>(value: T | Promise<T>): value is Promise<T>;
-	public static isPromise(value: any): value is Promise<any> {
-		return value && typeof value.then === "function" && typeof value.catch === "function";
+	public static isPromise<T>(value: T | Promise<T>): value is Promise<T> {
+		return value instanceof Promise;
 	}
 
 	/**
 	 * Compares two prefixes.
 	 * @param aKey - First prefix.
 	 * @param bKey - Second prefix.
+	 * @returns - Comparison result.
 	 */
-	public static prefixCompare(aKey: string | ((...args: any[]) => any), bKey: string | ((...args: any[]) => any)): number {
+	public static prefixCompare(aKey: string | PrefixSupplier, bKey: string | PrefixSupplier): number {
 		if (aKey === "" && bKey === "") return 0;
 		if (aKey === "") return 1;
 		if (bKey === "") return -1;

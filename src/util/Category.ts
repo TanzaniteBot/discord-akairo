@@ -34,7 +34,7 @@ export class Category<K extends string, V extends AkairoModule> extends Collecti
 	 * Calls `remove()` on all items in this category.
 	 */
 	public removeAll(): this {
-		for (const m of Array.from(this.values())) {
+		for (const m of this.values()) {
 			if (m.filepath) m.remove();
 		}
 
