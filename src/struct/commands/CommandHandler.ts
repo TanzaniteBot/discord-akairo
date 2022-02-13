@@ -7,7 +7,6 @@ import {
 	ApplicationCommandType,
 	AutocompleteInteraction,
 	Awaitable,
-	ChannelType,
 	ChatInputCommandInteraction,
 	Collection,
 	CommandInteractionOption,
@@ -1267,8 +1266,8 @@ export class CommandHandler extends AkairoHandler {
 					this.emit(event, message, command, "client", missing);
 					return true;
 				}
-			} else if (message.guild) {
-				if (message.channel?.type === ChannelType.DM) return false;
+			} else if (message.inGuild()) {
+				if (!message.channel || message.channel.isDMBased()) return false;
 				const missing = message.channel?.permissionsFor(message.guild.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(event, message, command, "client", missing);
@@ -1294,8 +1293,8 @@ export class CommandHandler extends AkairoHandler {
 						this.emit(event, message, command, "user", missing);
 						return true;
 					}
-				} else if (message.guild) {
-					if (message.channel?.type === ChannelType.DM) return false;
+				} else if (message.inGuild()) {
+					if (!message.channel || message.channel.isDMBased()) return false;
 					const missing = message.channel?.permissionsFor(message.author)?.missing(command.userPermissions);
 					if (missing?.length) {
 						this.emit(event, message, command, "user", missing);
