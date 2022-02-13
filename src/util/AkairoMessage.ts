@@ -1,7 +1,7 @@
 import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
 import {
 	Base,
-	CommandInteraction,
+	ChatInputCommandInteraction,
 	Guild,
 	GuildMember,
 	GuildTextBasedChannel,
@@ -58,7 +58,7 @@ export class AkairoMessage extends Base {
 	/**
 	 * The command interaction.
 	 */
-	public declare interaction: CommandInteraction;
+	public declare interaction: ChatInputCommandInteraction;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
@@ -80,7 +80,7 @@ export class AkairoMessage extends Base {
 	 * @param client - AkairoClient
 	 * @param interaction - CommandInteraction
 	 */
-	public constructor(client: AkairoClient, interaction: CommandInteraction) {
+	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction) {
 		super(client);
 
 		this.author = interaction.user;

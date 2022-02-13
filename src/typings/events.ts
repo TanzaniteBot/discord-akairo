@@ -1,4 +1,4 @@
-import type { ClientEvents, CommandInteraction, ContextMenuInteraction, Message } from "discord.js";
+import type { ChatInputCommandInteraction, ClientEvents, ContextMenuCommandInteraction, Message } from "discord.js";
 import type { AkairoModule } from "../struct/AkairoModule.js";
 import type { Command } from "../struct/commands/Command.js";
 import type { ContextMenuCommand } from "../struct/contextMenuCommands/ContextMenuCommand.js";
@@ -175,7 +175,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
 	 * @param interaction - The incoming interaction.
 	 */
-	slashNotFound: [interaction: CommandInteraction];
+	slashNotFound: [interaction: ChatInputCommandInteraction];
 
 	/**
 	 * Emitted when a slash command starts execution.
@@ -258,7 +258,7 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param interaction - The interaction.
 	 * @param command - Command executed.
 	 */
-	error: [error: Error, interaction: ContextMenuInteraction, command: ContextMenuCommand];
+	error: [error: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand];
 
 	/**
 	 * Emitted when a context menu command finishes execution.
@@ -266,13 +266,13 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command executed.
 	 * @param returnValue - The command's return value.
 	 */
-	finished: [interaction: ContextMenuInteraction, command: ContextMenuCommand, returnValue: any];
+	finished: [interaction: ContextMenuCommandInteraction, command: ContextMenuCommand, returnValue: any];
 
 	/**
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
 	 * @param interaction - The incoming interaction.
 	 */
-	notFound: [interaction: ContextMenuInteraction];
+	notFound: [interaction: ContextMenuCommandInteraction];
 
 	/**
 	 * Emitted when a command starts execution.
@@ -280,7 +280,7 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command executed.
 	 * @param args - The args passed to the command.
 	 */
-	started: [interaction: ContextMenuInteraction, command: ContextMenuCommand];
+	started: [interaction: ContextMenuCommandInteraction, command: ContextMenuCommand];
 
 	/**
 	 * Emitted when a command is blocked.
@@ -289,7 +289,7 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param reason - Reason for the block.
 	 */
 	blocked: [
-		interaction: ContextMenuInteraction,
+		interaction: ContextMenuCommandInteraction,
 		command: Command,
 		reason: typeof BuiltInReasons.OWNER | typeof BuiltInReasons.SUPER_USER
 	];
