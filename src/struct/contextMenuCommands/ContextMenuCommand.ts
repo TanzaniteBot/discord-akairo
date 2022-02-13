@@ -1,5 +1,5 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { ApplicationCommandType, type ContextMenuCommandInteraction, type Snowflake } from "discord.js";
+import { type ContextMenuInteraction, type Snowflake } from "discord.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import { Util } from "../../util/Util.js";
@@ -34,7 +34,7 @@ export abstract class ContextMenuCommand extends AkairoModule {
 	/**
 	 * The type of the context menu command.
 	 */
-	public declare type: ApplicationCommandType.User | ApplicationCommandType.Message;
+	public declare type: "USER" | "MESSAGE";
 
 	/**
 	 * The category of this context menu command.
@@ -68,8 +68,7 @@ export abstract class ContextMenuCommand extends AkairoModule {
 			throw new TypeError("options.guilds must be an array of strings.");
 		if (name !== undefined && typeof name !== "string") throw new TypeError("options.name must be a string.");
 		if (ownerOnly !== undefined && typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean");
-		if (type !== ApplicationCommandType.User && type !== ApplicationCommandType.Message)
-			throw new TypeError("options.type must be either ApplicationCommandType.User or ApplicationCommandType.Message.");
+		if (type !== "USER" && type !== "MESSAGE") throw new TypeError("options.type must be either 'USER' or 'MESSAGE'.");
 
 		super(id, { category });
 
@@ -84,7 +83,7 @@ export abstract class ContextMenuCommand extends AkairoModule {
 	 * Executes the context menu command.
 	 * @param interaction - The context menu command interaction.
 	 */
-	public exec(interaction: ContextMenuCommandInteraction): any {
+	public exec(interaction: ContextMenuInteraction): any {
 		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
 	}
 }
@@ -128,5 +127,5 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	/**
 	 * The type of the context menu command.
 	 */
-	type: ApplicationCommandType.User | ApplicationCommandType.Message;
+	type: "USER" | "MESSAGE";
 }

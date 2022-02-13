@@ -1,16 +1,15 @@
 import { APIEmbed } from "discord-api-types";
 import {
-	ActivityType,
 	BufferResolvable,
 	Collection,
-	Embed,
 	Emoji,
 	Guild,
 	GuildChannel,
 	GuildMember,
 	MessageAttachment,
-	PermissionFlagsBits,
-	PermissionsString,
+	MessageEmbed,
+	Permissions,
+	PermissionString,
 	Role,
 	Snowflake,
 	ThreadChannel,
@@ -218,8 +217,8 @@ export class ClientUtil {
 	 * @param newMember - The new member.
 	 */
 	public compareStreaming(oldMember: GuildMember, newMember: GuildMember): 0 | 1 | 2 {
-		const s1 = oldMember.presence?.activities.find(c => c.type === ActivityType.Streaming);
-		const s2 = newMember.presence?.activities.find(c => c.type === ActivityType.Streaming);
+		const s1 = oldMember.presence?.activities.find(c => c.type === "STREAMING");
+		const s2 = newMember.presence?.activities.find(c => c.type === "STREAMING");
 		if (s1 === s2) return 0;
 		if (s1) return 1;
 		if (s2) return 2;
@@ -230,8 +229,8 @@ export class ClientUtil {
 	 * Makes a Embed.
 	 * @param data - Embed data.
 	 */
-	public embed(data?: Embed | APIEmbed): Embed {
-		return new Embed(data);
+	public embed(data?: MessageEmbed | APIEmbed): MessageEmbed {
+		return new MessageEmbed(data);
 	}
 
 	/**
@@ -248,8 +247,8 @@ export class ClientUtil {
 	/**
 	 * Array of permission names.
 	 */
-	public permissionNames(): PermissionsString[] {
-		return Object.keys(PermissionFlagsBits) as PermissionsString[];
+	public permissionNames(): PermissionString[] {
+		return Object.keys(Permissions.FLAGS) as PermissionString[];
 	}
 
 	/**
@@ -387,8 +386,8 @@ export class ClientUtil {
 	public resolvePermissionNumber(number: number): string[] {
 		const resolved = [];
 
-		for (const key of Object.keys(PermissionFlagsBits)) {
-			if (BigInt(number) & PermissionFlagsBits[key as PermissionsString]) resolved.push(key);
+		for (const key of Object.keys(Permissions.FLAGS)) {
+			if (BigInt(number) & Permissions.FLAGS[key as PermissionString]) resolved.push(key);
 		}
 
 		return resolved;

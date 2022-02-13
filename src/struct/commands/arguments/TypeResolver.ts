@@ -230,7 +230,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isText()) return null;
+				if (!channel || channel.type !== "GUILD_TEXT") return null;
 
 				return channel;
 			},
@@ -249,7 +249,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isVoice()) return null;
+				if (!channel || channel.type !== "GUILD_VOICE") return null;
 				return channel;
 			},
 
@@ -267,7 +267,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isCategory()) return null;
+				if (!channel || channel.type !== "GUILD_CATEGORY") return null;
 
 				return channel;
 			},
@@ -278,7 +278,7 @@ export class TypeResolver {
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const categoryChannels = <Collection<string, CategoryChannel>>channels.filter(c => c.isCategory());
+				const categoryChannels = <Collection<string, CategoryChannel>>channels.filter(c => c.type === "GUILD_CATEGORY");
 				return categoryChannels.size ? categoryChannels : null;
 			},
 
@@ -286,7 +286,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isNews()) return null;
+				if (!channel || channel.type !== "GUILD_NEWS") return null;
 
 				return channel;
 			},
@@ -297,7 +297,7 @@ export class TypeResolver {
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const newsChannels = <Collection<string, NewsChannel>>channels.filter(c => c.isNews());
+				const newsChannels = <Collection<string, NewsChannel>>channels.filter(c => c.type === "GUILD_NEWS");
 				return newsChannels.size ? newsChannels : null;
 			},
 
@@ -305,7 +305,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isStore()) return null;
+				if (!channel || channel.type !== "GUILD_STORE") return null;
 
 				return channel;
 			},
@@ -317,7 +317,7 @@ export class TypeResolver {
 				if (!channels.size) return null;
 
 				// eslint-disable-next-line deprecation/deprecation
-				const storeChannels = <Collection<string, StoreChannel>>channels.filter(c => c.isStore());
+				const storeChannels = <Collection<string, StoreChannel>>channels.filter(c => c.type === "GUILD_STORE");
 				return storeChannels.size ? storeChannels : null;
 			},
 
@@ -325,7 +325,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isStage()) return null;
+				if (!channel || channel.type !== "GUILD_STAGE_VOICE") return null;
 
 				return channel;
 			},
@@ -336,7 +336,7 @@ export class TypeResolver {
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const storeChannels = <Collection<string, StageChannel>>channels.filter(c => c.isStage());
+				const storeChannels = <Collection<string, StageChannel>>channels.filter(c => c.type === "GUILD_STAGE_VOICE");
 				return storeChannels.size ? storeChannels : null;
 			},
 
@@ -409,7 +409,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				for (const channel of message.guild.channels.cache.values()) {
-					if (!channel.isTextBased()) continue;
+					if (!channel.isText()) continue;
 					try {
 						return await channel.messages.fetch(phrase);
 					} catch (err) {
@@ -429,7 +429,7 @@ export class TypeResolver {
 
 				if (message.inGuild()) {
 					for (const channel of message.guild.channels.cache.values()) {
-						if (!channel.isTextBased()) continue;
+						if (!channel.isText()) continue;
 						try {
 							return await channel.messages.fetch(phrase);
 						} catch (err) {

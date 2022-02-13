@@ -2,14 +2,10 @@ import {
 	ApplicationCommand,
 	ApplicationCommandData,
 	ApplicationCommandOptionData,
-	ApplicationCommandOptionType,
-	ApplicationCommandPermissionType,
-	ApplicationCommandType,
 	AutocompleteInteraction,
 	Awaitable,
-	ChannelType,
-	ChatInputCommandInteraction,
 	Collection,
+	CommandInteraction,
 	CommandInteractionOption,
 	CommandInteractionOptionResolver,
 	DiscordAPIError,
@@ -21,6 +17,7 @@ import {
 	TextBasedChannel,
 	User
 } from "discord.js";
+import { ApplicationCommandOptionTypes, ApplicationCommandTypes } from "discord.js/typings/enums";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
@@ -378,7 +375,7 @@ export class CommandHandler extends AkairoHandler {
 				});
 			}
 			this.client.on("interactionCreate", i => {
-				if (i.isChatInputCommand()) this.handleSlash(i);
+				if (i.isCommand()) this.handleSlash(i);
 				if (i.isAutocomplete()) this.handleAutocomplete(i);
 			});
 		});
@@ -418,7 +415,7 @@ export class CommandHandler extends AkairoHandler {
 				}),
 				guilds: data.slashGuilds ?? [],
 				defaultPermission: data.slashDefaultPermission,
-				type: ApplicationCommandType.ChatInput
+				type: ApplicationCommandTypes.CHAT_INPUT
 			});
 		}
 
@@ -445,8 +442,14 @@ export class CommandHandler extends AkairoHandler {
 			.filter(({ guilds }) => !guilds.length)
 			.map(options => ({
 				name: options.name,
-				description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
-				options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
+				description:
+					options.type === ApplicationCommandTypes.CHAT_INPUT || options.type === "CHAT_INPUT"
+						? options.description ?? ""
+						: undefined,
+				options:
+					options.type === ApplicationCommandTypes.CHAT_INPUT || options.type === "CHAT_INPUT"
+						? options.options ?? []
+						: undefined,
 				defaultPermission: options.defaultPermission,
 				type: options.type
 			}))
@@ -486,8 +489,14 @@ export class CommandHandler extends AkairoHandler {
 					...(guildSlashCommandsParsed.get(guildId) ?? []),
 					{
 						name: options.name,
-						description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
-						options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
+						description:
+							options.type === ApplicationCommandTypes.CHAT_INPUT || options.type === "CHAT_INPUT"
+								? options.description ?? ""
+								: undefined,
+						options:
+							options.type === ApplicationCommandTypes.CHAT_INPUT || options.type === "CHAT_INPUT"
+								? options.options ?? []
+								: undefined,
 						defaultPermission: options.defaultPermission,
 						type: options.type
 					} as ApplicationCommandData
@@ -558,7 +567,7 @@ export class CommandHandler extends AkairoHandler {
 					id: value.id,
 					permissions: allowedUsers.map(u => ({
 						id: u,
-						type: ApplicationCommandPermissionType.User,
+						type: "USER",
 						permission: true
 					}))
 				};
@@ -768,7 +777,7 @@ export class CommandHandler extends AkairoHandler {
 	 * @param interaction - Interaction to handle.
 	 */
 	// eslint-disable-next-line complexity
-	public async handleSlash(interaction: ChatInputCommandInteraction): Promise<boolean | null> {
+	public async handleSlash(interaction: CommandInteraction): Promise<boolean | null> {
 		const commandModule = this.findCommand(interaction.commandName);
 
 		if (!commandModule) {
@@ -822,14 +831,10 @@ export class CommandHandler extends AkairoHandler {
 			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
 				convertedOptions["subcommand"] = (interaction.options as CommandInteractionOptionResolver)["_subcommand"];
 			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
-				if (
-					option.type === ApplicationCommandOptionType.Subcommand ||
-					option.type === ApplicationCommandOptionType.SubcommandGroup
-				)
-					continue;
+				if (option.type === "SUB_COMMAND" || option.type === "SUB_COMMAND_GROUP") continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				const func = `get${originalOption?.resolve ?? AkairoApplicationCommandOptionType[option.type]}` as GetFunction;
+				const func = `get${originalOption?.resolve ?? [Util.snakeToCamelCase(option.type)]}` as GetFunction;
 				if (
 					!(
 						[
@@ -845,7 +850,7 @@ export class CommandHandler extends AkairoHandler {
 						] as const
 					).includes(func)
 				)
-					throw new Error(` ${option.type}`);
+					throw new Error(`${func} is not a valid get function.`);
 				convertedOptions[option.name] = interaction.options[func](option.name, false);
 			}
 
@@ -864,13 +869,19 @@ export class CommandHandler extends AkairoHandler {
 						this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
 						return;
 					}
-					if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.Subcommand) {
+					if (
+						usedSubcommandOrGroup.type === "SUB_COMMAND" ||
+						usedSubcommandOrGroup.type === ApplicationCommandOptionTypes.SUB_COMMAND
+					) {
 						if (!(<SubCommand>usedSubcommandOrGroup).options) {
 							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
 							return;
 						}
 						handleOptions((<SubCommand>usedSubcommandOrGroup).options!);
-					} else if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.SubcommandGroup) {
+					} else if (
+						usedSubcommandOrGroup.type === "SUB_COMMAND_GROUP" ||
+						usedSubcommandOrGroup.type === ApplicationCommandOptionTypes.SUB_COMMAND_GROUP
+					) {
 						const usedSubCommand = (<SubCommandGroup>usedSubcommandOrGroup).options?.find(
 							subcommand => subcommand.name === convertedOptions.subcommand
 						);
@@ -893,16 +904,24 @@ export class CommandHandler extends AkairoHandler {
 				function handleOptions(options: NonSubSlashOptions[]) {
 					for (const option of options) {
 						switch (option.type) {
-							case ApplicationCommandOptionType.Boolean:
+							case ApplicationCommandOptionTypes.BOOLEAN:
+							case "BOOLEAN":
 								convertedOptions[option.name] ??= false;
 								break;
-							case ApplicationCommandOptionType.Channel:
-							case ApplicationCommandOptionType.Integer:
-							case ApplicationCommandOptionType.Mentionable:
-							case ApplicationCommandOptionType.Number:
-							case ApplicationCommandOptionType.Role:
-							case ApplicationCommandOptionType.String:
-							case ApplicationCommandOptionType.User:
+							case ApplicationCommandOptionTypes.CHANNEL:
+							case "CHANNEL":
+							case ApplicationCommandOptionTypes.INTEGER:
+							case "INTEGER":
+							case ApplicationCommandOptionTypes.MENTIONABLE:
+							case "MENTIONABLE":
+							case ApplicationCommandOptionTypes.NUMBER:
+							case "NUMBER":
+							case ApplicationCommandOptionTypes.ROLE:
+							case "ROLE":
+							case ApplicationCommandOptionTypes.STRING:
+							case "STRING":
+							case ApplicationCommandOptionTypes.USER:
+							case "USER":
 							default:
 								convertedOptions[option.name] ??= null;
 								break;
@@ -1268,7 +1287,7 @@ export class CommandHandler extends AkairoHandler {
 					return true;
 				}
 			} else if (message.guild) {
-				if (message.channel?.type === ChannelType.DM) return false;
+				if (message.channel?.type === "DM") return false;
 				const missing = message.channel?.permissionsFor(message.guild.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(event, message, command, "client", missing);
@@ -1295,7 +1314,7 @@ export class CommandHandler extends AkairoHandler {
 						return true;
 					}
 				} else if (message.guild) {
-					if (message.channel?.type === ChannelType.DM) return false;
+					if (message.channel?.type === "DM") return false;
 					const missing = message.channel?.permissionsFor(message.author)?.missing(command.userPermissions);
 					if (missing?.length) {
 						this.emit(event, message, command, "user", missing);
@@ -1887,25 +1906,6 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
 		| NonNullable<CommandInteractionOption["message"]>;
 };
-
-// todo: remove this once discord-api-types updates
-/**
- * Used for reverse mapping since discord exports its enums as const enums.
- * @internal
- */
-enum AkairoApplicationCommandOptionType {
-	Subcommand = ApplicationCommandOptionType.Subcommand,
-	SubcommandGroup = ApplicationCommandOptionType.SubcommandGroup,
-	String = ApplicationCommandOptionType.String,
-	Integer = ApplicationCommandOptionType.Integer,
-	Boolean = ApplicationCommandOptionType.Boolean,
-	// eslint-disable-next-line @typescript-eslint/no-shadow
-	User = ApplicationCommandOptionType.User,
-	Channel = ApplicationCommandOptionType.Channel,
-	Role = ApplicationCommandOptionType.Role,
-	Mentionable = ApplicationCommandOptionType.Mentionable,
-	Number = ApplicationCommandOptionType.Number
-}
 
 /**
  * @typedef {CommandInteractionOptionResolver} VSCodePleaseStopRemovingMyImports

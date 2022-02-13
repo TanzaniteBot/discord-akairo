@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { AkairoMessage, Command } from "#discord-akairo";
-import { ApplicationCommandOptionType, Formatters, Message } from "discord.js";
+import { Formatters, Message } from "discord.js";
 import util from "util";
 
 export default class UserCommand extends Command {
@@ -14,7 +14,7 @@ export default class UserCommand extends Command {
 				{
 					name: "user",
 					description: "user",
-					type: ApplicationCommandOptionType.User,
+					type: "USER",
 					required: true,
 					resolve: "Member"
 				}

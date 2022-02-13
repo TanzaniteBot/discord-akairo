@@ -1,4 +1,4 @@
-import type { Awaitable, Collection, ContextMenuCommandInteraction } from "discord.js";
+import type { Awaitable, Collection, ContextMenuInteraction } from "discord.js";
 import type { ContextMenuCommandHandlerEvents } from "../../typings/events";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
@@ -77,7 +77,7 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 	protected setup() {
 		this.client.once("ready", () => {
 			this.client.on("interactionCreate", i => {
-				if (!i.isUserContextMenuCommand()) return;
+				if (!i.isUserContextMenu()) return;
 
 				this.handle(i);
 			});
@@ -88,7 +88,7 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 	 * Handles an interaction.
 	 * @param interaction - Interaction to handle.
 	 */
-	public async handle(interaction: ContextMenuCommandInteraction): Promise<boolean | null> {
+	public async handle(interaction: ContextMenuInteraction): Promise<boolean | null> {
 		const command = this.modules.find(module => module.name === interaction.commandName);
 
 		if (!command) {
@@ -120,7 +120,7 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param interaction - Interaction that called the command.
 	 * @param command - Command that errored.
 	 */
-	public emitError(err: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand | AkairoModule): void {
+	public emitError(err: Error, interaction: ContextMenuInteraction, command: ContextMenuCommand | AkairoModule): void {
 		if (this.listenerCount(ContextCommandHandlerEvents.ERROR)) {
 			this.emit(ContextCommandHandlerEvents.ERROR, err, interaction, command);
 			return;
