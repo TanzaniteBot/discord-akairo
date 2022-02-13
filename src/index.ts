@@ -1,92 +1,31 @@
 import packageJSON from "../package.json";
 import { CommandUtil } from "./struct/commands/CommandUtil";
 import * as Constants from "./util/Constants";
-export { AkairoClient, type AkairoOptions } from "./struct/AkairoClient";
-export { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "./struct/AkairoHandler";
-export { AkairoModule, AkairoModuleOptions } from "./struct/AkairoModule";
-export { ClientUtil } from "./struct/ClientUtil";
-export {
-	Argument,
-	type ArgumentMatch,
-	type ArgumentOptions,
-	type ArgumentPromptData,
-	type ArgumentPromptOptions,
-	type ArgumentType,
-	type ArgumentTypeCaster,
-	type BaseArgumentType,
-	type DefaultArgumentOptions,
-	type DefaultValueSupplier,
-	type FailureData,
-	type OtherwiseContentModifier,
-	type OtherwiseContentSupplier,
-	type ParsedValuePredicate,
-	type PromptContentModifier,
-	type PromptContentSupplier
-} from "./struct/commands/arguments/Argument";
-export { ArgumentRunner, type ArgumentRunnerState } from "./struct/commands/arguments/ArgumentRunner";
-export { TypeResolver } from "./struct/commands/arguments/TypeResolver";
-export {
-	Command,
-	type AkairoApplicationCommandAutocompleteOption,
-	type AkairoApplicationCommandChannelOptionData,
-	type AkairoApplicationCommandChoicesData,
-	type AkairoApplicationCommandNonOptionsData,
-	type AkairoApplicationCommandNumericOptionData,
-	type AkairoApplicationCommandOptionData,
-	type AkairoApplicationCommandSubCommandData,
-	type AkairoApplicationCommandSubGroupData,
-	type ArgumentGenerator,
-	type ArgumentGeneratorReturn,
-	type BeforeAction,
-	type CommandOptions,
-	type ExecutionPredicate,
-	type KeySupplier,
-	type MissingPermissionSupplier,
-	type RegexSupplier,
-	type SlashOption,
-	type SlashPermissionsSupplier
-} from "./struct/commands/Command";
-export {
-	CommandHandler,
-	type CommandHandlerOptions,
-	type CooldownData,
-	type IgnoreCheckPredicate,
-	type MentionPrefixPredicate,
-	type ParsedComponentData,
-	type PrefixSupplier,
-	type RegisterInteractionCommandError,
-	type SlashResolveType
-} from "./struct/commands/CommandHandler";
-export { CommandUtil } from "./struct/commands/CommandUtil";
-export {
-	ContentParser,
-	type ContentParserOptions,
-	type ContentParserResult,
-	type ExtractedFlags,
-	type StringData
-} from "./struct/commands/ContentParser";
-export { Flag } from "./struct/commands/Flag";
-export { ContextMenuCommand, type ContextMenuCommandOptions } from "./struct/contextMenuCommands/ContextMenuCommand";
-export { ContextMenuCommandHandler } from "./struct/contextMenuCommands/ContextMenuCommandHandler";
-export { Inhibitor, type InhibitorOptions } from "./struct/inhibitors/Inhibitor";
-export { InhibitorHandler } from "./struct/inhibitors/InhibitorHandler";
-export { Listener, type ListenerOptions, type ListenerType } from "./struct/listeners/Listener";
-export { ListenerHandler } from "./struct/listeners/ListenerHandler";
-export { Task, type TaskOptions } from "./struct/tasks/Task";
-export { TaskHandler } from "./struct/tasks/TaskHandler";
-export type {
-	AkairoClientEvents,
-	AkairoHandlerEvents,
-	CommandHandlerEvents,
-	ContextMenuCommandHandlerEvents,
-	InhibitorHandlerEvents,
-	ListenerHandlerEvents,
-	TaskHandlerEvents
-} from "./typings/events";
-export { AkairoError } from "./util/AkairoError";
-export { AkairoMessage } from "./util/AkairoMessage";
-export { Category } from "./util/Category";
-export { Util } from "./util/Util";
+export * from "./struct/AkairoClient";
+export * from "./struct/AkairoHandler";
+export * from "./struct/AkairoModule";
+export * from "./struct/ClientUtil";
+export * from "./struct/commands/arguments/Argument";
+export * from "./struct/commands/arguments/ArgumentRunner";
+export * from "./struct/commands/arguments/TypeResolver";
+export * from "./struct/commands/Command";
+export * from "./struct/commands/CommandHandler";
+export * from "./struct/commands/CommandUtil";
+export * from "./struct/commands/ContentParser";
+export * from "./struct/commands/Flag";
+export * from "./struct/contextMenuCommands/ContextMenuCommand";
+export * from "./struct/contextMenuCommands/ContextMenuCommandHandler";
+export * from "./struct/inhibitors/Inhibitor";
+export * from "./struct/inhibitors/InhibitorHandler";
+export * from "./struct/listeners/Listener";
+export * from "./struct/listeners/ListenerHandler";
+export * from "./struct/tasks/Task";
+export * from "./struct/tasks/TaskHandler";
+export * from "./typings/events";
+export * from "./util/AkairoError";
+export * from "./util/AkairoMessage";
+export * from "./util/Category";
+export * from "./util/Util";
 export { Constants };
 export const { version } = packageJSON;
 
