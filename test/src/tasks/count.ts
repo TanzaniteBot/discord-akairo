@@ -1,5 +1,5 @@
-/* eslint-disable no-console */
 import { Task } from "#discord-akairo";
+import logger from "../struct/Logger";
 
 export default class CountTask extends Task {
 	public constructor() {
@@ -13,6 +13,6 @@ export default class CountTask extends Task {
 
 	public override exec() {
 		this.number++;
-		console.log(`[countTask] On number ${this.number}.`);
+		logger.log("CountTask", `On number ${this.number}.`);
 	}
 }

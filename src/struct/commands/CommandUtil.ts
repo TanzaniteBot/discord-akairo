@@ -1,5 +1,5 @@
 /* eslint-disable require-await */
-import { APIMessage } from "discord-api-types/v9";
+import { APIMessage } from "discord-api-types/v10";
 import {
 	Collection,
 	InteractionReplyOptions,
@@ -117,7 +117,7 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	public async edit(options: string | WebhookEditMessageOptions | MessagePayload): Promise<Message | APIMessage>;
 	public async edit(
 		options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload
-	): Promise<Message | APIMessage> {
+	): Promise<APIMessage | Message<boolean>> {
 		if (!this.isSlashMessage(this.message)) {
 			return this.lastResponse!.edit(options);
 		} else {

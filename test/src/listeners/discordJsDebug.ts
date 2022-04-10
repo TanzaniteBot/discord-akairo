@@ -1,17 +1,16 @@
-/* eslint-disable no-console */
-
 import { Listener } from "#discord-akairo";
 import { ClientEvents } from "discord.js";
+import logger from "../struct/Logger";
 
 export default class DiscordJsDebugListener extends Listener {
 	public constructor() {
-		super("discord.js-debug", {
+		super("discordJsDebug", {
 			emitter: "client",
 			event: "debug"
 		});
 	}
 
 	public override exec(...[message]: ClientEvents["debug"]) {
-		console.debug(`[discord.js-debug] ${message}`);
+		logger.debug("DiscordJsDebug", message);
 	}
 }

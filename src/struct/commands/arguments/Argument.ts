@@ -15,7 +15,6 @@ import type {
 	NewsChannel,
 	Role,
 	StageChannel,
-	StoreChannel,
 	TextChannel,
 	ThreadChannel,
 	User,
@@ -152,7 +151,7 @@ export class Argument {
 			otherwise = options.otherwise ?? null,
 			modifyOtherwise = options.modifyOtherwise ?? null;
 
-		if (!Object.values(ArgumentMatches).includes(match))
+		if (!Object.values(ArgumentMatches).includes(match as ArgumentMatches))
 			throw new TypeError(
 				`options.match must one of ${Object.values(ArgumentMatches)
 					.map(v => `"${v}"`)
@@ -837,7 +836,7 @@ export interface ArgumentPromptOptions {
 	/**
 	 * Whenever an input matches the format of a command, this option controls whether or not to cancel this command and run that command.
 	 * The command to be run may be the same command or some other command.
-	 * Defaults to true,
+	 * @default true
 	 */
 	breakout?: boolean;
 
@@ -847,7 +846,8 @@ export interface ArgumentPromptOptions {
 	cancel?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 
 	/**
-	 * Word to use for cancelling the command. Defaults to 'cancel'.
+	 * Word to use for cancelling the command.
+	 * @default "cancel"
 	 */
 	cancelWord?: string;
 
@@ -860,12 +860,13 @@ export interface ArgumentPromptOptions {
 	 * Prompts forever until the stop word, cancel word, time limit, or retry limit.
 	 * Note that the retry count resets back to one on each valid entry.
 	 * The final evaluated argument will be an array of the inputs.
-	 * Defaults to false.
+	 * @default false
 	 */
 	infinite?: boolean;
 
 	/**
-	 * Amount of inputs allowed for an infinite prompt before finishing. Defaults to Infinity.
+	 * Amount of inputs allowed for an infinite prompt before finishing.
+	 * @default Infinity.
 	 */
 	limit?: number;
 
@@ -895,12 +896,14 @@ export interface ArgumentPromptOptions {
 	modifyTimeout?: PromptContentModifier;
 
 	/**
-	 * Prompts only when argument is provided but was not of the right type. Defaults to false.
+	 * Prompts only when argument is provided but was not of the right type.
+	 * @default false
 	 */
 	optional?: boolean;
 
 	/**
-	 * Amount of retries allowed. Defaults to 1.
+	 * Amount of retries allowed.
+	 * @default 1
 	 */
 	retries?: number;
 
@@ -915,12 +918,14 @@ export interface ArgumentPromptOptions {
 	start?: string | MessagePayload | MessageOptions | PromptContentSupplier;
 
 	/**
-	 * Word to use for ending infinite prompts. Defaults to 'stop'.
+	 * Word to use for ending infinite prompts.
+	 * @default "stop"
 	 */
 	stopWord?: string;
 
 	/**
-	 * Time to wait for input. Defaults to 30000.
+	 * Time to wait for input.
+	 * @default 30000
 	 */
 	time?: number;
 
@@ -982,7 +987,6 @@ export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" |
  * - `voiceChannel` tries to resolve to a voice channel.
  * - `categoryChannel` tries to resolve to a category channel.
  * - `newsChannel` tries to resolve to a news channel.
- * - `storeChannel` tries to resolve to a store channel.
  * - `stageChannel` tries to resolve to a stage channel.
  * - `threadChannel` tries to resolve a thread channel.
  * - `role` tries to resolve to a role.
@@ -1028,10 +1032,6 @@ export interface BaseArgumentType {
 	categoryChannels: Collection<string, CategoryChannel> | null;
 	newsChannel: NewsChannel | null;
 	newsChannels: Collection<string, NewsChannel> | null;
-	// eslint-disable-next-line deprecation/deprecation
-	storeChannel: StoreChannel | null;
-	// eslint-disable-next-line deprecation/deprecation
-	storeChannels: Collection<string, StoreChannel> | null;
 	stageChannel: StageChannel | null;
 	stageChannels: Collection<string, StageChannel> | null;
 	threadChannel: ThreadChannel | null;
@@ -1144,7 +1144,7 @@ export type ParsedValuePredicate = (message: Message, phrase: string, value: any
  */
 export type OtherwiseContentModifier = (
 	message: Message,
-	text: string,
+	text: string | MessagePayload | MessageOptions | OtherwiseContentSupplier,
 	data: FailureData
 ) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 
@@ -1166,7 +1166,7 @@ export type OtherwiseContentSupplier = (
  */
 export type PromptContentModifier = (
 	message: Message,
-	text: string,
+	text: string | MessagePayload | MessageOptions | OtherwiseContentSupplier,
 	data: ArgumentPromptData
 ) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
 

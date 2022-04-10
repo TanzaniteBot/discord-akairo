@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
-
 import { Command, Flag } from "#discord-akairo";
 import { Formatters, Message } from "discord.js";
 import util from "util";
+import logger from "../../struct/Logger";
 
 export default class FCommand extends Command {
 	public constructor() {
@@ -19,7 +18,7 @@ export default class FCommand extends Command {
 						return phrase;
 					},
 					default: (msg: Message, value: string) => {
-						console.log("failed", value);
+						logger.log("FCommand", "failed", value);
 						return 1;
 					}
 				}

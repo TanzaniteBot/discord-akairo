@@ -24,7 +24,7 @@ export default class EmbedCommand extends Command {
 		});
 	}
 
-	public override exec(message: Message, args: { emptyContent?: boolean; emptyEmbed?: boolean; phrase?: string }) {
+	public override exec(message: Message, args: { emptyContent: boolean; emptyEmbed: boolean; phrase: string }) {
 		if (args.emptyContent) {
 			return message.util!.send({ embeds: [{ description: args.phrase }] });
 		}

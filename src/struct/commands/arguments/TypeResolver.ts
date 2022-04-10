@@ -6,7 +6,6 @@ import {
 	Message,
 	NewsChannel,
 	StageChannel,
-	StoreChannel,
 	TextChannel,
 	ThreadChannel,
 	VoiceChannel
@@ -188,7 +187,7 @@ export class TypeResolver {
 					: this.client.util.resolveUser(
 							phrase,
 							new Collection([
-								[(message.channel as DMChannel).recipient.id!, (message.channel as DMChannel).recipient!],
+								[(message.channel as DMChannel).recipientId, (message.channel as DMChannel).recipient!],
 								[this.client.user!.id, this.client.user!]
 							])
 					  );
@@ -204,7 +203,7 @@ export class TypeResolver {
 					: this.client.util.resolveUsers(
 							phrase,
 							new Collection([
-								[(message.channel as DMChannel).recipient.id, (message.channel as DMChannel).recipient],
+								[(message.channel as DMChannel).recipientId, (message.channel as DMChannel).recipient!],
 								[this.client.user!.id, this.client.user!]
 							])
 					  );
@@ -301,26 +300,6 @@ export class TypeResolver {
 				return newsChannels.size ? newsChannels : null;
 			},
 
-			[ArgumentTypes.STORE_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isStore()) return null;
-
-				return channel;
-			},
-
-			[ArgumentTypes.STORE_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
-				if (!channels.size) return null;
-
-				// eslint-disable-next-line deprecation/deprecation
-				const storeChannels = <Collection<string, StoreChannel>>channels.filter(c => c.isStore());
-				return storeChannels.size ? storeChannels : null;
-			},
-
 			[ArgumentTypes.STAGE_CHANNEL]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
@@ -336,8 +315,8 @@ export class TypeResolver {
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const storeChannels = <Collection<string, StageChannel>>channels.filter(c => c.isStage());
-				return storeChannels.size ? storeChannels : null;
+				const stageChannels = <Collection<string, StageChannel>>channels.filter(c => c.isStage());
+				return stageChannels.size ? stageChannels : null;
 			},
 
 			[ArgumentTypes.THREAD_CHANNEL]: (message, phrase) => {
@@ -355,8 +334,8 @@ export class TypeResolver {
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const storeChannels = <Collection<string, ThreadChannel>>channels.filter(c => c.isThread());
-				return storeChannels.size ? storeChannels : null;
+				const threadChannels = <Collection<string, ThreadChannel>>channels.filter(c => c.isThread());
+				return threadChannels.size ? threadChannels : null;
 			},
 
 			[ArgumentTypes.ROLE]: (message, phrase) => {

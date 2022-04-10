@@ -1,6 +1,7 @@
 import { Command } from "#discord-akairo";
 import { Message } from "discord.js";
 import util from "util";
+import logger from "../../struct/Logger";
 
 export default class EvalCommand extends Command {
 	public constructor() {
@@ -50,7 +51,7 @@ export default class EvalCommand extends Command {
 
 		try {
 			let output = eval(code);
-			if (output && typeof output.then === "function") output = await output;
+			if (output instanceof Promise) output = await output;
 
 			if (typeof output !== "string") output = util.inspect(output, { depth: 0 });
 			output = `${logs.join("\n")}\n${logs.length && output === "undefined" ? "" : output}`;
@@ -68,7 +69,7 @@ export default class EvalCommand extends Command {
 
 			return sent;
 		} catch (err) {
-			console.error(err); // eslint-disable-line no-console
+			logger.error("EvalCommandError", err);
 			let error: Error | any = err;
 
 			error = error.toString();

@@ -1,17 +1,16 @@
-/* eslint-disable no-console */
-
 import { Listener } from "#discord-akairo";
 import { ClientEvents } from "discord.js";
+import logger from "../struct/Logger";
 
 export default class DiscordJsWarnListener extends Listener {
 	public constructor() {
-		super("discord.js-warn", {
+		super("discordJsWarn", {
 			emitter: "client",
 			event: "warn"
 		});
 	}
 
 	public override exec(...[message]: ClientEvents["warn"]) {
-		console.warn(`[discord.js-warn] ${message}`);
+		logger.warn("DiscordJsWarn", message);
 	}
 }

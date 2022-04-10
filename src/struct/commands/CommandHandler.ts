@@ -828,7 +828,7 @@ export class CommandHandler extends AkairoHandler {
 					continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				const func = `get${originalOption?.resolve ?? AkairoApplicationCommandOptionType[option.type]}` as GetFunction;
+				const func = `get${originalOption?.resolve ?? ApplicationCommandOptionType[option.type]}` as GetFunction;
 				if (
 					!(
 						[
@@ -1886,25 +1886,6 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
 		| NonNullable<CommandInteractionOption["message"]>;
 };
-
-// todo: remove this once discord-api-types updates
-/**
- * Used for reverse mapping since discord exports its enums as const enums.
- * @internal
- */
-enum AkairoApplicationCommandOptionType {
-	Subcommand = ApplicationCommandOptionType.Subcommand,
-	SubcommandGroup = ApplicationCommandOptionType.SubcommandGroup,
-	String = ApplicationCommandOptionType.String,
-	Integer = ApplicationCommandOptionType.Integer,
-	Boolean = ApplicationCommandOptionType.Boolean,
-	// eslint-disable-next-line @typescript-eslint/no-shadow
-	User = ApplicationCommandOptionType.User,
-	Channel = ApplicationCommandOptionType.Channel,
-	Role = ApplicationCommandOptionType.Role,
-	Mentionable = ApplicationCommandOptionType.Mentionable,
-	Number = ApplicationCommandOptionType.Number
-}
 
 /**
  * @typedef {CommandInteractionOptionResolver} VSCodePleaseStopRemovingMyImports

@@ -1,17 +1,16 @@
-/* eslint-disable no-console */
-
 import { Listener } from "#discord-akairo";
 import { ClientEvents } from "discord.js";
+import logger from "../struct/Logger";
 
 export default class DiscordJsErrorListener extends Listener {
 	public constructor() {
-		super("discord.js-error", {
+		super("discordJsError", {
 			emitter: "client",
 			event: "error"
 		});
 	}
 
 	public override exec(...[message]: ClientEvents["error"]) {
-		console.info(`[discord.js-error] ${message}`);
+		logger.log("DiscordJsError", message);
 	}
 }

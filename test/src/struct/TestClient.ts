@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
 	AkairoClient,
 	CommandHandler,
@@ -9,6 +8,7 @@ import {
 } from "#discord-akairo";
 import { GatewayIntentBits } from "discord.js";
 import path from "path";
+import logger from "./Logger";
 
 export default class TestClient extends AkairoClient {
 	public commandHandler: CommandHandler;
@@ -20,21 +20,23 @@ export default class TestClient extends AkairoClient {
 		super({
 			ownerID: ["123992700587343872", "322862723090219008"],
 			intents: [
-				GatewayIntentBits.DirectMessages,
 				GatewayIntentBits.DirectMessageReactions,
+				GatewayIntentBits.DirectMessages,
 				GatewayIntentBits.DirectMessageTyping,
-				GatewayIntentBits.Guilds,
 				GatewayIntentBits.GuildBans,
 				GatewayIntentBits.GuildEmojisAndStickers,
 				GatewayIntentBits.GuildIntegrations,
 				GatewayIntentBits.GuildInvites,
 				GatewayIntentBits.GuildMembers,
-				GatewayIntentBits.GuildMessages,
 				GatewayIntentBits.GuildMessageReactions,
+				GatewayIntentBits.GuildMessages,
 				GatewayIntentBits.GuildMessageTyping,
 				GatewayIntentBits.GuildPresences,
+				GatewayIntentBits.Guilds,
+				GatewayIntentBits.GuildScheduledEvents,
 				GatewayIntentBits.GuildVoiceStates,
-				GatewayIntentBits.GuildWebhooks
+				GatewayIntentBits.GuildWebhooks,
+				GatewayIntentBits.MessageContent
 			]
 		});
 
@@ -101,24 +103,24 @@ export default class TestClient extends AkairoClient {
 		const handlers = await Promise.allSettled([
 			this.commandHandler
 				.loadAll()
-				.then(() => console.log("Loaded commands"))
-				.catch(console.error),
+				.then(() => logger.log("Startup", "Loaded commands"))
+				.catch(e => logger.error("Startup", "Error loading commands", e.stack)),
 			this.contextMenuCommandHandler
 				.loadAll()
-				.then(() => console.log("Loaded context menu commands"))
-				.catch(console.error),
+				.then(() => logger.log("Startup", "Loaded context menu commands"))
+				.catch(e => logger.error("Startup", "Error loading context menu commands", e.stack)),
 			this.listenerHandler
 				.loadAll()
-				.then(() => console.log("Loaded listeners"))
-				.catch(console.error),
+				.then(() => logger.log("Startup", "Loaded listeners"))
+				.catch(e => logger.error("Startup", "Error loading listeners", e.stack)),
 			this.inhibitorHandler
 				.loadAll()
-				.then(() => console.log("Loaded inhibitors"))
-				.catch(console.error),
+				.then(() => logger.log("Startup", "Loaded inhibitors"))
+				.catch(e => logger.error("Startup", "Error loading inhibitors", e.stack)),
 			this.taskHandler
 				.loadAll()
-				.then(() => console.log("Loaded tasks"))
-				.catch(console.error)
+				.then(() => logger.log("Startup", "Loaded tasks"))
+				.catch(e => logger.error("Startup", "Error loading tasks", e.stack))
 		]);
 
 		const resolver = this.commandHandler.resolver;

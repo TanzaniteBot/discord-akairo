@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
-
 import { Argument, Command } from "#discord-akairo";
 import { Formatters, Message } from "discord.js";
 import util from "util";
+const { compose, range, union } = Argument;
 
 export default class TestCommand extends Command {
 	public constructor() {
@@ -14,10 +13,7 @@ export default class TestCommand extends Command {
 				{
 					id: "x",
 					match: "rest",
-					type: Argument.compose(
-						((m, s) => s.replace(/\s/g, ""))!,
-						Argument.range(Argument.union("integer", "emojint")!, 0, 50)!
-					)!
+					type: compose(((m, s) => s.replace(/\s/g, ""))!, range(union("integer", "emojint")!, 0, 50)!)!
 				}
 			]
 		});

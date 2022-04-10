@@ -1,8 +1,7 @@
-/* eslint-disable no-console */
-
 import { Command } from "#discord-akairo";
 import { Formatters, Message } from "discord.js";
 import util from "util";
+import logger from "../../struct/Logger";
 
 export default class PCommand extends Command {
 	public constructor() {
@@ -26,7 +25,7 @@ export default class PCommand extends Command {
 	}
 
 	public override before() {
-		console.log(1);
+		logger.log("PCommand", 1);
 	}
 
 	public override exec(message: Message, args: { integer: BigInt }) {

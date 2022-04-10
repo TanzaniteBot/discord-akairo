@@ -1,4 +1,4 @@
-import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v9";
+import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v10";
 import {
 	Base,
 	ChatInputCommandInteraction,

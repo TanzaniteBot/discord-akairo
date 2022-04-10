@@ -3,7 +3,6 @@ import type { Message } from "discord.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
-import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
 import type { InhibitorHandler } from "./InhibitorHandler.js";
@@ -21,16 +20,6 @@ export abstract class Inhibitor extends AkairoModule {
 	 * The category the inhibitor belongs to.
 	 */
 	public declare category: Category<string, Inhibitor>;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * The filepath.
-	 */
-	public declare filepath: string;
 
 	/**
 	 * The inhibitor handler.
@@ -100,7 +89,6 @@ export interface Inhibitor extends AkairoModule {
 
 /**
  * Options to use for inhibitor execution behavior.
- * Also includes properties from AkairoModuleOptions.
  */
 export interface InhibitorOptions extends AkairoModuleOptions {
 	/**

@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
-
 import { Listener } from "#discord-akairo";
 import { Message } from "discord.js";
+import logger from "../struct/Logger";
 
 export default class InvalidMessageListener extends Listener {
 	public constructor() {
@@ -13,6 +12,6 @@ export default class InvalidMessageListener extends Listener {
 	}
 
 	public override exec(msg: Message): void {
-		console.log(msg.util!.parsed);
+		logger.log("MessageInvalid", msg.util!.parsed);
 	}
 }

@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
-
 import { AkairoClientEvents, Listener } from "#discord-akairo";
+import logger from "../struct/Logger";
 
 export default class AkairoDebugListener extends Listener {
 	public constructor() {
@@ -11,6 +10,6 @@ export default class AkairoDebugListener extends Listener {
 	}
 
 	public override exec(...[message]: AkairoClientEvents["akairoDebug"]) {
-		console.debug(`[akairoDebug] ${message}`);
+		logger.debug("AkairoDebug", message);
 	}
 }

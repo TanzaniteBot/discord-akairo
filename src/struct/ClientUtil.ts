@@ -1,9 +1,10 @@
-import { APIEmbed } from "discord-api-types";
+import { APIEmbed } from "discord-api-types/v10";
 import {
 	ActivityType,
 	BufferResolvable,
 	Collection,
-	Embed,
+	EmbedBuilder,
+	EmbedData,
 	Emoji,
 	Guild,
 	GuildChannel,
@@ -230,8 +231,8 @@ export class ClientUtil {
 	 * Makes a Embed.
 	 * @param data - Embed data.
 	 */
-	public embed(data?: Embed | APIEmbed): Embed {
-		return new Embed(data);
+	public embed(data?: EmbedData | APIEmbed): EmbedBuilder {
+		return new EmbedBuilder(data);
 	}
 
 	/**

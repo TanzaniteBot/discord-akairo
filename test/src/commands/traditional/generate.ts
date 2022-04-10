@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { ArgumentGeneratorReturn, Command, Flag } from "#discord-akairo";
 import { Formatters, Message } from "discord.js";
 import util from "util";
