@@ -104,23 +104,23 @@ export default class TestClient extends AkairoClient {
 			this.commandHandler
 				.loadAll()
 				.then(() => logger.log("Startup", "Loaded commands"))
-				.catch(e => logger.error("Startup", "Error loading commands", e.stack)),
+				.catch(e => logger.error("Startup", "Error loading commands", e)),
 			this.contextMenuCommandHandler
 				.loadAll()
 				.then(() => logger.log("Startup", "Loaded context menu commands"))
-				.catch(e => logger.error("Startup", "Error loading context menu commands", e.stack)),
+				.catch(e => logger.error("Startup", "Error loading context menu commands", e)),
 			this.listenerHandler
 				.loadAll()
 				.then(() => logger.log("Startup", "Loaded listeners"))
-				.catch(e => logger.error("Startup", "Error loading listeners", e.stack)),
+				.catch(e => logger.error("Startup", "Error loading listeners", e)),
 			this.inhibitorHandler
 				.loadAll()
 				.then(() => logger.log("Startup", "Loaded inhibitors"))
-				.catch(e => logger.error("Startup", "Error loading inhibitors", e.stack)),
+				.catch(e => logger.error("Startup", "Error loading inhibitors", e)),
 			this.taskHandler
 				.loadAll()
 				.then(() => logger.log("Startup", "Loaded tasks"))
-				.catch(e => logger.error("Startup", "Error loading tasks", e.stack))
+				.catch(e => logger.error("Startup", "Error loading tasks", e))
 		]);
 
 		const resolver = this.commandHandler.resolver;

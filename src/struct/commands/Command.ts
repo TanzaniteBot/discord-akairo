@@ -1,4 +1,5 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
+import { BaseValidator, s, UnionValidator } from "@sapphire/shapeshift";
 import {
 	ApplicationCommandAutocompleteOption,
 	ApplicationCommandChannelOptionData,
@@ -18,7 +19,6 @@ import {
 import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
-import { isStringArrayStringOrFunc, Util } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import { Argument, ArgumentOptions, ArgumentTypeCasterReturn, DefaultArgumentOptions } from "./arguments/Argument.js";
@@ -222,79 +222,39 @@ export abstract class Command extends AkairoModule {
 		super(id, { category: options?.category });
 
 		const {
-			aliases = [],
-			args = this._args || this.args || [],
-			argumentDefaults = {},
-			before = this.before || (() => undefined),
-			channel = null,
-			clientPermissions = this.clientPermissions,
-			condition = this.condition || (() => false),
-			cooldown = null,
-			description = "",
-			editable = true,
-			flags = [],
+			aliases,
+			args,
+			argumentDefaults,
+			before,
+			channel,
+			clientPermissions,
+			condition,
+			cooldown,
+			description,
+			editable,
+			flags,
 			ignoreCooldown,
 			ignorePermissions,
 			lock,
-			onlyNsfw = false,
-			optionFlags = [],
-			ownerOnly = false,
-			prefix = this.prefix,
-			quoted = true,
-			ratelimit = 1,
-			regex = this.regex,
+			onlyNsfw,
+			optionFlags,
+			ownerOnly,
+			prefix,
+			quoted,
+			ratelimit,
+			regex,
 			separator,
-			slash = false,
+			slash,
 			slashDefaultPermission,
-			slashEphemeral = false,
-			slashGuilds = [],
-			slashOnly = false,
+			slashEphemeral,
+			slashGuilds,
+			slashOnly,
 			slashOptions,
 			slashPermissions,
-			superUserOnly = false,
-			typing = false,
-			userPermissions = this.userPermissions
-		} = options ?? {};
-
-		if (!Util.isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
-		if (typeof args !== "function" && !Util.isArrayOf(args, "object"))
-			throw new TypeError("options.args must be an array of argument objects or a function.");
-		if (typeof argumentDefaults !== "object") throw new TypeError("options.argumentDefaults must be an object.");
-		if (typeof before !== "function") throw new TypeError("options.before must be a function.");
-		if (!(["guild", "dm", null] as const).includes(channel))
-			throw new TypeError('options.channel must be either "guild" or "dm" or null.');
-		if (typeof condition !== "function") throw new TypeError("options.condition must be a function.");
-		if (typeof cooldown !== "number" && cooldown !== null) throw new TypeError("options.cooldown must be a number or null.");
-		if (typeof editable !== "boolean") throw new TypeError("options.editable must be a boolean.");
-		if (!Util.isArrayOf(flags, "string")) throw new TypeError("options.flags must be an array of strings.");
-		if (ignoreCooldown !== undefined && !isStringArrayStringOrFunc(ignoreCooldown))
-			throw new TypeError("options.ignoreCooldown must be a string, function, or array of strings.");
-		if (ignorePermissions !== undefined && !isStringArrayStringOrFunc(ignorePermissions))
-			throw new TypeError("options.ignorePermissions must be a string, function, or array of strings.");
-		if (lock !== undefined && typeof lock !== "function" && !(["channel", "guild", "user"] as const).includes(lock))
-			throw new TypeError("options.lock must be a function or a string with a value of 'channel', 'guild', or 'user'.");
-		if (typeof onlyNsfw !== "boolean") throw new TypeError("options.onlyNsfw must be a boolean.");
-		if (!Util.isArrayOf(optionFlags, "string")) throw new TypeError("options.optionFlags must be an array of strings.");
-		if (typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean.");
-		if (prefix !== undefined && !isStringArrayStringOrFunc(prefix))
-			throw new TypeError("options.prefix must be a string, function, or array of strings.");
-		if (typeof quoted !== "boolean") throw new TypeError("options.quoted must be a boolean.");
-		if (typeof ratelimit !== "number") throw new TypeError("options.ratelimit must be a number.");
-		if (regex !== undefined && typeof regex !== "function" && !(regex instanceof RegExp))
-			throw new TypeError("options.regex must be a function or a RegExp.");
-		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
-		if (typeof slash !== "boolean") throw new TypeError("options.slash must be a boolean.");
-		if (slashDefaultPermission && typeof slashDefaultPermission !== "boolean")
-			throw new TypeError("options.slashDefaultPermission must be a boolean.");
-		if (typeof slashEphemeral !== "boolean") throw new TypeError("options.slashEphemeral must be a boolean.");
-		if (!Util.isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
-		if (typeof slashOnly !== "boolean") throw new TypeError("options.slashOnly must be a boolean.");
-		if (slashOptions !== undefined && !Util.isArrayOf(slashOptions, "object"))
-			throw new TypeError("options.slashOptions must be an array of objects.");
-		if (slashPermissions !== undefined && typeof slashPermissions !== "function" && !Util.isArrayOf(slashPermissions, "object"))
-			throw new TypeError("options.slashPermissions must be an array of objects or a function.");
-		if (typeof superUserOnly !== "boolean") throw new TypeError("options.superUserOnly must be a boolean.");
-		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");
+			superUserOnly,
+			typing,
+			userPermissions
+		} = this.parseOptions(options);
 
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
@@ -344,6 +304,115 @@ export abstract class Command extends AkairoModule {
 		this.slashOnly = slashOnly;
 		this.slashOptions = slashOptions;
 		this.slashPermissions = typeof slashPermissions === "function" ? slashPermissions.bind(this) : slashPermissions;
+	}
+
+	// todo: switch to s.function when it's available
+	// eslint-disable-next-line complexity
+	private parseOptions(options: CommandOptions = {}) {
+		const ret = {
+			aliases: options.aliases ?? [],
+			args: options.args ?? this._args ?? this.args ?? [],
+			argumentDefaults: options.argumentDefaults ?? {},
+			before: options.before ?? this.before ?? (() => undefined),
+			channel: options.channel ?? null,
+			clientPermissions: options.clientPermissions ?? this.clientPermissions,
+			condition: options.condition ?? this.condition ?? (() => false),
+			cooldown: options.cooldown ?? null,
+			description: options.description ?? "",
+			editable: options.editable ?? true,
+			flags: options.flags ?? [],
+			ignoreCooldown: options.ignoreCooldown,
+			ignorePermissions: options.ignorePermissions,
+			lock: options.lock,
+			onlyNsfw: options.onlyNsfw ?? false,
+			optionFlags: options.optionFlags ?? [],
+			ownerOnly: options.ownerOnly ?? false,
+			prefix: options.prefix ?? this.prefix,
+			quoted: options.quoted ?? true,
+			ratelimit: options.ratelimit ?? 1,
+			regex: options.regex ?? this.regex,
+			separator: options.separator,
+			slash: options.slash ?? false,
+			slashDefaultPermission: options.slashDefaultPermission,
+			slashEphemeral: options.slashEphemeral ?? false,
+			slashGuilds: options.slashGuilds ?? [],
+			slashOnly: options.slashOnly ?? false,
+			slashOptions: options.slashOptions,
+			slashPermissions: options.slashPermissions,
+			superUserOnly: options.superUserOnly ?? false,
+			typing: options.typing ?? false,
+			userPermissions: options.userPermissions ?? this.userPermissions
+		};
+
+		if (typeof ret.before !== "function") throw new TypeError("options.before must be a function.");
+		if (typeof ret.condition !== "function") throw new TypeError("options.condition must be a function.");
+
+		const validator = s.object({
+			aliases: s.string.array,
+			args:
+				typeof ret.args === "function"
+					? <BaseValidator<ArgumentGenerator>>s.any
+					: s.object({
+							default: s.any.optional,
+							description: s.any.optional,
+							flag: s.union(s.string, s.string.array).nullish,
+							id: s.string.nullish,
+							index: s.number.nullish,
+							limit: s.number.nullish,
+							match: s.any.nullish /* function */,
+							modifyOtherwise: s.any.nullish /* function */,
+							multipleFlags: s.boolean.nullish,
+							otherwise: s.union(s.string, s.any /* function */).nullish
+					  }).array,
+			argumentDefaults: s.record(s.any),
+			before: <BaseValidator<BeforeAction>>s.any,
+			channel: s.union(s.literal("guild"), s.literal("dm"), s.null),
+			clientPermissions: s.any,
+			condition: <BaseValidator<ExecutionPredicate>>s.any,
+			cooldown: s.union(s.number, s.null),
+			description: s.any,
+			editable: s.boolean,
+			flags: s.string.array,
+			ignoreCooldown:
+				typeof ret.ignoreCooldown === "function"
+					? <BaseValidator<IgnoreCheckPredicate>>s.any
+					: s.union(s.string, s.string.array, s.undefined),
+			ignorePermissions:
+				typeof ret.ignoreCooldown === "function"
+					? <BaseValidator<IgnoreCheckPredicate>>s.any
+					: s.union(s.string, s.string.array, s.undefined),
+			lock:
+				typeof ret.lock === "function"
+					? <BaseValidator<KeySupplier>>s.any
+					: s.enum("channel" as const, "guild" as const, "user" as const).optional,
+			onlyNsfw: s.boolean,
+			optionFlags: s.string.array,
+			ownerOnly: s.boolean,
+			prefix:
+				typeof ret.prefix === "function" ? <BaseValidator<PrefixSupplier>>s.any : s.union(s.string, s.string.array, s.undefined),
+			quoted: s.boolean,
+			ratelimit: s.number,
+			regex: typeof ret.regex === "function" ? <BaseValidator<RegexSupplier>>s.any : s.instance(RegExp).optional,
+			separator: s.string.optional,
+			slash: s.boolean,
+			slashDefaultPermission: s.boolean.optional,
+			slashEphemeral: s.boolean,
+			slashGuilds: s.string.array,
+			slashOnly: s.boolean,
+			slashOptions: <BaseValidator<SlashOption[] | undefined>>(<unknown>s.record(s.any).array.optional),
+			slashPermissions:
+				typeof ret.slashPermissions === "function"
+					? <BaseValidator<SlashPermissionsSupplier>>s.any
+					: <UnionValidator<ApplicationCommandPermissionData[] | undefined>>s.record(s.any).array.optional,
+			superUserOnly: s.boolean,
+			typing: s.boolean,
+			userPermissions:
+				typeof ret.userPermissions === "function"
+					? <BaseValidator<MissingPermissionSupplier>>s.any
+					: <UnionValidator<PermissionResolvable | undefined>>s.union(s.record(s.any).array.optional, s.bigint, s.string)
+		});
+
+		return validator.parse(ret);
 	}
 
 	/**

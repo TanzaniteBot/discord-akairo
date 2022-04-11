@@ -1,3 +1,4 @@
+import { BaseValidator, s } from "@sapphire/shapeshift";
 import type {
 	BaseGuildVoiceChannel,
 	CategoryChannel,
@@ -22,12 +23,13 @@ import type {
 } from "discord.js";
 import type { URL } from "url";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
-import { isStringArrayStringOrFunc, Util } from "../../../util/Util.js";
+import { Util } from "../../../util/Util.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import { ContextMenuCommand } from "../../contextMenuCommands/ContextMenuCommand.js";
 import { Inhibitor } from "../../inhibitors/Inhibitor.js";
 import { Listener } from "../../listeners/Listener.js";
 import { Task } from "../../tasks/Task.js";
+import { ArgumentPromptOptionsValidator } from "../../validators/ArgumentPromptOptions.js";
 import type { Command } from "../Command.js";
 import type { CommandHandler } from "../CommandHandler.js";
 import { Flag, FlagType } from "../Flag.js";
@@ -136,40 +138,9 @@ export class Argument {
 	 * @param command - Command of the argument.
 	 * @param options - Options for the argument.
 	 */
-	// eslint-disable-next-line complexity
 	public constructor(command: Command, options: ArgumentOptions = {}) {
-		// doing this instead of object deconstruction so its valid to pass null values
-		const match = options.match ?? ArgumentMatches.PHRASE,
-			type = options.type ?? ArgumentTypes.STRING,
-			flag = options.flag ?? null,
-			multipleFlags = options.multipleFlags ?? false,
-			index = options.index ?? null,
-			unordered = options.unordered ?? false,
-			limit = options.limit ?? Infinity,
-			prompt = options.prompt ?? null,
-			defaultValue = options.default ?? null,
-			otherwise = options.otherwise ?? null,
-			modifyOtherwise = options.modifyOtherwise ?? null;
-
-		if (!Object.values(ArgumentMatches).includes(match as ArgumentMatches))
-			throw new TypeError(
-				`options.match must one of ${Object.values(ArgumentMatches)
-					.map(v => `"${v}"`)
-					.join(", ")}.`
-			);
-		if (flag !== null && !isStringArrayStringOrFunc(isStringArrayStringOrFunc))
-			throw new TypeError("options.flag must be a null, a string, or an array of strings.");
-		if (typeof multipleFlags !== "boolean") throw new TypeError("options.multipleFlags must be a boolean.");
-		if (index !== null && typeof index !== "number") throw new TypeError("options.index must be a number or null.");
-		if (typeof unordered !== "boolean" && typeof unordered !== "number" && !Util.isArrayOf(unordered, "number"))
-			throw new TypeError("options.unordered must be a boolean, number, or array of numbers.");
-		if (typeof limit !== "number") throw new TypeError("options.limit must be a number.");
-		if (prompt !== null && typeof prompt !== "boolean" && typeof prompt !== "object")
-			throw new TypeError("options.prompt must be a boolean, object, or null.");
-		if (otherwise !== null && typeof otherwise !== "string" && typeof otherwise !== "function" && typeof otherwise !== "object")
-			throw new TypeError("options.otherwise must be a string, function, object, or null.");
-		if (modifyOtherwise !== null && typeof modifyOtherwise !== "function")
-			throw new TypeError("options.modifyOtherwise must be a function or null.");
+		const { match, type, flag, multipleFlags, index, unordered, limit, prompt, defaultValue, otherwise, modifyOtherwise } =
+			this.parseOptions(options);
 
 		this.command = command;
 		this.match = match;
@@ -183,6 +154,42 @@ export class Argument {
 		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue;
 		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
 		this.modifyOtherwise = modifyOtherwise;
+	}
+
+	// todo: switch to s.function when it's available
+	private parseOptions(options: ArgumentOptions = {}) {
+		const ret = {
+			match: options.match ?? ArgumentMatches.PHRASE,
+			type: options.type ?? ArgumentTypes.STRING,
+			flag: options.flag ?? null,
+			multipleFlags: options.multipleFlags ?? false,
+			index: options.index ?? null,
+			unordered: options.unordered ?? false,
+			limit: options.limit ?? Infinity,
+			prompt: options.prompt ?? null,
+			defaultValue: options.default ?? null,
+			otherwise: options.otherwise ?? null,
+			modifyOtherwise: options.modifyOtherwise ?? null
+		};
+
+		const validation = s.object({
+			match: s.enum(...Object.values(ArgumentMatches)),
+			type: typeof ret.type === "function" ? <BaseValidator<ArgumentTypeCaster>>s.any : s.enum(...Object.values(ArgumentTypes)),
+			flag: s.union(s.string, s.string.array).nullable,
+			multipleFlags: s.boolean,
+			index: s.number.nullable,
+			unordered: s.union(s.boolean, s.number, s.number.array),
+			limit: s.number,
+			prompt: s.union(s.null, s.boolean, ArgumentPromptOptionsValidator),
+			defaultValue: typeof ret.defaultValue === "function" ? <BaseValidator<DefaultValueSupplier>>s.any : s.any,
+			otherwise:
+				typeof ret.otherwise === "function"
+					? <BaseValidator<OtherwiseContentSupplier>>s.any
+					: s.union(s.null, s.string, s.record(s.any)),
+			modifyOtherwise: typeof ret.modifyOtherwise === "function" ? s.any : s.union(s.null)
+		});
+
+		return validation.parse(ret);
 	}
 
 	/**
