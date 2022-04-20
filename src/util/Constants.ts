@@ -42,6 +42,8 @@ export enum ArgumentTypes {
 	STAGE_CHANNELS = "stageChannels",
 	THREAD_CHANNEL = "threadChannel",
 	THREAD_CHANNELS = "threadChannels",
+	DIRECTORY_CHANNEL = "directoryChannel",
+	DIRECTORY_CHANNELS = "directoryChannels",
 	ROLE = "role",
 	ROLES = "roles",
 	EMOJI = "emoji",
