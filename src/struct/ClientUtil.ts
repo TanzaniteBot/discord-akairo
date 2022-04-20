@@ -1,6 +1,7 @@
 import { APIEmbed } from "discord-api-types/v10";
 import {
 	ActivityType,
+	Attachment,
 	BufferResolvable,
 	Collection,
 	EmbedBuilder,
@@ -9,7 +10,6 @@ import {
 	Guild,
 	GuildChannel,
 	GuildMember,
-	MessageAttachment,
 	PermissionFlagsBits,
 	PermissionsString,
 	Role,
@@ -37,12 +37,12 @@ export class ClientUtil {
 	}
 
 	/**
-	 * Makes a MessageAttachment.
+	 * Makes a Attachment.
 	 * @param file - The file.
 	 * @param name - The filename.
 	 */
-	public attachment(file: BufferResolvable | Stream, name?: string): MessageAttachment {
-		return new MessageAttachment(file, name);
+	public attachment(file: BufferResolvable | Stream, name?: string): Attachment {
+		return new Attachment(file, name);
 	}
 
 	/**
