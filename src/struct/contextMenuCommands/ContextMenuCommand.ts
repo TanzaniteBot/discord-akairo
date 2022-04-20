@@ -1,5 +1,5 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { ApplicationCommandType, type ContextMenuCommandInteraction, type Snowflake } from "discord.js";
+import { ApplicationCommandType, LocalizationMap, type ContextMenuCommandInteraction, type Snowflake } from "discord.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import { Util } from "../../util/Util.js";
@@ -57,11 +57,16 @@ export abstract class ContextMenuCommand extends AkairoModule {
 	public declare handler: ContextMenuCommandHandler;
 
 	/**
+	 * Name localization.
+	 */
+	public declare nameLocalizations?: LocalizationMap;
+
+	/**
 	 * @param id - Listener ID.
 	 * @param options - Options for the context menu command.
 	 */
 	public constructor(id: string, options: ContextMenuCommandOptions) {
-		const { category, guilds, name, ownerOnly, superUserOnly, type } = options;
+		const { category, guilds, name, ownerOnly, superUserOnly, type, nameLocalizations } = options;
 
 		if (category !== undefined && typeof category !== "string") throw new TypeError("options.category must be a string.");
 		if (guilds !== undefined && !Util.isArrayOf(guilds, "string"))
@@ -70,6 +75,8 @@ export abstract class ContextMenuCommand extends AkairoModule {
 		if (ownerOnly !== undefined && typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean");
 		if (type !== ApplicationCommandType.User && type !== ApplicationCommandType.Message)
 			throw new TypeError("options.type must be either ApplicationCommandType.User or ApplicationCommandType.Message.");
+		if (nameLocalizations !== undefined && typeof nameLocalizations !== "object")
+			throw new TypeError("options.nameLocalizations must be a object.");
 
 		super(id, { category });
 
@@ -78,6 +85,7 @@ export abstract class ContextMenuCommand extends AkairoModule {
 		this.ownerOnly = ownerOnly;
 		this.superUserOnly = superUserOnly;
 		this.type = type;
+		this.nameLocalizations = nameLocalizations;
 	}
 
 	/**
@@ -129,4 +137,9 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	 * The type of the context menu command.
 	 */
 	type: ApplicationCommandType.User | ApplicationCommandType.Message;
+
+	/**
+	 * Name localization.
+	 */
+	nameLocalizations?: LocalizationMap;
 }

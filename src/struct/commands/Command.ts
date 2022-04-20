@@ -11,6 +11,7 @@ import {
 	ApplicationCommandSubGroupData,
 	AutocompleteInteraction,
 	Guild,
+	LocalizationMap,
 	Message,
 	PermissionResolvable,
 	Snowflake
@@ -115,6 +116,11 @@ export abstract class Command extends AkairoModule {
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
 	public declare ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * The slash command localizations.
+	 */
+	public declare localization: CommandLocalization;
 
 	/**
 	 * The key supplier for the locker.
@@ -235,6 +241,7 @@ export abstract class Command extends AkairoModule {
 			flags = [],
 			ignoreCooldown,
 			ignorePermissions,
+			localization = {},
 			lock,
 			onlyNsfw = false,
 			optionFlags = [],
@@ -271,6 +278,7 @@ export abstract class Command extends AkairoModule {
 			throw new TypeError("options.ignoreCooldown must be a string, function, or array of strings.");
 		if (ignorePermissions !== undefined && !isStringArrayStringOrFunc(ignorePermissions))
 			throw new TypeError("options.ignorePermissions must be a string, function, or array of strings.");
+		if (typeof localization !== "object") throw new TypeError("options.localization must be an object.");
 		if (lock !== undefined && typeof lock !== "function" && !(["channel", "guild", "user"] as const).includes(lock))
 			throw new TypeError("options.lock must be a function or a string with a value of 'channel', 'guild', or 'user'.");
 		if (typeof onlyNsfw !== "boolean") throw new TypeError("options.onlyNsfw must be a boolean.");
@@ -319,6 +327,7 @@ export abstract class Command extends AkairoModule {
 		this.description = Array.isArray(description) ? description.join("\n") : description;
 		this.editable = Boolean(editable);
 		this.lock = lock;
+		this.localization = <CommandLocalization>localization;
 		this.onlyNsfw = Boolean(onlyNsfw);
 		this.ownerOnly = Boolean(ownerOnly);
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
@@ -499,6 +508,11 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
 	ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * The slash command localizations.
+	 */
+	localization?: CommandLocalization;
 
 	/**
 	 * The key type or key generator for the locker. If lock is a string, it's expected one of 'guild', 'channel', or 'user'
@@ -744,6 +758,21 @@ export type SlashOption = AkairoApplicationCommandOptionData & {
 	 */
 	resolve?: SlashResolveType;
 };
+
+/**
+ * The localization for slash commands.
+ *
+ * @example
+ * const localization = {
+ *     nameLocalizations: {
+ *  	     ["en-US"]: "command name",
+ *     },
+ *     descriptionLocalizations: {
+ *         ["en-US"]: "command description",
+ *     },
+ * }
+ */
+export type CommandLocalization = Record<"nameLocalizations" | "descriptionLocalizations", LocalizationMap>;
 
 /**
  * @typedef {ApplicationCommandOptionType} VSCodePleaseStopRemovingMyImports

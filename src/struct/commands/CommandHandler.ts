@@ -417,7 +417,9 @@ export class CommandHandler extends AkairoHandler {
 				}),
 				guilds: data.slashGuilds ?? [],
 				defaultPermission: data.slashDefaultPermission,
-				type: ApplicationCommandType.ChatInput
+				type: ApplicationCommandType.ChatInput,
+				nameLocalizations: data.localization.nameLocalizations,
+				descriptionLocalizations: data.localization.descriptionLocalizations
 			});
 		}
 
@@ -434,7 +436,8 @@ export class CommandHandler extends AkairoHandler {
 					name: data.name,
 					guilds: data.guilds ?? [],
 					defaultPermission: this.useSlashPermissions ? !(data.ownerOnly || /* data.superUserOnly || */ false) : true,
-					type: data.type
+					type: data.type,
+					nameLocalizations: data.nameLocalizations
 				});
 			}
 		}
@@ -447,7 +450,9 @@ export class CommandHandler extends AkairoHandler {
 				description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
 				options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
 				defaultPermission: options.defaultPermission,
-				type: options.type
+				type: options.type,
+				nameLocalizations: options.nameLocalizations,
+				descriptionLocalizations: options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
 			}))
 			.sort((a, b) => {
 				if (a.name < b.name) return -1;
@@ -455,12 +460,14 @@ export class CommandHandler extends AkairoHandler {
 				return 0;
 			}) as ApplicationCommandData[];
 		const currentGlobalCommands = (await this.client.application?.commands.fetch())!
-			.map(value1 => ({
-				name: value1.name,
-				description: value1.description,
-				options: value1.options,
-				defaultPermission: value1.defaultPermission,
-				type: value1.type
+			.map(options => ({
+				name: options.name,
+				description: options.description,
+				options: options.options,
+				defaultPermission: options.defaultPermission,
+				type: options.type,
+				nameLocalizations: options.nameLocalizations,
+				descriptionLocalizations: options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
 			}))
 			.sort((a, b) => {
 				if (a.name < b.name) return -1;
@@ -488,7 +495,10 @@ export class CommandHandler extends AkairoHandler {
 						description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
 						options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
 						defaultPermission: options.defaultPermission,
-						type: options.type
+						type: options.type,
+						nameLocalizations: options.nameLocalizations,
+						descriptionLocalizations:
+							options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
 					} as ApplicationCommandData
 				]);
 			}
@@ -506,12 +516,15 @@ export class CommandHandler extends AkairoHandler {
 				});
 
 				const currentGuildCommands = (await guild.commands.fetch())
-					.map(value1 => ({
-						name: value1.name,
-						description: value1.description,
-						options: value1.options,
-						defaultPermission: value1.defaultPermission,
-						type: value1.type
+					.map(options => ({
+						name: options.name,
+						description: options.description,
+						options: options.options,
+						defaultPermission: options.defaultPermission,
+						type: options.type,
+						nameLocalizations: options.nameLocalizations,
+						descriptionLocalizations:
+							options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
 					}))
 					.sort((a, b) => {
 						if (a.name < b.name) return -1;
