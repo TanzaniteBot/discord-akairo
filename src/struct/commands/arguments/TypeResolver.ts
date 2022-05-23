@@ -1,6 +1,7 @@
 import {
 	CategoryChannel,
 	Collection,
+	DirectoryChannel,
 	DMChannel,
 	GuildMember,
 	Message,
@@ -229,7 +230,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isText()) return null;
+				if (!channel?.isText()) return null;
 
 				return channel;
 			},
@@ -248,7 +249,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isVoice()) return null;
+				if (!channel?.isVoice()) return null;
 				return channel;
 			},
 
@@ -266,7 +267,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isCategory()) return null;
+				if (!channel?.isCategory()) return null;
 
 				return channel;
 			},
@@ -285,7 +286,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isNews()) return null;
+				if (!channel?.isNews()) return null;
 
 				return channel;
 			},
@@ -304,7 +305,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isStage()) return null;
+				if (!channel?.isStage()) return null;
 
 				return channel;
 			},
@@ -323,7 +324,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (!channel || !channel.isThread()) return null;
+				if (!channel?.isThread()) return null;
 
 				return channel;
 			},
@@ -336,6 +337,25 @@ export class TypeResolver {
 
 				const threadChannels = <Collection<string, ThreadChannel>>channels.filter(c => c.isThread());
 				return threadChannels.size ? threadChannels : null;
+			},
+
+			[ArgumentTypes.DIRECTORY_CHANNEL]: (message, phrase) => {
+				if (!phrase) return null;
+				if (!message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (!channel?.isDirectory()) return null;
+
+				return channel;
+			},
+
+			[ArgumentTypes.DIRECTORY_CHANNELS]: (message, phrase) => {
+				if (!phrase) return null;
+				if (!message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
+				if (!channels.size) return null;
+
+				const directoryChannels = <Collection<string, DirectoryChannel>>channels.filter(c => c.isDirectory());
+				return directoryChannels.size ? directoryChannels : null;
 			},
 
 			[ArgumentTypes.ROLE]: (message, phrase) => {

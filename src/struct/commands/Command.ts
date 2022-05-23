@@ -12,6 +12,7 @@ import {
 	ApplicationCommandSubGroupData,
 	AutocompleteInteraction,
 	Guild,
+	LocalizationMap,
 	Message,
 	PermissionResolvable,
 	Snowflake
@@ -115,6 +116,11 @@ export abstract class Command extends AkairoModule {
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
 	public declare ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * The slash command localizations.
+	 */
+	public declare localization: CommandLocalization;
 
 	/**
 	 * The key supplier for the locker.
@@ -235,6 +241,7 @@ export abstract class Command extends AkairoModule {
 			flags,
 			ignoreCooldown,
 			ignorePermissions,
+			localization,
 			lock,
 			onlyNsfw,
 			optionFlags,
@@ -279,6 +286,7 @@ export abstract class Command extends AkairoModule {
 		this.description = Array.isArray(description) ? description.join("\n") : description;
 		this.editable = Boolean(editable);
 		this.lock = lock;
+		this.localization = <CommandLocalization>localization;
 		this.onlyNsfw = Boolean(onlyNsfw);
 		this.ownerOnly = Boolean(ownerOnly);
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
@@ -323,6 +331,7 @@ export abstract class Command extends AkairoModule {
 			flags: options.flags ?? [],
 			ignoreCooldown: options.ignoreCooldown,
 			ignorePermissions: options.ignorePermissions,
+			localization: options.localization ?? {},
 			lock: options.lock,
 			onlyNsfw: options.onlyNsfw ?? false,
 			optionFlags: options.optionFlags ?? [],
@@ -381,6 +390,8 @@ export abstract class Command extends AkairoModule {
 				typeof ret.ignoreCooldown === "function"
 					? <BaseValidator<IgnoreCheckPredicate>>s.any
 					: s.union(s.string, s.string.array, s.undefined),
+			// todo: improve this
+			localization: s.record(s.any),
 			lock:
 				typeof ret.lock === "function"
 					? <BaseValidator<KeySupplier>>s.any
@@ -568,6 +579,11 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
 	ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+
+	/**
+	 * The slash command localizations.
+	 */
+	localization?: CommandLocalization;
 
 	/**
 	 * The key type or key generator for the locker. If lock is a string, it's expected one of 'guild', 'channel', or 'user'
@@ -813,6 +829,21 @@ export type SlashOption = AkairoApplicationCommandOptionData & {
 	 */
 	resolve?: SlashResolveType;
 };
+
+/**
+ * The localization for slash commands.
+ *
+ * @example
+ * const localization = {
+ *     nameLocalizations: {
+ *  	     ["en-US"]: "command name",
+ *     },
+ *     descriptionLocalizations: {
+ *         ["en-US"]: "command description",
+ *     },
+ * }
+ */
+export type CommandLocalization = Record<"nameLocalizations" | "descriptionLocalizations", LocalizationMap>;
 
 /**
  * @typedef {ApplicationCommandOptionType} VSCodePleaseStopRemovingMyImports

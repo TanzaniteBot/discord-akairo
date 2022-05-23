@@ -3,6 +3,7 @@ import type {
 	BaseGuildVoiceChannel,
 	CategoryChannel,
 	Collection,
+	DirectoryChannel,
 	Emoji,
 	Guild,
 	GuildBasedChannel,
@@ -996,6 +997,7 @@ export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" |
  * - `newsChannel` tries to resolve to a news channel.
  * - `stageChannel` tries to resolve to a stage channel.
  * - `threadChannel` tries to resolve a thread channel.
+ * - `directoryChannel` tries to resolve to a directory channel.
  * - `role` tries to resolve to a role.
  * - `emoji` tries to resolve to a custom emoji.
  * - `guild` tries to resolve to a guild.
@@ -1043,6 +1045,8 @@ export interface BaseArgumentType {
 	stageChannels: Collection<string, StageChannel> | null;
 	threadChannel: ThreadChannel | null;
 	threadChannels: Collection<string, ThreadChannel> | null;
+	directoryChannel: DirectoryChannel | null;
+	directoryChannels: Collection<string, DirectoryChannel> | null;
 	role: Role | null;
 	roles: Collection<string, Role> | null;
 	emoji: Emoji | null;

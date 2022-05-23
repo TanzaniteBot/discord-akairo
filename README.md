@@ -17,7 +17,7 @@
 
 ### Changes in this fork of akairo
 
-Please see [this file](/docs/general/updates.md) for a list of changes in this fork vs normal akairo.
+Please see [this file](/guide/general/updates.md) for a list of changes in this fork vs normal akairo.
 If you have any questions related to this fork please contact `IRONM00N#0001` in the akairo server or join my [bot's discord](https://discord.gg/7FpsYp2c47).
 
 ## Features
