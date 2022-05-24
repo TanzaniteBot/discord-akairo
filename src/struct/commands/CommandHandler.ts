@@ -862,7 +862,7 @@ export class CommandHandler extends AkairoHandler {
 			}
 
 			// Makes options that are not found to be null so that it matches the behavior normal commands.
-			(() => {
+			out: {
 				type SubCommand = AkairoApplicationCommandSubCommandData;
 				type SubCommandGroup = AkairoApplicationCommandSubGroupData;
 				type NonSubSlashOptions =
@@ -874,12 +874,12 @@ export class CommandHandler extends AkairoHandler {
 					const usedSubcommandOrGroup = commandModule.slashOptions?.find(o => o.name === convertedOptions.subcommand);
 					if (!usedSubcommandOrGroup) {
 						this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
-						return;
+						break out;
 					}
 					if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.Subcommand) {
 						if (!(<SubCommand>usedSubcommandOrGroup).options) {
 							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
-							return;
+							break out;
 						}
 						handleOptions((<SubCommand>usedSubcommandOrGroup).options!);
 					} else if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.SubcommandGroup) {
@@ -888,10 +888,10 @@ export class CommandHandler extends AkairoHandler {
 						);
 						if (!usedSubCommand) {
 							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
-							return;
+							break out;
 						} else if (!usedSubCommand.options) {
 							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
-							return;
+							break out;
 						}
 
 						handleOptions(usedSubCommand.options);
@@ -902,6 +902,7 @@ export class CommandHandler extends AkairoHandler {
 					handleOptions((commandModule.slashOptions ?? []) as NonSubSlashOptions[]);
 				}
 
+				// eslint-disable-next-line no-inner-declarations
 				function handleOptions(options: NonSubSlashOptions[]) {
 					for (const option of options) {
 						switch (option.type) {
@@ -921,7 +922,7 @@ export class CommandHandler extends AkairoHandler {
 						}
 					}
 				}
-			})();
+			}
 
 			let key;
 			try {
@@ -1281,7 +1282,7 @@ export class CommandHandler extends AkairoHandler {
 				}
 			} else if (message.inGuild()) {
 				if (!message.channel || message.channel.isDMBased()) return false;
-				const missing = message.channel?.permissionsFor(message.guild.me!)?.missing(command.clientPermissions);
+				const missing = message.channel?.permissionsFor(message.guild.members.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
 					this.emit(event, message, command, "client", missing);
 					return true;
