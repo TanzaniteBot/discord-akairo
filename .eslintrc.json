@@ -49,7 +49,6 @@
 		"no-mixed-requires": "error",
 		"no-new-require": "error",
 		"no-path-concat": "error",
-		"consistent-this": ["error", "$this"],
 		"func-names": "error",
 		"func-name-matching": "error",
 		"func-style": [
@@ -103,6 +102,9 @@
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"deprecation/deprecation": "warn",
-		"@typescript-eslint/explicit-member-accessibility": ["warn", { "accessibility": "explicit" }]
+		"@typescript-eslint/explicit-member-accessibility": ["warn", { "accessibility": "explicit" }],
+		"@typescript-eslint/switch-exhaustiveness-check": "warn",
+		"consistent-this": ["error", "$this"],
+		"@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["$this"] }]
 	}
 }

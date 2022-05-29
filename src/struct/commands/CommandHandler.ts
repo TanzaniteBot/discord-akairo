@@ -853,7 +853,8 @@ export class CommandHandler extends AkairoHandler {
 							"getUser",
 							"getMember",
 							"getRole",
-							"getMentionable"
+							"getMentionable",
+							"getAttachment"
 						] as const
 					).includes(func)
 				)
@@ -915,7 +916,11 @@ export class CommandHandler extends AkairoHandler {
 							case ApplicationCommandOptionType.Role:
 							case ApplicationCommandOptionType.String:
 							case ApplicationCommandOptionType.User:
+							case ApplicationCommandOptionType.Attachment:
+								convertedOptions[option.name] ??= null;
+								break;
 							default:
+								// @ts-expect-error
 								convertedOptions[option.name] ??= null;
 								break;
 						}
@@ -1878,7 +1883,18 @@ export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boo
  */
 export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
 
-const slashResolvable = ["Boolean", "Channel", "String", "Integer", "Number", "User", "Member", "Role", "Mentionable"] as const;
+const slashResolvable = [
+	"Attachment",
+	"Boolean",
+	"Channel",
+	"Integer",
+	"Member",
+	"Mentionable",
+	"Number",
+	"Role",
+	"String",
+	"User"
+] as const;
 export type SlashResolveType = typeof slashResolvable[number];
 
 /**
@@ -1897,7 +1913,8 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["member"]>
 		| NonNullable<CommandInteractionOption["role"]>
 		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
-		| NonNullable<CommandInteractionOption["message"]>;
+		| NonNullable<CommandInteractionOption["message"]>
+		| NonNullable<CommandInteractionOption["attachment"]>;
 };
 
 /**
