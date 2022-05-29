@@ -1,1 +1,4 @@
 * text=auto eol=lf
+yarn.lock linguist-generated
+.yarn/plugins/* linguist-generated
+.yarn/releases/* linguist-generated
