@@ -841,7 +841,7 @@ export class CommandHandler extends AkairoHandler {
 					continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				const func = `get${originalOption?.resolve ?? ApplicationCommandOptionType[option.type]}` as GetFunction;
+				const func = `get${originalOption?.resolve ?? (ApplicationCommandOptionType[option.type] as SlashResolveType)}` as const;
 				if (
 					!(
 						[
@@ -858,7 +858,7 @@ export class CommandHandler extends AkairoHandler {
 						] as const
 					).includes(func)
 				)
-					throw new Error(` ${option.type}`);
+					throw new Error(`Unknown slash option type: ${option.type}`);
 				convertedOptions[option.name] = interaction.options[func](option.name, false);
 			}
 
@@ -1897,11 +1897,6 @@ const slashResolvable = [
 	"User"
 ] as const;
 export type SlashResolveType = typeof slashResolvable[number];
-
-/**
- * Calls the corresponding get function on the {@link CommandInteractionOptionResolver}
- */
-type GetFunction = `get${SlashResolveType}`;
 
 type ConvertedOptionsType = {
 	[key: string]:
