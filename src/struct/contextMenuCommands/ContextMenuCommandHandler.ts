@@ -77,9 +77,7 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 	protected setup() {
 		this.client.once("ready", () => {
 			this.client.on("interactionCreate", i => {
-				if (!i.isUserContextMenuCommand()) return;
-
-				this.handle(i);
+				if (i.isUserContextMenuCommand() || i.isMessageContextMenuCommand()) this.handle(i);
 			});
 		});
 	}
