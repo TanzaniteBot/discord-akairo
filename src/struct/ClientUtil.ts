@@ -1,20 +1,19 @@
 import { APIEmbed } from "discord-api-types/v10";
 import {
 	ActivityType,
-	Attachment,
+	AttachmentBuilder,
 	BufferResolvable,
 	Collection,
 	EmbedBuilder,
 	EmbedData,
 	Emoji,
 	Guild,
-	GuildChannel,
+	GuildBasedChannel,
 	GuildMember,
 	PermissionFlagsBits,
 	PermissionsString,
 	Role,
 	Snowflake,
-	ThreadChannel,
 	User
 } from "discord.js";
 import type { Stream } from "stream";
@@ -40,9 +39,10 @@ export class ClientUtil {
 	 * Makes a Attachment.
 	 * @param file - The file.
 	 * @param name - The filename.
+	 * @param description - The description of the file.
 	 */
-	public attachment(file: BufferResolvable | Stream, name?: string): Attachment {
-		return new Attachment(file, name);
+	public attachment(file: BufferResolvable | Stream, name?: string, description?: string): AttachmentBuilder {
+		return new AttachmentBuilder(file, { name, description });
 	}
 
 	/**
@@ -52,12 +52,7 @@ export class ClientUtil {
 	 * @param caseSensitive - Makes checking by name case sensitive.
 	 * @param wholeWord - Makes checking by name match full word only.
 	 */
-	public checkChannel<C extends ThreadChannel | GuildChannel>(
-		text: string,
-		channel: C,
-		caseSensitive = false,
-		wholeWord = false
-	): boolean {
+	public checkChannel<C extends GuildBasedChannel>(text: string, channel: C, caseSensitive = false, wholeWord = false): boolean {
 		if (channel.id === text) return true;
 
 		const reg = /<#(\d{17,19})>/;
@@ -260,7 +255,7 @@ export class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveChannel<C extends ThreadChannel | GuildChannel>(
+	public resolveChannel<C extends GuildBasedChannel>(
 		text: string,
 		channels: Collection<Snowflake, C>,
 		caseSensitive = false,
@@ -276,7 +271,7 @@ export class ClientUtil {
 	 * @param caseSensitive - Makes finding by name case sensitive.
 	 * @param wholeWord - Makes finding by name match full word only.
 	 */
-	public resolveChannels<C extends ThreadChannel | GuildChannel>(
+	public resolveChannels<C extends GuildBasedChannel>(
 		text: string,
 		channels: Collection<Snowflake, C>,
 		caseSensitive = false,

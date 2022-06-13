@@ -1,9 +1,7 @@
 import {
-	ApplicationCommand,
 	ApplicationCommandData,
 	ApplicationCommandOptionData,
 	ApplicationCommandOptionType,
-	ApplicationCommandPermissionType,
 	ApplicationCommandType,
 	AutocompleteInteraction,
 	Awaitable,
@@ -13,8 +11,7 @@ import {
 	CommandInteractionOptionResolver,
 	DiscordAPIError,
 	Guild,
-	GuildApplicationCommandPermissionData,
-	GuildResolvable,
+	InteractionType,
 	Message,
 	Snowflake,
 	TextBasedChannel,
@@ -213,12 +210,12 @@ export class CommandHandler extends AkairoHandler {
 	 */
 	public declare skipBuiltInPostInhibitors: boolean;
 
-	/**
-	 * Use slash command permissions for owner only commands
-	 *
-	 * Warning: this is experimental
-	 */
-	public declare useSlashPermissions: boolean;
+	// /**
+	//  * Use slash command permissions for owner only commands
+	//  *
+	//  * Warning: this is experimental
+	//  */
+	// public declare useSlashPermissions: boolean;
 
 	/**
 	 * @param client - The Akairo client.
@@ -251,8 +248,8 @@ export class CommandHandler extends AkairoHandler {
 			typing = false,
 			autoRegisterSlashCommands = false,
 			execSlash = false,
-			skipBuiltInPostInhibitors = false,
-			useSlashPermissions = false
+			skipBuiltInPostInhibitors = false
+			// useSlashPermissions = false
 		} = options ?? {};
 
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
@@ -285,7 +282,7 @@ export class CommandHandler extends AkairoHandler {
 		if (typeof execSlash !== "boolean") throw new TypeError("options.execSlash must be a boolean.");
 		if (typeof skipBuiltInPostInhibitors !== "boolean")
 			throw new TypeError("options.skipBuiltInPostInhibitors must be a boolean.");
-		if (typeof useSlashPermissions !== "boolean") throw new TypeError("options.useSlashPermissions must be a boolean.");
+		// if (typeof useSlashPermissions !== "boolean") throw new TypeError("options.useSlashPermissions must be a boolean.");
 
 		super(client, {
 			directory,
@@ -343,8 +340,8 @@ export class CommandHandler extends AkairoHandler {
 		this.inhibitorHandler = null;
 		this.autoDefer = Boolean(autoDefer);
 		this.execSlash = Boolean(execSlash);
-		this.skipBuiltInPostInhibitors = Boolean(skipBuiltInPostInhibitors);
-		this.useSlashPermissions = Boolean(useSlashPermissions);
+		// this.skipBuiltInPostInhibitors = Boolean(skipBuiltInPostInhibitors);
+		// this.useSlashPermissions = Boolean(useSlashPermissions);
 		this.setup();
 	}
 
@@ -353,10 +350,10 @@ export class CommandHandler extends AkairoHandler {
 	 */
 	protected setup() {
 		this.client.once("ready", () => {
-			if (this.autoRegisterSlashCommands)
-				this.registerInteractionCommands().then(() => {
-					if (this.useSlashPermissions) this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
-				});
+			// if (this.autoRegisterSlashCommands)
+			// 	this.registerInteractionCommands().then(() => {
+			// 		if (this.useSlashPermissions) this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
+			// 	});
 
 			this.client.on("messageCreate", async m => {
 				const message = m.partial ? await m.fetch().catch(() => null) : m;
@@ -378,7 +375,7 @@ export class CommandHandler extends AkairoHandler {
 			}
 			this.client.on("interactionCreate", i => {
 				if (i.isChatInputCommand()) this.handleSlash(i);
-				if (i.isAutocomplete()) this.handleAutocomplete(i);
+				if (i.type === InteractionType.ApplicationCommandAutocomplete) this.handleAutocomplete(i);
 			});
 		});
 
@@ -416,7 +413,8 @@ export class CommandHandler extends AkairoHandler {
 					return temp as ApplicationCommandOptionData;
 				}),
 				guilds: data.slashGuilds ?? [],
-				defaultPermission: data.slashDefaultPermission,
+				defaultMemberPermissions: data.slashDefaultMemberPermissions,
+				dmPermission: data.slashDmPermission,
 				type: ApplicationCommandType.ChatInput,
 				nameLocalizations: data.localization.nameLocalizations,
 				descriptionLocalizations: data.localization.descriptionLocalizations
@@ -435,7 +433,8 @@ export class CommandHandler extends AkairoHandler {
 				parsedSlashCommands.push({
 					name: data.name,
 					guilds: data.guilds ?? [],
-					defaultPermission: this.useSlashPermissions ? !(data.ownerOnly || /* data.superUserOnly || */ false) : true,
+					defaultMemberPermissions: data.defaultMemberPermissions,
+					dmPermission: data.dmPermission,
 					type: data.type,
 					nameLocalizations: data.nameLocalizations
 				});
@@ -449,7 +448,8 @@ export class CommandHandler extends AkairoHandler {
 				name: options.name,
 				description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
 				options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
-				defaultPermission: options.defaultPermission,
+				defaultMemberPermissions: options.defaultMemberPermissions,
+				dmPermission: options.dmPermission,
 				type: options.type,
 				nameLocalizations: options.nameLocalizations,
 				descriptionLocalizations: options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
@@ -464,7 +464,8 @@ export class CommandHandler extends AkairoHandler {
 				name: options.name,
 				description: options.description,
 				options: options.options,
-				defaultPermission: options.defaultPermission,
+				defaultMemberPermissions: options.defaultMemberPermissions,
+				dmPermission: options.dmPermission,
 				type: options.type,
 				nameLocalizations: options.nameLocalizations,
 				descriptionLocalizations: options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
@@ -494,7 +495,8 @@ export class CommandHandler extends AkairoHandler {
 						name: options.name,
 						description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
 						options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
-						defaultPermission: options.defaultPermission,
+						defaultMemberPermissions: options.defaultMemberPermissions,
+						dmPermission: options.dmPermission,
 						type: options.type,
 						nameLocalizations: options.nameLocalizations,
 						descriptionLocalizations:
@@ -520,7 +522,8 @@ export class CommandHandler extends AkairoHandler {
 						name: options.name,
 						description: options.description,
 						options: options.options,
-						defaultPermission: options.defaultPermission,
+						defaultMemberPermissions: options.defaultMemberPermissions,
+						dmPermission: options.dmPermission,
 						type: options.type,
 						nameLocalizations: options.nameLocalizations,
 						descriptionLocalizations:
@@ -550,72 +553,72 @@ export class CommandHandler extends AkairoHandler {
 		}
 	}
 
-	/**
-	 * updates interaction permissions
-	 */
-	protected async updateInteractionPermissions(owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */) {
-		const mapCom = (
-			value: ApplicationCommand<{ guild: GuildResolvable }>,
-			guild: Guild
-		): GuildApplicationCommandPermissionData => {
-			const command = this.modules.find(mod => mod.aliases[0] === value.name);
+	// /**
+	//  * updates interaction permissions
+	//  */
+	// protected async updateInteractionPermissions(owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */) {
+	// 	const mapCom = (
+	// 		value: ApplicationCommand<{ guild: GuildResolvable }>,
+	// 		guild: Guild
+	// 	): GuildApplicationCommandPermissionData => {
+	// 		const command = this.modules.find(mod => mod.aliases[0] === value.name);
 
-			if (!command?.slashPermissions) {
-				let allowedUsers: string[] = [];
-				/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
-				if (command?.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
-				allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
+	// 		if (!command?.slashPermissions) {
+	// 			let allowedUsers: string[] = [];
+	// 			/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
+	// 			if (command?.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
+	// 			allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
 
-				return {
-					id: value.id,
-					permissions: allowedUsers.map(u => ({
-						id: u,
-						type: ApplicationCommandPermissionType.User,
-						permission: true
-					}))
-				};
-			} else {
-				return {
-					id: value.id,
-					permissions: typeof command.slashPermissions === "function" ? command.slashPermissions(guild) : command.slashPermissions
-				};
-			}
-		};
+	// 			return {
+	// 				id: value.id,
+	// 				permissions: allowedUsers.map(u => ({
+	// 					id: u,
+	// 					type: ApplicationCommandPermissionType.User,
+	// 					permission: true
+	// 				}))
+	// 			};
+	// 		} else {
+	// 			return {
+	// 				id: value.id,
+	// 				permissions: typeof command.slashPermissions === "function" ? command.slashPermissions(guild) : command.slashPermissions
+	// 			};
+	// 		}
+	// 	};
 
-		const globalCommands = (await this.client.application?.commands.fetch())?.filter(value =>
-			Boolean(this.modules.find(mod => mod.aliases[0] === value.name))
-		);
-		const fullPermissions = globalCommands
-			?.filter(value => !value.defaultPermission)
-			.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)));
+	// 	const globalCommands = (await this.client.application?.commands.fetch())?.filter(value =>
+	// 		Boolean(this.modules.find(mod => mod.aliases[0] === value.name))
+	// 	);
+	// 	const fullPermissions = globalCommands
+	// 		?.filter(value => !value.defaultPermission)
+	// 		.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)));
 
-		const promises = this.client.guilds.cache.map(
-			/* async */ guild => {
-				const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
-				// await guild.commands.fetch();
-				if (guild.commands.cache.size)
-					perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild)));
-				if (guild.available)
-					return guild.commands.permissions.set({
-						fullPermissions: perms
-					});
-				// Return empty promise if guild is unavailable
-				return Promise.resolve();
-			}
-		);
-		try {
-			await Promise.all(promises);
-		} catch (e) {
-			this.client.emit(
-				"akairoDebug",
-				"[updateInteractionPermissions] Error updating interaction permissions, here are the promises, globalCommands, and fullPermissions",
-				promises,
-				globalCommands,
-				fullPermissions
-			);
-			throw e;
-		}
-	}
+	// 	const promises = this.client.guilds.cache.map(
+	// 		/* async */ guild => {
+	// 			const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
+	// 			// await guild.commands.fetch();
+	// 			if (guild.commands.cache.size)
+	// 				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild)));
+	// 			if (guild.available)
+	// 				return guild.commands.permissions.set({
+	// 					fullPermissions: perms
+	// 				});
+	// 			// Return empty promise if guild is unavailable
+	// 			return Promise.resolve();
+	// 		}
+	// 	);
+	// 	try {
+	// 		await Promise.all(promises);
+	// 	} catch (e) {
+	// 		this.client.emit(
+	// 			"akairoDebug",
+	// 			"[updateInteractionPermissions] Error updating interaction permissions, here are the promises, globalCommands, and fullPermissions",
+	// 			promises,
+	// 			globalCommands,
+	// 			fullPermissions
+	// 		);
+	// 		throw e;
+	// 	}
+	// }
 
 	/**
 	 * Registers a module.
@@ -625,8 +628,8 @@ export class CommandHandler extends AkairoHandler {
 	public override register(command: Command, filepath?: string): void {
 		super.register(command, filepath);
 
-		if (command.slashDefaultPermission === undefined)
-			command.slashDefaultPermission = this.useSlashPermissions ? !command.ownerOnly : true;
+		// if (command.slashDefaultPermission === undefined)
+		// 	command.slashDefaultPermission = this.useSlashPermissions ? !command.ownerOnly : true;
 
 		for (let alias of command.aliases) {
 			const conflict = this.aliases.get(alias.toLowerCase());
@@ -1806,13 +1809,13 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions {
 	 */
 	skipBuiltInPostInhibitors?: boolean;
 
-	/**
-	 * Use slash command permissions for owner only commands
-	 *
-	 * Warning: this is experimental
-	 * @default false
-	 */
-	useSlashPermissions?: boolean;
+	// /**
+	//  * Use slash command permissions for owner only commands
+	//  *
+	//  * Warning: this is experimental
+	//  * @default false
+	//  */
+	// useSlashPermissions?: boolean;
 }
 
 /**

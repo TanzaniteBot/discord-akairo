@@ -6,11 +6,9 @@ import {
 	ApplicationCommandNonOptionsData,
 	ApplicationCommandNumericOptionData,
 	ApplicationCommandOptionType,
-	ApplicationCommandPermissionData,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
 	AutocompleteInteraction,
-	Guild,
 	LocalizationMap,
 	Message,
 	PermissionResolvable,
@@ -70,7 +68,7 @@ export abstract class Command extends AkairoModule {
 	/**
 	 * Permissions required to run command by the client.
 	 */
-	public declare clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	public declare clientPermissions?: PermissionResolvable | MissingPermissionSupplier;
 
 	/**
 	 * Cooldown in milliseconds.
@@ -125,7 +123,7 @@ export abstract class Command extends AkairoModule {
 	/**
 	 * The key supplier for the locker.
 	 */
-	public declare lock?: KeySupplier | "channel" | "guild" | "user";
+	public declare lock?: KeySupplier;
 
 	/**
 	 * Stores the current locks.
@@ -168,11 +166,16 @@ export abstract class Command extends AkairoModule {
 	public declare slash?: boolean;
 
 	/**
-	 * The default permission to set when creating the slash command.
-	 *
-	 * **Note:** Requires the useSlashPermissions to be enabled in the command handler
+	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	public declare slashDefaultPermission: boolean;
+	public declare slashDefaultMemberPermissions?: PermissionResolvable;
+
+	/**
+	 * Whether the command is enabled in DMs
+	 *
+	 * **Cannot be enabled for commands that specify `slashGuilds`**
+	 */
+	public declare slashDmPermission?: boolean;
 
 	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
@@ -188,11 +191,6 @@ export abstract class Command extends AkairoModule {
 	 * Options for using the slash command.
 	 */
 	public declare slashOptions?: SlashOption[];
-
-	/**
-	 * The slash permissions to set in each guild for this command.
-	 */
-	public declare slashPermissions?: ApplicationCommandPermissionData[] | SlashPermissionsSupplier;
 
 	/**
 	 * Only allows this command to be executed as a slash command.
@@ -212,7 +210,7 @@ export abstract class Command extends AkairoModule {
 	/**
 	 * Permissions required to run command by the user.
 	 */
-	public declare userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	public declare userPermissions?: PermissionResolvable | MissingPermissionSupplier;
 
 	/**
 	 * Generator for arguments.
@@ -252,15 +250,19 @@ export abstract class Command extends AkairoModule {
 			regex = this.regex,
 			separator,
 			slash = false,
-			slashDefaultPermission,
 			slashEphemeral = false,
 			slashGuilds = [],
 			slashOnly = false,
 			slashOptions,
-			slashPermissions,
 			superUserOnly = false,
 			typing = false,
 			userPermissions = this.userPermissions
+		} = options ?? {};
+
+		// ts doesn't like it when I reference other properties when using destructuring syntax
+		const {
+			slashDefaultMemberPermissions = userPermissions && typeof userPermissions !== "function" ? userPermissions : undefined,
+			slashDmPermission = channel === null || channel === "dm"
 		} = options ?? {};
 
 		if (!Util.isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
@@ -292,15 +294,15 @@ export abstract class Command extends AkairoModule {
 			throw new TypeError("options.regex must be a function or a RegExp.");
 		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
 		if (typeof slash !== "boolean") throw new TypeError("options.slash must be a boolean.");
-		if (slashDefaultPermission && typeof slashDefaultPermission !== "boolean")
-			throw new TypeError("options.slashDefaultPermission must be a boolean.");
+		if (slashDmPermission != null && typeof slashDmPermission !== "boolean")
+			throw new TypeError("options.slashDmPermission must be a boolean.");
+		if (slashDmPermission != null && slashGuilds.length > 0)
+			throw new TypeError("You cannot set `options.slashDmPermission` with commands configured with `options.slashGuilds`.");
 		if (typeof slashEphemeral !== "boolean") throw new TypeError("options.slashEphemeral must be a boolean.");
 		if (!Util.isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
 		if (typeof slashOnly !== "boolean") throw new TypeError("options.slashOnly must be a boolean.");
 		if (slashOptions !== undefined && !Util.isArrayOf(slashOptions, "object"))
 			throw new TypeError("options.slashOptions must be an array of objects.");
-		if (slashPermissions !== undefined && typeof slashPermissions !== "function" && !Util.isArrayOf(slashPermissions, "object"))
-			throw new TypeError("options.slashPermissions must be an array of objects or a function.");
 		if (typeof superUserOnly !== "boolean") throw new TypeError("options.superUserOnly must be a boolean.");
 		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");
 
@@ -326,7 +328,6 @@ export abstract class Command extends AkairoModule {
 		this.cooldown = cooldown!;
 		this.description = Array.isArray(description) ? description.join("\n") : description;
 		this.editable = Boolean(editable);
-		this.lock = lock;
 		this.localization = <CommandLocalization>localization;
 		this.onlyNsfw = Boolean(onlyNsfw);
 		this.ownerOnly = Boolean(ownerOnly);
@@ -336,23 +337,24 @@ export abstract class Command extends AkairoModule {
 		this.superUserOnly = Boolean(superUserOnly);
 		this.typing = Boolean(typing);
 		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
-		if (typeof lock === "string") {
-			this.lock = {
-				guild: (message: Message | AkairoMessage): string => message.guild! && message.guild.id!,
-				channel: (message: Message | AkairoMessage): string => message.channel!.id,
-				user: (message: Message | AkairoMessage): string => message.author.id
-			}[lock];
-		}
+		this.lock =
+			typeof lock === "string"
+				? {
+						guild: (message: Message | AkairoMessage): string => message.guild! && message.guild.id!,
+						channel: (message: Message | AkairoMessage): string => message.channel!.id,
+						user: (message: Message | AkairoMessage): string => message.author.id
+				  }[lock]
+				: lock;
 		if (this.lock) this.locker = new Set();
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
 		this.slash = slash;
-		this.slashDefaultPermission = slashDefaultPermission!;
+		this.slashDefaultMemberPermissions = slashDefaultMemberPermissions;
+		this.slashDmPermission = slashDmPermission;
 		this.slashEphemeral = slashEphemeral;
 		this.slashGuilds = slashGuilds;
 		this.slashOnly = slashOnly;
 		this.slashOptions = slashOptions;
-		this.slashPermissions = typeof slashPermissions === "function" ? slashPermissions.bind(this) : slashPermissions;
 	}
 
 	/**
@@ -467,7 +469,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * Permissions required by the client to run this command.
 	 * @default this.clientPermissions
 	 */
-	clientPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	clientPermissions?: PermissionResolvable | MissingPermissionSupplier;
 
 	/**
 	 * Whether or not to run on messages that are not directly commands.
@@ -573,12 +575,19 @@ export interface CommandOptions extends AkairoModuleOptions {
 	slash?: boolean;
 
 	/**
-	 * The default permission to set when creating the slash command.
-	 *
-	 * **Note:** Requires `useSlashPermissions` to be enabled in the command handler
-	 * @default this.handler.useSlashPermissions ? !this.ownerOnly : true
+	 * The default bitfield used to determine whether this command be used in a guild
+	 * @default typeof this.userPermissions !== "function" ? this.userPermissions : undefined
 	 */
-	slashDefaultPermission?: boolean;
+	slashDefaultMemberPermissions?: PermissionResolvable;
+
+	/**
+	 * Whether the command is enabled in DMs
+	 *
+	 * **Cannot be enabled for commands that specify `slashGuilds`**
+	 *
+	 * @default this.channel === 'dm'
+	 */
+	slashDmPermission?: boolean;
 
 	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
@@ -596,11 +605,6 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * Options for using the slash command.
 	 */
 	slashOptions?: SlashOption[];
-
-	/**
-	 * The slash permissions to set in each guild for this command.
-	 */
-	slashPermissions?: ApplicationCommandPermissionData[] | SlashPermissionsSupplier;
 
 	/**
 	 * Only allow this command to be used as a slash command. Also makes `slash` `true`
@@ -623,7 +627,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * Permissions required by the user to run this command.
 	 * @default this.userPermissions
 	 */
-	userPermissions?: PermissionResolvable | PermissionResolvable[] | MissingPermissionSupplier;
+	userPermissions?: PermissionResolvable | MissingPermissionSupplier;
 }
 
 /**
@@ -651,12 +655,6 @@ export type ExecutionPredicate = (message: Message) => boolean | Promise<boolean
  * @param message - Message that triggered the command.
  */
 export type MissingPermissionSupplier = (message: Message | AkairoMessage) => Promise<any> | any;
-
-/**
- * A function used to create slash permissions depending on the guild.
- * @param guild The guild to create slash permissions for.
- */
-export type SlashPermissionsSupplier = (guild: Guild) => ApplicationCommandPermissionData[];
 
 /**
  * A function used to return a regular expression.

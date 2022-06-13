@@ -1,5 +1,11 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { ApplicationCommandType, LocalizationMap, type ContextMenuCommandInteraction, type Snowflake } from "discord.js";
+import {
+	ApplicationCommandType,
+	LocalizationMap,
+	PermissionResolvable,
+	type ContextMenuCommandInteraction,
+	type Snowflake
+} from "discord.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import { Util } from "../../util/Util.js";
@@ -62,11 +68,33 @@ export abstract class ContextMenuCommand extends AkairoModule {
 	public declare nameLocalizations?: LocalizationMap;
 
 	/**
+	 * The default bitfield used to determine whether this command be used in a guild
+	 */
+	public declare defaultMemberPermissions?: PermissionResolvable;
+
+	/**
+	 * Whether the command is enabled in DMs
+	 *
+	 * **Cannot be enabled for command that specify `guilds`**
+	 */
+	public declare dmPermission?: boolean;
+
+	/**
 	 * @param id - Listener ID.
 	 * @param options - Options for the context menu command.
 	 */
 	public constructor(id: string, options: ContextMenuCommandOptions) {
-		const { category, guilds, name, ownerOnly, superUserOnly, type, nameLocalizations } = options;
+		const {
+			category,
+			guilds = [],
+			name,
+			ownerOnly,
+			superUserOnly,
+			type,
+			nameLocalizations,
+			slashDefaultMemberPermissions,
+			slashDmPermission
+		} = options;
 
 		if (category !== undefined && typeof category !== "string") throw new TypeError("options.category must be a string.");
 		if (guilds !== undefined && !Util.isArrayOf(guilds, "string"))
@@ -77,6 +105,10 @@ export abstract class ContextMenuCommand extends AkairoModule {
 			throw new TypeError("options.type must be either ApplicationCommandType.User or ApplicationCommandType.Message.");
 		if (nameLocalizations !== undefined && typeof nameLocalizations !== "object")
 			throw new TypeError("options.nameLocalizations must be a object.");
+		if (slashDmPermission != null && typeof slashDmPermission !== "boolean")
+			throw new TypeError("options.slashDmPermission must be a boolean.");
+		if (slashDmPermission != null && guilds.length > 0)
+			throw new TypeError("You cannot set `options.slashDmPermission` with commands configured with `options.slashGuilds`.");
 
 		super(id, { category });
 
@@ -86,6 +118,8 @@ export abstract class ContextMenuCommand extends AkairoModule {
 		this.superUserOnly = superUserOnly;
 		this.type = type;
 		this.nameLocalizations = nameLocalizations;
+		this.defaultMemberPermissions = slashDefaultMemberPermissions;
+		this.dmPermission = slashDmPermission;
 	}
 
 	/**
@@ -115,6 +149,7 @@ export interface ContextMenuCommand extends AkairoModule {
 export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
+	 * @default []
 	 */
 	guilds?: Snowflake[];
 
@@ -142,4 +177,16 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	 * Name localization.
 	 */
 	nameLocalizations?: LocalizationMap;
+
+	/**
+	 * The default bitfield used to determine whether this command be used in a guild
+	 */
+	slashDefaultMemberPermissions?: PermissionResolvable;
+
+	/**
+	 * Whether the command is enabled in DMs
+	 *
+	 * **Cannot be enabled for commands that specify `guilds`**
+	 */
+	slashDmPermission?: boolean;
 }
