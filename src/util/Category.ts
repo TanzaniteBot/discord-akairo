@@ -15,7 +15,7 @@ export class Category<K extends string, V extends AkairoModule> extends Collecti
 	 * @param iterable - Entries to set.
 	 */
 	public constructor(id: string, iterable?: Iterable<readonly [K, V]>) {
-		super(iterable!);
+		super(iterable);
 		this.id = id;
 	}
 

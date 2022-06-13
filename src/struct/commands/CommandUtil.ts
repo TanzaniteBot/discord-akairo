@@ -1,5 +1,4 @@
 /* eslint-disable require-await */
-import { APIMessage } from "discord-api-types/v10";
 import {
 	Collection,
 	InteractionReplyOptions,
@@ -114,10 +113,8 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * @param options - Options to use.
 	 */
 	public async edit(options: string | MessageEditOptions | MessagePayload): Promise<Message>;
-	public async edit(options: string | WebhookEditMessageOptions | MessagePayload): Promise<Message | APIMessage>;
-	public async edit(
-		options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload
-	): Promise<APIMessage | Message<boolean>> {
+	public async edit(options: string | WebhookEditMessageOptions | MessagePayload): Promise<Message>;
+	public async edit(options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload): Promise<Message> {
 		if (!this.isSlashMessage(this.message)) {
 			return this.lastResponse!.edit(options);
 		} else {
@@ -131,10 +128,8 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * @param options - Options to use.
 	 */
 	public async reply(options: string | MessagePayload | ReplyMessageOptions): Promise<Message>;
-	public async reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
-	public async reply(
-		options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions
-	): Promise<Message | APIMessage> {
+	public async reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
+	public async reply(options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions): Promise<Message> {
 		const newOptions = (typeof options === "string" ? { content: options } : options) as ReplyMessageOptions;
 
 		if (!this.isSlashMessage(this.message) && !this.shouldEdit && !(newOptions instanceof MessagePayload) && !this.deleted) {
@@ -151,8 +146,8 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * @param options - Options to use.
 	 */
 	public async send(options: string | MessagePayload | MessageOptions): Promise<Message>;
-	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
-	public async send(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message | APIMessage> {
+	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
+	public async send(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files?.length > 0;
 		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!this.isSlashMessage(this.message)) {
@@ -191,10 +186,8 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * @param options - Options to use.
 	 */
 	public async sendNew(options: string | MessagePayload | MessageOptions): Promise<Message>;
-	public async sendNew(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage>;
-	public async sendNew(
-		options: string | MessagePayload | MessageOptions | InteractionReplyOptions
-	): Promise<Message | APIMessage> {
+	public async sendNew(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
+	public async sendNew(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message> {
 		if (!this.isSlashMessage(this.message)) {
 			const sent = await this.message.channel?.send(options as string | MessagePayload | MessageOptions);
 			const lastSent = this.setLastResponse(sent!);

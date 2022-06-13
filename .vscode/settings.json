@@ -23,5 +23,6 @@
 	"prettier.configPath": ".prettierrc.json",
 	"prettier.prettierPath": "node_modules/prettier",
 	"prettier.withNodeModules": true,
-	"prettier.useEditorConfig": false
+	"prettier.useEditorConfig": false,
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

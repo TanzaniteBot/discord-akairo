@@ -1,17 +1,11 @@
-import type { APIInteractionGuildMember, APIMessage } from "discord-api-types/v10";
 import {
 	Base,
-	ChatInputCommandInteraction,
-	Guild,
-	GuildMember,
-	GuildTextBasedChannel,
-	InteractionReplyOptions,
-	Message,
-	MessagePayload,
-	Snowflake,
-	TextBasedChannel,
-	User,
-	Util
+	Util,
+	type CacheType,
+	type ChatInputCommandInteraction,
+	type InteractionReplyOptions,
+	type Message,
+	type MessagePayload
 } from "discord.js";
 import type { AkairoClient } from "../struct/AkairoClient.js";
 import type { CommandUtil } from "../struct/commands/CommandUtil.js";
@@ -19,21 +13,21 @@ import type { CommandUtil } from "../struct/commands/CommandUtil.js";
 /**
  * A command interaction represented as a message.
  */
-export class AkairoMessage extends Base {
+export class AkairoMessage<Cached extends CacheType = CacheType> extends Base {
 	/**
 	 * The author of the interaction.
 	 */
-	public declare author: User;
+	public declare author: ChatInputCommandInteraction<Cached>["user"];
 
 	/**
 	 * The application's id
 	 */
-	public declare applicationId: Snowflake;
+	public declare applicationId: ChatInputCommandInteraction<Cached>["applicationId"];
 
 	/**
 	 * The id of the channel this interaction was sent in
 	 */
-	public declare channelId: Snowflake | null;
+	public declare channelId: ChatInputCommandInteraction<Cached>["channelId"];
 
 	/**
 	 * The command name and arguments represented as a string.
@@ -43,33 +37,33 @@ export class AkairoMessage extends Base {
 	/**
 	 * The timestamp the interaction was sent at.
 	 */
-	public declare createdTimestamp: number;
+	public declare createdTimestamp: ChatInputCommandInteraction<Cached>["createdTimestamp"];
 
 	/**
 	 * The id of the guild this interaction was sent in
 	 */
-	public declare guildId: Snowflake | null;
+	public declare guildId: ChatInputCommandInteraction<Cached>["guildId"];
 
 	/**
 	 * The ID of the interaction.
 	 */
-	public declare id: Snowflake;
+	public declare id: ChatInputCommandInteraction<Cached>["id"];
 
 	/**
 	 * The command interaction.
 	 */
-	public declare interaction: ChatInputCommandInteraction;
+	public declare interaction: ChatInputCommandInteraction<Cached>;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
 	 * Only available if the interaction comes from a guild where the author is still a member.
 	 */
-	public declare member: GuildMember | APIInteractionGuildMember | null;
+	public declare member: ChatInputCommandInteraction<Cached>["member"];
 
 	/**
 	 * Whether or not this message is a partial
 	 */
-	public declare readonly partial: false;
+	public declare partial: false;
 
 	/**
 	 * Utilities for command responding.
@@ -80,7 +74,7 @@ export class AkairoMessage extends Base {
 	 * @param client - AkairoClient
 	 * @param interaction - CommandInteraction
 	 */
-	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction) {
+	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction<Cached>) {
 		super(client);
 
 		this.author = interaction.user;
@@ -98,7 +92,7 @@ export class AkairoMessage extends Base {
 	/**
 	 * The channel that the interaction was sent in.
 	 */
-	public get channel(): TextBasedChannel | null {
+	public get channel(): ChatInputCommandInteraction<Cached>["channel"] {
 		return this.interaction.channel;
 	}
 
@@ -113,14 +107,14 @@ export class AkairoMessage extends Base {
 	/**
 	 * The guild the interaction was sent in (if in a guild channel).
 	 */
-	public get guild(): Guild | null {
+	public get guild(): ChatInputCommandInteraction<Cached>["guild"] {
 		return this.interaction.guild;
 	}
 
 	/**
 	 * The time the message was sent at
 	 */
-	public get createdAt(): Date {
+	public get createdAt(): ChatInputCommandInteraction<Cached>["createdAt"] {
 		return this.interaction.createdAt;
 	}
 
@@ -136,8 +130,8 @@ export class AkairoMessage extends Base {
 	/**
 	 * Indicates whether this interaction is received from a guild.
 	 */
-	public inGuild(): this is AkairoMessageInGuild & this {
-		return Boolean(this.guildId && this.member);
+	public inGuild(): this is AkairoMessage<"cached"> {
+		return this.interaction.inCachedGuild();
 	}
 
 	/**
@@ -151,12 +145,7 @@ export class AkairoMessage extends Base {
 	 * Replies or edits the reply of the slash command.
 	 * @param options The options to edit the reply.
 	 */
-	public reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message | APIMessage> {
+	public reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message> {
 		return this.util.reply(options);
 	}
-}
-
-export interface AkairoMessageInGuild {
-	guild: Guild;
-	channel: GuildTextBasedChannel;
 }
