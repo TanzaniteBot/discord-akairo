@@ -262,7 +262,7 @@ export abstract class Command extends AkairoModule {
 		// ts doesn't like it when I reference other properties when using destructuring syntax
 		const {
 			slashDefaultMemberPermissions = userPermissions && typeof userPermissions !== "function" ? userPermissions : undefined,
-			slashDmPermission = channel === null || channel === "dm"
+			slashDmPermission = slashGuilds.length > 0 ? channel === null || channel === "dm" : undefined
 		} = options ?? {};
 
 		if (!Util.isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
@@ -294,9 +294,9 @@ export abstract class Command extends AkairoModule {
 			throw new TypeError("options.regex must be a function or a RegExp.");
 		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
 		if (typeof slash !== "boolean") throw new TypeError("options.slash must be a boolean.");
-		if (slashDmPermission != null && typeof slashDmPermission !== "boolean")
+		if (slashDmPermission !== undefined && typeof slashDmPermission !== "boolean")
 			throw new TypeError("options.slashDmPermission must be a boolean.");
-		if (slashDmPermission != null && slashGuilds.length > 0)
+		if (typeof slashDmPermission !== "boolean" && slashGuilds.length > 0)
 			throw new TypeError("You cannot set `options.slashDmPermission` with commands configured with `options.slashGuilds`.");
 		if (typeof slashEphemeral !== "boolean") throw new TypeError("options.slashEphemeral must be a boolean.");
 		if (!Util.isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
