@@ -14,6 +14,7 @@ import type {
 	MessagePayload,
 	NewsChannel,
 	Role,
+	Snowflake,
 	StageChannel,
 	TextChannel,
 	ThreadChannel,
@@ -1018,33 +1019,33 @@ export interface BaseArgumentType {
 	date: Date | null;
 	color: number | null;
 	user: User | null;
-	users: Collection<string, User> | null;
+	users: Collection<Snowflake, User> | null;
 	member: GuildMember | null;
-	members: Collection<string, GuildMember> | null;
+	members: Collection<Snowflake, GuildMember> | null;
 	relevant: User | GuildMember | null;
-	relevants: Collection<string, User> | Collection<string, GuildMember> | null;
+	relevants: Collection<Snowflake, User> | Collection<Snowflake, GuildMember> | null;
 	channel: GuildBasedChannel | null;
-	channels: GuildBasedChannel | null;
+	channels: Collection<Snowflake, GuildBasedChannel> | null;
 	textChannel: TextChannel | null;
-	textChannels: Collection<string, TextChannel> | null;
+	textChannels: Collection<Snowflake, TextChannel> | null;
 	voiceChannel: VoiceChannel | null;
-	voiceChannels: Collection<string, VoiceChannel> | null;
+	voiceChannels: Collection<Snowflake, VoiceChannel> | null;
 	categoryChannel: CategoryChannel | null;
-	categoryChannels: Collection<string, CategoryChannel> | null;
+	categoryChannels: Collection<Snowflake, CategoryChannel> | null;
 	newsChannel: NewsChannel | null;
-	newsChannels: Collection<string, NewsChannel> | null;
+	newsChannels: Collection<Snowflake, NewsChannel> | null;
 	stageChannel: StageChannel | null;
-	stageChannels: Collection<string, StageChannel> | null;
+	stageChannels: Collection<Snowflake, StageChannel> | null;
 	threadChannel: ThreadChannel | null;
-	threadChannels: Collection<string, ThreadChannel> | null;
+	threadChannels: Collection<Snowflake, ThreadChannel> | null;
 	directoryChannel: DirectoryChannel | null;
-	directoryChannels: Collection<string, DirectoryChannel> | null;
+	directoryChannels: Collection<Snowflake, DirectoryChannel> | null;
 	role: Role | null;
-	roles: Collection<string, Role> | null;
+	roles: Collection<Snowflake, Role> | null;
 	emoji: Emoji | null;
-	emojis: Collection<string, Emoji> | null;
+	emojis: Collection<Snowflake, Emoji> | null;
 	guild: Guild | null;
-	guilds: Collection<string, Guild> | null;
+	guilds: Collection<Snowflake, Guild> | null;
 	message: Message | null;
 	guildMessage: Message | null;
 	relevantMessage: Message | null;
