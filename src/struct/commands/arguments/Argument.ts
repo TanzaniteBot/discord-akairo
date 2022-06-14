@@ -1,5 +1,4 @@
 import type {
-	BaseGuildVoiceChannel,
 	CategoryChannel,
 	Collection,
 	DirectoryChannel,
@@ -1024,8 +1023,8 @@ export interface BaseArgumentType {
 	members: Collection<string, GuildMember> | null;
 	relevant: User | GuildMember | null;
 	relevants: Collection<string, User> | Collection<string, GuildMember> | null;
-	channel: GuildBasedChannel | BaseGuildVoiceChannel | null;
-	channels: Collection<string, GuildBasedChannel | BaseGuildVoiceChannel> | null;
+	channel: GuildBasedChannel | null;
+	channels: GuildBasedChannel | null;
 	textChannel: TextChannel | null;
 	textChannels: Collection<string, TextChannel> | null;
 	voiceChannel: VoiceChannel | null;
