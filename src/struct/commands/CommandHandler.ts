@@ -1074,10 +1074,10 @@ export class CommandHandler extends AkairoHandler {
 			const match = message.content.match(entry.regex);
 			if (!match) continue;
 
-			const matches = [];
+			const matches: RegExpExecArray[] = [];
 
 			if (entry.regex.global) {
-				let matched;
+				let matched: RegExpExecArray | null;
 
 				while ((matched = entry.regex.exec(message.content)) != null) {
 					matches.push(matched);
