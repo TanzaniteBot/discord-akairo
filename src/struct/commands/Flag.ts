@@ -50,7 +50,6 @@ export class Flag<T extends FlagType = FlagType> {
 	 * Only exists if {@link type} is {@link FlagType.Continue}.
 	 */
 	public declare rest: T extends FlagType.Continue ? string | null : never;
-	
 
 	/**
 	 * @param type - Type of flag.
@@ -61,7 +60,10 @@ export class Flag<T extends FlagType = FlagType> {
 	private constructor(type: T & FlagType.Retry, data?: FlagRetryData);
 	private constructor(type: T & FlagType.Fail, data?: FlagFailData);
 	private constructor(type: T & FlagType.Continue, data?: FlagContinueData);
-	private constructor(type: T, data: Record<string, never> | FlagTimeoutData | FlagRetryData | FlagFailData | FlagContinueData = {}) {
+	private constructor(
+		type: T,
+		data: Record<string, never> | FlagTimeoutData | FlagRetryData | FlagFailData | FlagContinueData = {}
+	) {
 		this.type = type;
 		Object.assign(this, data);
 	}
@@ -73,12 +75,12 @@ export class Flag<T extends FlagType = FlagType> {
 		return new Flag(FlagType.Cancel);
 	}
 
-		/**
+	/**
 	 * Create a flag that cancels the command because of the timeout
 	 */
-		 public static timeout(time: number): Flag<FlagType.Timeout> {
-			return new Flag(FlagType.Timeout, {time});
-		}
+	public static timeout(time: number): Flag<FlagType.Timeout> {
+		return new Flag(FlagType.Timeout, { time });
+	}
 
 	/**
 	 * Creates a flag that retries with another input.

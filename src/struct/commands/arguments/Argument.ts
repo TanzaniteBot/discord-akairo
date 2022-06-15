@@ -314,7 +314,6 @@ export class Argument {
 				const time = promptOptions?.time ? this.command.argumentDefaults.prompt?.time : 30000;
 				if (!time) return Flag.cancel();
 				return Flag.timeout(time);
-				
 			}
 
 			if (promptOptions.breakout) {
