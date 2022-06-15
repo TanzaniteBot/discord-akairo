@@ -1022,8 +1022,7 @@ export class CommandHandler extends AkairoHandler {
 			if (Flag.is(args, FlagType.Cancel)) {
 				this.emit(CommandHandlerEvents.COMMAND_CANCELLED, message, command);
 				return true;
-			}
-			if (Flag.is(args, FlagType.Timeout)) {
+			} else if (Flag.is(args, FlagType.Timeout)) {
 				this.emit(CommandHandlerEvents.COMMAND_TIMEOUT, message, command, args.time);
 				return true;
 			} else if (Flag.is(args, FlagType.Retry)) {

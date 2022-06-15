@@ -311,9 +311,8 @@ export class Argument {
 					const sentTimeout = await message.channel.send(timeoutText);
 					if (message.util) message.util.addMessage(sentTimeout);
 				}
-				const time = promptOptions?.time ? this.command.argumentDefaults.prompt?.time : 30000;
-				if (!time) return Flag.cancel();
-				return Flag.timeout(time);
+				if (!promptOptions.time) return Flag.cancel();
+				return Flag.timeout(promptOptions.time);
 			}
 
 			if (promptOptions.breakout) {
