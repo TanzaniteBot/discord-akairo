@@ -10,6 +10,13 @@ export class Flag<T extends FlagType = FlagType> {
 	public declare type: T;
 
 	/**
+	 * Order waiting time .
+	 *
+	 * Only exists if {@link type} is {@link FlagType.Timeout}.
+	 */
+	public declare time: T extends FlagType.Timeout ? number : never;
+
+	/**
 	 * Message to handle.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Retry}.
@@ -43,16 +50,18 @@ export class Flag<T extends FlagType = FlagType> {
 	 * Only exists if {@link type} is {@link FlagType.Continue}.
 	 */
 	public declare rest: T extends FlagType.Continue ? string | null : never;
+	
 
 	/**
 	 * @param type - Type of flag.
 	 * @param data - Extra data.
 	 */
 	private constructor(type: T & FlagType.Cancel);
+	private constructor(type: T & FlagType.Timeout, data?: FlagTimeoutData);
 	private constructor(type: T & FlagType.Retry, data?: FlagRetryData);
 	private constructor(type: T & FlagType.Fail, data?: FlagFailData);
 	private constructor(type: T & FlagType.Continue, data?: FlagContinueData);
-	private constructor(type: T, data: Record<string, never> | FlagRetryData | FlagFailData | FlagContinueData = {}) {
+	private constructor(type: T, data: Record<string, never> | FlagTimeoutData | FlagRetryData | FlagFailData | FlagContinueData = {}) {
 		this.type = type;
 		Object.assign(this, data);
 	}
@@ -63,6 +72,13 @@ export class Flag<T extends FlagType = FlagType> {
 	public static cancel(): Flag<FlagType.Cancel> {
 		return new Flag(FlagType.Cancel);
 	}
+
+		/**
+	 * Create a flag that cancels the command because of the timeout
+	 */
+		 public static timeout(time: number): Flag<FlagType.Timeout> {
+			return new Flag(FlagType.Timeout, {time});
+		}
 
 	/**
 	 * Creates a flag that retries with another input.
@@ -96,6 +112,7 @@ export class Flag<T extends FlagType = FlagType> {
 	 * @param type - Type of flag.
 	 */
 	public static is(value: unknown, type: FlagType.Cancel): value is Flag<FlagType.Cancel>;
+	public static is(value: unknown, type: FlagType.Timeout): value is Flag<FlagType.Timeout>;
 	public static is(value: unknown, type: FlagType.Continue): value is Flag<FlagType.Continue>;
 	public static is(value: unknown, type: FlagType.Fail): value is Flag<FlagType.Fail>;
 	public static is(value: unknown, type: FlagType.Retry): value is Flag<FlagType.Retry>;
@@ -106,9 +123,14 @@ export class Flag<T extends FlagType = FlagType> {
 
 export enum FlagType {
 	Cancel = "cancel",
+	Timeout = "timeout",
 	Retry = "retry",
 	Fail = "fail",
 	Continue = "continue"
+}
+
+interface FlagTimeoutData {
+	time: number;
 }
 
 interface FlagRetryData {

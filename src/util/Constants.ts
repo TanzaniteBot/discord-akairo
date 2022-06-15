@@ -72,10 +72,12 @@ export enum AkairoHandlerEvents {
 	REMOVE = "remove"
 }
 
+
 export enum CommandHandlerEvents {
 	COMMAND_BLOCKED = "commandBlocked",
 	COMMAND_BREAKOUT = "commandBreakout",
 	COMMAND_CANCELLED = "commandCancelled",
+	COMMAND_TIMEOUT = "commandTimeout",
 	COMMAND_FINISHED = "commandFinished",
 	COMMAND_INVALID = "commandInvalid",
 	COMMAND_LOCKED = "commandLocked",
@@ -92,7 +94,7 @@ export enum CommandHandlerEvents {
 	SLASH_MISSING_PERMISSIONS = "slashMissingPermissions",
 	SLASH_NOT_FOUND = "slashNotFound",
 	SLASH_STARTED = "slashStarted",
-	SLASH_ONLY = "slashOnly"
+	SLASH_ONLY = "slashOnly",
 }
 
 export enum ContextCommandHandlerEvents {
