@@ -1,7 +1,7 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import EventEmitter from "node:events";
-import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
+import { patchAbstract } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ListenerHandler } from "./ListenerHandler.js";
@@ -68,10 +68,10 @@ export abstract class Listener extends AkairoModule {
 	 * Executes the listener.
 	 * @param args - Arguments.
 	 */
-	public exec(...args: any[]): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
-	}
+	public abstract exec(...args: any[]): any;
 }
+
+patchAbstract(Listener, "exec");
 
 export interface Listener extends AkairoModule {
 	/**

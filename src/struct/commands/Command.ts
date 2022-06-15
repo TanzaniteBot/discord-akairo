@@ -14,10 +14,9 @@ import type {
 	PermissionResolvable,
 	Snowflake
 } from "discord.js";
-import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
-import { isArrayOf, isStringArrayStringOrFunc } from "../../util/Util.js";
+import { isArrayOf, isStringArrayStringOrFunc, patchAbstract } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import {
@@ -369,6 +368,7 @@ export abstract class Command extends AkairoModule {
 	 * @param message - Message that triggered the command.
 	 * @param parsed - Parsed content.
 	 * @param state - Argument processing state.
+	 * @abstract
 	 */
 	// @ts-expect-error
 	public *args(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn {}
@@ -376,12 +376,14 @@ export abstract class Command extends AkairoModule {
 	/**
 	 * Runs before argument parsing and execution.
 	 * @param message - Message being handled.
+	 * @abstract
 	 */
 	public before(message: Message): any {}
 
 	/**
 	 * Checks if the command should be ran by using an arbitrary condition.
 	 * @param message - Message being handled.
+	 * @abstract
 	 */
 	public condition(message: Message): boolean | Promise<boolean> {
 		return false;
@@ -391,27 +393,25 @@ export abstract class Command extends AkairoModule {
 	 * Executes the command.
 	 * @param message - Message that triggered the command.
 	 * @param args - Evaluated arguments.
+	 * @abstract
 	 */
-	public exec(message: Message, args: any): any;
-	public exec(message: Message | AkairoMessage, args: any): any;
-	public exec(message: Message | AkairoMessage, args: any): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
-	}
+	public exec?(message: Message, args: any): any;
+	public exec?(message: Message | AkairoMessage, args: any): any;
 
 	/**
 	 * Execute the slash command
 	 * @param message - Message for slash command
 	 * @param args - Slash command options
+	 * @abstract
 	 */
-	public execSlash(message: AkairoMessage, ...args: any[]): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "execSlash");
-	}
+	public execSlash?(message: AkairoMessage, ...args: any[]): any;
 
 	/**
 	 * Respond to autocomplete interactions for this command.
 	 * @param interaction The autocomplete interaction
+	 * @abstract
 	 */
-	public autocomplete(interaction: AutocompleteInteraction): any {}
+	public autocomplete?(interaction: AutocompleteInteraction): any;
 
 	/**
 	 * Parses content using the command's arguments.
@@ -423,6 +423,10 @@ export abstract class Command extends AkairoModule {
 		return this.argumentRunner.run(message, parsed, this.argumentGenerator);
 	}
 }
+
+patchAbstract(Command, "exec");
+patchAbstract(Command, "execSlash");
+patchAbstract(Command, "autocomplete");
 
 export interface Command extends AkairoModule {
 	/**

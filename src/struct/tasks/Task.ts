@@ -1,6 +1,6 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
+import { patchAbstract } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { TaskHandler } from "./TaskHandler.js";
@@ -58,10 +58,10 @@ export abstract class Task extends AkairoModule {
 	 * Executes the task.
 	 * @param args - Arguments.
 	 */
-	public exec(...args: any[]): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
-	}
+	public abstract exec(...args: any[]): any;
 }
+
+patchAbstract(Task, "exec");
 
 export interface Task extends AkairoModule {
 	/**

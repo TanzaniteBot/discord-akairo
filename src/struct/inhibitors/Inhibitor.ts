@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Message } from "discord.js";
-import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
+import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
 import type { InhibitorHandler } from "./InhibitorHandler.js";
@@ -68,12 +68,11 @@ export abstract class Inhibitor extends AkairoModule {
 	 * @param message - Message being handled.
 	 * @param command - Command to check.
 	 */
-	public exec(message: Message, command?: Command): boolean | Promise<boolean>;
-	public exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean>;
-	public exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean> {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
-	}
+	public abstract exec(message: Message, command?: Command): boolean | Promise<boolean>;
+	public abstract exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean>;
 }
+
+patchAbstract(Inhibitor, "exec");
 
 export interface Inhibitor extends AkairoModule {
 	/**

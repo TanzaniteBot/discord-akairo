@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
 	ApplicationCommandType,
-	LocalizationMap,
-	PermissionResolvable,
 	type ContextMenuCommandInteraction,
+	type LocalizationMap,
+	type PermissionResolvable,
 	type Snowflake
 } from "discord.js";
-import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
-import { isArrayOf } from "../../util/Util.js";
+import { isArrayOf, patchAbstract } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
@@ -125,10 +124,10 @@ export abstract class ContextMenuCommand extends AkairoModule {
 	 * Executes the context menu command.
 	 * @param interaction - The context menu command interaction.
 	 */
-	public exec(interaction: ContextMenuCommandInteraction): any {
-		throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, "exec");
-	}
+	public abstract exec(interaction: ContextMenuCommandInteraction): any;
 }
+
+patchAbstract(ContextMenuCommand, "exec");
 
 export interface ContextMenuCommand extends AkairoModule {
 	/**

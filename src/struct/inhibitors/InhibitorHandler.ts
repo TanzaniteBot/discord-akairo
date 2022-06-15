@@ -49,13 +49,7 @@ export class InhibitorHandler extends AkairoHandler {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Inhibitor.name);
 		}
 
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
+		super(client, { directory, classToHandle, extensions, automateCategories, loadFilter });
 	}
 
 	/**

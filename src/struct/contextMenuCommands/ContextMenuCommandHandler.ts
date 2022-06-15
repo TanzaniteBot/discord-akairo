@@ -60,13 +60,7 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, ContextMenuCommand.name);
 		}
 
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
+		super(client, { directory, classToHandle, extensions, automateCategories, loadFilter });
 
 		this.setup();
 	}

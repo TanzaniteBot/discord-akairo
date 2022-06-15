@@ -23,12 +23,9 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 
 	/**
 	 * @param options - Options for the client.
-	 */
-	public constructor(options: AkairoOptions & ClientOptions);
-	/**
-	 * @param options - Options for the client.
 	 * @param clientOptions - Options for Discord JS client. If not specified, the previous options parameter is used instead.
 	 */
+	public constructor(options: AkairoOptions & ClientOptions);
 	public constructor(options: AkairoOptions, clientOptions: ClientOptions);
 	public constructor(options: (AkairoOptions & ClientOptions) | AkairoOptions, clientOptions?: ClientOptions) {
 		const combinedOptions = { ...options, ...clientOptions };

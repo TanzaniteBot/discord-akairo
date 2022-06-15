@@ -54,13 +54,7 @@ export class ListenerHandler extends AkairoHandler {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Listener.name);
 		}
 
-		super(client, {
-			directory,
-			classToHandle,
-			extensions,
-			automateCategories,
-			loadFilter
-		});
+		super(client, { directory, classToHandle, extensions, automateCategories, loadFilter });
 
 		this.emitters = new Collection();
 		this.emitters.set("client", this.client);

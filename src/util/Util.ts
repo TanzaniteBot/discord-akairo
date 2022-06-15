@@ -1,5 +1,6 @@
 import EventEmitter from "node:events";
 import type { PrefixSupplier } from "../struct/commands/CommandHandler.js";
+import { AkairoError } from "./AkairoError.js";
 
 /**
  * Deep assign properties to an object.
@@ -88,7 +89,7 @@ export function prefixCompare(aKey: string | PrefixSupplier, bKey: string | Pref
  * Compares each property of two objects to determine if they are equal.
  * @param a - First value.
  * @param b - Second value.
- * @param ignoreUndefined - Whether to ignore undefined properties.
+ * @param options - Additional options.
  * @returns Whether the two values are equal.
  */
 export function deepEquals<T>(a: unknown, b: T, options?: DeepEqualsOptions): a is T;
@@ -116,6 +117,23 @@ export function deepEquals(a: any, b: any, options?: DeepEqualsOptions): boolean
 		} else if (newA[key] !== newB[key]) return false;
 	}
 	return true;
+}
+
+/**
+ * Options for {@link deepEquals}.
+ */
+export interface DeepEqualsOptions {
+	/**
+	 * Whether to ignore undefined properties.
+	 * @default true
+	 */
+	ignoreUndefined?: boolean;
+
+	/**
+	 * Whether to ignore the order of the items in arrays
+	 * @default true
+	 */
+	ignoreArrayOrder?: boolean;
 }
 
 /**
@@ -163,16 +181,20 @@ export function isStringArrayStringOrFunc(value: any): value is string | string[
 	return typeof value === "string" || typeof value === "function" || isArrayOf(value, "string");
 }
 
-export interface DeepEqualsOptions {
-	/**
-	 * Whether to ignore undefined properties.
-	 * @default true
-	 */
-	ignoreUndefined?: boolean;
-
-	/**
-	 * Whether to ignore the order of the items in arrays
-	 * @default true
-	 */
-	ignoreArrayOrder?: boolean;
+/**
+ * Defines an abstract method to a class to produce a runtime error.
+ * @param Class The class to patch.
+ * @param method The name of the method to patch.
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function patchAbstract(Class: Function, method: string): void {
+	Object.defineProperty(Class.prototype, method, {
+		configurable: true,
+		enumerable: false,
+		writable: true,
+		// eslint-disable-next-line func-names
+		value: function () {
+			throw new AkairoError("NOT_IMPLEMENTED", Class.name, method);
+		}
+	});
 }
