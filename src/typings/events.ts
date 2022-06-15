@@ -49,7 +49,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	commandCancelled: [message: Message, command: Command, retryMessage?: Message];
 
 	/**
-	 * Emitted when a command is cancelled becouse of a timeout.
+	 * Emitted when a command is cancelled because of a timeout.
 	 * @param message - Message sent.
 	 * @param command - Command executed.
 	 * @param time - Timeout in milliseconds.
