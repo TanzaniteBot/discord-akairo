@@ -54,7 +54,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param command - Command executed.
 	 * @param time - Timeout in milliseconds.
 	 */
-	 commandTimeout: [message: Message, command: Command, time: number];
+	commandTimeout: [message: Message, command: Command, time: number];
 
 	/**
 	 * Emitted when a command finishes execution.
