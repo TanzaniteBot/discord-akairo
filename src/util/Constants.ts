@@ -76,6 +76,7 @@ export enum CommandHandlerEvents {
 	COMMAND_BLOCKED = "commandBlocked",
 	COMMAND_BREAKOUT = "commandBreakout",
 	COMMAND_CANCELLED = "commandCancelled",
+	COMMAND_TIMEOUT = "commandTimeout",
 	COMMAND_FINISHED = "commandFinished",
 	COMMAND_INVALID = "commandInvalid",
 	COMMAND_LOCKED = "commandLocked",
