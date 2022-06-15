@@ -181,20 +181,20 @@ export function isStringArrayStringOrFunc(value: any): value is string | string[
 	return typeof value === "string" || typeof value === "function" || isArrayOf(value, "string");
 }
 
+/* eslint-disable @typescript-eslint/ban-types, func-names */
 /**
  * Defines an abstract method to a class to produce a runtime error.
  * @param Class The class to patch.
  * @param method The name of the method to patch.
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function patchAbstract(Class: Function, method: string): void {
 	Object.defineProperty(Class.prototype, method, {
 		configurable: true,
 		enumerable: false,
 		writable: true,
-		// eslint-disable-next-line func-names
 		value: function () {
-			throw new AkairoError("NOT_IMPLEMENTED", Class.name, method);
+			throw new AkairoError("NOT_IMPLEMENTED", this.constructor.name, method);
 		}
 	});
 }
+/* eslint-enable @typescript-eslint/ban-types, func-names */
