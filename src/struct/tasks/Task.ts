@@ -2,7 +2,7 @@
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { TaskHandler } from "./TaskHandler.js";
 
 /**

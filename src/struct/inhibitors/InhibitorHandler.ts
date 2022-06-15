@@ -1,11 +1,11 @@
 import type { Awaitable, Collection, Message } from "discord.js";
-import type { InhibitorHandlerEvents } from "../../typings/events";
+import type { InhibitorHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
-import { Util } from "../../util/Util.js";
+import { isPromise } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "../AkairoHandler.js";
 import type { Command } from "../commands/Command.js";
 import { Inhibitor } from "./Inhibitor.js";
 
@@ -81,7 +81,7 @@ export class InhibitorHandler extends AkairoHandler {
 			promises.push(
 				(async () => {
 					let inhibited = inhibitor.exec(message, command);
-					if (Util.isPromise(inhibited)) inhibited = await inhibited;
+					if (isPromise(inhibited)) inhibited = await inhibited;
 					if (inhibited) return inhibitor;
 					return null;
 				})()

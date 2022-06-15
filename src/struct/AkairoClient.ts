@@ -1,6 +1,6 @@
 import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
-import type { AkairoClientEvents } from "../typings/events";
-import { ClientUtil } from "./ClientUtil.js";
+import type { AkairoClientEvents } from "../typings/events.js";
+import * as ClientUtil from "./ClientUtil.js";
 
 /**
  * The Akairo framework client. Creates the handlers and sets them up.
@@ -19,20 +19,23 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 	/**
 	 * Utility methods.
 	 */
-	public declare util: ClientUtil;
+	public declare util: typeof ClientUtil;
 
 	/**
 	 * @param options - Options for the client.
-	 * @param clientOptions - Options for Discord JS client.If not specified, the previous options parameter is used instead.
 	 */
 	public constructor(options: AkairoOptions & ClientOptions);
+	/**
+	 * @param options - Options for the client.
+	 * @param clientOptions - Options for Discord JS client. If not specified, the previous options parameter is used instead.
+	 */
 	public constructor(options: AkairoOptions, clientOptions: ClientOptions);
 	public constructor(options: (AkairoOptions & ClientOptions) | AkairoOptions, clientOptions?: ClientOptions) {
 		const combinedOptions = { ...options, ...clientOptions };
 		super(combinedOptions as AkairoOptions & ClientOptions);
 		this.ownerID = combinedOptions.ownerID ?? [];
 		this.superUserID = combinedOptions.superUserID ?? [];
-		this.util = new ClientUtil(this);
+		this.util = ClientUtil;
 	}
 
 	/**

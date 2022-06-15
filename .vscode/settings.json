@@ -6,7 +6,8 @@
 		".git": true
 	},
 	"files.exclude": {
-		"**/node_modules": false,
+		"**/node_modules": true,
+		"**/.yarn/cache/**": true,
 		"**/*js.map": true,
 		"**/*d.ts.map": true
 	},

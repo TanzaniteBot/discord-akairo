@@ -1,5 +1,5 @@
 import type { Awaitable, Collection, ContextMenuCommandInteraction } from "discord.js";
-import type { ContextMenuCommandHandlerEvents } from "../../typings/events";
+import type { ContextMenuCommandHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants.js";

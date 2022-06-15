@@ -29,7 +29,7 @@
 		"no-new": "error",
 		"no-octal-escape": "error",
 		"no-return-assign": "error",
-		"no-return-await": "error",
+		"no-return-await": "off",
 		"no-self-compare": "error",
 		"no-sequences": "error",
 		"no-unmodified-loop-condition": "error",

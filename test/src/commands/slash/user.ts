@@ -1,6 +1,6 @@
-import { AkairoMessage, Command } from "#discord-akairo";
-import { ApplicationCommandOptionType, Formatters, Message } from "discord.js";
-import util from "util";
+import { Command, type AkairoMessage } from "#discord-akairo";
+import { ApplicationCommandOptionType, Formatters, type Message } from "discord.js";
+import { inspect } from "node:util";
 
 export default class UserCommand extends Command {
 	public constructor() {
@@ -28,7 +28,7 @@ export default class UserCommand extends Command {
 		}
 	) {
 		message.util!.send({
-			embeds: [{ description: Formatters.codeBlock("js", `${util.inspect(args, { depth: 2 }).slice(0, 4000)}`) }]
+			embeds: [{ description: Formatters.codeBlock("js", `${inspect(args, { depth: 2 }).slice(0, 4000)}`) }]
 		});
 	}
 }

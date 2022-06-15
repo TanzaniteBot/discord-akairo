@@ -1,18 +1,17 @@
-/* eslint-disable require-await */
 import {
 	Collection,
-	InteractionReplyOptions,
-	Message,
-	MessageEditOptions,
-	MessageOptions,
 	MessagePayload,
-	ReplyMessageOptions,
-	Snowflake,
-	WebhookEditMessageOptions
+	type InteractionReplyOptions,
+	type Message,
+	type MessageEditOptions,
+	type MessageOptions,
+	type ReplyMessageOptions,
+	type Snowflake,
+	type WebhookEditMessageOptions
 } from "discord.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
-import { CommandHandler, ParsedComponentData } from "./CommandHandler.js";
+import { CommandHandler, type ParsedComponentData } from "./CommandHandler.js";
 
 /**
  * Command utilities.
@@ -116,9 +115,9 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	public async edit(options: string | WebhookEditMessageOptions | MessagePayload): Promise<Message>;
 	public async edit(options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload): Promise<Message> {
 		if (!this.isSlashMessage(this.message)) {
-			return this.lastResponse!.edit(options);
+			return await this.lastResponse!.edit(options);
 		} else {
-			return this.message.interaction.editReply(options);
+			return await this.message.interaction.editReply(options);
 		}
 	}
 
@@ -138,7 +137,7 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 				failIfNotExists: newOptions.failIfNotExists ?? this.handler.client.options.failIfNotExists
 			};
 		}
-		return this.send(newOptions);
+		return await this.send(newOptions);
 	}
 
 	/**
@@ -158,7 +157,7 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 				!CommandUtil.deletedMessages.has(this.lastResponse!.id) &&
 				!this.lastResponse!.attachments.size
 			) {
-				return this.lastResponse!.edit(newOptions as MessageEditOptions);
+				return await this.lastResponse!.edit(newOptions as MessageEditOptions);
 			}
 			const sent = await this.message.channel?.send(newOptions as MessageOptions);
 
@@ -229,9 +228,9 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 */
 	public async delete(): Promise<Message | void> {
 		if (this.isSlashMessage(this.message)) {
-			return this.message.interaction.deleteReply();
+			return await this.message.interaction.deleteReply();
 		} else {
-			return this.lastResponse?.delete();
+			return await this.lastResponse?.delete();
 		}
 	}
 }

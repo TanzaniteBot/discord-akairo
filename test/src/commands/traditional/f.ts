@@ -1,7 +1,7 @@
 import { Command, Flag } from "#discord-akairo";
-import { Formatters, Message } from "discord.js";
-import util from "util";
-import logger from "../../struct/Logger";
+import { Formatters, type Message } from "discord.js";
+import { inspect } from "node:util";
+import logger from "../../struct/Logger.js";
 
 export default class FCommand extends Command {
 	public constructor() {
@@ -27,6 +27,6 @@ export default class FCommand extends Command {
 	}
 
 	public override exec(message: Message, args: { x: unknown }) {
-		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
+		message.channel.send(Formatters.codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

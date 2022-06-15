@@ -1,5 +1,5 @@
 import { Listener } from "#discord-akairo";
-import { Message } from "discord.js";
+import type { Message } from "discord.js";
 import logger from "../struct/Logger";
 
 export default class InvalidMessageListener extends Listener {

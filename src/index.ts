@@ -1,33 +1,5 @@
 import packageJSON from "../package.json";
-import { CommandUtil } from "./struct/commands/CommandUtil";
-import * as Constants from "./util/Constants";
-export * from "./struct/AkairoClient";
-export * from "./struct/AkairoHandler";
-export * from "./struct/AkairoModule";
-export * from "./struct/ClientUtil";
-export * from "./struct/commands/arguments/Argument";
-export * from "./struct/commands/arguments/ArgumentRunner";
-export * from "./struct/commands/arguments/TypeResolver";
-export * from "./struct/commands/Command";
-export * from "./struct/commands/CommandHandler";
-export * from "./struct/commands/CommandUtil";
-export * from "./struct/commands/ContentParser";
-export * from "./struct/commands/Flag";
-export * from "./struct/contextMenuCommands/ContextMenuCommand";
-export * from "./struct/contextMenuCommands/ContextMenuCommandHandler";
-export * from "./struct/inhibitors/Inhibitor";
-export * from "./struct/inhibitors/InhibitorHandler";
-export * from "./struct/listeners/Listener";
-export * from "./struct/listeners/ListenerHandler";
-export * from "./struct/tasks/Task";
-export * from "./struct/tasks/TaskHandler";
-export * from "./typings/events";
-export * from "./util/AkairoError";
-export * from "./util/AkairoMessage";
-export * from "./util/Category";
-export * from "./util/Util";
-export { Constants };
-export const { version } = packageJSON;
+import { CommandUtil } from "./struct/commands/CommandUtil.js";
 
 declare module "discord.js" {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -41,3 +13,34 @@ declare module "discord.js" {
 		util?: CommandUtil<Message>;
 	}
 }
+
+export * from "./struct/AkairoClient.js";
+export * from "./struct/AkairoHandler.js";
+export * from "./struct/AkairoModule.js";
+export * as ClientUtil from "./struct/ClientUtil.js";
+export * from "./struct/commands/arguments/Argument.js";
+export * from "./struct/commands/arguments/ArgumentRunner.js";
+export * from "./struct/commands/arguments/TypeResolver.js";
+export * from "./struct/commands/Command.js";
+export * from "./struct/commands/CommandHandler.js";
+export * from "./struct/commands/CommandUtil.js";
+export * from "./struct/commands/ContentParser.js";
+export * from "./struct/commands/Flag.js";
+export * from "./struct/contextMenuCommands/ContextMenuCommand.js";
+export * from "./struct/contextMenuCommands/ContextMenuCommandHandler.js";
+export * from "./struct/inhibitors/Inhibitor.js";
+export * from "./struct/inhibitors/InhibitorHandler.js";
+export * from "./struct/listeners/Listener.js";
+export * from "./struct/listeners/ListenerHandler.js";
+export * from "./struct/tasks/Task.js";
+export * from "./struct/tasks/TaskHandler.js";
+export * from "./typings/events.js";
+export * from "./util/AkairoError.js";
+export * from "./util/AkairoMessage.js";
+export * from "./util/Category.js";
+export * as Constants from "./util/Constants.js";
+export * as Util from "./util/Util.js";
+/**
+ * The version of the library.
+ */
+export const version = packageJSON.version;

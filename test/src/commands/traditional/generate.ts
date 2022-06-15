@@ -1,6 +1,6 @@
 import { ArgumentGeneratorReturn, Command, Flag } from "#discord-akairo";
-import { Formatters, Message } from "discord.js";
-import util from "util";
+import { Formatters, type Message } from "discord.js";
+import { inspect } from "node:util";
 
 export default class GenerateCommand extends Command {
 	public constructor() {
@@ -23,6 +23,6 @@ export default class GenerateCommand extends Command {
 	}
 
 	public override exec(message: Message, args: { x: "2" }) {
-		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
+		message.channel.send(Formatters.codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

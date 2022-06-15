@@ -1,7 +1,7 @@
 import { Command } from "#discord-akairo";
-import { Message } from "discord.js";
-import util from "util";
-import logger from "../../struct/Logger";
+import type { Message } from "discord.js";
+import { inspect } from "node:util";
+import logger from "../../struct/Logger.js";
 
 export default class EvalCommand extends Command {
 	public constructor() {
@@ -33,7 +33,7 @@ export default class EvalCommand extends Command {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const print = (...a: any[]) => {
 			const cleaned = a.map(obj => {
-				if (typeof a !== "string") obj = util.inspect(obj, { depth: 1 });
+				if (typeof a !== "string") obj = inspect(obj, { depth: 1 });
 				return obj.replace(tokenRegex, "[TOKEN]");
 			});
 
@@ -53,7 +53,7 @@ export default class EvalCommand extends Command {
 			let output = eval(code);
 			if (output instanceof Promise) output = await output;
 
-			if (typeof output !== "string") output = util.inspect(output, { depth: 0 });
+			if (typeof output !== "string") output = inspect(output, { depth: 0 });
 			output = `${logs.join("\n")}\n${logs.length && output === "undefined" ? "" : output}`;
 			output = output.replace(tokenRegex, "[TOKEN]");
 

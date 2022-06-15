@@ -1,5 +1,5 @@
 import { ArgumentMatches } from "../../util/Constants.js";
-import { Util } from "../../util/Util.js";
+import { isArrayOf } from "../../util/Util.js";
 import type { ArgumentOptions } from "./arguments/Argument.js";
 
 /*
@@ -490,8 +490,8 @@ export class ContentParser {
 	public constructor(options: ContentParserOptions = {}) {
 		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
 
-		if (!Util.isArrayOf(flagWords, "string")) throw new TypeError("options.flagWords must be an array of strings.");
-		if (!Util.isArrayOf(optionFlagWords, "string")) throw new TypeError("options.optionFlagWords must be an array of strings.");
+		if (!isArrayOf(flagWords, "string")) throw new TypeError("options.flagWords must be an array of strings.");
+		if (!isArrayOf(optionFlagWords, "string")) throw new TypeError("options.optionFlagWords must be an array of strings.");
 		if (typeof quoted !== "boolean") throw new TypeError("options.quoted must be a boolean.");
 		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
 

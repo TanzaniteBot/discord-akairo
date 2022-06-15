@@ -1,18 +1,18 @@
 import {
-	CategoryChannel,
 	ChannelType,
 	Collection,
-	DirectoryChannel,
-	DMChannel,
-	GuildMember,
-	Message,
-	NewsChannel,
-	StageChannel,
-	TextChannel,
-	ThreadChannel,
-	VoiceChannel
+	type CategoryChannel,
+	type DirectoryChannel,
+	type DMChannel,
+	type GuildMember,
+	type Message,
+	type NewsChannel,
+	type StageChannel,
+	type TextChannel,
+	type ThreadChannel,
+	type VoiceChannel
 } from "discord.js";
-import { URL } from "url";
+import { URL } from "node:url";
 import { ArgumentTypes } from "../../../util/Constants.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import type { ContextMenuCommandHandler } from "../../contextMenuCommands/ContextMenuCommandHandler.js";

@@ -7,7 +7,7 @@ import {
 	TaskHandler
 } from "#discord-akairo";
 import { GatewayIntentBits } from "discord.js";
-import path from "path";
+import { join } from "node:path";
 import logger from "./Logger";
 
 export default class TestClient extends AkairoClient {
@@ -41,7 +41,7 @@ export default class TestClient extends AkairoClient {
 		});
 
 		this.commandHandler = new CommandHandler(this, {
-			directory: path.join(__dirname, "..", "commands"),
+			directory: join(__dirname, "..", "commands"),
 			ignoreCooldown: ["132266422679240704"],
 			aliasReplacement: /-/g,
 			prefix: "!!",
@@ -68,19 +68,19 @@ export default class TestClient extends AkairoClient {
 		});
 
 		this.inhibitorHandler = new InhibitorHandler(this, {
-			directory: path.join(__dirname, "..", "inhibitors")
+			directory: join(__dirname, "..", "inhibitors")
 		});
 
 		this.listenerHandler = new ListenerHandler(this, {
-			directory: path.join(__dirname, "..", "listeners")
+			directory: join(__dirname, "..", "listeners")
 		});
 
 		this.taskHandler = new TaskHandler(this, {
-			directory: path.join(__dirname, "..", "tasks")
+			directory: join(__dirname, "..", "tasks")
 		});
 
 		this.contextMenuCommandHandler = new ContextMenuCommandHandler(this, {
-			directory: path.join(__dirname, "..", "context-menu-commands")
+			directory: join(__dirname, "..", "context-menu-commands")
 		});
 
 		this.setup();

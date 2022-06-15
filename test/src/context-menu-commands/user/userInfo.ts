@@ -1,6 +1,6 @@
 import { ContextMenuCommand } from "#discord-akairo";
-import { ApplicationCommandType, ContextMenuCommandInteraction, Formatters } from "discord.js";
-import { inspect } from "util";
+import { ApplicationCommandType, Formatters, type ContextMenuCommandInteraction } from "discord.js";
+import { inspect } from "node:util";
 
 export default class UserInfo extends ContextMenuCommand {
 	public constructor() {

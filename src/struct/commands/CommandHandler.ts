@@ -1,30 +1,38 @@
 import {
-	ApplicationCommandData,
-	ApplicationCommandOptionData,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
-	AutocompleteInteraction,
-	Awaitable,
-	ChatInputCommandInteraction,
 	Collection,
-	CommandInteractionOption,
-	CommandInteractionOptionResolver,
 	DiscordAPIError,
-	Guild,
 	InteractionType,
-	Message,
-	Snowflake,
-	TextBasedChannel,
-	User
+	type ApplicationCommandData,
+	type ApplicationCommandOptionData,
+	type AutocompleteInteraction,
+	type Awaitable,
+	type ChatInputCommandInteraction,
+	type CommandInteractionOption,
+	type CommandInteractionOptionResolver,
+	type Guild,
+	type Message,
+	type Snowflake,
+	type TextBasedChannel,
+	type User
 } from "discord.js";
-import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events";
+import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
-import { isStringArrayStringOrFunc, Util } from "../../util/Util.js";
-import { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import {
+	deepAssign,
+	deepEquals,
+	intoArray,
+	intoCallable,
+	isPromise,
+	isStringArrayStringOrFunc,
+	prefixCompare
+} from "../../util/Util.js";
+import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "../AkairoHandler.js";
 import type { AkairoModule } from "../AkairoModule.js";
 import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
@@ -33,13 +41,13 @@ import type { TaskHandler } from "../tasks/TaskHandler.js";
 import type { DefaultArgumentOptions } from "./arguments/Argument.js";
 import { TypeResolver } from "./arguments/TypeResolver.js";
 import {
-	AkairoApplicationCommandChannelOptionData,
-	AkairoApplicationCommandChoicesData,
-	AkairoApplicationCommandNonOptionsData,
-	AkairoApplicationCommandSubCommandData,
-	AkairoApplicationCommandSubGroupData,
 	Command,
-	KeySupplier
+	type AkairoApplicationCommandChannelOptionData,
+	type AkairoApplicationCommandChoicesData,
+	type AkairoApplicationCommandNonOptionsData,
+	type AkairoApplicationCommandSubCommandData,
+	type AkairoApplicationCommandSubGroupData,
+	type KeySupplier
 } from "./Command";
 import { CommandUtil } from "./CommandUtil.js";
 import { Flag, FlagType } from "./Flag.js";
@@ -315,7 +323,7 @@ export class CommandHandler extends AkairoHandler {
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
 		this.prompts = new Collection();
-		this.argumentDefaults = Util.deepAssign(
+		this.argumentDefaults = deepAssign(
 			{
 				prompt: {
 					start: "",
@@ -476,7 +484,7 @@ export class CommandHandler extends AkairoHandler {
 				return 0;
 			}) as ApplicationCommandData[];
 
-		if (!Util.deepEquals(currentGlobalCommands, slashCommandsApp)) {
+		if (!deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
 			await this.client.application?.commands.set(slashCommandsApp).catch(error => {
 				if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "global", slashCommandsApp);
@@ -535,7 +543,7 @@ export class CommandHandler extends AkairoHandler {
 						return 0;
 					});
 
-				if (!Util.deepEquals(currentGuildCommands, sortedCommands)) {
+				if (!deepEquals(currentGuildCommands, sortedCommands)) {
 					this.client.emit(
 						"akairoDebug",
 						`[registerInteractionCommands] Updating guild commands for ${guild.name}.`,
@@ -672,7 +680,7 @@ export class CommandHandler extends AkairoHandler {
 			}
 
 			if (newEntry) {
-				this.prefixes = this.prefixes.sort((aVal, bVal, aKey, bKey) => Util.prefixCompare(aKey, bKey));
+				this.prefixes = this.prefixes.sort((aVal, bVal, aKey, bKey) => prefixCompare(aKey, bKey));
 			}
 		}
 	}
@@ -935,7 +943,7 @@ export class CommandHandler extends AkairoHandler {
 			let key;
 			try {
 				if (commandModule.lock) key = (commandModule.lock as KeySupplier)(message, convertedOptions);
-				if (Util.isPromise(key)) key = await key;
+				if (isPromise(key)) key = await key;
 				if (key) {
 					if (commandModule.locker?.has(key)) {
 						key = null;
@@ -1008,7 +1016,7 @@ export class CommandHandler extends AkairoHandler {
 				if (await this.runPostTypeInhibitors(message, command)) return false;
 			}
 			const before = command.before(message);
-			if (Util.isPromise(before)) await before;
+			if (isPromise(before)) await before;
 
 			const args = await command.parse(message, content);
 			if (Flag.is(args, FlagType.Cancel)) {
@@ -1024,7 +1032,7 @@ export class CommandHandler extends AkairoHandler {
 
 			if (!ignore) {
 				if (command.lock) key = (command.lock as KeySupplier)(message, args);
-				if (Util.isPromise(key)) key = await key;
+				if (isPromise(key)) key = await key;
 				if (key) {
 					if (command.locker?.has(key)) {
 						key = null;
@@ -1099,7 +1107,7 @@ export class CommandHandler extends AkairoHandler {
 						if (await this.runPostTypeInhibitors(message, command)) return;
 
 						const before = command.before(message);
-						if (Util.isPromise(before)) await before;
+						if (isPromise(before)) await before;
 
 						await this.runCommand(message, command, { match, matches });
 					} catch (err) {
@@ -1126,7 +1134,7 @@ export class CommandHandler extends AkairoHandler {
 			filterPromises.push(
 				(async () => {
 					let cond = command.condition(message);
-					if (Util.isPromise(cond)) cond = await cond;
+					if (isPromise(cond)) cond = await cond;
 					if (cond) trueCommands.push(command);
 				})()
 			);
@@ -1145,7 +1153,7 @@ export class CommandHandler extends AkairoHandler {
 					try {
 						if (await this.runPostTypeInhibitors(message, command)) return;
 						const before = command.before(message);
-						if (Util.isPromise(before)) await before;
+						if (isPromise(before)) await before;
 						await this.runCommand(message, command, {});
 					} catch (err) {
 						this.emitError(err, message, command);
@@ -1282,7 +1290,7 @@ export class CommandHandler extends AkairoHandler {
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
 				let missing = command.clientPermissions(message);
-				if (Util.isPromise(missing)) missing = await missing;
+				if (isPromise(missing)) missing = await missing;
 
 				if (missing != null) {
 					this.emit(event, message, command, "client", missing);
@@ -1309,7 +1317,7 @@ export class CommandHandler extends AkairoHandler {
 			if (!isIgnored) {
 				if (typeof command.userPermissions === "function") {
 					let missing = command.userPermissions(message);
-					if (Util.isPromise(missing)) missing = await missing;
+					if (isPromise(missing)) missing = await missing;
 
 					if (missing != null) {
 						this.emit(event, message, command, "user", missing);
@@ -1415,14 +1423,14 @@ export class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 */
 	public async parseCommand(message: Message | AkairoMessage): Promise<ParsedComponentData> {
-		const allowMention = await Util.intoCallable(this.prefix)(message);
-		let prefixes = Util.intoArray(allowMention);
+		const allowMention = await intoCallable(this.prefix)(message);
+		let prefixes = intoArray(allowMention);
 		if (allowMention) {
 			const mentions = [`<@${this.client.user?.id}>`, `<@!${this.client.user?.id}>`];
 			prefixes = [...mentions, ...prefixes];
 		}
 
-		prefixes.sort(Util.prefixCompare);
+		prefixes.sort(prefixCompare);
 		return this.parseMultiplePrefixes(
 			message,
 			prefixes.map(p => [p, null])
@@ -1439,12 +1447,12 @@ export class CommandHandler extends AkairoHandler {
 		}
 
 		const promises = this.prefixes.map(async (cmds, provider) => {
-			const prefixes = Util.intoArray(await Util.intoCallable(provider)(message));
+			const prefixes = intoArray(await intoCallable(provider)(message));
 			return prefixes.map(p => [p, cmds]);
 		});
 
 		const pairs = (await Promise.all(promises)).flatMap(x => x, 1);
-		pairs.sort(([a]: any, [b]: any) => Util.prefixCompare(a, b));
+		pairs.sort(([a]: any, [b]: any) => prefixCompare(a, b));
 		return this.parseMultiplePrefixes(message, pairs as [string, Set<string>][]);
 	}
 

@@ -1,5 +1,5 @@
-/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import {
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type {
 	ApplicationCommandAutocompleteOption,
 	ApplicationCommandChannelOptionData,
 	ApplicationCommandChoicesData,
@@ -17,14 +17,19 @@ import {
 import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { Category } from "../../util/Category.js";
-import { isStringArrayStringOrFunc, Util } from "../../util/Util.js";
+import { isArrayOf, isStringArrayStringOrFunc } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
-import { Argument, ArgumentOptions, ArgumentTypeCasterReturn, DefaultArgumentOptions } from "./arguments/Argument.js";
-import { ArgumentRunner, ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
-import { CommandHandler, IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
-import { ContentParser, ContentParserResult } from "./ContentParser.js";
-import { Flag } from "./Flag.js";
+import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
+import {
+	Argument,
+	type ArgumentOptions,
+	type ArgumentTypeCasterReturn,
+	type DefaultArgumentOptions
+} from "./arguments/Argument.js";
+import { ArgumentRunner, type ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
+import type { CommandHandler, IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
+import { ContentParser, type ContentParserResult } from "./ContentParser.js";
+import type { Flag } from "./Flag.js";
 
 /**
  * Represents a command.
@@ -265,8 +270,8 @@ export abstract class Command extends AkairoModule {
 			slashDmPermission = slashGuilds.length > 0 ? channel === null || channel === "dm" : undefined
 		} = options ?? {};
 
-		if (!Util.isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
-		if (typeof args !== "function" && !Util.isArrayOf(args, "object"))
+		if (!isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
+		if (typeof args !== "function" && !isArrayOf(args, "object"))
 			throw new TypeError("options.args must be an array of argument objects or a function.");
 		if (typeof argumentDefaults !== "object") throw new TypeError("options.argumentDefaults must be an object.");
 		if (typeof before !== "function") throw new TypeError("options.before must be a function.");
@@ -275,7 +280,7 @@ export abstract class Command extends AkairoModule {
 		if (typeof condition !== "function") throw new TypeError("options.condition must be a function.");
 		if (typeof cooldown !== "number" && cooldown !== null) throw new TypeError("options.cooldown must be a number or null.");
 		if (typeof editable !== "boolean") throw new TypeError("options.editable must be a boolean.");
-		if (!Util.isArrayOf(flags, "string")) throw new TypeError("options.flags must be an array of strings.");
+		if (!isArrayOf(flags, "string")) throw new TypeError("options.flags must be an array of strings.");
 		if (ignoreCooldown !== undefined && !isStringArrayStringOrFunc(ignoreCooldown))
 			throw new TypeError("options.ignoreCooldown must be a string, function, or array of strings.");
 		if (ignorePermissions !== undefined && !isStringArrayStringOrFunc(ignorePermissions))
@@ -284,7 +289,7 @@ export abstract class Command extends AkairoModule {
 		if (lock !== undefined && typeof lock !== "function" && !(["channel", "guild", "user"] as const).includes(lock))
 			throw new TypeError("options.lock must be a function or a string with a value of 'channel', 'guild', or 'user'.");
 		if (typeof onlyNsfw !== "boolean") throw new TypeError("options.onlyNsfw must be a boolean.");
-		if (!Util.isArrayOf(optionFlags, "string")) throw new TypeError("options.optionFlags must be an array of strings.");
+		if (!isArrayOf(optionFlags, "string")) throw new TypeError("options.optionFlags must be an array of strings.");
 		if (typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean.");
 		if (prefix !== undefined && !isStringArrayStringOrFunc(prefix))
 			throw new TypeError("options.prefix must be a string, function, or array of strings.");
@@ -299,9 +304,9 @@ export abstract class Command extends AkairoModule {
 		if (typeof slashDmPermission !== "boolean" && slashGuilds.length > 0)
 			throw new TypeError("You cannot set `options.slashDmPermission` with commands configured with `options.slashGuilds`.");
 		if (typeof slashEphemeral !== "boolean") throw new TypeError("options.slashEphemeral must be a boolean.");
-		if (!Util.isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
+		if (!isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
 		if (typeof slashOnly !== "boolean") throw new TypeError("options.slashOnly must be a boolean.");
-		if (slashOptions !== undefined && !Util.isArrayOf(slashOptions, "object"))
+		if (slashOptions !== undefined && !isArrayOf(slashOptions, "object"))
 			throw new TypeError("options.slashOptions must be an array of objects.");
 		if (typeof superUserOnly !== "boolean") throw new TypeError("options.superUserOnly must be a boolean.");
 		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");

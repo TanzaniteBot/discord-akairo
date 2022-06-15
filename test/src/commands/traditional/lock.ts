@@ -1,6 +1,6 @@
 import { Command } from "#discord-akairo";
-import { Message } from "discord.js";
-import { promisify } from "util";
+import { type Message } from "discord.js";
+import { promisify } from "node:util";
 
 const sleep = promisify(setTimeout);
 

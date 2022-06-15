@@ -1,9 +1,9 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import EventEmitter from "events";
+import EventEmitter from "node:events";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ListenerHandler } from "./ListenerHandler.js";
 
 /**

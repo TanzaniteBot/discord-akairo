@@ -1,9 +1,9 @@
 import type { Awaitable, Collection } from "discord.js";
-import type { TaskHandlerEvents } from "../../typings/events";
+import type { TaskHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "../AkairoHandler.js";
 import { Task } from "./Task.js";
 
 /**

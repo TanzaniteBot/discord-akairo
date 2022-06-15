@@ -21,14 +21,14 @@ import type {
 	User,
 	VoiceChannel
 } from "discord.js";
-import type { URL } from "url";
+import type { URL } from "node:url";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
-import { isStringArrayStringOrFunc, Util } from "../../../util/Util.js";
+import { intoCallable, isArrayOf, isPromise, isStringArrayStringOrFunc } from "../../../util/Util.js";
 import type { AkairoClient } from "../../AkairoClient.js";
-import { ContextMenuCommand } from "../../contextMenuCommands/ContextMenuCommand.js";
-import { Inhibitor } from "../../inhibitors/Inhibitor.js";
-import { Listener } from "../../listeners/Listener.js";
-import { Task } from "../../tasks/Task.js";
+import type { ContextMenuCommand } from "../../contextMenuCommands/ContextMenuCommand.js";
+import type { Inhibitor } from "../../inhibitors/Inhibitor.js";
+import type { Listener } from "../../listeners/Listener.js";
+import type { Task } from "../../tasks/Task.js";
 import type { Command } from "../Command.js";
 import type { CommandHandler } from "../CommandHandler.js";
 import { Flag, FlagType } from "../Flag.js";
@@ -162,7 +162,7 @@ export class Argument {
 			throw new TypeError("options.flag must be a null, a string, or an array of strings.");
 		if (typeof multipleFlags !== "boolean") throw new TypeError("options.multipleFlags must be a boolean.");
 		if (index !== null && typeof index !== "number") throw new TypeError("options.index must be a number or null.");
-		if (typeof unordered !== "boolean" && typeof unordered !== "number" && !Util.isArrayOf(unordered, "number"))
+		if (typeof unordered !== "boolean" && typeof unordered !== "number" && !isArrayOf(unordered, "number"))
 			throw new TypeError("options.unordered must be a boolean, number, or array of numbers.");
 		if (typeof limit !== "number") throw new TypeError("options.limit must be a number.");
 		if (prompt !== null && typeof prompt !== "boolean" && typeof prompt !== "object")
@@ -233,7 +233,7 @@ export class Argument {
 			inputPhrase: string | undefined,
 			inputParsed: string
 		) => {
-			let text = await Util.intoCallable(prompter).call(this, message, {
+			let text = await intoCallable(prompter).call(this, message, {
 				retries: retryCount,
 				infinite: isInfinite,
 				message: inputMessage,
@@ -391,7 +391,7 @@ export class Argument {
 
 			const modifyOtherwise = this.modifyOtherwise ?? commandDefs.modifyOtherwise ?? handlerDefs.modifyOtherwise ?? null;
 
-			let text = await Util.intoCallable(otherwise).call(this, message, {
+			let text = await intoCallable(otherwise).call(this, message, {
 				phrase,
 				failure
 			});
@@ -422,7 +422,7 @@ export class Argument {
 				return doOtherwise(null);
 			}
 
-			return Util.intoCallable(this.default)(message, {
+			return intoCallable(this.default)(message, {
 				phrase,
 				failure: null
 			});
@@ -438,7 +438,7 @@ export class Argument {
 				return this.collect(message, phrase, res);
 			}
 
-			return this.default == null ? res : Util.intoCallable(this.default)(message, { phrase, failure: res });
+			return this.default == null ? res : intoCallable(this.default)(message, { phrase, failure: res });
 		}
 
 		return res;
@@ -471,7 +471,7 @@ export class Argument {
 
 		if (typeof type === "function") {
 			let res = type(message, phrase);
-			if (Util.isPromise(res)) res = await res;
+			if (isPromise(res)) res = await res;
 			return res;
 		}
 
@@ -494,7 +494,7 @@ export class Argument {
 
 		if (resolver.type(type)) {
 			let res = resolver.type(type)?.call(this, message, phrase);
-			if (Util.isPromise(res)) res = await res;
+			if (isPromise(res)) res = await res;
 			return res;
 		}
 

@@ -1,4 +1,4 @@
-import { AkairoClientEvents, Listener } from "#discord-akairo";
+import { Listener, type AkairoClientEvents } from "#discord-akairo";
 import logger from "../struct/Logger";
 
 export default class AkairoDebugListener extends Listener {

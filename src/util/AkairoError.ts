@@ -1,4 +1,4 @@
-import { SlashOption } from "../struct/commands/Command";
+import type { SlashOption } from "../struct/commands/Command.js";
 
 const Messages = {
 	// Module-related

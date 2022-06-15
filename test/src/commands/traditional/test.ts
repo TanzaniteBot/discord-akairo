@@ -1,6 +1,6 @@
 import { Argument, Command } from "#discord-akairo";
-import { Formatters, Message } from "discord.js";
-import util from "util";
+import { Formatters, type Message } from "discord.js";
+import { inspect } from "node:util";
 const { compose, range, union } = Argument;
 
 export default class TestCommand extends Command {
@@ -20,6 +20,6 @@ export default class TestCommand extends Command {
 	}
 
 	public override exec(message: Message, args: { x: number }) {
-		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
+		message.channel.send(Formatters.codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

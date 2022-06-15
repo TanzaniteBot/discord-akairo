@@ -1,6 +1,6 @@
 import {
 	Base,
-	Util,
+	cleanContent,
 	type CacheType,
 	type ChatInputCommandInteraction,
 	type InteractionReplyOptions,
@@ -101,7 +101,7 @@ export class AkairoMessage<Cached extends CacheType = CacheType> extends Base {
 	 * If mentions cannot be resolved to a name, the relevant mention in the message content will not be converted.
 	 */
 	public get cleanContent(): string | null {
-		return this.content != null ? Util.cleanContent(this.content, this.channel!) : null;
+		return this.content != null ? cleanContent(this.content, this.channel!) : null;
 	}
 
 	/**

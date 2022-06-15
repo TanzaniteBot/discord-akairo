@@ -1,11 +1,11 @@
 import { Awaitable, Collection } from "discord.js";
-import type EventEmitter from "events";
-import type { ListenerHandlerEvents } from "../../typings/events";
+import type EventEmitter from "node:events";
+import type { ListenerHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { Category } from "../../util/Category.js";
-import { Util } from "../../util/Util.js";
+import { isEventEmitter } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
+import { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "../AkairoHandler.js";
 import { Listener } from "./Listener.js";
 
 /**
@@ -74,10 +74,8 @@ export class ListenerHandler extends AkairoHandler {
 		const listener: Listener = this.modules.get(id.toString())!;
 		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
-		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
-			? (listener.emitter as EventEmitter)
-			: this.emitters.get(listener.emitter as string)!;
-		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
+		const emitter = isEventEmitter(listener.emitter) ? listener.emitter : this.emitters.get(listener.emitter as string)!;
+		if (!isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		emitter[listener.type ?? "on"](listener.event, listener.exec);
 		return listener;
@@ -111,10 +109,10 @@ export class ListenerHandler extends AkairoHandler {
 		const listener: Listener = this.modules.get(id.toString())!;
 		if (!listener) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
-		const emitter: EventEmitter = Util.isEventEmitter(listener.emitter)
+		const emitter: EventEmitter = isEventEmitter(listener.emitter)
 			? (listener.emitter as EventEmitter)
 			: this.emitters.get(listener.emitter as string)!;
-		if (!Util.isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
+		if (!isEventEmitter(emitter)) throw new AkairoError("INVALID_TYPE", "emitter", "EventEmitter", true);
 
 		emitter.removeListener(listener.event, listener.exec);
 		return listener;
@@ -126,7 +124,7 @@ export class ListenerHandler extends AkairoHandler {
 	 */
 	public setEmitters(emitters: any): ListenerHandler {
 		for (const [key, value] of Object.entries(emitters)) {
-			if (!Util.isEventEmitter(value)) throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
+			if (!isEventEmitter(value)) throw new AkairoError("INVALID_TYPE", key, "EventEmitter", true);
 			this.emitters.set(key, value);
 		}
 

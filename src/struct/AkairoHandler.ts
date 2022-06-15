@@ -1,12 +1,12 @@
 import { Collection } from "discord.js";
-import EventEmitter from "events";
-import fs from "fs";
-import path from "path";
-import url from "url";
+import EventEmitter from "node:events";
+import { readdirSync, statSync } from "node:fs";
+import { dirname, extname, join, resolve, sep } from "node:path";
+import { pathToFileURL } from "node:url";
 import { AkairoError } from "../util/AkairoError.js";
 import { Category } from "../util/Category.js";
 import { AkairoHandlerEvents } from "../util/Constants.js";
-import { Util } from "../util/Util.js";
+import { isArrayOf } from "../util/Util.js";
 import type { AkairoClient } from "./AkairoClient.js";
 import { AkairoModule } from "./AkairoModule.js";
 
@@ -72,7 +72,7 @@ export class AkairoHandler extends EventEmitter {
 		if (typeof directory !== "string") throw new TypeError("options.directory must be a string.");
 		if (classToHandle !== AkairoModule && !(classToHandle.prototype instanceof AkairoModule))
 			throw new TypeError("options.classToHandle must be a class that extends AkairoModule.");
-		if (!(extensions instanceof Set) && !Util.isArrayOf(extensions, "string"))
+		if (!(extensions instanceof Set) && !isArrayOf(extensions, "string"))
 			throw new TypeError("options.extensions must be an array of strings or a Set.");
 		if (typeof automateCategories !== "boolean") throw new TypeError("options.automateCategories must be a boolean.");
 		if (typeof loadFilter !== "function") throw new TypeError("options.loadFilter must be a function.");
@@ -116,7 +116,7 @@ export class AkairoHandler extends EventEmitter {
 	 */
 	public async load(thing: string | AkairoModule, isReload = false): Promise<AkairoModule | undefined> {
 		const isClass = typeof thing === "function";
-		if (!isClass && !this.extensions.has(path.extname(thing as string))) return undefined;
+		if (!isClass && !this.extensions.has(extname(thing as string))) return undefined;
 
 		let mod = isClass
 			? thing
@@ -125,7 +125,7 @@ export class AkairoHandler extends EventEmitter {
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
 					// eslint-disable-next-line @typescript-eslint/no-var-requires
-			  }.call(this, await eval(`import(${JSON.stringify(url.pathToFileURL(thing as string).toString())})`));
+			  }.call(this, await eval(`import(${JSON.stringify(pathToFileURL(thing as string).toString())})`));
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
 			mod = new mod(this); // eslint-disable-line new-cap
@@ -154,7 +154,7 @@ export class AkairoHandler extends EventEmitter {
 		const filepaths = AkairoHandler.readdirRecursive(directory);
 		const promises = [];
 		for (let filepath of filepaths) {
-			filepath = path.resolve(filepath);
+			filepath = resolve(filepath);
 			if (filter(filepath)) promises.push(this.load(filepath));
 		}
 
@@ -174,7 +174,7 @@ export class AkairoHandler extends EventEmitter {
 		this.modules.set(mod.id, mod);
 
 		if (mod.categoryID === "default" && this.automateCategories) {
-			const dirs = path.dirname(filepath!).split(path.sep);
+			const dirs = dirname(filepath!).split(sep);
 			mod.categoryID = dirs[dirs.length - 1];
 		}
 
@@ -249,12 +249,12 @@ export class AkairoHandler extends EventEmitter {
 		const result = [];
 
 		(function read(dir) {
-			const files = fs.readdirSync(dir);
+			const files = readdirSync(dir);
 
 			for (const file of files) {
-				const filepath = path.join(dir, file);
+				const filepath = join(dir, file);
 
-				if (fs.statSync(filepath).isDirectory()) {
+				if (statSync(filepath).isDirectory()) {
 					read(filepath);
 				} else {
 					result.push(filepath);

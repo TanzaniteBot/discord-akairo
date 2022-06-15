@@ -1,5 +1,5 @@
 import { Listener } from "#discord-akairo";
-import { ClientEvents } from "discord.js";
+import type { ClientEvents } from "discord.js";
 import logger from "../struct/Logger";
 
 export default class DiscordJsDebugListener extends Listener {

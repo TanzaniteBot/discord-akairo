@@ -1,6 +1,6 @@
 import { Command } from "#discord-akairo";
-import { Formatters, Message } from "discord.js";
-import util from "util";
+import { Formatters, type Message } from "discord.js";
+import { inspect } from "node:util";
 
 export default class ArgsCommand extends Command {
 	public constructor() {
@@ -59,6 +59,6 @@ export default class ArgsCommand extends Command {
 			option: string;
 		}
 	) {
-		message.channel.send(Formatters.codeBlock("js", `${util.inspect(args, { depth: 1 })}`));
+		message.channel.send(Formatters.codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }
