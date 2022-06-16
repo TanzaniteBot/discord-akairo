@@ -1,13 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import packageJSON from "../package.json";
 import { CommandUtil } from "./struct/commands/CommandUtil.js";
 
 declare module "discord.js" {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	export interface Message<Cached extends boolean = boolean> extends Base {
 		/**
 		 * Extra properties applied to the Discord.js message object.
 		 * Utilities for command responding.
-		 * Available on all messages after 'all' inhibitors and built-in inhibitors (bot, client).
+		 * Available on all messages after `'all'` inhibitors and built-in inhibitors (bot, client).
 		 * Not all properties of the util are available, depending on the input.
 		 * */
 		util?: CommandUtil<Message>;
@@ -40,6 +40,7 @@ export * from "./util/AkairoMessage.js";
 export * from "./util/Category.js";
 export * as Constants from "./util/Constants.js";
 export * as Util from "./util/Util.js";
+
 /**
  * The version of the library.
  */

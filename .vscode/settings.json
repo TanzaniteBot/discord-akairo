@@ -1,12 +1,13 @@
 {
 	"search.exclude": {
-		"dist": true,
-		"node_modules": true,
-		".yarn/plugins/@yarnpkg/plugin-interactive-tools.cjs": true,
+		"**/dist/**": true,
+		"**/node_modules/**": true,
+		"**/.yarn/plugins/**": true,
+		"**/.yarn/releases/**": true,
 		".git": true
 	},
 	"files.exclude": {
-		"**/node_modules": true,
+		"**/node_modules/**": true,
 		"**/.yarn/cache/**": true,
 		"**/*js.map": true,
 		"**/*d.ts.map": true
@@ -25,5 +26,6 @@
 	"prettier.prettierPath": "node_modules/prettier",
 	"prettier.withNodeModules": true,
 	"prettier.useEditorConfig": false,
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.workspaceSymbols.scope": "currentProject"
 }
