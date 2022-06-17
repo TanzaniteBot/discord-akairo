@@ -15,9 +15,7 @@ import type {
 	Snowflake
 } from "discord.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
-import type { Category } from "../../util/Category.js";
 import { isArrayOf, isStringArrayStringOrFunc, patchAbstract } from "../../util/Util.js";
-import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import {
 	Argument,
@@ -33,7 +31,7 @@ import type { Flag } from "./Flag.js";
 /**
  * Represents a command.
  */
-export abstract class Command extends AkairoModule {
+export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * Command names.
 	 */
@@ -55,19 +53,9 @@ export abstract class Command extends AkairoModule {
 	public declare argumentRunner: ArgumentRunner;
 
 	/**
-	 * Category the command belongs to.
-	 */
-	public declare category: Category<string, Command>;
-
-	/**
 	 * Usable only in this channel type.
 	 */
 	public declare channel?: string;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
 
 	/**
 	 * Permissions required to run command by the client.
@@ -93,21 +81,6 @@ export abstract class Command extends AkairoModule {
 	 * Whether or not this command can be ran by an edit.
 	 */
 	public declare editable: boolean;
-
-	/**
-	 * The filepath.
-	 */
-	public declare filepath: string;
-
-	/**
-	 * The handler.
-	 */
-	public declare handler: CommandHandler;
-
-	/**
-	 * The ID of the command.
-	 */
-	public declare id: string;
 
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
@@ -427,18 +400,6 @@ export abstract class Command extends AkairoModule {
 patchAbstract(Command, "exec");
 patchAbstract(Command, "execSlash");
 patchAbstract(Command, "autocomplete");
-
-export interface Command extends AkairoModule {
-	/**
-	 * Reloads the command.
-	 */
-	reload(): Promise<Command>;
-
-	/**
-	 * Removes the command.
-	 */
-	remove(): Command;
-}
 
 /**
  * Options to use for command execution behavior.

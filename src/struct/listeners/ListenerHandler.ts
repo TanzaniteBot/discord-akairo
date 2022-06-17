@@ -2,35 +2,19 @@ import { Awaitable, Collection } from "discord.js";
 import type EventEmitter from "node:events";
 import type { ListenerHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
-import type { Category } from "../../util/Category.js";
 import { isEventEmitter } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "../AkairoHandler.js";
+import { AkairoHandler, type AkairoHandlerOptions } from "../AkairoHandler.js";
 import { Listener } from "./Listener.js";
 
 /**
  * Loads listeners and registers them with EventEmitters.
  */
-export class ListenerHandler extends AkairoHandler {
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, Listener>>;
-
+export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
 	/**
 	 * Class to handle.
 	 */
 	public declare classToHandle: typeof Listener;
-
-	/**
-	 * The Akairo client
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Directory to listeners.
-	 */
-	public declare directory: string;
 
 	/**
 	 * EventEmitters for use, mapped by name to EventEmitter.
@@ -39,15 +23,10 @@ export class ListenerHandler extends AkairoHandler {
 	public declare emitters: Collection<string, EventEmitter>;
 
 	/**
-	 * Listeners loaded, mapped by ID to Listener.
-	 */
-	public declare modules: Collection<string, Listener>;
-
-	/**
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions) {
+	public constructor(client: AkairoClient, options: ListenerHandlerOptions) {
 		const { directory, classToHandle = Listener, extensions = [".js", ".ts"], automateCategories, loadFilter } = options ?? {};
 
 		if (!(classToHandle.prototype instanceof Listener || classToHandle === Listener)) {
@@ -128,49 +107,9 @@ export class ListenerHandler extends AkairoHandler {
 
 type Events = ListenerHandlerEvents;
 
-export interface ListenerHandler extends AkairoHandler {
-	/**
-	 * Finds a category by name.
-	 * @param name - Name to find with.
-	 */
-	findCategory(name: string): Category<string, Listener>;
-
-	/**
-	 * Loads a listener, can be a listener class or a filepath.
-	 * @param thing - Listener class or path to listener.
-	 * @param isReload - Whether this is a reload or not.
-	 */
-	load(thing: string | Listener, isReload?: boolean): Promise<Listener>;
-
-	/**
-	 * Reads all listeners from the directory and loads them.
-	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
-	 * @param filter - Filter for files, where true means it should be loaded.
-	 */
-	loadAll(directory?: string, filter?: LoadPredicate): Promise<ListenerHandler>;
-
-	/**
-	 * Reloads a listener.
-	 * @param id - ID of the listener.
-	 */
-	reload(id: string): Promise<Listener>;
-
-	/**
-	 * Reloads all listeners.
-	 */
-	reloadAll(): Promise<ListenerHandler>;
-
-	/**
-	 * Removes a listener.
-	 * @param id - ID of the listener.
-	 */
-	remove(id: string): Listener;
-
-	/**
-	 * Removes all listeners.
-	 */
-	removeAll(): ListenerHandler;
-
+export interface ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
 	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }
+
+export type ListenerHandlerOptions = AkairoHandlerOptions<Listener, ListenerHandler>;

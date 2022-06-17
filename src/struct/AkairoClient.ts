@@ -28,8 +28,8 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 	public constructor(options: AkairoOptions & ClientOptions);
 	public constructor(options: AkairoOptions, clientOptions: ClientOptions);
 	public constructor(options: (AkairoOptions & ClientOptions) | AkairoOptions, clientOptions?: ClientOptions) {
-		const combinedOptions = { ...options, ...clientOptions };
-		super(combinedOptions as AkairoOptions & ClientOptions);
+		const combinedOptions = <AkairoOptions & ClientOptions>{ ...options, ...(clientOptions ?? {}) };
+		super(combinedOptions);
 		this.ownerID = combinedOptions.ownerID ?? [];
 		this.superUserID = combinedOptions.superUserID ?? [];
 		this.util = ClientUtil;
@@ -58,23 +58,23 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 	}
 }
 
-type Event = AkairoClientEvents;
+type Events = AkairoClientEvents;
 
 export interface AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
-	on<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
-	on<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
+	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	on<S extends string | symbol>(event: Exclude<S, keyof Events>, listener: (...args: any[]) => Awaitable<void>): this;
 
-	once<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
-	once<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
+	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	once<S extends string | symbol>(event: Exclude<S, keyof Events>, listener: (...args: any[]) => Awaitable<void>): this;
 
-	emit<K extends keyof Event>(event: K, ...args: Event[K]): boolean;
-	emit<S extends string | symbol>(event: Exclude<S, keyof Event>, ...args: unknown[]): boolean;
+	emit<K extends keyof Events>(event: K, ...args: Events[K]): boolean;
+	emit<S extends string | symbol>(event: Exclude<S, keyof Events>, ...args: unknown[]): boolean;
 
-	off<K extends keyof Event>(event: K, listener: (...args: Event[K]) => Awaitable<void>): this;
-	off<S extends string | symbol>(event: Exclude<S, keyof Event>, listener: (...args: any[]) => Awaitable<void>): this;
+	off<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
+	off<S extends string | symbol>(event: Exclude<S, keyof Events>, listener: (...args: any[]) => Awaitable<void>): this;
 
-	removeAllListeners<K extends keyof Event>(event?: K): this;
-	removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof Event>): this;
+	removeAllListeners<K extends keyof Events>(event?: K): this;
+	removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof Events>): this;
 }
 
 /**

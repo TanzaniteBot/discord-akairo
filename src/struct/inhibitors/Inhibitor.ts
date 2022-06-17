@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Message } from "discord.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
-import type { Category } from "../../util/Category.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
@@ -10,26 +9,11 @@ import type { InhibitorHandler } from "./InhibitorHandler.js";
 /**
  * Represents an inhibitor.
  */
-export abstract class Inhibitor extends AkairoModule {
+export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor> {
 	/**
 	 * The priority of the inhibitor.
 	 */
 	public declare priority: number;
-
-	/**
-	 * The category the inhibitor belongs to.
-	 */
-	public declare category: Category<string, Inhibitor>;
-
-	/**
-	 * The inhibitor handler.
-	 */
-	public declare handler: InhibitorHandler;
-
-	/**
-	 * The ID of this inhibitor.
-	 */
-	public declare id: string;
 
 	/**
 	 * Reason emitted when command is inhibited.
@@ -73,18 +57,6 @@ export abstract class Inhibitor extends AkairoModule {
 }
 
 patchAbstract(Inhibitor, "exec");
-
-export interface Inhibitor extends AkairoModule {
-	/**
-	 * Reloads the inhibitor.
-	 */
-	reload(): Promise<Inhibitor>;
-
-	/**
-	 * Removes the inhibitor.
-	 */
-	remove(): Inhibitor;
-}
 
 /**
  * Options to use for inhibitor execution behavior.

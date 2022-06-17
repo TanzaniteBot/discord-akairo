@@ -139,7 +139,7 @@ export class Argument {
 	 */
 	// eslint-disable-next-line complexity
 	public constructor(command: Command, options: ArgumentOptions = {}) {
-		// doing this instead of object deconstruction so its valid to pass null values
+		// doing this instead of object deconstruction so it's valid to pass null values
 		const match = options.match ?? ArgumentMatches.PHRASE,
 			type = options.type ?? ArgumentTypes.STRING,
 			flag = options.flag ?? null,

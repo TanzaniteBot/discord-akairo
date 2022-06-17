@@ -113,12 +113,7 @@ export class Flag<T extends FlagType = FlagType> {
 	 * @param value - Value to check.
 	 * @param type - Type of flag.
 	 */
-	public static is(value: unknown, type: FlagType.Cancel): value is Flag<FlagType.Cancel>;
-	public static is(value: unknown, type: FlagType.Timeout): value is Flag<FlagType.Timeout>;
-	public static is(value: unknown, type: FlagType.Continue): value is Flag<FlagType.Continue>;
-	public static is(value: unknown, type: FlagType.Fail): value is Flag<FlagType.Fail>;
-	public static is(value: unknown, type: FlagType.Retry): value is Flag<FlagType.Retry>;
-	public static is(value: unknown, type: FlagType): value is Flag<typeof type> {
+	public static is<Type extends FlagType>(value: unknown, type: Type): value is Flag<typeof type> {
 		return value instanceof Flag && value.type === type;
 	}
 }

@@ -10,12 +10,15 @@ import { isArrayOf } from "../util/Util.js";
 import type { AkairoClient } from "./AkairoClient.js";
 import { AkairoModule } from "./AkairoModule.js";
 
-export type Static<M> = { (): M };
+export type Class<T> = abstract new (...args: any[]) => T;
 
 /**
  * Base class for handling modules.
  */
-export class AkairoHandler extends EventEmitter {
+export class AkairoHandler<
+	Module extends AkairoModule<Handler, Module>,
+	Handler extends AkairoHandler<Module, Handler>
+> extends EventEmitter {
 	/**
 	 * Whether or not to automate category names.
 	 */
@@ -24,12 +27,12 @@ export class AkairoHandler extends EventEmitter {
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
-	public declare categories: Collection<string, Category<string, AkairoModule>>;
+	public declare categories: Collection<string, Category<string, Module>>;
 
 	/**
 	 * Class to handle.
 	 */
-	public declare classToHandle: typeof AkairoModule;
+	public declare classToHandle: Class<Module>;
 
 	/**
 	 * The Akairo client.
@@ -54,13 +57,13 @@ export class AkairoHandler extends EventEmitter {
 	/**
 	 * Modules loaded, mapped by ID to AkairoModule.
 	 */
-	public declare modules: Collection<string, AkairoModule>;
+	public declare modules: Collection<string, Module>;
 
 	/**
 	 * @param client - The Akairo client.
 	 * @param options - Options for module loading and handling.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions) {
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Module, Handler>) {
 		const {
 			directory,
 			classToHandle = AkairoModule,
@@ -81,9 +84,9 @@ export class AkairoHandler extends EventEmitter {
 
 		this.client = client;
 		this.directory = directory;
-		this.classToHandle = classToHandle;
+		this.classToHandle = <Class<Module>>classToHandle;
 		this.extensions = new Set(extensions);
-		this.automateCategories = Boolean(automateCategories);
+		this.automateCategories = automateCategories;
 		this.loadFilter = loadFilter;
 		this.modules = new Collection();
 		this.categories = new Collection();
@@ -93,7 +96,7 @@ export class AkairoHandler extends EventEmitter {
 	 * Deregisters a module.
 	 * @param mod - Module to use.
 	 */
-	public deregister(mod: AkairoModule): void {
+	public deregister(mod: Module): void {
 		if (mod.filepath) delete require.cache[require.resolve(mod.filepath)];
 		this.modules.delete(mod.id);
 		mod.category!.delete(mod.id);
@@ -103,7 +106,7 @@ export class AkairoHandler extends EventEmitter {
 	 * Finds a category by name.
 	 * @param name - Name to find with.
 	 */
-	public findCategory(name: string): Category<string, AkairoModule> | undefined {
+	public findCategory(name: string): Category<string, Module> | undefined {
 		return this.categories.find(category => {
 			return category.id.toLowerCase() === name.toLowerCase();
 		});
@@ -114,7 +117,7 @@ export class AkairoHandler extends EventEmitter {
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	public async load(thing: string | AkairoModule, isReload = false): Promise<AkairoModule | undefined> {
+	public async load(thing: string | Module, isReload = false): Promise<Module | undefined> {
 		const isClass = typeof thing === "function";
 		if (!isClass && !this.extensions.has(extname(thing as string))) return undefined;
 
@@ -124,7 +127,6 @@ export class AkairoHandler extends EventEmitter {
 					if (!m) return null;
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
-					// eslint-disable-next-line @typescript-eslint/no-var-requires
 			  }.call(this, await eval(`import(${JSON.stringify(pathToFileURL(thing as string).toString())})`));
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
@@ -150,7 +152,7 @@ export class AkairoHandler extends EventEmitter {
 	public async loadAll(
 		directory: string = this.directory!,
 		filter: LoadPredicate = this.loadFilter || (() => true)
-	): Promise<AkairoHandler> {
+	): Promise<this> {
 		const filepaths = AkairoHandler.readdirRecursive(directory);
 		const promises = [];
 		for (let filepath of filepaths) {
@@ -167,10 +169,10 @@ export class AkairoHandler extends EventEmitter {
 	 * @param mod - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public register(mod: AkairoModule, filepath?: string): void {
+	public register(mod: Module, filepath?: string): void {
 		mod.filepath = filepath!;
 		mod.client = this.client;
-		mod.handler = this;
+		mod.handler = <Handler>(<unknown>this);
 		this.modules.set(mod.id, mod);
 
 		if (mod.categoryID === "default" && this.automateCategories) {
@@ -191,7 +193,7 @@ export class AkairoHandler extends EventEmitter {
 	 * Reloads a module.
 	 * @param id - ID of the module.
 	 */
-	public async reload(id: string): Promise<AkairoModule | undefined> {
+	public async reload(id: string): Promise<Module | undefined> {
 		const mod = this.modules.get(id.toString());
 		if (!mod) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 		if (!mod.filepath) throw new AkairoError("NOT_RELOADABLE", this.classToHandle.name, id);
@@ -206,7 +208,7 @@ export class AkairoHandler extends EventEmitter {
 	/**
 	 * Reloads all modules.
 	 */
-	public async reloadAll(): Promise<AkairoHandler> {
+	public async reloadAll(): Promise<this> {
 		const promises = [];
 		for (const m of Array.from(this.modules.values())) {
 			if (m.filepath) promises.push(this.reload(m.id));
@@ -220,7 +222,7 @@ export class AkairoHandler extends EventEmitter {
 	 * Removes a module.
 	 * @param id - ID of the module.
 	 */
-	public remove(id: string): AkairoModule {
+	public remove(id: string): Module {
 		const mod = this.modules.get(id.toString());
 		if (!mod) throw new AkairoError("MODULE_NOT_FOUND", this.classToHandle.name, id);
 
@@ -233,7 +235,7 @@ export class AkairoHandler extends EventEmitter {
 	/**
 	 * Removes all modules.
 	 */
-	public removeAll(): AkairoHandler {
+	public removeAll(): this {
 		for (const m of Array.from(this.modules.values())) {
 			if (m.filepath) this.remove(m.id);
 		}
@@ -276,7 +278,10 @@ export type LoadPredicate = (filepath: string) => boolean;
 /**
  * Options for module loading and handling.
  */
-export interface AkairoHandlerOptions {
+export interface AkairoHandlerOptions<
+	Module extends AkairoModule<Handler, Module>,
+	Handler extends AkairoHandler<Module, Handler>
+> {
 	/**
 	 * Whether or not to set each module's category to its parent directory name.
 	 * @default false
@@ -287,7 +292,7 @@ export interface AkairoHandlerOptions {
 	 * Only classes that extends this class can be handled.
 	 * @default AkairoModule
 	 */
-	classToHandle?: typeof AkairoModule;
+	classToHandle?: Class<Module>;
 
 	/**
 	 * Directory to modules.

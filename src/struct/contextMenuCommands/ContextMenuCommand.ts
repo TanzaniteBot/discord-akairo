@@ -6,16 +6,14 @@ import {
 	type PermissionResolvable,
 	type Snowflake
 } from "discord.js";
-import type { Category } from "../../util/Category.js";
 import { isArrayOf, patchAbstract } from "../../util/Util.js";
-import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
 
 /**
  * Represents a context menu command.
  */
-export abstract class ContextMenuCommand extends AkairoModule {
+export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommandHandler, ContextMenuCommand> {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
@@ -40,26 +38,6 @@ export abstract class ContextMenuCommand extends AkairoModule {
 	 * The type of the context menu command.
 	 */
 	public declare type: ApplicationCommandType.User | ApplicationCommandType.Message;
-
-	/**
-	 * The category of this context menu command.
-	 */
-	public declare category: Category<string, ContextMenuCommand>;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * The filepath.
-	 */
-	public declare filepath: string;
-
-	/**
-	 * The handler.
-	 */
-	public declare handler: ContextMenuCommandHandler;
 
 	/**
 	 * Name localization.
@@ -128,18 +106,6 @@ export abstract class ContextMenuCommand extends AkairoModule {
 }
 
 patchAbstract(ContextMenuCommand, "exec");
-
-export interface ContextMenuCommand extends AkairoModule {
-	/**
-	 * Reloads the context menu command.
-	 */
-	reload(): Promise<ContextMenuCommand>;
-
-	/**
-	 * Removes the context menu command.
-	 */
-	remove(): ContextMenuCommand;
-}
 
 /**
  * Options to use for context menu command execution behavior.

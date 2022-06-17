@@ -1,29 +1,39 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import type { ChatInputCommandInteraction, ClientEvents, ContextMenuCommandInteraction, Message } from "discord.js";
+import type { AkairoHandler } from "../struct/AkairoHandler.js";
 import type { AkairoModule } from "../struct/AkairoModule.js";
 import type { Command } from "../struct/commands/Command.js";
+import type { CommandHandler } from "../struct/commands/CommandHandler.js";
 import type { ContextMenuCommand } from "../struct/contextMenuCommands/ContextMenuCommand.js";
+import type { ContextMenuCommandHandler } from "../struct/contextMenuCommands/ContextMenuCommandHandler.js";
 import type { Inhibitor } from "../struct/inhibitors/Inhibitor.js";
+import type { InhibitorHandler } from "../struct/inhibitors/InhibitorHandler.js";
 import type { Listener } from "../struct/listeners/Listener.js";
+import type { ListenerHandler } from "../struct/listeners/ListenerHandler.js";
 import type { Task } from "../struct/tasks/Task.js";
+import type { TaskHandler } from "../struct/tasks/TaskHandler.js";
 import type { AkairoMessage } from "../util/AkairoMessage.js";
 import type { BuiltInReasons } from "../util/Constants.js";
 
-export interface AkairoHandlerEvents {
+export interface AkairoHandlerEvents<
+	Module extends AkairoModule<Handler, Module>,
+	Handler extends AkairoHandler<Module, Handler>
+> {
 	/**
 	 * Emitted when a module is loaded.
 	 * @param mod - Module loaded.
 	 * @param isReload - Whether or not this was a reload.
 	 */
-	load: [mod: AkairoModule, isReload: boolean];
+	load: [mod: Module, isReload: boolean];
 
 	/**
 	 * Emitted when a module is removed.
 	 * @param mod - Module removed.
 	 */
-	remove: [mod: AkairoModule];
+	remove: [mod: Module];
 }
 
-export interface CommandHandlerEvents extends AkairoHandlerEvents {
+export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, CommandHandler> {
 	/**
 	 * Emitted when a command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
 	 * @param message - Message sent.
@@ -111,13 +121,6 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	inPrompt: [message: Message];
 
 	/**
-	 * Emitted when a command is loaded.
-	 * @param command - Module loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	load: [command: Command, isReload: boolean];
-
-	/**
 	 * Emitted when a message is blocked by a pre-message inhibitor. The built-in inhibitors are 'client' and 'bot'.
 	 * @param message - Message sent.
 	 * @param reason - Reason for the block.
@@ -138,12 +141,6 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	 * @param missing - The missing permissions.
 	 */
 	missingPermissions: [message: Message, command: Command, type: "client" | "user", missing?: any];
-
-	/**
-	 * Emitted when a command is removed.
-	 * @param command - Command removed.
-	 */
-	remove: [command: Command];
 
 	/**
 	 * Emitted when a slash command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
@@ -201,65 +198,13 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents {
 	slashOnly: [message: Message, command: Command];
 }
 
-export interface InhibitorHandlerEvents extends AkairoHandlerEvents {
-	/**
-	 * Emitted when an inhibitor is removed.
-	 * @param inhibitor - Inhibitor removed.
-	 */
-	remove: [inhibitor: Inhibitor];
+export interface InhibitorHandlerEvents extends AkairoHandlerEvents<Inhibitor, InhibitorHandler> {}
 
-	/**
-	 * Emitted when an inhibitor is loaded.
-	 * @param inhibitor - Inhibitor loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	load: [inhibitor: Inhibitor, isReload: boolean];
-}
+export interface ListenerHandlerEvents extends AkairoHandlerEvents<Listener, ListenerHandler> {}
 
-export interface ListenerHandlerEvents extends AkairoHandlerEvents {
-	/**
-	 * Emitted when a listener is removed.
-	 * @param listener - Listener removed.
-	 */
-	remove: [listener: Listener];
+export interface TaskHandlerEvents extends AkairoHandlerEvents<Task, TaskHandler> {}
 
-	/**
-	 * Emitted when a listener is loaded.
-	 * @param listener - Listener loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	load: [listener: Listener, isReload: boolean];
-}
-
-export interface TaskHandlerEvents extends AkairoHandlerEvents {
-	/**
-	 * Emitted when a task is removed.
-	 * @param task - Task removed.
-	 */
-	remove: [task: Task];
-
-	/**
-	 * Emitted when a task is loaded.
-	 * @param task - Task loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	load: [task: Task, isReload: boolean];
-}
-
-export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents {
-	/**
-	 * Emitted when a context menu command is removed.
-	 * @param contextMenu - Context menu command removed.
-	 */
-	remove: [contextMenu: ContextMenuCommand];
-
-	/**
-	 * Emitted when a context menu command is loaded.
-	 * @param contextMenu - Context menu command loaded.
-	 * @param isReload - Whether or not this was a reload.
-	 */
-	load: [contextMenu: ContextMenuCommand, isReload: boolean];
-
+export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents<ContextMenuCommand, ContextMenuCommandHandler> {
 	/**
 	 * Emitted when a context menu command errors.
 	 * @param error - The error.

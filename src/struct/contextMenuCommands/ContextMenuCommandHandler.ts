@@ -1,53 +1,26 @@
-import type { Awaitable, Collection, ContextMenuCommandInteraction } from "discord.js";
+import type { Awaitable, ContextMenuCommandInteraction } from "discord.js";
 import type { ContextMenuCommandHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
-import type { Category } from "../../util/Category.js";
 import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions, LoadPredicate } from "../AkairoHandler.js";
-import type { AkairoModule } from "../AkairoModule.js";
+import { AkairoHandler, AkairoHandlerOptions } from "../AkairoHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import { ContextMenuCommand } from "./ContextMenuCommand.js";
 
 /**
  * Loads context menu commands and handles them.
  */
-export class ContextMenuCommandHandler extends AkairoHandler {
-	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, ContextMenuCommand>>;
-
-	/**
-	 * Class to handle.
-	 */
-	public declare classToHandle: typeof ContextMenuCommand;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
-	 * Directory to context menu commands.
-	 */
-	public declare directory: string;
-
+export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand, ContextMenuCommandHandler> {
 	/**
 	 * Inhibitor handler to use.
 	 */
 	public declare inhibitorHandler?: InhibitorHandler;
 
 	/**
-	 * Context menu commands loaded, mapped by ID to context menu command.
-	 */
-	public declare modules: Collection<string, ContextMenuCommand>;
-
-	/**
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions) {
+	public constructor(client: AkairoClient, options: ContextMenuCommandHandlerOptions) {
 		const {
 			directory,
 			classToHandle = ContextMenuCommand,
@@ -112,7 +85,7 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 	 * @param interaction - Interaction that called the command.
 	 * @param command - Command that errored.
 	 */
-	public emitError(err: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand | AkairoModule): void {
+	public emitError(err: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand): void {
 		if (this.listenerCount(ContextCommandHandlerEvents.ERROR)) {
 			this.emit(ContextCommandHandlerEvents.ERROR, err, interaction, command);
 			return;
@@ -124,61 +97,9 @@ export class ContextMenuCommandHandler extends AkairoHandler {
 
 type Events = ContextMenuCommandHandlerEvents;
 
-export interface ContextMenuCommandHandler extends AkairoHandler {
-	/**
-	 * Deregisters a module.
-	 * @param contextMenuCommand - Module to use.
-	 */
-	deregister(contextMenuCommand: ContextMenuCommand): void;
-
-	/**
-	 * Finds a category by name.
-	 * @param name - Name to find with.
-	 */
-	findCategory(name: string): Category<string, ContextMenuCommand>;
-
-	/**
-	 * Loads an context menu command.
-	 * @param thing - Module or path to module.
-	 */
-	load(thing: string | ContextMenuCommand): Promise<ContextMenuCommand>;
-
-	/**
-	 * Reads all context menu commands from the directory and loads them.
-	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
-	 * @param filter - Filter for files, where true means it should be loaded.
-	 */
-	loadAll(directory?: string, filter?: LoadPredicate): Promise<ContextMenuCommandHandler>;
-
-	/**
-	 * Registers a module.
-	 * @param contextMenuCommand - Module to use.
-	 * @param filepath - Filepath of module.
-	 */
-	register(contextMenuCommand: ContextMenuCommand, filepath?: string): void;
-
-	/**
-	 * Reloads an context menu command.
-	 * @param id - ID of the context menu command.
-	 */
-	reload(id: string): Promise<ContextMenuCommand>;
-
-	/**
-	 * Reloads all context menu commands.
-	 */
-	reloadAll(): Promise<ContextMenuCommandHandler>;
-
-	/**
-	 * Removes an context menu command.
-	 * @param id - ID of the context menu command.
-	 */
-	remove(id: string): ContextMenuCommand;
-
-	/**
-	 * Removes all context menu commands.
-	 */
-	removeAll(): ContextMenuCommandHandler;
-
+export interface ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand, ContextMenuCommandHandler> {
 	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }
+
+export type ContextMenuCommandHandlerOptions = AkairoHandlerOptions<ContextMenuCommand, ContextMenuCommandHandler>;

@@ -5,40 +5,40 @@ import type { AkairoHandler } from "./AkairoHandler.js";
 /**
  * Base class for a module.
  */
-export abstract class AkairoModule {
+export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler>, Module extends AkairoModule<Handler, Module>> {
 	/**
-	 * Category this belongs to.
+	 * The category this module belongs to.
 	 */
-	public declare category: Category<string, AkairoModule>;
+	public declare category: Category<string, this>;
 
 	/**
-	 * ID of the category this belongs to.
+	 * The ID of the category this module belongs to.
 	 */
 	public declare categoryID: string;
 
 	/**
-	 * The Akairo client.
+	 * The client thant instantiated this module.
 	 */
 	public declare client: AkairoClient;
 
 	/**
-	 * The filepath.
+	 * The filepath of this module.
 	 */
 	public declare filepath: string;
 
 	/**
-	 * The handler.
+	 * The handler for this module.
 	 */
-	public declare handler: AkairoHandler;
+	public declare handler: Handler;
 
 	/**
-	 * ID of the module.
+	 * The ID of this module.
 	 */
 	public declare id: string;
 
 	/**
-	 * @param id - ID of module.
-	 * @param options - Options.
+	 * @param id The ID of module.
+	 * @param options Additional options for this module.
 	 */
 	public constructor(id: string, options?: AkairoModuleOptions) {
 		const { category = "default" } = options ?? {};
@@ -54,21 +54,21 @@ export abstract class AkairoModule {
 	}
 
 	/**
-	 * Reloads the module.
+	 * Reloads this module.
 	 */
-	public reload(): Promise<AkairoModule> {
-		return this.handler?.reload(this.id) as Promise<this>;
+	public reload(): Promise<Module> {
+		return this.handler?.reload(this.id) as Promise<Module>;
 	}
 
 	/**
-	 * Removes the module.
+	 * Removes this module.
 	 */
-	public remove(): AkairoModule {
-		return this.handler?.remove(this.id) as this;
+	public remove(): Module {
+		return this.handler?.remove(this.id) as Module;
 	}
 
 	/**
-	 * Returns the ID.
+	 * Returns the ID of this module.
 	 */
 	public toString(): string {
 		return this.id;

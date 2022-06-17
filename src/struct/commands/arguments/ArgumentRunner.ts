@@ -46,12 +46,7 @@ export class ArgumentRunner {
 		message: Message,
 		parsed: ContentParserResult,
 		generator: ArgumentGenerator
-	): Promise<
-		| Flag
-		| {
-				[args: string]: unknown;
-		  }
-	> {
+	): Promise<Flag | { [args: string]: unknown }> {
 		const state = {
 			usedIndices: new Set<number>(),
 			phraseIndex: 0,

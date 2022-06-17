@@ -1,25 +1,13 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import EventEmitter from "node:events";
-import type { Category } from "../../util/Category.js";
 import { patchAbstract } from "../../util/Util.js";
-import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ListenerHandler } from "./ListenerHandler.js";
 
 /**
  * Represents a listener.
  */
-export abstract class Listener extends AkairoModule {
-	/**
-	 * The category of this listener.
-	 */
-	public declare category: Category<string, Listener>;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
+export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 	/**
 	 * The event emitter.
 	 */
@@ -29,16 +17,6 @@ export abstract class Listener extends AkairoModule {
 	 * The event name listened to.
 	 */
 	public declare event: string;
-
-	/**
-	 * The filepath.
-	 */
-	public declare filepath: string;
-
-	/**
-	 * The handler.
-	 */
-	public declare handler: ListenerHandler;
 
 	/**
 	 * Type of listener.
@@ -72,18 +50,6 @@ export abstract class Listener extends AkairoModule {
 }
 
 patchAbstract(Listener, "exec");
-
-export interface Listener extends AkairoModule {
-	/**
-	 * Reloads the listener.
-	 */
-	reload(): Promise<Listener>;
-
-	/**
-	 * Removes the listener.
-	 */
-	remove(): Listener;
-}
 
 /**
  * Options to use for listener execution behavior.

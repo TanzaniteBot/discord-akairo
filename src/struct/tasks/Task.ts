@@ -1,38 +1,16 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import type { Category } from "../../util/Category.js";
 import { patchAbstract } from "../../util/Util.js";
-import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { TaskHandler } from "./TaskHandler.js";
 
 /**
  * Represents a task.
  */
-export abstract class Task extends AkairoModule {
-	/**
-	 * The category of this task.
-	 */
-	public declare category: Category<string, Task>;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
+export abstract class Task extends AkairoModule<TaskHandler, Task> {
 	/**
 	 * The time in milliseconds between each time the task is run.
 	 */
 	public declare delay?: number;
-
-	/**
-	 * The filepath.
-	 */
-	public declare filepath: string;
-
-	/**
-	 * The handler.
-	 */
-	public declare handler: TaskHandler;
 
 	/**
 	 * Whether or not to run the task on start.
@@ -62,23 +40,6 @@ export abstract class Task extends AkairoModule {
 }
 
 patchAbstract(Task, "exec");
-
-export interface Task extends AkairoModule {
-	/**
-	 * Reloads the task.
-	 */
-	reload(): Promise<Task>;
-
-	/**
-	 * Removes the task.
-	 */
-	remove(): Task;
-
-	/**
-	 * Returns the ID.
-	 */
-	toString(): string;
-}
 
 /**
  * Options to use for task execution behavior.

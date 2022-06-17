@@ -20,7 +20,6 @@ import {
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
-import type { Category } from "../../util/Category.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
 import {
 	deepAssign,
@@ -32,8 +31,7 @@ import {
 	prefixCompare
 } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, type AkairoHandlerOptions, type LoadPredicate } from "../AkairoHandler.js";
-import type { AkairoModule } from "../AkairoModule.js";
+import { AkairoHandler, type AkairoHandlerOptions } from "../AkairoHandler.js";
 import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import type { ListenerHandler } from "../listeners/ListenerHandler.js";
@@ -55,7 +53,7 @@ import { Flag, FlagType } from "./Flag.js";
 /**
  * Loads commands and handles messages.
  */
-export class CommandHandler extends AkairoHandler {
+export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * Collection of command aliases.
 	 */
@@ -97,21 +95,6 @@ export class CommandHandler extends AkairoHandler {
 	public declare blockClient: boolean;
 
 	/**
-	 * Categories, mapped by ID to Category.
-	 */
-	public declare categories: Collection<string, Category<string, Command>>;
-
-	/**
-	 * Class to handle
-	 */
-	public declare classToHandle: typeof Command;
-
-	/**
-	 * The Akairo client.
-	 */
-	public declare client: AkairoClient;
-
-	/**
 	 * Whether or not `message.util` is assigned.
 	 */
 	public declare commandUtil: boolean;
@@ -144,11 +127,6 @@ export class CommandHandler extends AkairoHandler {
 	public declare defaultCooldown: number;
 
 	/**
-	 * Directory to commands.
-	 */
-	public declare directory: string;
-
-	/**
 	 * Whether or not to require the use of execSlash for slash commands.
 	 */
 	public declare execSlash: boolean;
@@ -177,11 +155,6 @@ export class CommandHandler extends AkairoHandler {
 	 * Inhibitor handler to use.
 	 */
 	public declare inhibitorHandler: InhibitorHandler | null;
-
-	/**
-	 * Commands loaded, mapped by ID to Command.
-	 */
-	public declare modules: Collection<string, Command>;
 
 	/**
 	 * The prefix(es) for command parsing.
@@ -1524,7 +1497,7 @@ export class CommandHandler extends AkairoHandler {
 	 * @param message - Message that called the command.
 	 * @param command - Command that errored.
 	 */
-	public emitError(err: Error, message: Message | AkairoMessage, command?: Command | AkairoModule): void {
+	public emitError(err: Error, message: Message | AkairoMessage, command?: Command): void {
 		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
 			this.emit(CommandHandlerEvents.ERROR, err, message, command);
 			return;
@@ -1638,42 +1611,7 @@ export class CommandHandler extends AkairoHandler {
 
 type Events = CommandHandlerEventsType;
 
-export interface CommandHandler extends AkairoHandler {
-	/**
-	 * Loads a command.
-	 * @param thing - Module or path to module.
-	 */
-	load(thing: string | Command): Promise<Command>;
-
-	/**
-	 * Reads all commands from the directory and loads them.
-	 * @param directory - Directory to load from. Defaults to the directory passed in the constructor.
-	 * @param filter - Filter for files, where true means it should be loaded.
-	 */
-	loadAll(directory?: string, filter?: LoadPredicate): Promise<CommandHandler>;
-
-	/**
-	 * Removes a command.
-	 * @param id - ID of the command.
-	 */
-	remove(id: string): Command;
-
-	/**
-	 * Removes all commands.
-	 */
-	removeAll(): CommandHandler;
-
-	/**
-	 * Reloads a command.
-	 * @param id - ID of the command.
-	 */
-	reload(id: string): Promise<Command>;
-
-	/**
-	 * Reloads all commands.
-	 */
-	reloadAll(): Promise<CommandHandler>;
-
+export interface CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }
@@ -1698,7 +1636,7 @@ export class RegisterInteractionCommandError extends Error {
 	}
 }
 
-export interface CommandHandlerOptions extends AkairoHandlerOptions {
+export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, CommandHandler> {
 	/**
 	 * Regular expression to automatically make command aliases.
 	 * For example, using `/-/g` would mean that aliases containing `-` would be valid with and without it.
