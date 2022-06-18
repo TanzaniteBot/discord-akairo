@@ -4,12 +4,16 @@ import {
 	type CategoryChannel,
 	type DirectoryChannel,
 	type DMChannel,
+	type GuildBasedChannel,
 	type GuildMember,
 	type Message,
 	type NewsChannel,
+	type Snowflake,
 	type StageChannel,
+	type TextBasedChannel,
 	type TextChannel,
 	type ThreadChannel,
+	type VoiceBasedChannel,
 	type VoiceChannel
 } from "discord.js";
 import { URL } from "node:url";
@@ -74,6 +78,27 @@ export class TypeResolver {
 		this.contextMenuCommandHandler = null;
 		this.types = new Collection();
 		this.addBuiltInTypes();
+	}
+
+	private singleChannelBuiltInType<R extends GuildBasedChannel>(type: ChannelType) {
+		return (message: Message, phrase: string): R | null => {
+			if (!phrase || !message.inGuild()) return null;
+			const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+			if (channel?.type !== type) return null;
+
+			return <R>channel;
+		};
+	}
+
+	private multipleChannelBuiltInType<R extends GuildBasedChannel>(type: ChannelType) {
+		return (message: Message, phrase: string): Collection<Snowflake, R> | null => {
+			if (!phrase || !message.inGuild()) return null;
+			const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
+			if (!channels.size) return null;
+
+			const textChannels = <Collection<Snowflake, R>>channels.filter(c => c.type === type);
+			return textChannels.size ? textChannels : null;
+		};
 	}
 
 	/**
@@ -227,103 +252,28 @@ export class TypeResolver {
 				return channels.size ? channels : null;
 			},
 
-			[ArgumentTypes.TEXT_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (channel?.type !== ChannelType.GuildText) return null;
+			[ArgumentTypes.TEXT_CHANNEL]: this.singleChannelBuiltInType<TextChannel>(ChannelType.GuildText),
 
-				return channel;
-			},
+			[ArgumentTypes.TEXT_CHANNELS]: this.multipleChannelBuiltInType<TextChannel>(ChannelType.GuildText),
 
-			[ArgumentTypes.TEXT_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
-				if (!channels.size) return null;
+			[ArgumentTypes.VOICE_CHANNEL]: this.singleChannelBuiltInType<VoiceChannel>(ChannelType.GuildVoice),
 
-				const textChannels = <Collection<string, TextChannel>>channels.filter(c => c.type === ChannelType.GuildText);
-				return textChannels.size ? textChannels : null;
-			},
+			[ArgumentTypes.VOICE_CHANNELS]: this.multipleChannelBuiltInType<VoiceChannel>(ChannelType.GuildVoice),
 
-			[ArgumentTypes.VOICE_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (channel?.type !== ChannelType.GuildVoice) return null;
-				return channel;
-			},
+			[ArgumentTypes.CATEGORY_CHANNEL]: this.singleChannelBuiltInType<CategoryChannel>(ChannelType.GuildCategory),
 
-			[ArgumentTypes.VOICE_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
-				if (!channels.size) return null;
+			[ArgumentTypes.CATEGORY_CHANNELS]: this.multipleChannelBuiltInType<CategoryChannel>(ChannelType.GuildCategory),
 
-				const voiceChannels = <Collection<string, VoiceChannel>>channels.filter(c => c.type === ChannelType.GuildVoice);
-				return voiceChannels.size ? voiceChannels : null;
-			},
+			[ArgumentTypes.NEWS_CHANNEL]: this.singleChannelBuiltInType<NewsChannel>(ChannelType.GuildNews),
 
-			[ArgumentTypes.CATEGORY_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (channel?.type !== ChannelType.GuildCategory) return null;
+			[ArgumentTypes.NEWS_CHANNELS]: this.multipleChannelBuiltInType<NewsChannel>(ChannelType.GuildCategory),
 
-				return channel;
-			},
+			[ArgumentTypes.STAGE_CHANNEL]: this.singleChannelBuiltInType<StageChannel>(ChannelType.GuildStageVoice),
 
-			[ArgumentTypes.CATEGORY_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
-				if (!channels.size) return null;
-
-				const categoryChannels = <Collection<string, CategoryChannel>>channels.filter(c => c.type === ChannelType.GuildCategory);
-				return categoryChannels.size ? categoryChannels : null;
-			},
-
-			[ArgumentTypes.NEWS_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (channel?.type !== ChannelType.GuildNews) return null;
-
-				return channel;
-			},
-
-			[ArgumentTypes.NEWS_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
-				if (!channels.size) return null;
-
-				const newsChannels = <Collection<string, NewsChannel>>channels.filter(c => c.type === ChannelType.GuildNews);
-				return newsChannels.size ? newsChannels : null;
-			},
-
-			[ArgumentTypes.STAGE_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				if (channel?.type !== ChannelType.GuildStageVoice) return null;
-
-				return channel;
-			},
-
-			[ArgumentTypes.STAGE_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
-				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
-				if (!channels.size) return null;
-
-				const stageChannels = <Collection<string, StageChannel>>channels.filter(c => c.type === ChannelType.GuildStageVoice);
-				return stageChannels.size ? stageChannels : null;
-			},
+			[ArgumentTypes.STAGE_CHANNELS]: this.multipleChannelBuiltInType<StageChannel>(ChannelType.GuildStageVoice),
 
 			[ArgumentTypes.THREAD_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
+				if (!phrase || !message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
 				if (!channel?.isThread()) return null;
 
@@ -331,36 +281,56 @@ export class TypeResolver {
 			},
 
 			[ArgumentTypes.THREAD_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
+				if (!phrase || !message.inGuild()) return null;
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				const threadChannels = <Collection<string, ThreadChannel>>channels.filter(c => c.isThread());
+				const threadChannels = <Collection<Snowflake, ThreadChannel>>channels.filter(c => c.isThread());
 				return threadChannels.size ? threadChannels : null;
 			},
 
-			[ArgumentTypes.DIRECTORY_CHANNEL]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
+			// @ts-expect-error
+			[ArgumentTypes.DIRECTORY_CHANNEL]: this.singleChannelBuiltInType<DirectoryChannel>(ChannelType.GuildDirectory),
+
+			// @ts-expect-error
+			[ArgumentTypes.DIRECTORY_CHANNELS]: this.multipleChannelBuiltInType<DirectoryChannel>(ChannelType.GuildDirectory),
+
+			[ArgumentTypes.FORUM_CHANNEL]: this.singleChannelBuiltInType<any>(ChannelType.GuildForum),
+
+			[ArgumentTypes.FORUM_CHANNELS]: this.multipleChannelBuiltInType<any>(ChannelType.GuildForum),
+
+			[ArgumentTypes.TEXT_BASED_CHANNEL]: (message, phrase) => {
+				if (!phrase || !message.inGuild()) return null;
 				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
-				// @ts-expect-error
-				if (channel?.type !== ChannelType.GuildDirectory) return null;
+				if (!channel?.isTextBased()) return null;
 
 				return channel;
 			},
 
-			[ArgumentTypes.DIRECTORY_CHANNELS]: (message, phrase) => {
-				if (!phrase) return null;
-				if (!message.inGuild()) return null;
+			[ArgumentTypes.TEXT_BASED_CHANNELS]: (message, phrase) => {
+				if (!phrase || !message.inGuild()) return null;
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				if (!channels.size) return null;
 
-				// @ts-expect-error
-				const directoryChannels = <
-					Collection<string, DirectoryChannel> // @ts-expect-error
-				>channels.filter(c => c.type === ChannelType.GuildDirectory);
-				return directoryChannels.size ? directoryChannels : null;
+				const threadChannels = <Collection<Snowflake, TextBasedChannel>>channels.filter(c => c.isTextBased());
+				return threadChannels.size ? threadChannels : null;
+			},
+
+			[ArgumentTypes.VOICE_BASED_CHANNEL]: (message, phrase) => {
+				if (!phrase || !message.inGuild()) return null;
+				const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
+				if (!channel?.isVoiceBased()) return null;
+
+				return channel;
+			},
+
+			[ArgumentTypes.VOICE_BASED_CHANNELS]: (message, phrase) => {
+				if (!phrase || !message.inGuild()) return null;
+				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
+				if (!channels.size) return null;
+
+				const threadChannels = <Collection<Snowflake, VoiceBasedChannel>>channels.filter(c => c.isVoiceBased());
+				return threadChannels.size ? threadChannels : null;
 			},
 
 			[ArgumentTypes.ROLE]: (message, phrase) => {

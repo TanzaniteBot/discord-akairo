@@ -16,9 +16,11 @@ import type {
 	Role,
 	Snowflake,
 	StageChannel,
+	TextBasedChannel,
 	TextChannel,
 	ThreadChannel,
 	User,
+	VoiceBasedChannel,
 	VoiceChannel
 } from "discord.js";
 import type { URL } from "node:url";
@@ -1007,60 +1009,66 @@ export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" |
  * - `emojiMention` matches a mention of an emoji.
  */
 export interface BaseArgumentType {
-	string: string | null;
-	lowercase: string | null;
-	uppercase: string | null;
-	charCodes: number[] | null;
-	number: number | null;
-	integer: number | null;
-	bigint: bigint | null;
-	emojint: number | null;
-	url: URL | null;
-	date: Date | null;
-	color: number | null;
-	user: User | null;
-	users: Collection<Snowflake, User> | null;
-	member: GuildMember | null;
-	members: Collection<Snowflake, GuildMember> | null;
-	relevant: User | GuildMember | null;
-	relevants: Collection<Snowflake, User> | Collection<Snowflake, GuildMember> | null;
-	channel: GuildBasedChannel | null;
-	channels: Collection<Snowflake, GuildBasedChannel> | null;
-	textChannel: TextChannel | null;
-	textChannels: Collection<Snowflake, TextChannel> | null;
-	voiceChannel: VoiceChannel | null;
-	voiceChannels: Collection<Snowflake, VoiceChannel> | null;
-	categoryChannel: CategoryChannel | null;
-	categoryChannels: Collection<Snowflake, CategoryChannel> | null;
-	newsChannel: NewsChannel | null;
-	newsChannels: Collection<Snowflake, NewsChannel> | null;
-	stageChannel: StageChannel | null;
-	stageChannels: Collection<Snowflake, StageChannel> | null;
-	threadChannel: ThreadChannel | null;
-	threadChannels: Collection<Snowflake, ThreadChannel> | null;
-	directoryChannel: DirectoryChannel | null;
-	directoryChannels: Collection<Snowflake, DirectoryChannel> | null;
-	role: Role | null;
-	roles: Collection<Snowflake, Role> | null;
-	emoji: Emoji | null;
-	emojis: Collection<Snowflake, Emoji> | null;
-	guild: Guild | null;
-	guilds: Collection<Snowflake, Guild> | null;
-	message: Message | null;
-	guildMessage: Message | null;
-	relevantMessage: Message | null;
-	invite: Invite | null;
-	userMention: User | null;
-	memberMention: GuildMember | null;
-	channelMention: ThreadChannel | GuildChannel | null;
-	roleMention: Role | null;
-	emojiMention: GuildEmoji | null;
-	commandAlias: Command | null;
-	command: Command | null;
-	inhibitor: Inhibitor | null;
-	listener: Listener | null;
-	task: Task | null;
-	contextMenuCommand: ContextMenuCommand | null;
+	[ArgumentTypes.STRING]: string | null;
+	[ArgumentTypes.LOWERCASE]: string | null;
+	[ArgumentTypes.UPPERCASE]: string | null;
+	[ArgumentTypes.CHAR_CODES]: number[] | null;
+	[ArgumentTypes.NUMBER]: number | null;
+	[ArgumentTypes.INTEGER]: number | null;
+	[ArgumentTypes.BIGINT]: bigint | null;
+	[ArgumentTypes.EMOJINT]: number | null;
+	[ArgumentTypes.URL]: URL | null;
+	[ArgumentTypes.DATE]: Date | null;
+	[ArgumentTypes.COLOR]: number | null;
+	[ArgumentTypes.USER]: User | null;
+	[ArgumentTypes.USERS]: Collection<Snowflake, User> | null;
+	[ArgumentTypes.MEMBER]: GuildMember | null;
+	[ArgumentTypes.MEMBERS]: Collection<Snowflake, GuildMember> | null;
+	[ArgumentTypes.RELEVANT]: User | GuildMember | null;
+	[ArgumentTypes.RELEVANTS]: Collection<Snowflake, User> | Collection<Snowflake, GuildMember> | null;
+	[ArgumentTypes.CHANNEL]: GuildBasedChannel | null;
+	[ArgumentTypes.CHANNELS]: Collection<Snowflake, GuildBasedChannel> | null;
+	[ArgumentTypes.TEXT_CHANNEL]: TextChannel | null;
+	[ArgumentTypes.TEXT_CHANNELS]: Collection<Snowflake, TextChannel> | null;
+	[ArgumentTypes.VOICE_CHANNEL]: VoiceChannel | null;
+	[ArgumentTypes.VOICE_CHANNELS]: Collection<Snowflake, VoiceChannel> | null;
+	[ArgumentTypes.CATEGORY_CHANNEL]: CategoryChannel | null;
+	[ArgumentTypes.CATEGORY_CHANNELS]: Collection<Snowflake, CategoryChannel> | null;
+	[ArgumentTypes.NEWS_CHANNEL]: NewsChannel | null;
+	[ArgumentTypes.NEWS_CHANNELS]: Collection<Snowflake, NewsChannel> | null;
+	[ArgumentTypes.STAGE_CHANNEL]: StageChannel | null;
+	[ArgumentTypes.STAGE_CHANNELS]: Collection<Snowflake, StageChannel> | null;
+	[ArgumentTypes.THREAD_CHANNEL]: ThreadChannel | null;
+	[ArgumentTypes.THREAD_CHANNELS]: Collection<Snowflake, ThreadChannel> | null;
+	[ArgumentTypes.DIRECTORY_CHANNEL]: DirectoryChannel | null;
+	[ArgumentTypes.DIRECTORY_CHANNELS]: Collection<Snowflake, DirectoryChannel> | null;
+	[ArgumentTypes.FORUM_CHANNEL]: unknown | null;
+	[ArgumentTypes.FORUM_CHANNELS]: Collection<Snowflake, unknown> | null;
+	[ArgumentTypes.TEXT_BASED_CHANNEL]: TextBasedChannel | null;
+	[ArgumentTypes.TEXT_BASED_CHANNELS]: Collection<Snowflake, TextBasedChannel> | null;
+	[ArgumentTypes.VOICE_BASED_CHANNEL]: VoiceBasedChannel | null;
+	[ArgumentTypes.VOICE_BASED_CHANNELS]: Collection<Snowflake, VoiceBasedChannel> | null;
+	[ArgumentTypes.ROLE]: Role | null;
+	[ArgumentTypes.ROLES]: Collection<Snowflake, Role> | null;
+	[ArgumentTypes.EMOJI]: Emoji | null;
+	[ArgumentTypes.EMOJIS]: Collection<Snowflake, Emoji> | null;
+	[ArgumentTypes.GUILD]: Guild | null;
+	[ArgumentTypes.GUILDS]: Collection<Snowflake, Guild> | null;
+	[ArgumentTypes.MESSAGE]: Message | null;
+	[ArgumentTypes.GUILD_MESSAGE]: Message | null;
+	[ArgumentTypes.RELEVANT_MESSAGE]: Message | null;
+	[ArgumentTypes.INVITE]: Invite | null;
+	[ArgumentTypes.USER_MENTION]: User | null;
+	[ArgumentTypes.MEMBER_MENTION]: GuildMember | null;
+	[ArgumentTypes.CHANNEL_MENTION]: ThreadChannel | GuildChannel | null;
+	[ArgumentTypes.ROLE_MENTION]: Role | null;
+	[ArgumentTypes.EMOJI_MENTION]: GuildEmoji | null;
+	[ArgumentTypes.COMMAND_ALIAS]: Command | null;
+	[ArgumentTypes.COMMAND]: Command | null;
+	[ArgumentTypes.INHIBITOR]: Inhibitor | null;
+	[ArgumentTypes.LISTENER]: Listener | null;
+	[ArgumentTypes.TASK]: Task | null;
+	[ArgumentTypes.CONTEXT_MENU_COMMAND]: ContextMenuCommand | null;
 }
 
 /**
