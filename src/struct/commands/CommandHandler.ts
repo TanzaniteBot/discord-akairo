@@ -331,10 +331,10 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 */
 	protected setup() {
 		this.client.once("ready", () => {
-			// if (this.autoRegisterSlashCommands)
-			// 	this.registerInteractionCommands().then(() => {
-			// 		if (this.useSlashPermissions) this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
-			// 	});
+			if (this.autoRegisterSlashCommands) this.registerInteractionCommands();
+			// .then(() => {
+			// 	if (this.useSlashPermissions) this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
+			// });
 
 			this.client.on("messageCreate", async m => {
 				const message = m.partial ? await m.fetch().catch(() => null) : m;
