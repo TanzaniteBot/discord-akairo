@@ -22,8 +22,8 @@ export default class EvalCommand extends Command {
 	public override async exec(message: Message, { code }: { code: string }) {
 		if (!code) return message.util!.reply("No code provided!");
 
-		const evaled: any = {};
-		const logs: any[] = [];
+		const evaled: { output?: string; errored?: boolean; message?: Message } = {};
+		const logs: string[] = [];
 
 		const token = this.client.token!.split("").join("[^]{0,2}");
 		const rev = this.client.token!.split("").reverse().join("[^]{0,2}");
@@ -33,8 +33,8 @@ export default class EvalCommand extends Command {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const print = (...a: any[]) => {
 			const cleaned = a.map(obj => {
-				if (typeof a !== "string") obj = inspect(obj, { depth: 1 });
-				return obj.replace(tokenRegex, "[TOKEN]");
+				const str = typeof obj !== "string" ? inspect(obj, { depth: 1 }) : obj;
+				return str.replace(tokenRegex, "[TOKEN]");
 			});
 
 			if (!evaled.output) {
@@ -46,7 +46,7 @@ export default class EvalCommand extends Command {
 			const title = evaled.errored ? "☠\u2000**Error**" : "📤\u2000**Output**";
 
 			if (evaled.output.length + code.length > 1900) evaled.output = "Output too long.";
-			evaled.message.edit([`📥\u2000**Input**${cb}js`, code, cb, `${title}${cb}js`, evaled.output, cb]);
+			evaled.message!.edit([`📥\u2000**Input**${cb}js`, code, cb, `${title}${cb}js`, evaled.output, cb].join("\n"));
 		};
 
 		try {

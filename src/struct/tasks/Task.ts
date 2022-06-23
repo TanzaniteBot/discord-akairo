@@ -1,6 +1,7 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
+import { s } from "@sapphire/shapeshift";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, akairoModuleOptionsValidator, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { TaskHandler } from "./TaskHandler.js";
 
 /**
@@ -22,10 +23,7 @@ export abstract class Task extends AkairoModule<TaskHandler, Task> {
 	 * @param options - Options for the task.
 	 */
 	public constructor(id: string, options: TaskOptions = {}) {
-		const { category, delay, runOnStart = false } = options;
-
-		if (delay !== undefined && typeof delay !== "number") throw new TypeError("options.delay must be a number.");
-		if (typeof runOnStart !== "boolean") throw new TypeError("options.runOnStart must be a boolean.");
+		const { category, delay, runOnStart } = taskOptionsValidator.parse(options);
 
 		super(id, { category });
 		this.delay = delay;
@@ -56,3 +54,8 @@ export interface TaskOptions extends AkairoModuleOptions {
 	 */
 	runOnStart?: boolean;
 }
+
+export const taskOptionsValidator = akairoModuleOptionsValidator.extend({
+	delay: s.number.optional,
+	runOnStart: s.boolean.default(false)
+}).passthrough;

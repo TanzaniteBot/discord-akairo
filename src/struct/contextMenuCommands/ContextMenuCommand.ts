@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { s } from "@sapphire/shapeshift";
 import {
 	ApplicationCommandType,
+	BitField,
 	type ContextMenuCommandInteraction,
 	type LocalizationMap,
 	type PermissionResolvable,
 	type Snowflake
 } from "discord.js";
-import { isArrayOf, patchAbstract } from "../../util/Util.js";
-import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
+import { patchAbstract } from "../../util/Util.js";
+import { AkairoModule, akairoModuleOptionsValidator, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
 
 /**
@@ -27,12 +29,12 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 	/**
 	 * Usable only by the client owner.
 	 */
-	public declare ownerOnly?: boolean;
+	public declare ownerOnly: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
 	 */
-	public declare superUserOnly?: boolean;
+	public declare superUserOnly: boolean;
 
 	/**
 	 * The type of the context menu command.
@@ -61,30 +63,13 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 	 * @param options - Options for the context menu command.
 	 */
 	public constructor(id: string, options: ContextMenuCommandOptions) {
-		const {
-			category,
-			guilds = [],
-			name,
-			ownerOnly,
-			superUserOnly,
-			type,
-			nameLocalizations,
-			slashDefaultMemberPermissions,
-			slashDmPermission
-		} = options;
+		// eslint-disable-next-line prefer-const
+		let { category, guilds, name, ownerOnly, superUserOnly, type, nameLocalizations, defaultMemberPermissions, dmPermission } =
+			contextMenuCommandOptionsValidator.parse(options);
 
-		if (category !== undefined && typeof category !== "string") throw new TypeError("options.category must be a string.");
-		if (guilds !== undefined && !isArrayOf(guilds, "string")) throw new TypeError("options.guilds must be an array of strings.");
-		if (name !== undefined && typeof name !== "string") throw new TypeError("options.name must be a string.");
-		if (ownerOnly !== undefined && typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean");
-		if (type !== ApplicationCommandType.User && type !== ApplicationCommandType.Message)
-			throw new TypeError("options.type must be either ApplicationCommandType.User or ApplicationCommandType.Message.");
-		if (nameLocalizations !== undefined && typeof nameLocalizations !== "object")
-			throw new TypeError("options.nameLocalizations must be a object.");
-		if (slashDmPermission != null && typeof slashDmPermission !== "boolean")
-			throw new TypeError("options.slashDmPermission must be a boolean.");
-		if (slashDmPermission != null && guilds.length > 0)
-			throw new TypeError("You cannot set `options.slashDmPermission` with commands configured with `options.slashGuilds`.");
+		if (dmPermission != null && guilds.length > 0)
+			throw new TypeError("You cannot set `options.dmPermission` with commands configured with `options.guilds`.");
+		if (guilds.length === 0) dmPermission ??= true;
 
 		super(id, { category });
 
@@ -92,10 +77,10 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 		this.name = name;
 		this.ownerOnly = ownerOnly;
 		this.superUserOnly = superUserOnly;
-		this.type = type;
+		this.type = <typeof this["type"]>type;
 		this.nameLocalizations = nameLocalizations;
-		this.defaultMemberPermissions = slashDefaultMemberPermissions;
-		this.dmPermission = slashDmPermission;
+		this.defaultMemberPermissions = <typeof this["defaultMemberPermissions"]>defaultMemberPermissions;
+		this.dmPermission = dmPermission;
 	}
 
 	/**
@@ -124,11 +109,13 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 
 	/**
 	 * Usable only by the client owner.
+	 * @default false
 	 */
 	ownerOnly?: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
+	 * @default false
 	 */
 	superUserOnly?: boolean;
 
@@ -145,12 +132,31 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	/**
 	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	slashDefaultMemberPermissions?: PermissionResolvable;
+	defaultMemberPermissions?: PermissionResolvable;
 
 	/**
 	 * Whether the command is enabled in DMs
 	 *
 	 * **Cannot be enabled for commands that specify `guilds`**
+	 * @default guilds.length > 0 ? undefined : true
 	 */
-	slashDmPermission?: boolean;
+	dmPermission?: boolean;
 }
+
+export const contextMenuCommandOptionsValidator = akairoModuleOptionsValidator.extend({
+	guilds: s.string.array.default([]),
+	name: s.string,
+	ownerOnly: s.boolean.default(false),
+	superUserOnly: s.boolean.default(false),
+	type: s.enum(ApplicationCommandType.User, ApplicationCommandType.Message),
+	nameLocalizations: s.record(s.string.nullish).optional,
+	defaultMemberPermissions: s.union(
+		s.bigint,
+		s.string,
+		s.instance(BitField),
+		s.bigint.array,
+		s.string.array,
+		s.instance(BitField).array
+	).optional,
+	dmPermission: s.boolean.optional
+}).passthrough;

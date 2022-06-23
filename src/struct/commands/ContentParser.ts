@@ -1,3 +1,4 @@
+import { s } from "@sapphire/shapeshift";
 import { ArgumentMatches } from "../../util/Constants.js";
 import { isArrayOf } from "../../util/Util.js";
 import type { ArgumentOptions } from "./arguments/Argument.js";
@@ -55,6 +56,13 @@ import type { ArgumentOptions } from "./arguments/Argument.js";
  * EOF = /^$/
  */
 
+type TokenType = "FlagWord" | "OptionFlagWord" | "Quote" | "OpenQuote" | "EndQuote" | "Word" | "WS" | "EOF" | "Separator";
+
+interface Token {
+	type: TokenType;
+	value: string;
+}
+
 class Tokenizer {
 	public declare content: string;
 	public declare flagWords: string[];
@@ -63,10 +71,11 @@ class Tokenizer {
 	public declare separator?: string;
 	public declare position: number;
 	public declare state: TokenizerState;
-	public declare tokens: any[];
+	public declare tokens: Token[];
 
 	public constructor(content: string, options: ContentParserOptions = {}) {
-		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
+		s.string.parse(content);
+		const { flagWords, optionFlagWords, quoted, separator } = contentParserOptionsValidator.parse(options);
 
 		this.content = content;
 		this.flagWords = flagWords;
@@ -78,23 +87,23 @@ class Tokenizer {
 		this.tokens = [];
 	}
 
-	public startsWith(str: string) {
+	public startsWith(str: string): boolean {
 		return this.content.slice(this.position, this.position + str.length).toLowerCase() === str.toLowerCase();
 	}
 
-	public match(regex: RegExp) {
+	public match(regex: RegExp): RegExpMatchArray | null {
 		return this.content.slice(this.position).match(regex);
 	}
 
-	public slice(from: number, to: number) {
+	public slice(from: number, to: number): string {
 		return this.content.slice(this.position + from, this.position + to);
 	}
 
-	public addToken(type: string, value: string) {
+	public addToken(type: TokenType, value: string): void {
 		this.tokens.push({ type, value });
 	}
 
-	public advance(n: number) {
+	public advance(n: number): void {
 		this.position += n;
 	}
 
@@ -106,12 +115,14 @@ class Tokenizer {
 		}
 	}
 
-	public tokenize() {
+	public tokenize(): Token[] {
 		while (this.position < this.content.length) {
 			this.runOne();
 		}
 
 		this.addToken("EOF", "");
+
+		console.dir(this, { depth: 3 });
 		return this.tokens;
 	}
 
@@ -263,7 +274,7 @@ const enum TokenizerState {
 }
 
 class Parser {
-	public declare tokens: any;
+	public declare tokens: Token[];
 	public declare separated: any;
 	public declare position: number;
 
@@ -280,7 +291,8 @@ class Parser {
 		optionFlags: any[];
 	};
 
-	public constructor(tokens: any[], options: ParserOptions) {
+	public constructor(tokens: Token[], options: ParserOptions) {
+		s.any.array.parse(tokens);
 		const { separated } = options;
 
 		this.tokens = tokens;
@@ -325,6 +337,8 @@ class Parser {
 		}
 
 		this.match("EOF");
+		console.dir("Parser#parse");
+		console.dir(this, { depth: 3 });
 		return this.results;
 	}
 
@@ -515,6 +529,8 @@ export class ContentParser {
 			separator: this.separator
 		}).tokenize();
 
+		// console.dir(this, { depth: 3 });
+		// console.dir(tokens, { depth: 3 });
 		return new Parser(tokens, { separated: this.separator != null }).parse();
 	}
 
@@ -570,6 +586,13 @@ export interface ContentParserOptions {
 	 */
 	separator?: string;
 }
+
+const contentParserOptionsValidator = s.object({
+	flagWords: s.string.array.default([]),
+	optionFlagWords: s.string.array.default([]),
+	quoted: s.boolean.default(true),
+	separator: s.string.optional
+});
 
 /**
  * Result of parsing.

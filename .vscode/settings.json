@@ -27,5 +27,6 @@
 	"prettier.withNodeModules": true,
 	"prettier.useEditorConfig": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"typescript.workspaceSymbols.scope": "currentProject"
+	"typescript.workspaceSymbols.scope": "currentProject",
+	"gitlens.advanced.blame.customArguments": ["--ignore-revs-file", ".git-blame-ignore-revs"]
 }

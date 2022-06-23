@@ -49,7 +49,7 @@ export class Flag<T extends FlagType = FlagType> {
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Continue}.
 	 */
-	public declare rest: T extends FlagType.Continue ? string | null : never;
+	public declare rest: T extends FlagType.Continue ? string : never;
 
 	/**
 	 * @param type - Type of flag.

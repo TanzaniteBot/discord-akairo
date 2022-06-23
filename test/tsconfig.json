@@ -18,9 +18,10 @@
 		"useUnknownInCatchVariables": false,
 		"baseUrl": ".",
 		"paths": {
-			"#discord-akairo": ["./import"]
-		}
+			"#discord-akairo": ["./src/import"]
+		},
+		"rootDir": "."
 	},
-	"include": ["src/**/*.ts", "bot.ts", "import*.ts"],
+	"include": ["./src/**/*.ts", "./src/bot.ts", "import*.ts"],
 	"exclude": ["node_modules", "dist"]
 }

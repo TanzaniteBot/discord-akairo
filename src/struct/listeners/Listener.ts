@@ -1,7 +1,8 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
+import { s } from "@sapphire/shapeshift";
 import EventEmitter from "node:events";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, akairoModuleOptionsValidator, type AkairoModuleOptions } from "../AkairoModule.js";
 import type { ListenerHandler } from "./ListenerHandler.js";
 
 /**
@@ -28,15 +29,9 @@ export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 	 * @param options - Options for the listener.
 	 */
 	public constructor(id: string, options: ListenerOptions) {
-		const { category, emitter, event, type = "on" } = options;
-
-		if (typeof emitter !== "string" && !(emitter instanceof EventEmitter))
-			throw new TypeError("options.emitter must be a string or an EventEmitter.");
-		if (typeof event !== "string") throw new TypeError("options.event must be a string.");
-		if (!listenersTypes.includes(type))
-			throw new TypeError(`options.type must be one of ${listenersTypes.map(v => `"${v}"`).join(", ")}.`);
-
+		const { category, emitter, event, type } = listenerOptionsValidator.parse(options);
 		super(id, { category });
+
 		this.emitter = emitter;
 		this.event = event;
 		this.type = type;
@@ -74,3 +69,11 @@ export interface ListenerOptions extends AkairoModuleOptions {
 
 const listenersTypes = ["on", "once", "prependListener", "prependOnceListener"] as const;
 export type ListenerType = typeof listenersTypes[number];
+
+const listenerOptionsValidator = akairoModuleOptionsValidator.extend(
+	s.object({
+		emitter: s.union(s.string, s.instance(EventEmitter)),
+		event: s.string,
+		type: s.enum(...listenersTypes).default("on")
+	})
+);

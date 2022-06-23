@@ -27,7 +27,7 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 			extensions = [".js", ".ts"],
 			automateCategories,
 			loadFilter
-		} = options ?? {};
+		} = options;
 
 		if (!(classToHandle.prototype instanceof ContextMenuCommand || classToHandle === ContextMenuCommand)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, ContextMenuCommand.name);

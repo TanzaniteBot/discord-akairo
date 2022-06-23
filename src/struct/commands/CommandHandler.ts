@@ -36,7 +36,7 @@ import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCom
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import type { ListenerHandler } from "../listeners/ListenerHandler.js";
 import type { TaskHandler } from "../tasks/TaskHandler.js";
-import type { DefaultArgumentOptions } from "./arguments/Argument.js";
+import type { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
 import { TypeResolver } from "./arguments/TypeResolver.js";
 import {
 	Command,
@@ -72,7 +72,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * Default argument options.
 	 */
-	public declare argumentDefaults: DefaultArgumentOptions;
+	public declare argumentDefaults: ArgumentDefaults;
 
 	/**
 	 * Automatically defer messages "BotName is thinking".
@@ -144,12 +144,12 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	public declare ignoreCooldown: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	public declare ignoreCooldown: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	public declare ignorePermissions: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	public declare ignorePermissions: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
 
 	/**
 	 * Inhibitor handler to use.
@@ -190,13 +190,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
 	 */
 	public declare skipBuiltInPostInhibitors: boolean;
-
-	// /**
-	//  * Use slash command permissions for owner only commands
-	//  *
-	//  * Warning: this is experimental
-	//  */
-	// public declare useSlashPermissions: boolean;
 
 	/**
 	 * @param client - The Akairo client.
@@ -263,7 +256,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		if (typeof execSlash !== "boolean") throw new TypeError("options.execSlash must be a boolean.");
 		if (typeof skipBuiltInPostInhibitors !== "boolean")
 			throw new TypeError("options.skipBuiltInPostInhibitors must be a boolean.");
-		// if (typeof useSlashPermissions !== "boolean") throw new TypeError("options.useSlashPermissions must be a boolean.");
 
 		super(client, {
 			directory,
@@ -321,8 +313,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		this.inhibitorHandler = null;
 		this.autoDefer = Boolean(autoDefer);
 		this.execSlash = Boolean(execSlash);
-		// this.skipBuiltInPostInhibitors = Boolean(skipBuiltInPostInhibitors);
-		// this.useSlashPermissions = Boolean(useSlashPermissions);
+		this.skipBuiltInPostInhibitors = Boolean(skipBuiltInPostInhibitors);
 		this.setup();
 	}
 
@@ -332,9 +323,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	protected setup() {
 		this.client.once("ready", () => {
 			if (this.autoRegisterSlashCommands) this.registerInteractionCommands();
-			// .then(() => {
-			// 	if (this.useSlashPermissions) this.updateInteractionPermissions(this.client.ownerID /*  this.client.superUserID */);
-			// });
 
 			this.client.on("messageCreate", async m => {
 				const message = m.partial ? await m.fetch().catch(() => null) : m;
@@ -360,12 +348,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			});
 		});
 
-		if (this.commandUtil)
+		if (this.commandUtil) {
 			this.client.on("messageDelete", message => {
 				if (message.inGuild()) {
 					CommandUtil.deletedMessages.add(message.id);
 				}
 			});
+		}
 	}
 
 	/**
@@ -534,73 +523,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		}
 	}
 
-	// /**
-	//  * updates interaction permissions
-	//  */
-	// protected async updateInteractionPermissions(owners: Snowflake | Snowflake[] /* superUsers: Snowflake | Snowflake[] */) {
-	// 	const mapCom = (
-	// 		value: ApplicationCommand<{ guild: GuildResolvable }>,
-	// 		guild: Guild
-	// 	): GuildApplicationCommandPermissionData => {
-	// 		const command = this.modules.find(mod => mod.aliases[0] === value.name);
-
-	// 		if (!command?.slashPermissions) {
-	// 			let allowedUsers: string[] = [];
-	// 			/* if (command.superUserOnly) allowedUsers.push(...Util.intoArray(superUsers)); */
-	// 			if (command?.ownerOnly) allowedUsers.push(...Util.intoArray(owners));
-	// 			allowedUsers = [...new Set(allowedUsers)]; // remove duplicates
-
-	// 			return {
-	// 				id: value.id,
-	// 				permissions: allowedUsers.map(u => ({
-	// 					id: u,
-	// 					type: ApplicationCommandPermissionType.User,
-	// 					permission: true
-	// 				}))
-	// 			};
-	// 		} else {
-	// 			return {
-	// 				id: value.id,
-	// 				permissions: typeof command.slashPermissions === "function" ? command.slashPermissions(guild) : command.slashPermissions
-	// 			};
-	// 		}
-	// 	};
-
-	// 	const globalCommands = (await this.client.application?.commands.fetch())?.filter(value =>
-	// 		Boolean(this.modules.find(mod => mod.aliases[0] === value.name))
-	// 	);
-	// 	const fullPermissions = globalCommands
-	// 		?.filter(value => !value.defaultPermission)
-	// 		.filter(value => Boolean(this.modules.find(mod => mod.aliases[0] === value.name)));
-
-	// 	const promises = this.client.guilds.cache.map(
-	// 		/* async */ guild => {
-	// 			const perms = new Array(...((fullPermissions ?? new Collection()).map(value => mapCom(value, guild)) ?? []));
-	// 			// await guild.commands.fetch();
-	// 			if (guild.commands.cache.size)
-	// 				perms.push(...guild.commands.cache.filter(value => !value.defaultPermission).map(value => mapCom(value, guild)));
-	// 			if (guild.available)
-	// 				return guild.commands.permissions.set({
-	// 					fullPermissions: perms
-	// 				});
-	// 			// Return empty promise if guild is unavailable
-	// 			return Promise.resolve();
-	// 		}
-	// 	);
-	// 	try {
-	// 		await Promise.all(promises);
-	// 	} catch (e) {
-	// 		this.client.emit(
-	// 			"akairoDebug",
-	// 			"[updateInteractionPermissions] Error updating interaction permissions, here are the promises, globalCommands, and fullPermissions",
-	// 			promises,
-	// 			globalCommands,
-	// 			fullPermissions
-	// 		);
-	// 		throw e;
-	// 	}
-	// }
-
 	/**
 	 * Registers a module.
 	 * @param command - Module to use.
@@ -608,9 +530,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 */
 	public override register(command: Command, filepath?: string): void {
 		super.register(command, filepath);
-
-		// if (command.slashDefaultPermission === undefined)
-		// 	command.slashDefaultPermission = this.useSlashPermissions ? !command.ownerOnly : true;
 
 		for (let alias of command.aliases) {
 			const conflict = this.aliases.get(alias.toLowerCase());
@@ -905,7 +824,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 								convertedOptions[option.name] ??= null;
 								break;
 							default:
-								// @ts-expect-error
+								// @ts-expect-error:
 								convertedOptions[option.name] ??= null;
 								break;
 						}
@@ -915,7 +834,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 			let key;
 			try {
-				if (commandModule.lock) key = (commandModule.lock as KeySupplier)(message, convertedOptions);
+				if (commandModule.lock) key = commandModule.lock(message, convertedOptions);
 				if (isPromise(key)) key = await key;
 				if (key) {
 					if (commandModule.locker?.has(key)) {
@@ -1324,7 +1243,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const isIgnored = Array.isArray(ignorer)
 			? ignorer.includes(id)
 			: typeof ignorer === "function"
-			? ignorer(message, command)
+			? // @ts-ignore
+			  ignorer(message, command)
 			: id === ignorer;
 
 		if (isIgnored) return false;
@@ -1757,14 +1677,6 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, Com
 	 * @default false
 	 */
 	skipBuiltInPostInhibitors?: boolean;
-
-	// /**
-	//  * Use slash command permissions for owner only commands
-	//  *
-	//  * Warning: this is experimental
-	//  * @default false
-	//  */
-	// useSlashPermissions?: boolean;
 }
 
 /**
@@ -1822,7 +1734,11 @@ export interface ParsedComponentData {
  * @param message - Message to check.
  * @param command - Command to check.
  */
-export type IgnoreCheckPredicate = (message: Message | AkairoMessage, command: Command) => boolean;
+export type IgnoreCheckPredicate = (
+	this: Command | CommandHandler,
+	message: Message | AkairoMessage,
+	command: Command
+) => boolean;
 
 /**
  * A function that returns whether mentions can be used as a prefix.
@@ -1834,7 +1750,7 @@ export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boo
  * A function that returns the prefix(es) to use.
  * @param message - Message to get prefix for.
  */
-export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
+export type PrefixSupplier = (this: Command | CommandHandler, message: Message) => string | string[] | Promise<string | string[]>;
 
 const slashResolvable = [
 	"Attachment",

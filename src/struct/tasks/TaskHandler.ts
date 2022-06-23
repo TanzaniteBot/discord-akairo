@@ -14,7 +14,7 @@ export class TaskHandler extends AkairoHandler<Task, TaskHandler> {
 	 * @param options - Options.
 	 */
 	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Task, TaskHandler>) {
-		const { directory, classToHandle = Task, extensions = [".js", ".ts"], automateCategories, loadFilter } = options ?? {};
+		const { directory, classToHandle = Task, extensions = [".js", ".ts"], automateCategories, loadFilter } = options;
 
 		if (!(classToHandle.prototype instanceof Task || classToHandle === Task)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Task.name);

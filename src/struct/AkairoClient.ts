@@ -1,3 +1,4 @@
+import { s } from "@sapphire/shapeshift";
 import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
 import type { AkairoClientEvents } from "../typings/events.js";
 import * as ClientUtil from "./ClientUtil.js";
@@ -25,10 +26,11 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 	 * @param options - Options for the client.
 	 * @param clientOptions - Options for Discord JS client. If not specified, the previous options parameter is used instead.
 	 */
-	public constructor(options: AkairoOptions & ClientOptions);
-	public constructor(options: AkairoOptions, clientOptions: ClientOptions);
-	public constructor(options: (AkairoOptions & ClientOptions) | AkairoOptions, clientOptions?: ClientOptions) {
-		const combinedOptions = <AkairoOptions & ClientOptions>{ ...options, ...(clientOptions ?? {}) };
+	public constructor(options: AkairoClientOptions & ClientOptions);
+	public constructor(options: AkairoClientOptions, clientOptions: ClientOptions);
+	public constructor(options: (AkairoClientOptions & ClientOptions) | AkairoClientOptions, clientOptions?: ClientOptions) {
+		const combinedOptions = <AkairoClientOptions & ClientOptions>{ ...options, ...(clientOptions ?? {}) };
+		akairoClientOptionsValidator.parse(combinedOptions);
 		super(combinedOptions);
 		this.ownerID = combinedOptions.ownerID ?? [];
 		this.superUserID = combinedOptions.superUserID ?? [];
@@ -80,7 +82,7 @@ export interface AkairoClient<Ready extends boolean = boolean> extends Client<Re
 /**
  * Options for the client.
  */
-export interface AkairoOptions {
+export interface AkairoClientOptions {
 	/**
 	 * Discord ID of the client owner(s).
 	 * @default []
@@ -93,3 +95,8 @@ export interface AkairoOptions {
 	 */
 	superUserID?: Snowflake | Snowflake[];
 }
+
+export const akairoClientOptionsValidator = s.object({
+	ownerID: s.union(s.string, s.string.array).default([]),
+	superUserID: s.union(s.string, s.string.array).default([])
+}).passthrough;

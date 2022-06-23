@@ -503,9 +503,9 @@ export class TypeResolver {
 	 * Gets the resolver function for a type.
 	 * @param name - Name of type.
 	 */
-	public type<T extends keyof BaseArgumentType>(name: T): ArgumentTypeCaster<BaseArgumentType[T]>;
-	public type(name: string): ArgumentTypeCaster | undefined;
-	public type(name: string): ArgumentTypeCaster | undefined {
+	public type<T extends keyof BaseArgumentType>(name: T): OmitThisParameter<ArgumentTypeCaster<BaseArgumentType[T]>>;
+	public type(name: string): OmitThisParameter<ArgumentTypeCaster> | undefined;
+	public type(name: string): OmitThisParameter<ArgumentTypeCaster> | undefined {
 		return this.types.get(name);
 	}
 
@@ -523,9 +523,9 @@ export class TypeResolver {
 	 * Adds multiple new types.
 	 * @param types  - Object with keys as the type name and values as the cast function.
 	 */
-	public addTypes(types: any): TypeResolver {
+	public addTypes(types: Record<string, ArgumentTypeCaster>): TypeResolver {
 		for (const [key, value] of Object.entries(types)) {
-			this.addType(key, value as any);
+			this.addType(key, value);
 		}
 
 		return this;

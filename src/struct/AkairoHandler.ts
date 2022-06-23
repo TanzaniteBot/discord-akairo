@@ -1,3 +1,4 @@
+import { s } from "@sapphire/shapeshift";
 import { Collection } from "discord.js";
 import EventEmitter from "node:events";
 import { readdirSync, statSync } from "node:fs";
@@ -6,8 +7,7 @@ import { pathToFileURL } from "node:url";
 import { AkairoError } from "../util/AkairoError.js";
 import { Category } from "../util/Category.js";
 import { AkairoHandlerEvents } from "../util/Constants.js";
-import { isArrayOf } from "../util/Util.js";
-import type { AkairoClient } from "./AkairoClient.js";
+import { AkairoClient } from "./AkairoClient.js";
 import { AkairoModule } from "./AkairoModule.js";
 
 export type Class<T> = abstract new (...args: any[]) => T;
@@ -64,21 +64,17 @@ export class AkairoHandler<
 	 * @param options - Options for module loading and handling.
 	 */
 	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Module, Handler>) {
+		s.instance(AkairoClient).parse(client);
+
 		const {
 			directory,
 			classToHandle = AkairoModule,
-			extensions = [".js", ".json", ".ts"],
-			automateCategories = false,
+			extensions,
+			automateCategories,
 			loadFilter = () => true
-		} = options ?? {};
+		} = akairoHandlerOptionsValidator.parse(options);
 
-		if (typeof directory !== "string") throw new TypeError("options.directory must be a string.");
-		if (classToHandle !== AkairoModule && !(classToHandle.prototype instanceof AkairoModule))
-			throw new TypeError("options.classToHandle must be a class that extends AkairoModule.");
-		if (!(extensions instanceof Set) && !isArrayOf(extensions, "string"))
-			throw new TypeError("options.extensions must be an array of strings or a Set.");
-		if (typeof automateCategories !== "boolean") throw new TypeError("options.automateCategories must be a boolean.");
-		if (typeof loadFilter !== "function") throw new TypeError("options.loadFilter must be a function.");
+		if (typeof loadFilter !== "function") throw new TypeError("options.loadFilter should be a function");
 
 		super();
 
@@ -123,11 +119,14 @@ export class AkairoHandler<
 
 		let mod = isClass
 			? thing
-			: function findExport(this: any, m: any): any {
+			: function findExport(this: AkairoHandler<Module, Handler>, m: any): any {
 					if (!m) return null;
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
-			  }.call(this, await eval(`import(${JSON.stringify(pathToFileURL(thing as string).toString())})`));
+			  }.call(
+					this,
+					await eval(`import(${JSON.stringify(`${pathToFileURL(thing as string).toString()}?update=${Date.now()}`)})`)
+			  );
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
 			mod = new mod(this); // eslint-disable-line new-cap
@@ -312,3 +311,11 @@ export interface AkairoHandlerOptions<
 	 */
 	loadFilter?: LoadPredicate;
 }
+
+export const akairoHandlerOptionsValidator = s.object({
+	automateCategories: s.boolean.default(false),
+	classToHandle: s.any,
+	directory: s.string,
+	extensions: s.union(s.string.array, s.string.set).default([".js", ".json", ".ts"]),
+	/* function */ loadFilter: s.any
+}).passthrough;

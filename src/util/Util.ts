@@ -7,7 +7,7 @@ import { AkairoError } from "./AkairoError.js";
  * @param target The object to assign values to.
  * @param os The objects to assign from.
  */
-export function deepAssign<A, B>(target: A, ...os: B[]): A {
+export function deepAssign<A, B>(target: A, ...os: B[]): A & B {
 	for (const o of os) {
 		for (const [key, value] of Object.entries(o)) {
 			const valueIsObject = value && typeof value === "object";
@@ -23,7 +23,7 @@ export function deepAssign<A, B>(target: A, ...os: B[]): A {
 		}
 	}
 
-	return target;
+	return target as A & B;
 }
 
 /**
@@ -98,6 +98,9 @@ export function deepEquals(a: any, b: any, options?: DeepEqualsOptions): boolean
 	const { ignoreUndefined = true, ignoreArrayOrder = true } = options ?? {};
 
 	if (a === b) return true;
+	else if ((typeof a !== "object" || a === null) && (typeof b !== "object" || b === null)) return false;
+	else if (typeof a !== typeof b && (typeof a === "object" || typeof b === "object")) return false;
+	else if (typeof a === typeof b && (a === null || b === null)) return false;
 	if (typeof a !== "object" || typeof b !== "object") throw new TypeError("Not objects");
 	if ((Array.isArray(a) && !Array.isArray(b)) || (!Array.isArray(a) && Array.isArray(b))) return false;
 	const newA = ignoreArrayOrder && Array.isArray(a) && a.length && typeof a[0] !== "object" ? [...a].sort() : a;
@@ -175,7 +178,7 @@ export function isArrayOf<T>(
 
 /**
  * Checks if a value is a string, an array of strings, or a function
- * @internal
+ * @private
  */
 export function isStringArrayStringOrFunc(value: any): value is string | string[] | ((...args: any[]) => any) {
 	return typeof value === "string" || typeof value === "function" || isArrayOf(value, "string");
@@ -198,3 +201,7 @@ export function patchAbstract(Class: Function, method: string): void {
 	});
 }
 /* eslint-enable @typescript-eslint/ban-types, func-names */
+
+// credit https://stackoverflow.com/a/54178819/16940811
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

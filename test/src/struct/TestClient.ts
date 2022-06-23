@@ -54,7 +54,12 @@ export default class TestClient extends AkairoClient {
 			argumentDefaults: {
 				prompt: {
 					start: "What is thing?",
-					modifyStart: (msg, text) => `${msg.author}, ${text}\nType \`cancel\` to cancel this command.`,
+					// eslint-disable-next-line no-sequences
+					// eslint-disable-next-line func-names
+					modifyStart: function (msg, text) {
+						console.dir(this, { depth: 0 });
+						return `${msg.author}, ${text}\nType \`cancel\` to cancel this command.`;
+					},
 					retry: "What is thing, again?",
 					modifyRetry: (msg, text) => `${msg.author}, ${text}\nType \`cancel\` to cancel this command.`,
 					timeout: "Out of time.",

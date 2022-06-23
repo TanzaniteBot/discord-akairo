@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { s } from "@sapphire/shapeshift";
 import type { Message } from "discord.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, AkairoModuleOptions, akairoModuleOptionsValidator } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
 import type { InhibitorHandler } from "./InhibitorHandler.js";
 
@@ -29,14 +30,8 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	 * @param id - Inhibitor ID.
 	 * @param options - Options for the inhibitor.
 	 */
-	public constructor(id: string, options?: InhibitorOptions) {
-		const { category, reason = "", type = "post", priority = 0 } = options ?? {};
-
-		if (reason !== undefined && typeof reason !== "string") throw new TypeError("options.reason must be a string.");
-		if (typeof reason !== "string") throw new TypeError("options.type must be a string.");
-		if (!(["post", "all", "pre"] as const).includes(type))
-			throw new TypeError('options.type must be either "post", "all" or "pre".');
-		if (typeof priority !== "number") throw new TypeError("options.priority must be a number.");
+	public constructor(id: string, options: InhibitorOptions = {}) {
+		const { category, reason, type, priority } = inhibitorOptionsValidator.parse(options);
 
 		super(id, { category });
 
@@ -81,3 +76,9 @@ export interface InhibitorOptions extends AkairoModuleOptions {
 	 */
 	priority?: number;
 }
+
+export const inhibitorOptionsValidator = akairoModuleOptionsValidator.extend({
+	reason: s.string.default(""),
+	type: s.enum("all", "pre", "post").default("post"),
+	priority: s.number.default(0)
+}).passthrough;

@@ -1,4 +1,4 @@
-import type {
+import {
 	CategoryChannel,
 	Collection,
 	DirectoryChannel,
@@ -40,6 +40,10 @@ import type { TypeResolver } from "./TypeResolver.js";
  * <R = unknown> = ArgumentTypeCaster<R>
  * ``` */
 type ATC<R = unknown> = ArgumentTypeCaster<R>;
+/** ```ts
+ * type OATC<R = unknown> = OmitThisParameter<ArgumentTypeCaster<R>>;
+ * ``` */
+type OATC<R = unknown> = OmitThisParameter<ArgumentTypeCaster<R>>;
 /** ```ts
  * keyof BaseArgumentType
  * ``` */
@@ -128,7 +132,7 @@ export class Argument {
 	/**
 	 * The type to cast to or a function to use to cast.
 	 */
-	public declare type: ArgumentType | ArgumentTypeCaster;
+	public declare type: ArgumentType | OmitThisParameter<ArgumentTypeCaster>;
 
 	/**
 	 * Whether or not the argument is unordered.
@@ -218,22 +222,23 @@ export class Argument {
 	 * @param parsedInput - Previous parsed input from command if there was one.
 	 */
 	public async collect(message: Message, commandInput = "", parsedInput: any = null): Promise<Flag | any> {
-		const promptOptions: ArgumentPromptOptions = {};
-		Object.assign(promptOptions, this.handler.argumentDefaults.prompt);
-		Object.assign(promptOptions, this.command.argumentDefaults.prompt);
-		Object.assign(promptOptions, this.prompt || {});
+		const promptOptions = {
+			...this.handler.argumentDefaults.prompt,
+			...this.command.argumentDefaults.prompt,
+			...(typeof this.prompt === "object" ? this.prompt : {})
+		};
 
 		const isInfinite = promptOptions.infinite || (this.match === ArgumentMatches.SEPARATE && !commandInput);
 		const additionalRetry = Number(Boolean(commandInput));
-		const values = isInfinite ? [] : null;
+		const values: any[] | null = isInfinite ? [] : null;
 
 		const getText = async (
-			promptType: string,
-			prompter: any,
-			retryCount: any,
+			promptType: "start" | "retry" | "timeout" | "ended" | "cancel",
+			prompter: ArgumentPromptResponse | undefined,
+			retryCount: number,
 			inputMessage: Message | undefined,
 			inputPhrase: string | undefined,
-			inputParsed: string
+			inputParsed: "stop" | "cancel" | ""
 		) => {
 			let text = await intoCallable(prompter).call(this, message, {
 				retries: retryCount,
@@ -256,12 +261,13 @@ export class Argument {
 			}[promptType];
 
 			if (modifier) {
-				text = await modifier.call(this, message, text, {
+				text = await modifier.call(this, message, text!, {
 					retries: retryCount,
 					infinite: isInfinite,
 					message: inputMessage!,
 					phrase: inputPhrase!,
-					failure: inputParsed as any
+					// @ts-expect-error
+					failure: inputParsed
 				});
 
 				if (Array.isArray(text)) {
@@ -276,7 +282,7 @@ export class Argument {
 		const promptOne = async (
 			prevMessage: Message | undefined,
 			prevInput: string | undefined,
-			prevParsed: any,
+			prevParsed: "stop" | "cancel" | "" | null | undefined | Flag<FlagType.Fail>,
 			retryCount: number
 		): Promise<any> => {
 			let sentStart;
@@ -284,7 +290,8 @@ export class Argument {
 			if (retryCount !== 1 || !isInfinite || !values?.length) {
 				const promptType = retryCount === 1 ? "start" : "retry";
 				const prompter = retryCount === 1 ? promptOptions.start : promptOptions.retry;
-				const startText = await getText(promptType, prompter, retryCount, prevMessage, prevInput, prevParsed!);
+				// @ts-expect-error
+				const startText = await getText(promptType, prompter, retryCount, prevMessage, prevInput, prevParsed);
 
 				if (startText) {
 					sentStart = await (message.util || message.channel).send(startText);
@@ -319,10 +326,10 @@ export class Argument {
 
 			if (promptOptions.breakout) {
 				const looksLike = await this.handler.parseCommand(input);
-				if (looksLike && looksLike.command) return Flag.retry(input);
+				if (looksLike?.command) return Flag.retry(input);
 			}
 
-			if (input?.content.toLowerCase() === promptOptions.cancelWord!.toLowerCase()) {
+			if (input?.content.toLowerCase() === promptOptions.cancelWord.toLowerCase()) {
 				const cancelText = await getText("cancel", promptOptions.cancel, retryCount, input, input?.content, "cancel");
 				if (cancelText) {
 					const sentCancel = await message.channel.send(cancelText);
@@ -333,7 +340,7 @@ export class Argument {
 			}
 
 			if (isInfinite && input?.content.toLowerCase() === promptOptions.stopWord!.toLowerCase()) {
-				if (!values?.length) return promptOne(input, input?.content, null, retryCount + 1);
+				if (!values!.length) return promptOne(input, input?.content, null, retryCount + 1);
 				return values;
 			}
 
@@ -353,12 +360,11 @@ export class Argument {
 			}
 
 			if (isInfinite) {
-				values!.push(parsedValue as never);
+				values!.push(parsedValue);
 				const limit = promptOptions.limit!;
-				// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-				if (values?.length! < limit) return promptOne(message, input.content, parsedValue, 1);
+				if (values!.length < limit) return promptOne(message, input.content, parsedValue, 1);
 
-				return values;
+				return values!;
 			}
 
 			return parsedValue;
@@ -456,7 +462,7 @@ export class Argument {
 	public static cast<T extends ATC>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<ATCR<T>>;
 	public static cast<T extends KBAT>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<BAT[T]>;
 	public static cast(type: AT | ATC, resolver: TypeResolver, message: Message, phrase: string): Promise<any>;
-	public static async cast(type: ATC | AT, resolver: TypeResolver, message: Message, phrase: string): Promise<any> {
+	public static async cast(type: OATC | AT, resolver: TypeResolver, message: Message, phrase: string): Promise<any> {
 		if (Array.isArray(type)) {
 			for (const entry of type) {
 				if (Array.isArray(entry)) {
@@ -512,7 +518,7 @@ export class Argument {
 	public static compose<T extends KBAT>(...types: T[]): ATCBAT<T>;
 	public static compose(...types: (AT | ATC)[]): ATC;
 	public static compose(...types: (AT | ATC)[]): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			let acc: any = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -533,7 +539,7 @@ export class Argument {
 	public static composeWithFailure<T extends KBAT>(...types: T[]): ATCBAT<T>;
 	public static composeWithFailure(...types: (AT | ATC)[]): ATC;
 	public static composeWithFailure(...types: (AT | ATC)[]): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			let acc: any = phrase;
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -561,7 +567,7 @@ export class Argument {
 	public static product<T extends KBAT>(...types: T[]): ATCBAT<T>;
 	public static product(...types: (AT | ATC)[]): ATC;
 	public static product(...types: (AT | ATC)[]): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			const results = [];
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
@@ -602,7 +608,7 @@ export class Argument {
 	public static tagged<T extends KBAT>(type: T, tag?: any): ATCBAT<T>;
 	public static tagged(type: AT | ATC, tag?: any): ATC;
 	public static tagged(type: AT | ATC, tag: any = type): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
@@ -623,7 +629,7 @@ export class Argument {
 	public static taggedUnion<T extends KBAT>(...types: T[]): ATCBAT<T>;
 	public static taggedUnion(...types: (AT | ATC)[]): ATC;
 	public static taggedUnion(...types: (AT | ATC)[]): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			for (let entry of types) {
 				entry = Argument.tagged(entry);
 				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
@@ -644,7 +650,7 @@ export class Argument {
 	public static taggedWithInput<T extends KBAT>(type: T, tag?: any): ATCBAT<T>;
 	public static taggedWithInput(type: AT | ATC, tag?: any): ATC;
 	public static taggedWithInput(type: AT | ATC, tag: any = type): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
@@ -664,7 +670,7 @@ export class Argument {
 	public static union<T extends KBAT>(...types: T[]): ATCBAT<T>;
 	public static union(...types: (AT | ATC)[]): ATC;
 	public static union(...types: (AT | ATC)[]): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			for (let entry of types) {
 				if (typeof entry === "function") entry = entry.bind(this);
 				const res = await Argument.cast(entry, this.handler.resolver, message, phrase);
@@ -685,7 +691,7 @@ export class Argument {
 	public static validate<T extends KBAT>(type: T, predicate: ParsedValuePredicate): ATCBAT<T>;
 	public static validate(type: AT | ATC, predicate: ParsedValuePredicate): ATC;
 	public static validate(type: AT | ATC, predicate: ParsedValuePredicate): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) return res;
@@ -703,7 +709,7 @@ export class Argument {
 	public static withInput<T extends KBAT>(type: T): ATCBAT<T>;
 	public static withInput(type: AT | ATC): ATC;
 	public static withInput(type: AT | ATC): ATC {
-		return async function typeFn(this: any, message, phrase) {
+		return async function typeFn(this: Argument, message, phrase) {
 			if (typeof type === "function") type = type.bind(this);
 			const res = await Argument.cast(type, this.handler.resolver, message, phrase);
 			if (Argument.isFailure(res)) {
@@ -806,6 +812,11 @@ export interface ArgumentOptions {
  */
 export interface ArgumentPromptData {
 	/**
+	 * Amount of retries so far.
+	 */
+	retries: number;
+
+	/**
 	 * Whether the prompt is infinite or not.
 	 */
 	infinite: boolean;
@@ -814,11 +825,6 @@ export interface ArgumentPromptData {
 	 * The message that caused the prompt.
 	 */
 	message: Message;
-
-	/**
-	 * Amount of retries so far.
-	 */
-	retries: number;
 
 	/**
 	 * The input phrase that caused the prompt if there was one, otherwise an empty string.
@@ -846,7 +852,7 @@ export interface ArgumentPromptOptions {
 	/**
 	 * Text sent on cancellation of command.
 	 */
-	cancel?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	cancel?: ArgumentPromptResponse;
 
 	/**
 	 * Word to use for cancelling the command.
@@ -857,7 +863,7 @@ export interface ArgumentPromptOptions {
 	/**
 	 * Text sent on amount of tries reaching the max.
 	 */
-	ended?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	ended?: ArgumentPromptResponse;
 
 	/**
 	 * Prompts forever until the stop word, cancel word, time limit, or retry limit.
@@ -913,12 +919,12 @@ export interface ArgumentPromptOptions {
 	/**
 	 * Text sent on a retry (failure to cast type).
 	 */
-	retry?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	retry?: ArgumentPromptResponse;
 
 	/**
 	 * Text sent on start of prompt.
 	 */
-	start?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	start?: ArgumentPromptResponse;
 
 	/**
 	 * Word to use for ending infinite prompts.
@@ -935,8 +941,10 @@ export interface ArgumentPromptOptions {
 	/**
 	 * Text sent on collector time out.
 	 */
-	timeout?: string | MessagePayload | MessageOptions | PromptContentSupplier;
+	timeout?: ArgumentPromptResponse;
 }
+
+export type ArgumentPromptResponse = string | MessagePayload | MessageOptions | PromptContentSupplier;
 
 /**
  * The method to match arguments from text.
@@ -1091,7 +1099,7 @@ export type ArgumentType = keyof BaseArgumentType | (string | string[])[] | RegE
  * @param message - Message that triggered the command.
  * @param phrase - The user input.
  */
-export type ArgumentTypeCaster<R = unknown> = (message: Message, phrase: string) => R;
+export type ArgumentTypeCaster<R = unknown> = (this: Argument, message: Message, phrase: string) => R;
 
 /**
  * The return type of an argument.
@@ -1114,14 +1122,9 @@ export interface FailureData {
 }
 
 /**
- * Defaults for argument options.
+ * Base Argument options
  */
-export interface DefaultArgumentOptions {
-	/**
-	 * Default prompt options.
-	 */
-	prompt?: ArgumentPromptOptions;
-
+export interface BaseArgumentOptions {
 	/**
 	 * Default text sent if argument parsing fails.
 	 */
@@ -1131,6 +1134,29 @@ export interface DefaultArgumentOptions {
 	 * Function to modify otherwise content.
 	 */
 	modifyOtherwise?: OtherwiseContentModifier;
+}
+
+/**
+ * Defaults for argument options.
+ */
+export interface DefaultArgumentOptions extends BaseArgumentOptions {
+	/**
+	 * Default prompt options.
+	 */
+	prompt?: ArgumentPromptOptions;
+}
+
+/**
+ * The argument defaults with default values provided.
+ */
+export interface ArgumentDefaults extends BaseArgumentOptions {
+	/**
+	 * Prompt options.
+	 */
+	prompt: ArgumentPromptOptions &
+		Required<
+			Pick<ArgumentPromptOptions, "breakout" | "cancelWord" | "infinite" | "limit" | "optional" | "retries" | "stopWord" | "time">
+		>;
 }
 
 /**
@@ -1155,6 +1181,7 @@ export type ParsedValuePredicate = (message: Message, phrase: string, value: any
  * @param data - Miscellaneous data.
  */
 export type OtherwiseContentModifier = (
+	this: Argument,
 	message: Message,
 	text: string | MessagePayload | MessageOptions | OtherwiseContentSupplier,
 	data: FailureData
@@ -1177,6 +1204,7 @@ export type OtherwiseContentSupplier = (
  * @param data - Miscellaneous data.
  */
 export type PromptContentModifier = (
+	this: Argument,
 	message: Message,
 	text: string | MessagePayload | MessageOptions | OtherwiseContentSupplier,
 	data: ArgumentPromptData

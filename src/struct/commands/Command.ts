@@ -90,7 +90,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	public declare ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	public declare ignorePermissions?: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
 
 	/**
 	 * The slash command localizations.
@@ -343,8 +343,13 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param state - Argument processing state.
 	 * @abstract
 	 */
-	// @ts-expect-error
-	public *args(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn {}
+	public *args(
+		this: Command,
+		message: Message,
+		parsed: ContentParserResult,
+		state: ArgumentRunnerState
+		// @ts-expect-error
+	): ArgumentGeneratorReturn {}
 
 	/**
 	 * Runs before argument parsing and execution.
@@ -604,7 +609,7 @@ export interface CommandOptions extends AkairoModuleOptions {
  * A function to run before argument parsing and execution.
  * @param message - Message that triggered the command.
  */
-export type BeforeAction = (message: Message) => any;
+export type BeforeAction = (this: Command, message: Message) => any;
 
 /**
  * A function used to supply the key for the locker.
@@ -617,7 +622,7 @@ export type KeySupplier = (message: Message | AkairoMessage, args: any) => strin
  * A function used to check if the command should run arbitrarily.
  * @param message - Message to check.
  */
-export type ExecutionPredicate = (message: Message) => boolean | Promise<boolean>;
+export type ExecutionPredicate = (this: Command, message: Message) => boolean | Promise<boolean>;
 
 /**
  * A function used to check if a message has permissions for the command.

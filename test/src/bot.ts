@@ -1,6 +1,6 @@
-import { token } from "./src/auth.json";
-import logger from "./src/struct/Logger.js";
-import TestClient from "./src/struct/TestClient.js";
+import { token } from "./auth.json";
+import logger from "./struct/Logger.js";
+import TestClient from "./struct/TestClient.js";
 
 const client = new TestClient();
 

@@ -1,3 +1,4 @@
+import { s } from "@sapphire/shapeshift";
 import type { Category } from "../util/Category.js";
 import type { AkairoClient } from "./AkairoClient.js";
 import type { AkairoHandler } from "./AkairoHandler.js";
@@ -41,9 +42,8 @@ export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler
 	 * @param options Additional options for this module.
 	 */
 	public constructor(id: string, options?: AkairoModuleOptions) {
-		const { category = "default" } = options ?? {};
-
-		if (typeof category !== "string") throw new TypeError("options.category must be a string.");
+		s.string.parse(id);
+		const { category } = akairoModuleOptionsValidator.parse(options);
 
 		this.id = id;
 		this.categoryID = category;
@@ -82,3 +82,7 @@ export interface AkairoModuleOptions {
 	 */
 	category?: string;
 }
+
+export const akairoModuleOptionsValidator = s.object({
+	category: s.string.default("default")
+}).passthrough;
