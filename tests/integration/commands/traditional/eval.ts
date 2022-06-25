@@ -1,4 +1,5 @@
-import type { Message } from "discord.js";
+/* eslint-disable @typescript-eslint/no-shadow, callback-return, @typescript-eslint/no-unused-vars */
+import { escapeCodeBlock, Formatters, type Message } from "discord.js";
 import { inspect } from "node:util";
 import { Command } from "../../../../src/index.js";
 import logger from "../../struct/Logger.js";
@@ -28,9 +29,8 @@ export default class EvalCommand extends Command {
 		const token = this.client.token!.split("").join("[^]{0,2}");
 		const rev = this.client.token!.split("").reverse().join("[^]{0,2}");
 		const tokenRegex = new RegExp(`${token}|${rev}`, "g");
-		const cb = "```";
+		const cb = (code: string) => Formatters.codeBlock("js", escapeCodeBlock(code));
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const print = (...a: any[]) => {
 			const cleaned = a.map(obj => {
 				const str = typeof obj !== "string" ? inspect(obj, { depth: 1 }) : obj;
@@ -46,7 +46,7 @@ export default class EvalCommand extends Command {
 			const title = evaled.errored ? "☠\u2000**Error**" : "📤\u2000**Output**";
 
 			if (evaled.output.length + code.length > 1900) evaled.output = "Output too long.";
-			evaled.message!.edit([`📥\u2000**Input**${cb}js`, code, cb, `${title}${cb}js`, evaled.output, cb].join("\n"));
+			evaled.message!.edit([`📥\u2000**Input**`, cb(code), `${title}`, cb(evaled.output)].join("\n"));
 		};
 
 		try {
@@ -59,9 +59,7 @@ export default class EvalCommand extends Command {
 
 			if (output.length + code.length > 1900) output = "Output too long.";
 
-			const sent = await message.util!.sendNew(
-				[`📥\u2000**Input**${cb}js`, code, cb, `📤\u2000**Output**${cb}js`, output, cb].join("\n")
-			);
+			const sent = await message.util!.sendNew(["📥\u2000**Input**", cb(code), "📤\u2000**Output**", cb(output)].join("\n"));
 
 			evaled.message = sent;
 			evaled.errored = false;
@@ -76,9 +74,7 @@ export default class EvalCommand extends Command {
 			error = `${logs.join("\n")}\n${logs.length && error === "undefined" ? "" : error}`;
 			error = error.replace(tokenRegex, "[TOKEN]");
 
-			const sent = await message.util!.send(
-				[`📥\u2000**Input**${cb}js`, code, cb, `☠\u2000**Error**${cb}js`, error, cb].join("\n")
-			);
+			const sent = await message.util!.send([`📥\u2000**Input**`, cb(code), `☠\u2000**Error**`, cb(error)].join("\n"));
 
 			evaled.message = sent;
 			evaled.errored = true;

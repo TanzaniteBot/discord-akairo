@@ -19,6 +19,7 @@ function timestamp(): string {
 		amOrPm = "PM";
 		hour -= 12;
 	}
+
 	return `${hour >= 10 ? hour : `0${hour}`}:${minute >= 10 ? minute : `0${minute}`} ${amOrPm}`;
 }
 
