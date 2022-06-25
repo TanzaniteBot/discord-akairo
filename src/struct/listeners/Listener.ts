@@ -12,17 +12,17 @@ export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 	/**
 	 * The event emitter.
 	 */
-	public declare emitter: string | EventEmitter;
+	public emitter: string | EventEmitter;
 
 	/**
 	 * The event name listened to.
 	 */
-	public declare event: string;
+	public event: string;
 
 	/**
 	 * Type of listener.
 	 */
-	public declare type: ListenerType;
+	public type: ListenerType;
 
 	/**
 	 * @param id - Listener ID.

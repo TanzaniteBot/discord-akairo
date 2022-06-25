@@ -25,37 +25,37 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	/**
 	 * The command handler.
 	 */
-	public declare handler: CommandHandler | ContextMenuCommandHandler;
+	public handler: CommandHandler | ContextMenuCommandHandler;
 
 	/**
 	 * Whether or not the command is a slash command.
 	 */
-	public declare isSlash: boolean;
+	public isSlash: boolean;
 
 	/**
 	 * The last response sent.
 	 */
-	public declare lastResponse: Message | null;
+	public lastResponse: Message | null;
 
 	/**
 	 * Message that triggered the command.
 	 */
-	public declare message: MessageType;
+	public message: MessageType;
 
 	/**
 	 * Messages stored from prompts and prompt replies.
 	 */
-	public declare messages: Collection<Snowflake, Message> | null;
+	public messages: Collection<Snowflake, Message> | null;
 
 	/**
 	 * The parsed components.
 	 */
-	public declare parsed: ParsedComponentData | null;
+	public parsed: ParsedComponentData | null;
 
 	/**
 	 * Whether or not the last response should be edited.
 	 */
-	public declare shouldEdit: boolean;
+	public shouldEdit: boolean;
 
 	/**
 	 * Whether or not `this.message` has been deleted.

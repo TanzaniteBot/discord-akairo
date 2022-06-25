@@ -7,49 +7,49 @@ export class Flag<T extends FlagType = FlagType> {
 	/**
 	 * The type of flag.
 	 */
-	public declare type: T;
+	public type: T;
 
 	/**
 	 * Order waiting time .
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Timeout}.
 	 */
-	public declare time: T extends FlagType.Timeout ? number : never;
+	public time!: T extends FlagType.Timeout ? number : never;
 
 	/**
 	 * Message to handle.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Retry}.
 	 */
-	public declare message: T extends FlagType.Retry ? Message : never;
+	public message!: T extends FlagType.Retry ? Message : never;
 
 	/**
 	 * The extra data for the failure.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Fail}.
 	 */
-	public declare value: T extends FlagType.Fail ? any : never;
+	public value!: T extends FlagType.Fail ? any : never;
 
 	/**
 	 * Command ID.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Continue}.
 	 */
-	public declare command: T extends FlagType.Continue ? string : never;
+	public command!: T extends FlagType.Continue ? string : never;
 
 	/**
 	 * Whether or not to ignore permission checks.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Continue}.
 	 */
-	public declare ignore: T extends FlagType.Continue ? boolean : never;
+	public ignore!: T extends FlagType.Continue ? boolean : never;
 
 	/**
 	 *  The rest of the arguments. If this is not set, the argument handler will automatically use the rest of the content.
 	 *
 	 * Only exists if {@link type} is {@link FlagType.Continue}.
 	 */
-	public declare rest: T extends FlagType.Continue ? string : never;
+	public rest!: T extends FlagType.Continue ? string : never;
 
 	/**
 	 * @param type - Type of flag.

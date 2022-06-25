@@ -34,37 +34,37 @@ export class TypeResolver {
 	/**
 	 * The Akairo client.
 	 */
-	public declare client: AkairoClient;
+	public client: AkairoClient;
 
 	/**
 	 * The command handler.
 	 */
-	public declare commandHandler: CommandHandler;
+	public commandHandler: CommandHandler;
 
 	/**
 	 * The inhibitor handler.
 	 */
-	public declare inhibitorHandler?: InhibitorHandler | null;
+	public inhibitorHandler?: InhibitorHandler | null;
 
 	/**
 	 * The listener handler.
 	 */
-	public declare listenerHandler?: ListenerHandler | null;
+	public listenerHandler?: ListenerHandler | null;
 
 	/**
 	 * The task handler.
 	 */
-	public declare taskHandler: TaskHandler | null;
+	public taskHandler: TaskHandler | null;
 
 	/**
 	 * The context menu command handler.
 	 */
-	public declare contextMenuCommandHandler: ContextMenuCommandHandler | null;
+	public contextMenuCommandHandler: ContextMenuCommandHandler | null;
 
 	/**
 	 * Collection of types.
 	 */
-	public declare types: Collection<keyof BaseArgumentType | string, ArgumentTypeCaster>;
+	public types: Collection<keyof BaseArgumentType | string, ArgumentTypeCaster>;
 
 	/**
 	 * @param handler - The command handler.

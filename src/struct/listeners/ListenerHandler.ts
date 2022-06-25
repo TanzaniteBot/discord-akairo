@@ -14,13 +14,13 @@ export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
 	/**
 	 * Class to handle.
 	 */
-	public declare classToHandle: typeof Listener;
+	public override classToHandle!: typeof Listener;
 
 	/**
 	 * EventEmitters for use, mapped by name to EventEmitter.
 	 * By default, 'client' is set to the given client.
 	 */
-	public declare emitters: Collection<string, EventEmitter>;
+	public emitters: Collection<string, EventEmitter>;
 
 	/**
 	 * @param client - The Akairo client.

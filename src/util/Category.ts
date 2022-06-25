@@ -9,7 +9,7 @@ export class Category<K extends string, V extends AkairoModule<any, any>> extend
 	/**
 	 * ID of the category.
 	 */
-	public declare id: string;
+	public id: string;
 
 	/**
 	 * @param id - ID of the category.

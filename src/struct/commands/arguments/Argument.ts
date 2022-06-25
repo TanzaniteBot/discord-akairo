@@ -77,67 +77,67 @@ export class Argument {
 	/**
 	 * The command this argument belongs to.
 	 */
-	public declare command: Command;
+	public command: Command;
 
 	/**
 	 * The default value of the argument or a function supplying the default value.
 	 */
-	public declare default: DefaultValueSupplier | any;
+	public default: DefaultValueSupplier | any;
 
 	/**
 	 *  Description of the command.
 	 */
-	public declare description: string | any;
+	public description: string | any;
 
 	/**
 	 * The string(s) to use for flag or option match.
 	 */
-	public declare flag?: string | string[] | null;
+	public flag?: string | string[] | null;
 
 	/**
 	 * The index to start from.
 	 */
-	public declare index: number | null;
+	public index: number | null;
 
 	/**
 	 * The amount of phrases to match for rest, separate, content, or text match.
 	 */
-	public declare limit: number;
+	public limit: number;
 
 	/**
 	 * The method to match text.
 	 */
-	public declare match: ArgumentMatch;
+	public match: ArgumentMatch;
 
 	/**
 	 * Function to modify otherwise content.
 	 */
-	public declare modifyOtherwise: OtherwiseContentModifier | null;
+	public modifyOtherwise: OtherwiseContentModifier | null;
 
 	/**
 	 * Whether to process multiple option flags instead of just the first.
 	 */
-	public declare multipleFlags: boolean;
+	public multipleFlags: boolean;
 
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public declare otherwise: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
+	public otherwise: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
 
 	/**
 	 * The prompt options.
 	 */
-	public declare prompt: ArgumentPromptOptions | boolean | null;
+	public prompt: ArgumentPromptOptions | boolean | null;
 
 	/**
 	 * The type to cast to or a function to use to cast.
 	 */
-	public declare type: ArgumentType | OmitThisParameter<ArgumentTypeCaster>;
+	public type: ArgumentType | OmitThisParameter<ArgumentTypeCaster>;
 
 	/**
 	 * Whether or not the argument is unordered.
 	 */
-	public declare unordered: boolean | number | number[];
+	public unordered: boolean | number | number[];
 
 	/**
 	 * @param command - Command of the argument.

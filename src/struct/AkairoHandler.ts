@@ -22,42 +22,42 @@ export class AkairoHandler<
 	/**
 	 * Whether or not to automate category names.
 	 */
-	public declare automateCategories: boolean;
+	public automateCategories: boolean;
 
 	/**
 	 * Categories, mapped by ID to Category.
 	 */
-	public declare categories: Collection<string, Category<string, Module>>;
+	public categories: Collection<string, Category<string, Module>>;
 
 	/**
 	 * Class to handle.
 	 */
-	public declare classToHandle: Class<Module>;
+	public classToHandle: Class<Module>;
 
 	/**
 	 * The Akairo client.
 	 */
-	public declare client: AkairoClient;
+	public client: AkairoClient;
 
 	/**
 	 * The main directory to modules.
 	 */
-	public declare directory: string;
+	public directory: string;
 
 	/**
 	 * File extensions to load.
 	 */
-	public declare extensions: Set<Extension>;
+	public extensions: Set<Extension>;
 
 	/**
 	 * Function that filters files when loading.
 	 */
-	public declare loadFilter: LoadPredicate;
+	public loadFilter: LoadPredicate;
 
 	/**
 	 * Modules loaded, mapped by ID to AkairoModule.
 	 */
-	public declare modules: Collection<string, Module>;
+	public modules: Collection<string, Module>;
 
 	/**
 	 * @param client - The Akairo client.

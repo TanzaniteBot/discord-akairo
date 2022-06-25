@@ -13,7 +13,7 @@ export class ArgumentRunner {
 	/**
 	 * The command the arguments are being run for
 	 */
-	public declare command: Command;
+	public command: Command;
 
 	/**
 	 * @param command - Command to run for.

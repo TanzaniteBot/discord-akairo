@@ -10,17 +10,17 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 	/**
 	 * The ID of the owner(s).
 	 */
-	public declare ownerID: Snowflake | Snowflake[];
+	public ownerID: Snowflake | Snowflake[];
 
 	/**
 	 * The ID of the superUser(s).
 	 */
-	public declare superUserID: Snowflake | Snowflake[];
+	public superUserID: Snowflake | Snowflake[];
 
 	/**
 	 * Utility methods.
 	 */
-	public declare util: typeof ClientUtil;
+	public util: typeof ClientUtil;
 
 	/**
 	 * @param options - Options for the client.

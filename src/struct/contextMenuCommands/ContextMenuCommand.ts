@@ -19,44 +19,44 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
-	public declare guilds?: Snowflake[];
+	public guilds?: Snowflake[];
 
 	/**
 	 * The name of the context menu command.
 	 */
-	public declare name: string;
+	public name: string;
 
 	/**
 	 * Usable only by the client owner.
 	 */
-	public declare ownerOnly: boolean;
+	public ownerOnly: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
 	 */
-	public declare superUserOnly: boolean;
+	public superUserOnly: boolean;
 
 	/**
 	 * The type of the context menu command.
 	 */
-	public declare type: ApplicationCommandType.User | ApplicationCommandType.Message;
+	public type: ApplicationCommandType.User | ApplicationCommandType.Message;
 
 	/**
 	 * Name localization.
 	 */
-	public declare nameLocalizations?: LocalizationMap;
+	public nameLocalizations?: LocalizationMap;
 
 	/**
 	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	public declare defaultMemberPermissions?: PermissionResolvable;
+	public defaultMemberPermissions?: PermissionResolvable;
 
 	/**
 	 * Whether the command is enabled in DMs
 	 *
 	 * **Cannot be enabled for command that specify `guilds`**
 	 */
-	public declare dmPermission?: boolean;
+	public dmPermission?: boolean;
 
 	/**
 	 * @param id - Listener ID.

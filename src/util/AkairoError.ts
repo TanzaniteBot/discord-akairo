@@ -46,7 +46,7 @@ export class AkairoError<K extends keyof typeof Messages> extends Error {
 	/**
 	 * The error code.
 	 */
-	public declare code: string;
+	public code: string;
 
 	/**
 	 * @param key - Error key.

@@ -17,58 +17,58 @@ export class AkairoMessage<Cached extends CacheType = CacheType> extends Base {
 	/**
 	 * The author of the interaction.
 	 */
-	public declare author: ChatInputCommandInteraction<Cached>["user"];
+	public author: ChatInputCommandInteraction<Cached>["user"];
 
 	/**
 	 * The application's id
 	 */
-	public declare applicationId: ChatInputCommandInteraction<Cached>["applicationId"];
+	public applicationId: ChatInputCommandInteraction<Cached>["applicationId"];
 
 	/**
 	 * The id of the channel this interaction was sent in
 	 */
-	public declare channelId: ChatInputCommandInteraction<Cached>["channelId"];
+	public channelId: ChatInputCommandInteraction<Cached>["channelId"];
 
 	/**
 	 * The command name and arguments represented as a string.
 	 */
-	public declare content: string;
+	public content: string;
 
 	/**
 	 * The timestamp the interaction was sent at.
 	 */
-	public declare createdTimestamp: ChatInputCommandInteraction<Cached>["createdTimestamp"];
+	public createdTimestamp: ChatInputCommandInteraction<Cached>["createdTimestamp"];
 
 	/**
 	 * The id of the guild this interaction was sent in
 	 */
-	public declare guildId: ChatInputCommandInteraction<Cached>["guildId"];
+	public guildId: ChatInputCommandInteraction<Cached>["guildId"];
 
 	/**
 	 * The ID of the interaction.
 	 */
-	public declare id: ChatInputCommandInteraction<Cached>["id"];
+	public id: ChatInputCommandInteraction<Cached>["id"];
 
 	/**
 	 * The command interaction.
 	 */
-	public declare interaction: ChatInputCommandInteraction<Cached>;
+	public interaction: ChatInputCommandInteraction<Cached>;
 
 	/**
 	 * Represents the author of the interaction as a guild member.
 	 * Only available if the interaction comes from a guild where the author is still a member.
 	 */
-	public declare member: ChatInputCommandInteraction<Cached>["member"];
+	public member: ChatInputCommandInteraction<Cached>["member"];
 
 	/**
 	 * Whether or not this message is a partial
 	 */
-	public declare partial: false;
+	public partial: false;
 
 	/**
 	 * Utilities for command responding.
 	 */
-	public declare util: CommandUtil<AkairoMessage>;
+	public util!: CommandUtil<AkairoMessage>;
 
 	/**
 	 * @param client - AkairoClient

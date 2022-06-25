@@ -11,12 +11,12 @@ export abstract class Task extends AkairoModule<TaskHandler, Task> {
 	/**
 	 * The time in milliseconds between each time the task is run.
 	 */
-	public declare delay?: number;
+	public delay?: number;
 
 	/**
 	 * Whether or not to run the task on start.
 	 */
-	public declare runOnStart: boolean;
+	public runOnStart: boolean;
 
 	/**
 	 * @param id - Task ID.

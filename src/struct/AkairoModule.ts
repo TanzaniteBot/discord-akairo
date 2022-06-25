@@ -10,32 +10,32 @@ export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler
 	/**
 	 * The category this module belongs to.
 	 */
-	public declare category: Category<string, this>;
+	public category: Category<string, this>;
 
 	/**
 	 * The ID of the category this module belongs to.
 	 */
-	public declare categoryID: string;
+	public categoryID: string;
 
 	/**
 	 * The client thant instantiated this module.
 	 */
-	public declare client: AkairoClient;
+	public client: AkairoClient;
 
 	/**
 	 * The filepath of this module.
 	 */
-	public declare filepath: string;
+	public filepath: string;
 
 	/**
 	 * The handler for this module.
 	 */
-	public declare handler: Handler;
+	public handler: Handler;
 
 	/**
 	 * The ID of this module.
 	 */
-	public declare id: string;
+	public id: string;
 
 	/**
 	 * @param id The ID of module.

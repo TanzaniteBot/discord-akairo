@@ -14,17 +14,17 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	/**
 	 * The priority of the inhibitor.
 	 */
-	public declare priority: number;
+	public priority: number;
 
 	/**
 	 * Reason emitted when command is inhibited.
 	 */
-	public declare reason: string;
+	public reason: string;
 
 	/**
 	 * The type of the inhibitor for when it should run.
 	 */
-	public declare type: string;
+	public type: string;
 
 	/**
 	 * @param id - Inhibitor ID.

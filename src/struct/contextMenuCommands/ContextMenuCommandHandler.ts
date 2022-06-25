@@ -14,7 +14,7 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 	/**
 	 * Inhibitor handler to use.
 	 */
-	public declare inhibitorHandler?: InhibitorHandler;
+	public inhibitorHandler?: InhibitorHandler;
 
 	/**
 	 * @param client - The Akairo client.

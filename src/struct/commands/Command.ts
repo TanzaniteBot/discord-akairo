@@ -35,164 +35,159 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * Command names.
 	 */
-	public declare aliases: string[];
+	public aliases: string[];
 
 	/**
 	 * Argument options or generator.
 	 */
-	public declare _args?: ArgumentOptions[] | ArgumentGenerator;
+	public _args?: ArgumentOptions[] | ArgumentGenerator;
 
 	/**
 	 * Default prompt options.
 	 */
-	public declare argumentDefaults: DefaultArgumentOptions;
+	public argumentDefaults: DefaultArgumentOptions;
 
 	/**
 	 * The argument runner.
 	 */
-	public declare argumentRunner: ArgumentRunner;
+	public argumentRunner: ArgumentRunner;
 
 	/**
 	 * Usable only in this channel type.
 	 */
-	public declare channel?: string;
+	public channel?: string;
 
 	/**
 	 * Permissions required to run command by the client.
 	 */
-	public declare clientPermissions?: PermissionResolvable | MissingPermissionSupplier;
+	public clientPermissions?: PermissionResolvable | MissingPermissionSupplier;
 
 	/**
 	 * Cooldown in milliseconds.
 	 */
-	public declare cooldown: number | null;
+	public cooldown: number | null;
 
 	/**
 	 * The content parser.
 	 */
-	public declare contentParser: ContentParser;
+	public contentParser: ContentParser;
 
 	/**
 	 * Description of the command.
 	 */
-	public declare description: string | any | any[];
+	public description: string | any | any[];
 
 	/**
 	 * Whether or not this command can be ran by an edit.
 	 */
-	public declare editable: boolean;
+	public editable: boolean;
 
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	public declare ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	public ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	public declare ignorePermissions?: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
+	public ignorePermissions?: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
 
 	/**
 	 * The slash command localizations.
 	 */
-	public declare localization: CommandLocalization;
+	public localization: CommandLocalization;
 
 	/**
 	 * The key supplier for the locker.
 	 */
-	public declare lock?: KeySupplier;
+	public lock?: KeySupplier;
 
 	/**
 	 * Stores the current locks.
 	 */
-	public declare locker?: Set<string>;
+	public locker?: Set<string>;
 
 	/**
 	 * Whether or not the command can only be run in  NSFW channels.
 	 */
-	public declare onlyNsfw: boolean;
+	public onlyNsfw: boolean;
 
 	/**
 	 * Usable only by the client owner.
 	 */
-	public declare ownerOnly: boolean;
+	public ownerOnly: boolean;
 
 	/**
 	 * Command prefix overwrite.
 	 */
-	public declare prefix?: string | string[] | PrefixSupplier;
-
-	/**
-	 * Whether or not to consider quotes.
-	 */
-	public declare quoted: boolean;
+	public prefix?: string | string[] | PrefixSupplier;
 
 	/**
 	 * Uses allowed before cooldown.
 	 */
-	public declare ratelimit: number;
+	public ratelimit: number;
 
 	/**
 	 * The regex trigger for this command.
 	 */
-	public declare regex?: RegExp | RegexSupplier;
+	public regex?: RegExp | RegexSupplier;
 
 	/**
 	 * Mark command as slash command and set information.
 	 */
-	public declare slash?: boolean;
+	public slash?: boolean;
 
 	/**
 	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	public declare slashDefaultMemberPermissions?: PermissionResolvable;
+	public slashDefaultMemberPermissions?: PermissionResolvable;
 
 	/**
 	 * Whether the command is enabled in DMs
 	 *
 	 * **Cannot be enabled for commands that specify `slashGuilds`**
 	 */
-	public declare slashDmPermission?: boolean;
+	public slashDmPermission?: boolean;
 
 	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
 	 */
-	public declare slashEphemeral?: boolean;
+	public slashEphemeral?: boolean;
 
 	/**
 	 * Assign slash commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */
-	public declare slashGuilds?: Snowflake[];
+	public slashGuilds?: Snowflake[];
 
 	/**
 	 * Options for using the slash command.
 	 */
-	public declare slashOptions?: SlashOption[];
+	public slashOptions?: SlashOption[];
 
 	/**
 	 * Only allows this command to be executed as a slash command.
 	 */
-	public declare slashOnly: boolean;
+	public slashOnly: boolean;
 
 	/**
 	 * Whether or not to allow client superUsers(s) only.
 	 */
-	public declare superUserOnly: boolean;
+	public superUserOnly: boolean;
 
 	/**
 	 * Whether or not to type during command execution.
 	 */
-	public declare typing: boolean;
+	public typing: boolean;
 
 	/**
 	 * Permissions required to run command by the user.
 	 */
-	public declare userPermissions?: PermissionResolvable | MissingPermissionSupplier;
+	public userPermissions?: PermissionResolvable | MissingPermissionSupplier;
 
 	/**
 	 * Generator for arguments.
 	 */
-	public declare argumentGenerator: ArgumentGenerator;
+	public argumentGenerator: ArgumentGenerator;
 
 	/**
 	 * @param id - Command ID.

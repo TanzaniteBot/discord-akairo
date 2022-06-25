@@ -26,6 +26,7 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"target": "ES2022",
+		"useDefineForClassFields": false,
 
 		/* Interop Constraints */
 		"esModuleInterop": true,

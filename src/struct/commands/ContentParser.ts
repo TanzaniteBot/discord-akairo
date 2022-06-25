@@ -64,14 +64,14 @@ interface Token {
 }
 
 class Tokenizer {
-	public declare content: string;
-	public declare flagWords: string[];
-	public declare optionFlagWords: string[];
-	public declare quoted: boolean;
-	public declare separator?: string;
-	public declare position: number;
-	public declare state: TokenizerState;
-	public declare tokens: Token[];
+	public content: string;
+	public flagWords: string[];
+	public optionFlagWords: string[];
+	public quoted: boolean;
+	public separator?: string;
+	public position: number;
+	public state: TokenizerState;
+	public tokens: Token[];
 
 	public constructor(content: string, options: ContentParserOptions = {}) {
 		s.string.parse(content);
@@ -274,9 +274,9 @@ const enum TokenizerState {
 }
 
 class Parser {
-	public declare tokens: Token[];
-	public declare separated: any;
-	public declare position: number;
+	public tokens: Token[];
+	public separated: any;
+	public position: number;
 
 	/**
 	 * Phrases are `{ type: 'Phrase', value, raw }`.
@@ -480,23 +480,23 @@ export class ContentParser {
 	/**
 	 * Words considered flags.
 	 */
-	public declare flagWords: string[];
+	public flagWords: string[];
 
 	/**
 	 * Words considered option flags.
 	 */
-	public declare optionFlagWords: string[];
+	public optionFlagWords: string[];
 
 	/**
 	 * Whether to parse quotes.
 	 * @default true
 	 */
-	public declare quoted: boolean;
+	public quoted: boolean;
 
 	/**
 	 * Whether to parse a separator.
 	 */
-	public declare separator?: string;
+	public separator?: string;
 
 	/**
 	 * @param options - Options.

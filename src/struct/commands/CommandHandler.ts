@@ -57,139 +57,139 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * Collection of command aliases.
 	 */
-	public declare aliases: Collection<string, string>;
+	public aliases: Collection<string, string>;
 
 	/**
 	 * Regular expression to automatically make command aliases for.
 	 */
-	public declare aliasReplacement?: RegExp;
+	public aliasReplacement?: RegExp;
 
 	/**
 	 * Whether or not mentions are allowed for prefixing.
 	 */
-	public declare allowMention: boolean | MentionPrefixPredicate;
+	public allowMention: boolean | MentionPrefixPredicate;
 
 	/**
 	 * Default argument options.
 	 */
-	public declare argumentDefaults: ArgumentDefaults;
+	public argumentDefaults: ArgumentDefaults;
 
 	/**
 	 * Automatically defer messages "BotName is thinking".
 	 */
-	public declare autoDefer: boolean;
+	public autoDefer: boolean;
 
 	/**
 	 * Specify whether to register all slash commands when starting the client
 	 */
-	public declare autoRegisterSlashCommands: boolean;
+	public autoRegisterSlashCommands: boolean;
 
 	/**
 	 * Whether or not to block bots.
 	 */
-	public declare blockBots: boolean;
+	public blockBots: boolean;
 
 	/**
 	 * Whether or not to block self.
 	 */
-	public declare blockClient: boolean;
+	public blockClient: boolean;
 
 	/**
 	 * Whether or not `message.util` is assigned.
 	 */
-	public declare commandUtil: boolean;
+	public commandUtil: boolean;
 
 	/**
 	 * Milliseconds a message should exist for before its command util instance is marked for removal.
 	 */
-	public declare commandUtilLifetime: number;
+	public commandUtilLifetime: number;
 
 	/**
 	 * Collection of CommandUtils.
 	 */
-	public declare commandUtils: Collection<string, CommandUtil<Message | AkairoMessage>>;
+	public commandUtils: Collection<string, CommandUtil<Message | AkairoMessage>>;
 
 	/**
 	 * Time interval in milliseconds for sweeping command util instances.
 	 */
-	public declare commandUtilSweepInterval: number;
+	public commandUtilSweepInterval: number;
 
 	/**
 	 * Collection of cooldowns.
 	 * <info>The elements in the collection are objects with user IDs as keys
 	 * and {@link CooldownData} objects as values</info>
 	 */
-	public declare cooldowns: Collection<string, { [id: string]: CooldownData }>;
+	public cooldowns: Collection<string, { [id: string]: CooldownData }>;
 
 	/**
 	 * Default cooldown for commands.
 	 */
-	public declare defaultCooldown: number;
+	public defaultCooldown: number;
 
 	/**
 	 * Whether or not to require the use of execSlash for slash commands.
 	 */
-	public declare execSlash: boolean;
+	public execSlash: boolean;
 
 	/**
 	 * Whether or not members are fetched on each message author from a guild.
 	 */
-	public declare fetchMembers: boolean;
+	public fetchMembers: boolean;
 
 	/**
 	 * Whether or not edits are handled.
 	 */
-	public declare handleEdits: boolean;
+	public handleEdits: boolean;
 
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	public declare ignoreCooldown: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
+	public ignoreCooldown: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	public declare ignorePermissions: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
+	public ignorePermissions: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
 
 	/**
 	 * Inhibitor handler to use.
 	 */
-	public declare inhibitorHandler: InhibitorHandler | null;
+	public inhibitorHandler: InhibitorHandler | null;
 
 	/**
 	 * The prefix(es) for command parsing.
 	 */
-	public declare prefix: string | string[] | PrefixSupplier;
+	public prefix: string | string[] | PrefixSupplier;
 
 	/**
 	 * Collection of prefix overwrites to commands.
 	 */
-	public declare prefixes: Collection<string | PrefixSupplier, Set<string>>;
+	public prefixes: Collection<string | PrefixSupplier, Set<string>>;
 
 	/**
 	 * Collection of sets of ongoing argument prompts.
 	 */
-	public declare prompts: Collection<string, Set<string>>;
+	public prompts: Collection<string, Set<string>>;
 
 	/**
 	 * The type resolver.
 	 */
-	public declare resolver: TypeResolver;
+	public resolver: TypeResolver;
 
 	/**
 	 * Whether or not to store messages in CommandUtil.
 	 */
-	public declare storeMessages: boolean;
+	public storeMessages: boolean;
 
 	/**
 	 * Show "BotName is typing" information message on the text channels when a command is running.
 	 */
-	public declare typing: boolean;
+	public typing: boolean;
 
 	/**
 	 * Whether or not to skip built in reasons post type inhibitors so you can make custom ones.
 	 */
-	public declare skipBuiltInPostInhibitors: boolean;
+	public skipBuiltInPostInhibitors: boolean;
 
 	/**
 	 * @param client - The Akairo client.
