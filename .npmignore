@@ -1,11 +1,21 @@
-# NPM
-node_modules
-.git
-.vscode
 .eslintrc.json
+.git
+.git-blame-ignore-revs
 .gitattributes
+.github/
 .gitignore
-.travis.yml
+.prettierignore
+.prettierrc.json
 .vscode
-test/
+.vscode/
+.yarn/
+.yarnrc.yml
+dist/**/*.tsbuildinfo
+dist/tests/*
 docs/
+guide/
+node_modules
+test/
+tests/
+tsconfig*.json
+vite.config.ts

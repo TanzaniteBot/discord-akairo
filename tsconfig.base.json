@@ -1,0 +1,37 @@
+{
+	"compilerOptions": {
+		/* Type Checking */
+		"alwaysStrict": true,
+		"noImplicitOverride": true,
+		"strict": true,
+		"useUnknownInCatchVariables": false,
+
+		/* Modules */
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"resolveJsonModule": true,
+
+		/* Emit */
+		"declaration": true,
+		"declarationMap": true,
+		"importsNotUsedAsValues": "preserve",
+		"newLine": "lf",
+		"noEmitOnError": true,
+		"preserveConstEnums": true,
+		"removeComments": true,
+		"sourceMap": true,
+		"stripInternal": true,
+
+		/* Language and Environment */
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"target": "ES2022",
+
+		/* Interop Constraints */
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+
+		/* Output Formatting */
+		"noErrorTruncation": true
+	}
+}

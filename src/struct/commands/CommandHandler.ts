@@ -46,7 +46,7 @@ import {
 	type AkairoApplicationCommandSubCommandData,
 	type AkairoApplicationCommandSubGroupData,
 	type KeySupplier
-} from "./Command";
+} from "./Command.js";
 import { CommandUtil } from "./CommandUtil.js";
 import { Flag, FlagType } from "./Flag.js";
 

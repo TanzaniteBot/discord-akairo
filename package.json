@@ -5,6 +5,13 @@
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
 	"author": "1Computer",
+	"contributors": [
+		"IRONM00N"
+	],
+	"engines": {
+		"node": ">=16.0.0"
+	},
+	"type": "commonjs",
 	"license": "MIT",
 	"keywords": [
 		"discord",
@@ -27,16 +34,15 @@
 	"homepage": "https://github.com/NotEnoughUpdates/discord-akairo/wiki",
 	"scripts": {
 		"lint": "yarn eslint ./src",
-		"test": "yarn build && cd ./test && yarn && yarn test && cd ../",
-		"test:run": "yarn build && cd ./test && yarn && yarn start && cd ../",
-		"test:run:swc": "yarn build:swc && cd ./test && yarn start:swc && cd ../",
+		"test": "yarn build && node --enable-source-maps --trace-warnings ./dist/tests/integration/bot.js",
+		"test:run": "yarn test start",
 		"test:all": "yarn lint && yarn test",
 		"format": "yarn prettier . --write",
-		"build": "yarn rimraf dist && yarn tsc",
-		"build:swc": "yarn rimraf dist && mkdir dist && yarn cp-cli ./package.json ./dist/package.json && yarn swc ./src -d ./dist/src",
+		"build": "yarn tsc --build",
 		"build:no-emit": "yarn tsc --noEmit",
-		"prepare": "yarn build",
-		"prepublishOnly": "yarn lint && yarn build:no-emit"
+		"build:clean": "yarn rimraf dist && yarn build",
+		"prepare": "yarn build:clean",
+		"prepublishOnly": "yarn test:all && yarn build:no-emit"
 	},
 	"devDependencies": {
 		"@favware/npm-deprecate": "^1.0.4",
@@ -51,6 +57,7 @@
 		"eslint": "^8.17.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-deprecation": "^1.3.2",
+		"eslint-plugin-import": "^2.26.0",
 		"node-fetch": "^3.2.6",
 		"prettier": "^2.7.0",
 		"rimraf": "^3.0.2",

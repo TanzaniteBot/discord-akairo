@@ -1,33 +1,8 @@
 {
+	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
-		/* Type Checking */
-		"alwaysStrict": true,
-		"noImplicitOverride": true,
-		"strict": true,
-		"useUnknownInCatchVariables": false,
-
-		/* Modules */
-		"module": "CommonJS",
-		"resolveJsonModule": true,
-
-		/* Emit */
-		"declaration": true,
-		"declarationMap": true,
-		"outDir": "dist",
-		"sourceMap": true,
-		"stripInternal": true,
-
-		/* Language and Environment */
-		"target": "ES2022",
-
-		/* Interop Constraints */
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-
-		/* Output Formatting */
-		"noErrorTruncation": true
+		"outDir": "dist"
 	},
-	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules", "dist"],
-	"references": [{ "path": "./src" }]
+	"references": [{ "path": "./src" }, { "path": "./tests/integration" }, { "path": "./tsconfig.pkg.json" }],
+	"files": []
 }

@@ -1,4 +1,4 @@
-import { s } from "@sapphire/shapeshift";
+import { ArrayValidator, s, SetValidator } from "@sapphire/shapeshift";
 import { Collection } from "discord.js";
 import EventEmitter from "node:events";
 import { readdirSync, statSync } from "node:fs";
@@ -47,7 +47,7 @@ export class AkairoHandler<
 	/**
 	 * File extensions to load.
 	 */
-	public declare extensions: Set<string>;
+	public declare extensions: Set<Extension>;
 
 	/**
 	 * Function that filters files when loading.
@@ -115,7 +115,7 @@ export class AkairoHandler<
 	 */
 	public async load(thing: string | Module, isReload = false): Promise<Module | undefined> {
 		const isClass = typeof thing === "function";
-		if (!isClass && !this.extensions.has(extname(thing as string))) return undefined;
+		if (!isClass && !this.extensions.has(extname(thing as string) as Extension)) return undefined;
 
 		let mod = isClass
 			? thing
@@ -302,7 +302,7 @@ export interface AkairoHandlerOptions<
 	 * File extensions to load.
 	 * @default [".js", ".json", ".ts"]
 	 */
-	extensions?: string[] | Set<string>;
+	extensions?: Extension[] | Set<Extension>;
 
 	/**
 	 * Filter for files to be loaded.
@@ -312,10 +312,14 @@ export interface AkairoHandlerOptions<
 	loadFilter?: LoadPredicate;
 }
 
+export type Extension = `.${string}`;
+
 export const akairoHandlerOptionsValidator = s.object({
 	automateCategories: s.boolean.default(false),
 	classToHandle: s.any,
 	directory: s.string,
-	extensions: s.union(s.string.array, s.string.set).default([".js", ".json", ".ts"]),
+	extensions: s
+		.union(<ArrayValidator<Extension>>s.string.array, <SetValidator<Extension>>s.string.set)
+		.default([".js", ".json", ".ts"]),
 	/* function */ loadFilter: s.any
 }).passthrough;

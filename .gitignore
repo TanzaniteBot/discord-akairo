@@ -15,6 +15,7 @@ test/db.sqlite
 test/node_modules
 test/dist
 test/src/auth.json
+tests/integration/auth.json
 
 .pnp.*
 .yarn/*
