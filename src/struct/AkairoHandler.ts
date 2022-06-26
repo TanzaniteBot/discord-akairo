@@ -1,9 +1,9 @@
-import { ArrayValidator, s, SetValidator } from "@sapphire/shapeshift";
 import { Collection } from "discord.js";
 import EventEmitter from "node:events";
 import { readdirSync, statSync } from "node:fs";
 import { dirname, extname, join, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
+import { z } from "zod";
 import { AkairoError } from "../util/AkairoError.js";
 import { Category } from "../util/Category.js";
 import { AkairoHandlerEvents } from "../util/Constants.js";
@@ -64,24 +64,22 @@ export class AkairoHandler<
 	 * @param options - Options for module loading and handling.
 	 */
 	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Module, Handler>) {
-		s.instance(AkairoClient).parse(client);
+		z.instanceof(AkairoClient).parse(client);
 
 		const {
 			directory,
 			classToHandle = AkairoModule,
 			extensions,
 			automateCategories,
-			loadFilter = () => true
-		} = akairoHandlerOptionsValidator.parse(options);
-
-		if (typeof loadFilter !== "function") throw new TypeError("options.loadFilter should be a function");
+			loadFilter
+		} = AkairoHandlerOptions.parse(options);
 
 		super();
 
 		this.client = client;
 		this.directory = directory;
 		this.classToHandle = <Class<Module>>classToHandle;
-		this.extensions = new Set(extensions);
+		this.extensions = new Set(<Extension[] | Set<Extension>>extensions);
 		this.automateCategories = automateCategories;
 		this.loadFilter = loadFilter;
 		this.modules = new Collection();
@@ -129,7 +127,7 @@ export class AkairoHandler<
 			  );
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
-			mod = new mod(this); // eslint-disable-line new-cap
+			mod = new mod(this);
 		} else {
 			if (!isClass) delete require.cache[require.resolve(thing as string)];
 			return undefined;
@@ -273,14 +271,15 @@ export class AkairoHandler<
  * @param filepath - Filepath of file.
  */
 export type LoadPredicate = (filepath: string) => boolean;
+export const LoadPredicate = z.function().args(z.string()).returns(z.boolean());
+
+export type Extension = `.${string}`;
+export const Extension = z.string().regex(/\..*$/);
 
 /**
  * Options for module loading and handling.
  */
-export interface AkairoHandlerOptions<
-	Module extends AkairoModule<Handler, Module>,
-	Handler extends AkairoHandler<Module, Handler>
-> {
+export type AkairoHandlerOptions<Module extends AkairoModule<Handler, Module>, Handler extends AkairoHandler<Module, Handler>> = {
 	/**
 	 * Whether or not to set each module's category to its parent directory name.
 	 * @default false
@@ -310,16 +309,13 @@ export interface AkairoHandlerOptions<
 	 * @default () => true
 	 */
 	loadFilter?: LoadPredicate;
-}
-
-export type Extension = `.${string}`;
-
-export const akairoHandlerOptionsValidator = s.object({
-	automateCategories: s.boolean.default(false),
-	classToHandle: s.any,
-	directory: s.string,
-	extensions: s
-		.union(<ArrayValidator<Extension>>s.string.array, <SetValidator<Extension>>s.string.set)
-		.default([".js", ".json", ".ts"]),
-	/* function */ loadFilter: s.any
-}).passthrough;
+};
+export const AkairoHandlerOptions = z
+	.object({
+		automateCategories: z.boolean().default(false),
+		classToHandle: z.any(),
+		directory: z.string(),
+		extensions: z.union([Extension.array(), z.set(Extension)]).default([".js", ".json", ".ts"]),
+		loadFilter: LoadPredicate.default(() => () => true)
+	})
+	.passthrough();

@@ -17,6 +17,7 @@ import {
 	type VoiceChannel
 } from "discord.js";
 import { URL } from "node:url";
+import { SyncOrAsync } from "../../../typings/Util.js";
 import { ArgumentTypes } from "../../../util/Constants.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import type { ContextMenuCommandHandler } from "../../contextMenuCommands/ContextMenuCommandHandler.js";
@@ -106,7 +107,7 @@ export class TypeResolver {
 	 */
 	public addBuiltInTypes(): void {
 		const builtIns: {
-			[K in keyof BaseArgumentType]: (message: Message, phrase: string) => BaseArgumentType[K] | Promise<BaseArgumentType[K]>;
+			[K in keyof BaseArgumentType]: (message: Message, phrase: string) => SyncOrAsync<BaseArgumentType[K]>;
 		} = {
 			[ArgumentTypes.STRING]: (_message, phrase) => {
 				return phrase || null;

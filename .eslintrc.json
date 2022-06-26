@@ -71,7 +71,7 @@
 				"max": 2
 			}
 		],
-		"new-cap": "error",
+		"new-cap": "off",
 		"no-array-constructor": "error",
 		"no-inline-comments": "off",
 		"no-lonely-if": "error",

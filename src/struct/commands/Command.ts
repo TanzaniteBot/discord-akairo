@@ -14,6 +14,7 @@ import type {
 	PermissionResolvable,
 	Snowflake
 } from "discord.js";
+import { SyncOrAsync } from "../../typings/Util.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import { isArrayOf, isStringArrayStringOrFunc, patchAbstract } from "../../util/Util.js";
 import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
@@ -358,7 +359,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param message - Message being handled.
 	 * @abstract
 	 */
-	public condition(message: Message): boolean | Promise<boolean> {
+	public condition(message: Message): SyncOrAsync<boolean> {
 		return false;
 	}
 
@@ -617,14 +618,14 @@ export type KeySupplier = (message: Message | AkairoMessage, args: any) => strin
  * A function used to check if the command should run arbitrarily.
  * @param message - Message to check.
  */
-export type ExecutionPredicate = (this: Command, message: Message) => boolean | Promise<boolean>;
+export type ExecutionPredicate = (this: Command, message: Message) => SyncOrAsync<boolean>;
 
 /**
  * A function used to check if a message has permissions for the command.
  * A non-null return value signifies the reason for missing permissions.
  * @param message - Message that triggered the command.
  */
-export type MissingPermissionSupplier = (message: Message | AkairoMessage) => Promise<any> | any;
+export type MissingPermissionSupplier = (message: Message | AkairoMessage) => SyncOrAsync<any>;
 
 /**
  * A function used to return a regular expression.

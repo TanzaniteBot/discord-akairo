@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { s } from "@sapphire/shapeshift";
 import type { Message } from "discord.js";
+import { z } from "zod";
+import { SyncOrAsync } from "../../typings/Util.js";
 import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, AkairoModuleOptions, akairoModuleOptionsValidator } from "../AkairoModule.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
 import type { InhibitorHandler } from "./InhibitorHandler.js";
 
@@ -31,7 +32,7 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	 * @param options - Options for the inhibitor.
 	 */
 	public constructor(id: string, options: InhibitorOptions = {}) {
-		const { category, reason, type, priority } = inhibitorOptionsValidator.parse(options);
+		const { category, reason, type, priority } = InhibitorOptions.parse(options);
 
 		super(id, { category });
 
@@ -47,8 +48,8 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	 * @param message - Message being handled.
 	 * @param command - Command to check.
 	 */
-	public abstract exec(message: Message, command?: Command): boolean | Promise<boolean>;
-	public abstract exec(message: Message | AkairoMessage, command?: Command): boolean | Promise<boolean>;
+	public abstract exec(message: Message, command?: Command): SyncOrAsync<boolean>;
+	public abstract exec(message: Message | AkairoMessage, command?: Command): SyncOrAsync<boolean>;
 }
 
 patchAbstract(Inhibitor, "exec");
@@ -56,7 +57,7 @@ patchAbstract(Inhibitor, "exec");
 /**
  * Options to use for inhibitor execution behavior.
  */
-export interface InhibitorOptions extends AkairoModuleOptions {
+export type InhibitorOptions = AkairoModuleOptions & {
 	/**
 	 * Reason emitted when command or message is blocked.
 	 * @default ""
@@ -75,10 +76,10 @@ export interface InhibitorOptions extends AkairoModuleOptions {
 	 * @default 0
 	 */
 	priority?: number;
-}
+};
 
-export const inhibitorOptionsValidator = akairoModuleOptionsValidator.extend({
-	reason: s.string.default(""),
-	type: s.enum("all", "pre", "post").default("post"),
-	priority: s.number.default(0)
-}).passthrough;
+export const InhibitorOptions = AkairoModuleOptions.extend({
+	reason: z.string().default(""),
+	type: z.union([z.literal("all"), z.literal("pre"), z.literal("post")]).default("post"),
+	priority: z.number().default(0)
+}).passthrough();

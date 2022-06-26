@@ -1,8 +1,8 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { s } from "@sapphire/shapeshift";
 import EventEmitter from "node:events";
+import { z } from "zod";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, akairoModuleOptionsValidator, type AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { ListenerHandler } from "./ListenerHandler.js";
 
 /**
@@ -29,7 +29,7 @@ export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 	 * @param options - Options for the listener.
 	 */
 	public constructor(id: string, options: ListenerOptions) {
-		const { category, emitter, event, type } = listenerOptionsValidator.parse(options);
+		const { category, emitter, event, type } = ListenerOptions.parse(options);
 		super(id, { category });
 
 		this.emitter = emitter;
@@ -46,10 +46,18 @@ export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 
 patchAbstract(Listener, "exec");
 
+export type ListenerType = "on" | "once" | "prependListener" | "prependOnceListener";
+export const ListenerType = z.union([
+	z.literal("on"),
+	z.literal("once"),
+	z.literal("prependListener"),
+	z.literal("prependOnceListener")
+]);
+
 /**
  * Options to use for listener execution behavior.
  */
-export interface ListenerOptions extends AkairoModuleOptions {
+export type ListenerOptions = AkairoModuleOptions & {
 	/**
 	 * The event emitter, either a key from `ListenerHandler#emitters` or an EventEmitter.
 	 */
@@ -65,15 +73,9 @@ export interface ListenerOptions extends AkairoModuleOptions {
 	 * @default "on"
 	 */
 	type?: ListenerType;
-}
-
-const listenersTypes = ["on", "once", "prependListener", "prependOnceListener"] as const;
-export type ListenerType = typeof listenersTypes[number];
-
-const listenerOptionsValidator = akairoModuleOptionsValidator.extend(
-	s.object({
-		emitter: s.union(s.string, s.instance(EventEmitter)),
-		event: s.string,
-		type: s.enum(...listenersTypes).default("on")
-	})
-);
+};
+export const ListenerOptions = AkairoModuleOptions.extend({
+	emitter: z.union([z.string(), z.instanceof(EventEmitter)]),
+	event: z.string(),
+	type: ListenerType.default("on")
+});

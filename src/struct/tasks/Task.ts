@@ -1,7 +1,7 @@
 /* eslint-disable func-names, @typescript-eslint/no-unused-vars */
-import { s } from "@sapphire/shapeshift";
+import { z } from "zod";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, akairoModuleOptionsValidator, type AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { TaskHandler } from "./TaskHandler.js";
 
 /**
@@ -23,7 +23,7 @@ export abstract class Task extends AkairoModule<TaskHandler, Task> {
 	 * @param options - Options for the task.
 	 */
 	public constructor(id: string, options: TaskOptions = {}) {
-		const { category, delay, runOnStart } = taskOptionsValidator.parse(options);
+		const { category, delay, runOnStart } = TaskOptions.parse(options);
 
 		super(id, { category });
 		this.delay = delay;
@@ -42,7 +42,7 @@ patchAbstract(Task, "exec");
 /**
  * Options to use for task execution behavior.
  */
-export interface TaskOptions extends AkairoModuleOptions {
+export type TaskOptions = AkairoModuleOptions & {
 	/**
 	 * The amount of time between the task being executed.
 	 */
@@ -53,9 +53,9 @@ export interface TaskOptions extends AkairoModuleOptions {
 	 * @default false
 	 */
 	runOnStart?: boolean;
-}
+};
 
-export const taskOptionsValidator = akairoModuleOptionsValidator.extend({
-	delay: s.number.optional,
-	runOnStart: s.boolean.default(false)
-}).passthrough;
+export const TaskOptions = AkairoModuleOptions.extend({
+	delay: z.number().optional(),
+	runOnStart: z.boolean().default(false)
+}).passthrough();

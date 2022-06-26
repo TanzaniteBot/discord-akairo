@@ -1,5 +1,6 @@
 import EventEmitter from "node:events";
 import type { PrefixSupplier } from "../struct/commands/CommandHandler.js";
+import { SyncOrAsync } from "../typings/Util.js";
 import { AkairoError } from "./AkairoError.js";
 
 /**
@@ -65,7 +66,7 @@ export function isEventEmitter(value: unknown): value is EventEmitter {
  * @param value - Value to check.
  * @returns - Whether the value is a promise.
  */
-export function isPromise<T>(value: T | Promise<T>): value is Promise<T> {
+export function isPromise<T>(value: SyncOrAsync<T>): value is Promise<T> {
 	return value instanceof Promise;
 }
 

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { s } from "@sapphire/shapeshift";
 import {
 	ApplicationCommandType,
 	BitField,
@@ -8,8 +7,9 @@ import {
 	type PermissionResolvable,
 	type Snowflake
 } from "discord.js";
+import { z } from "zod";
 import { patchAbstract } from "../../util/Util.js";
-import { AkairoModule, akairoModuleOptionsValidator, type AkairoModuleOptions } from "../AkairoModule.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
 
 /**
@@ -65,7 +65,7 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 	public constructor(id: string, options: ContextMenuCommandOptions) {
 		// eslint-disable-next-line prefer-const
 		let { category, guilds, name, ownerOnly, superUserOnly, type, nameLocalizations, defaultMemberPermissions, dmPermission } =
-			contextMenuCommandOptionsValidator.parse(options);
+			ContextMenuCommandOptions.parse(options);
 
 		if (dmPermission != null && guilds.length > 0)
 			throw new TypeError("You cannot set `options.dmPermission` with commands configured with `options.guilds`.");
@@ -95,7 +95,7 @@ patchAbstract(ContextMenuCommand, "exec");
 /**
  * Options to use for context menu command execution behavior.
  */
-export interface ContextMenuCommandOptions extends AkairoModuleOptions {
+export type ContextMenuCommandOptions = AkairoModuleOptions & {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 * @default []
@@ -141,22 +141,23 @@ export interface ContextMenuCommandOptions extends AkairoModuleOptions {
 	 * @default guilds.length > 0 ? undefined : true
 	 */
 	dmPermission?: boolean;
-}
-
-export const contextMenuCommandOptionsValidator = akairoModuleOptionsValidator.extend({
-	guilds: s.string.array.default([]),
-	name: s.string,
-	ownerOnly: s.boolean.default(false),
-	superUserOnly: s.boolean.default(false),
-	type: s.enum(ApplicationCommandType.User, ApplicationCommandType.Message),
-	nameLocalizations: s.record(s.string.nullish).optional,
-	defaultMemberPermissions: s.union(
-		s.bigint,
-		s.string,
-		s.instance(BitField),
-		s.bigint.array,
-		s.string.array,
-		s.instance(BitField).array
-	).optional,
-	dmPermission: s.boolean.optional
-}).passthrough;
+};
+export const ContextMenuCommandOptions = AkairoModuleOptions.extend({
+	guilds: z.string().array().default([]),
+	name: z.string(),
+	ownerOnly: z.boolean().default(false),
+	superUserOnly: z.boolean().default(false),
+	type: z.union([z.literal(ApplicationCommandType.User), z.literal(ApplicationCommandType.Message)]),
+	nameLocalizations: z.record(z.string().nullish()).optional(),
+	defaultMemberPermissions: z
+		.union([
+			z.bigint(),
+			z.string(),
+			z.instanceof(BitField),
+			z.bigint().array(),
+			z.string().array(),
+			z.instanceof(BitField).array()
+		])
+		.optional(),
+	dmPermission: z.boolean().optional()
+}).passthrough();

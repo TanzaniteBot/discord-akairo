@@ -1,6 +1,5 @@
-import { s } from "@sapphire/shapeshift";
+import { z } from "zod";
 import { ArgumentMatches } from "../../util/Constants.js";
-import { isArrayOf } from "../../util/Util.js";
 import type { ArgumentOptions } from "./arguments/Argument.js";
 
 /*
@@ -56,13 +55,6 @@ import type { ArgumentOptions } from "./arguments/Argument.js";
  * EOF = /^$/
  */
 
-type TokenType = "FlagWord" | "OptionFlagWord" | "Quote" | "OpenQuote" | "EndQuote" | "Word" | "WS" | "EOF" | "Separator";
-
-interface Token {
-	type: TokenType;
-	value: string;
-}
-
 class Tokenizer {
 	public content: string;
 	public flagWords: string[];
@@ -74,8 +66,8 @@ class Tokenizer {
 	public tokens: Token[];
 
 	public constructor(content: string, options: ContentParserOptions = {}) {
-		s.string.parse(content);
-		const { flagWords, optionFlagWords, quoted, separator } = contentParserOptionsValidator.parse(options);
+		z.string().parse(content);
+		const { flagWords, optionFlagWords, quoted, separator } = ContentParserOptions.parse(options);
 
 		this.content = content;
 		this.flagWords = flagWords;
@@ -122,11 +114,10 @@ class Tokenizer {
 
 		this.addToken("EOF", "");
 
-		console.dir(this, { depth: 3 });
 		return this.tokens;
 	}
 
-	public runOne() {
+	public runOne(): void {
 		this.choice(
 			this.runWhitespace,
 			this.runFlags,
@@ -139,7 +130,7 @@ class Tokenizer {
 		);
 	}
 
-	public runFlags() {
+	public runFlags(): boolean {
 		if (this.state === TokenizerState.Default) {
 			for (const word of this.flagWords) {
 				if (this.startsWith(word)) {
@@ -153,7 +144,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runOptionFlags() {
+	public runOptionFlags(): boolean {
 		if (this.state === TokenizerState.Default) {
 			for (const word of this.optionFlagWords) {
 				if (this.startsWith(word)) {
@@ -167,7 +158,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runQuote() {
+	public runQuote(): boolean {
 		if (this.separator == null && this.quoted && this.startsWith('"')) {
 			if (this.state === TokenizerState.Quotes) {
 				this.state = TokenizerState.Default;
@@ -183,7 +174,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runOpenQuote() {
+	public runOpenQuote(): boolean {
 		if (this.separator == null && this.quoted && this.startsWith('"')) {
 			if (this.state === TokenizerState.Default) {
 				this.state = TokenizerState.SpecialQuotes;
@@ -197,7 +188,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runEndQuote() {
+	public runEndQuote(): boolean {
 		if (this.separator == null && this.quoted && this.startsWith("”")) {
 			if (this.state === TokenizerState.SpecialQuotes) {
 				this.state = TokenizerState.Default;
@@ -211,7 +202,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runSeparator() {
+	public runSeparator(): boolean {
 		if (this.separator != null && this.startsWith(this.separator)) {
 			this.addToken("Separator", this.slice(0, this.separator.length));
 			this.advance(this.separator.length);
@@ -221,7 +212,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runWord() {
+	public runWord(): boolean {
 		const wordRegex =
 			this.state === TokenizerState.Default ? /^\S+/ : this.state === TokenizerState.Quotes ? /^[^\s"]+/ : /^[^\s”]+/;
 
@@ -253,7 +244,7 @@ class Tokenizer {
 		return false;
 	}
 
-	public runWhitespace() {
+	public runWhitespace(): boolean {
 		const wsMatch = this.match(/^\s+/);
 		if (wsMatch) {
 			this.addToken("WS", wsMatch[0]);
@@ -265,6 +256,28 @@ class Tokenizer {
 	}
 }
 
+type TokenType = "FlagWord" | "OptionFlagWord" | "Quote" | "OpenQuote" | "EndQuote" | "Word" | "WS" | "EOF" | "Separator";
+const TokenType = z.union([
+	z.literal("FlagWord"),
+	z.literal("OptionFlagWord"),
+	z.literal("Quote"),
+	z.literal("OpenQuote"),
+	z.literal("EndQuote"),
+	z.literal("Word"),
+	z.literal("WS"),
+	z.literal("EOF"),
+	z.literal("Separator")
+]);
+
+type Token = {
+	type: TokenType;
+	value: string;
+};
+const Token = z.object({
+	type: TokenType,
+	value: z.string()
+});
+
 const enum TokenizerState {
 	Default = 0,
 	/** ("") */
@@ -275,7 +288,7 @@ const enum TokenizerState {
 
 class Parser {
 	public tokens: Token[];
-	public separated: any;
+	public separated: boolean;
 	public position: number;
 
 	/**
@@ -284,16 +297,11 @@ class Parser {
 	 * Option flags are `{ type: 'OptionFlag', key, value, raw }`.
 	 * The `all` property is partitioned into `phrases`, `flags`, and `optionFlags`.
 	 */
-	public results: {
-		all: any[];
-		phrases: any[];
-		flags: any[];
-		optionFlags: any[];
-	};
+	public results: ContentParserResult;
 
 	public constructor(tokens: Token[], options: ParserOptions) {
-		s.any.array.parse(tokens);
-		const { separated } = options;
+		Token.array().parse(tokens);
+		const { separated } = ParserOptions.parse(options);
 
 		this.tokens = tokens;
 		this.separated = separated;
@@ -307,19 +315,19 @@ class Parser {
 		};
 	}
 
-	public next() {
+	public next(): void {
 		this.position++;
 	}
 
-	public lookaheadN(n: number, ...types: string[]) {
+	public lookaheadN(n: number, ...types: TokenType[]): boolean {
 		return this.tokens[this.position + n] != null && types.includes(this.tokens[this.position + n].type);
 	}
 
-	public lookahead(...types: string[]) {
+	public lookahead(...types: TokenType[]): boolean {
 		return this.lookaheadN(0, ...types);
 	}
 
-	public match(...types: string[]) {
+	public match(...types: TokenType[]): Token {
 		if (this.lookahead(...types)) {
 			this.next();
 			return this.tokens[this.position - 1];
@@ -330,19 +338,17 @@ class Parser {
 		);
 	}
 
-	public parse() {
+	public parse(): ContentParserResult {
 		// -1 for EOF.
 		while (this.position < this.tokens.length - 1) {
 			this.runArgument();
 		}
 
 		this.match("EOF");
-		console.dir("Parser#parse");
-		console.dir(this, { depth: 3 });
 		return this.results;
 	}
 
-	public runArgument() {
+	public runArgument(): void {
 		const leading = this.lookahead("WS") ? this.match("WS").value : "";
 		if (this.lookahead("FlagWord", "OptionFlagWord")) {
 			const parsed = this.parseFlag();
@@ -367,17 +373,17 @@ class Parser {
 		this.results.phrases.push(parsed);
 	}
 
-	public parseFlag() {
+	public parseFlag(): ParsedFlag | ParsedOptionFlag {
 		if (this.lookahead("FlagWord")) {
 			const flag = this.match("FlagWord");
-			const parsed = { type: "Flag", key: flag.value, raw: flag.value };
+			const parsed = { type: "Flag" as const, key: flag.value, raw: flag.value };
 			return parsed;
 		}
 
 		// Otherwise, `this.lookahead('OptionFlagWord')` should be true.
 		const flag = this.match("OptionFlagWord");
 		const parsed = {
-			type: "OptionFlag",
+			type: "OptionFlag" as const,
 			key: flag.value,
 			value: "",
 			raw: flag.value
@@ -397,10 +403,10 @@ class Parser {
 		return parsed;
 	}
 
-	public parsePhrase() {
+	public parsePhrase(): ParsedPhrase {
 		if (!this.separated) {
 			if (this.lookahead("Quote")) {
-				const parsed = { type: "Phrase", value: "", raw: "" };
+				const parsed = { type: "Phrase" as const, value: "", raw: "" };
 				const openQuote = this.match("Quote");
 				parsed.raw += openQuote.value;
 				while (this.lookahead("Word", "WS")) {
@@ -418,7 +424,7 @@ class Parser {
 			}
 
 			if (this.lookahead("OpenQuote")) {
-				const parsed = { type: "Phrase", value: "", raw: "" };
+				const parsed = { type: "Phrase" as const, value: "", raw: "" };
 				const openQuote = this.match("OpenQuote");
 				parsed.raw += openQuote.value;
 				while (this.lookahead("Word", "WS")) {
@@ -442,7 +448,7 @@ class Parser {
 			if (this.lookahead("EndQuote")) {
 				const endQuote = this.match("EndQuote");
 				const parsed = {
-					type: "Phrase",
+					type: "Phrase" as const,
 					value: endQuote.value,
 					raw: endQuote.value
 				};
@@ -452,7 +458,7 @@ class Parser {
 
 		if (this.separated) {
 			const init = this.match("Word");
-			const parsed = { type: "Phrase", value: init.value, raw: init.value };
+			const parsed = { type: "Phrase" as const, value: init.value, raw: init.value };
 			while (this.lookahead("WS") && this.lookaheadN(1, "Word")) {
 				const ws = this.match("WS");
 				const word = this.match("Word");
@@ -464,14 +470,17 @@ class Parser {
 		}
 
 		const word = this.match("Word");
-		const parsed = { type: "Phrase", value: word.value, raw: word.value };
+		const parsed = { type: "Phrase" as const, value: word.value, raw: word.value };
 		return parsed;
 	}
 }
 
-export interface ParserOptions {
+export type ParserOptions = {
 	separated: boolean;
-}
+};
+export const ParserOptions = z.object({
+	separated: z.boolean()
+});
 
 /**
  * Parses content.
@@ -502,17 +511,10 @@ export class ContentParser {
 	 * @param options - Options.
 	 */
 	public constructor(options: ContentParserOptions = {}) {
-		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
+		const { flagWords, optionFlagWords, quoted, separator } = ContentParserOptions.parse(options);
 
-		if (!isArrayOf(flagWords, "string")) throw new TypeError("options.flagWords must be an array of strings.");
-		if (!isArrayOf(optionFlagWords, "string")) throw new TypeError("options.optionFlagWords must be an array of strings.");
-		if (typeof quoted !== "boolean") throw new TypeError("options.quoted must be a boolean.");
-		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
-
-		this.flagWords = flagWords;
-		this.flagWords.sort((a, b) => b.length - a.length);
-		this.optionFlagWords = optionFlagWords;
-		this.optionFlagWords.sort((a, b) => b.length - a.length);
+		this.flagWords = flagWords.sort((a, b) => b.length - a.length);
+		this.optionFlagWords = optionFlagWords.sort((a, b) => b.length - a.length);
 		this.quoted = Boolean(quoted);
 		this.separator = separator;
 	}
@@ -529,8 +531,6 @@ export class ContentParser {
 			separator: this.separator
 		}).tokenize();
 
-		// console.dir(this, { depth: 3 });
-		// console.dir(tokens, { depth: 3 });
 		return new Parser(tokens, { separated: this.separator != null }).parse();
 	}
 
@@ -540,17 +540,17 @@ export class ContentParser {
 	 */
 	public static getFlags(args: ArgumentOptions[]): ExtractedFlags {
 		const res = {
-			flagWords: [],
-			optionFlagWords: []
+			flagWords: <string[]>[],
+			optionFlagWords: <string[]>[]
 		};
 
 		for (const arg of args) {
-			const arr: any[] | any = res[arg.match === ArgumentMatches.FLAG ? "flagWords" : "optionFlagWords"];
+			const arr = res[arg.match === ArgumentMatches.FLAG ? "flagWords" : "optionFlagWords"];
 			if (arg.match === ArgumentMatches.FLAG || arg.match === ArgumentMatches.OPTION) {
 				if (Array.isArray(arg.flag)) {
 					arr.push(...arg.flag);
 				} else {
-					arr.push(arg.flag);
+					arr.push(arg.flag!);
 				}
 			}
 		}
@@ -562,7 +562,7 @@ export class ContentParser {
 /**
  * Options for the content parser.
  */
-export interface ContentParserOptions {
+export type ContentParserOptions = {
 	/**
 	 * Words considered flags.
 	 * @default []
@@ -585,13 +585,12 @@ export interface ContentParserOptions {
 	 * Whether to parse a separator.
 	 */
 	separator?: string;
-}
-
-const contentParserOptionsValidator = s.object({
-	flagWords: s.string.array.default([]),
-	optionFlagWords: s.string.array.default([]),
-	quoted: s.boolean.default(true),
-	separator: s.string.optional
+};
+export const ContentParserOptions = z.object({
+	flagWords: z.string().array().default([]),
+	optionFlagWords: z.string().array().default([]),
+	quoted: z.boolean().default(true),
+	separator: z.string().optional()
 });
 
 /**
@@ -601,48 +600,76 @@ export interface ContentParserResult {
 	/**
 	 * All phrases and flags.
 	 */
-	all: StringData[];
+	all: (ParsedPhrase | ParsedFlag | ParsedOptionFlag)[];
 
 	/**
 	 * Phrases.
 	 */
-	phrases: StringData[];
+	phrases: ParsedPhrase[];
 
 	/**
 	 * Flags.
 	 */
-	flags: StringData[];
+	flags: ParsedFlag[];
 
 	/**
 	 * Option flags.
 	 */
-	optionFlags: StringData[];
+	optionFlags: ParsedOptionFlag[];
 }
 
-/**
- * A single phrase or flag.
- */
-export type StringData = {
+interface BaseParsed {
 	/**
-	 * One of 'Phrase', 'Flag', 'OptionFlag'.
+	 * The thing that was parsed.
 	 */
 	type: "Phrase" | "Flag" | "OptionFlag";
-
-	/**
-	 * The key of a 'Flag' or 'OptionFlag'.
-	 */
-	key: string;
-
-	/**
-	 * The value of a 'Phrase' or 'OptionFlag'.
-	 */
-	value: string;
 
 	/**
 	 * The raw string with whitespace and/or separator.
 	 */
 	raw: string;
-};
+}
+
+/**
+ * A parsed phrase.
+ */
+interface ParsedPhrase extends BaseParsed {
+	type: "Phrase";
+
+	/**
+	 * The value of the phrase.
+	 */
+	value: string;
+}
+
+/**
+ * A parsed flag.
+ */
+interface ParsedFlag extends BaseParsed {
+	type: "Flag";
+
+	/**
+	 * The key of the flag.
+	 */
+	key: string;
+}
+
+/**
+ * A parsed option flag.
+ */
+interface ParsedOptionFlag extends BaseParsed {
+	type: "OptionFlag";
+
+	/**
+	 * The key of the option flag.
+	 */
+	key: string;
+
+	/**
+	 * The value of the option flag.
+	 */
+	value: string;
+}
 
 /**
  * Flags extracted from an argument list.
@@ -651,10 +678,10 @@ export interface ExtractedFlags {
 	/**
 	 * Words considered flags.
 	 */
-	flagWords?: string[];
+	flagWords: string[];
 
 	/**
 	 * Words considered option flags.
 	 */
-	optionFlagWords?: string[];
+	optionFlagWords: string[];
 }

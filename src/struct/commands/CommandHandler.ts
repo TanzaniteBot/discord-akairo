@@ -18,6 +18,7 @@ import {
 	type User
 } from "discord.js";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events.js";
+import { SyncOrAsync } from "../../typings/Util.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
@@ -1744,13 +1745,13 @@ export type IgnoreCheckPredicate = (
  * A function that returns whether mentions can be used as a prefix.
  * @param message - Message to option for.
  */
-export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boolean>;
+export type MentionPrefixPredicate = (message: Message) => SyncOrAsync<boolean>;
 
 /**
  * A function that returns the prefix(es) to use.
  * @param message - Message to get prefix for.
  */
-export type PrefixSupplier = (this: Command | CommandHandler, message: Message) => string | string[] | Promise<string | string[]>;
+export type PrefixSupplier = (this: Command | CommandHandler, message: Message) => SyncOrAsync<string | string[]>;
 
 const slashResolvable = [
 	"Attachment",

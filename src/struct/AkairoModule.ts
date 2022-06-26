@@ -1,4 +1,4 @@
-import { s } from "@sapphire/shapeshift";
+import { z } from "zod";
 import type { Category } from "../util/Category.js";
 import type { AkairoClient } from "./AkairoClient.js";
 import type { AkairoHandler } from "./AkairoHandler.js";
@@ -42,8 +42,8 @@ export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler
 	 * @param options Additional options for this module.
 	 */
 	public constructor(id: string, options?: AkairoModuleOptions) {
-		s.string.parse(id);
-		const { category } = akairoModuleOptionsValidator.parse(options);
+		z.string().parse(id);
+		const { category } = AkairoModuleOptions.parse(options);
 
 		this.id = id;
 		this.categoryID = category;
@@ -75,14 +75,16 @@ export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler
 	}
 }
 
-export interface AkairoModuleOptions {
+export type AkairoModuleOptions = {
 	/**
 	 * Category ID for organization purposes.
 	 * @default "default"
 	 */
 	category?: string;
-}
+};
 
-export const akairoModuleOptionsValidator = s.object({
-	category: s.string.default("default")
-}).passthrough;
+export const AkairoModuleOptions = z
+	.object({
+		category: z.string().default("default")
+	})
+	.passthrough();

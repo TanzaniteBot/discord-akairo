@@ -380,7 +380,12 @@ export class ArgumentRunner {
 	 * @param value - A value.
 	 */
 	public static isShortCircuit(value: unknown): value is Flag<FlagType.Cancel> | Flag<FlagType.Retry> | Flag<FlagType.Continue> {
-		return Flag.is(value, FlagType.Cancel) || Flag.is(value, FlagType.Retry) || Flag.is(value, FlagType.Continue);
+		return (
+			Flag.is(value, FlagType.Cancel) ||
+			Flag.is(value, FlagType.Timeout) ||
+			Flag.is(value, FlagType.Retry) ||
+			Flag.is(value, FlagType.Continue)
+		);
 	}
 
 	/**

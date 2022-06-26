@@ -55,12 +55,12 @@ export class Flag<T extends FlagType = FlagType> {
 	 * @param type - Type of flag.
 	 * @param data - Extra data.
 	 */
-	private constructor(type: T & FlagType.Cancel);
-	private constructor(type: T & FlagType.Timeout, data?: FlagTimeoutData);
-	private constructor(type: T & FlagType.Retry, data?: FlagRetryData);
-	private constructor(type: T & FlagType.Fail, data?: FlagFailData);
-	private constructor(type: T & FlagType.Continue, data?: FlagContinueData);
-	private constructor(
+	public constructor(type: T & FlagType.Cancel);
+	public constructor(type: T & FlagType.Timeout, data?: FlagTimeoutData);
+	public constructor(type: T & FlagType.Retry, data?: FlagRetryData);
+	public constructor(type: T & FlagType.Fail, data?: FlagFailData);
+	public constructor(type: T & FlagType.Continue, data?: FlagContinueData);
+	public constructor(
 		type: T,
 		data: Record<string, never> | FlagTimeoutData | FlagRetryData | FlagFailData | FlagContinueData = {}
 	) {

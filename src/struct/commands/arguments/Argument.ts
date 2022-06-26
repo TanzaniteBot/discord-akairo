@@ -1,4 +1,4 @@
-import type {
+import {
 	CategoryChannel,
 	Collection,
 	DirectoryChannel,
@@ -10,8 +10,6 @@ import type {
 	GuildMember,
 	Invite,
 	Message,
-	MessageOptions,
-	MessagePayload,
 	NewsChannel,
 	Role,
 	Snowflake,
@@ -24,8 +22,10 @@ import type {
 	VoiceChannel
 } from "discord.js";
 import type { URL } from "node:url";
+import { z } from "zod";
+import { MessageSendResolvable, SyncOrAsync } from "../../../typings/Util.js";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
-import { intoCallable, isArrayOf, isPromise, isStringArrayStringOrFunc } from "../../../util/Util.js";
+import { intoCallable, isPromise } from "../../../util/Util.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import type { ContextMenuCommand } from "../../contextMenuCommands/ContextMenuCommand.js";
 import type { Inhibitor } from "../../inhibitors/Inhibitor.js";
@@ -122,7 +122,7 @@ export class Argument {
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public otherwise: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
+	public otherwise: MessageSendResolvable | OtherwiseContentSupplier | null;
 
 	/**
 	 * The prompt options.
@@ -145,41 +145,22 @@ export class Argument {
 	 */
 	// eslint-disable-next-line complexity
 	public constructor(command: Command, options: ArgumentOptions = {}) {
-		// doing this instead of object deconstruction so it's valid to pass null values
-		const match = options.match ?? ArgumentMatches.PHRASE,
-			type = options.type ?? ArgumentTypes.STRING,
-			flag = options.flag ?? null,
-			multipleFlags = options.multipleFlags ?? false,
-			index = options.index ?? null,
-			unordered = options.unordered ?? false,
-			limit = options.limit ?? Infinity,
-			prompt = options.prompt ?? null,
-			defaultValue = options.default ?? null,
-			otherwise = options.otherwise ?? null,
-			modifyOtherwise = options.modifyOtherwise ?? null;
-
-		if (!Object.values(ArgumentMatches).includes(match as ArgumentMatches))
-			throw new TypeError(
-				`options.match must one of ${Object.values(ArgumentMatches)
-					.map(v => `"${v}"`)
-					.join(", ")}.`
-			);
-		if (flag !== null && !isStringArrayStringOrFunc(isStringArrayStringOrFunc))
-			throw new TypeError("options.flag must be a null, a string, or an array of strings.");
-		if (typeof multipleFlags !== "boolean") throw new TypeError("options.multipleFlags must be a boolean.");
-		if (index !== null && typeof index !== "number") throw new TypeError("options.index must be a number or null.");
-		if (typeof unordered !== "boolean" && typeof unordered !== "number" && !isArrayOf(unordered, "number"))
-			throw new TypeError("options.unordered must be a boolean, number, or array of numbers.");
-		if (typeof limit !== "number") throw new TypeError("options.limit must be a number.");
-		if (prompt !== null && typeof prompt !== "boolean" && typeof prompt !== "object")
-			throw new TypeError("options.prompt must be a boolean, object, or null.");
-		if (otherwise !== null && typeof otherwise !== "string" && typeof otherwise !== "function" && typeof otherwise !== "object")
-			throw new TypeError("options.otherwise must be a string, function, object, or null.");
-		if (modifyOtherwise !== null && typeof modifyOtherwise !== "function")
-			throw new TypeError("options.modifyOtherwise must be a function or null.");
+		const {
+			match,
+			type,
+			flag,
+			multipleFlags,
+			index,
+			unordered,
+			limit,
+			prompt,
+			default: defaultValue,
+			otherwise,
+			modifyOtherwise
+		} = ArgumentOptions.parse(options);
 
 		this.command = command;
-		this.match = match;
+		this.match = match ?? ArgumentMatches.PHRASE;
 		this.type = typeof type === "function" ? type.bind(this) : type;
 		this.flag = flag;
 		this.multipleFlags = multipleFlags;
@@ -238,7 +219,7 @@ export class Argument {
 			retryCount: number,
 			inputMessage: Message | undefined,
 			inputPhrase: string | undefined,
-			inputParsed: "stop" | "cancel" | ""
+			inputParsed: "stop" | "cancel" | "" | null | undefined | Flag<FlagType.Fail>
 		) => {
 			let text = await intoCallable(prompter).call(this, message, {
 				retries: retryCount,
@@ -290,7 +271,6 @@ export class Argument {
 			if (retryCount !== 1 || !isInfinite || !values?.length) {
 				const promptType = retryCount === 1 ? "start" : "retry";
 				const prompter = retryCount === 1 ? promptOptions.start : promptOptions.retry;
-				// @ts-expect-error
 				const startText = await getText(promptType, prompter, retryCount, prevMessage, prevInput, prevParsed);
 
 				if (startText) {
@@ -722,95 +702,9 @@ export class Argument {
 }
 
 /**
- * Options for how an argument parses text.
- */
-export interface ArgumentOptions {
-	/**
-	 * Default value if no input or did not cast correctly.
-	 * If using a flag match, setting the default value to a non-void value inverses the result.
-	 */
-	default?: DefaultValueSupplier | any;
-
-	/**
-	 * The description of the argument
-	 */
-	description?: string | any | any[];
-
-	/**
-	 * The string(s) to use as the flag for flag or option match.
-	 */
-	flag?: string | string[] | null;
-
-	/**
-	 * ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator.
-	 */
-	id?: string | null;
-
-	/**
-	 * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
-	 * Ignored when used with the unordered option.
-	 */
-	index?: number | null;
-
-	/**
-	 * Amount of phrases to match when matching more than one.
-	 * Applicable to text, content, rest, or separate match only.
-	 * @default Infinity.
-	 */
-	limit?: number | null;
-
-	/**
-	 * Method to match text. Defaults to 'phrase'.
-	 * @default ArgumentMatches.PHRASE
-	 */
-	match?: ArgumentMatch | null;
-
-	/**
-	 * Function to modify otherwise content.
-	 */
-	modifyOtherwise?: OtherwiseContentModifier | null;
-
-	/**
-	 * Whether or not to have flags process multiple inputs.
-	 * For option flags, this works like the separate match; the limit option will also work here.
-	 * For flags, this will count the number of occurrences.
-	 * @default false
-	 */
-	multipleFlags?: boolean | null;
-
-	/**
-	 * Text sent if argument parsing fails. This overrides the `default` option and all prompt options.
-	 */
-	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier | null;
-
-	/**
-	 * Prompt options for when user does not provide input.
-	 */
-	prompt?: ArgumentPromptOptions | boolean | null;
-
-	/**
-	 * Type to cast to.
-	 * @default ArgumentTypes.STRING
-	 */
-	type?: ArgumentType | ArgumentTypeCaster | null;
-
-	/**
-	 * Marks the argument as unordered.
-	 * Each phrase is evaluated in order until one matches (no input at all means no evaluation).
-	 * Passing in a number forces evaluation from that index onwards.
-	 * Passing in an array of numbers forces evaluation on those indices only.
-	 * If there is a match, that index is considered used and future unordered args will not check that index again.
-	 * If there is no match, then the prompting or default value is used.
-	 * Applicable to phrase match only.
-	 * @default false
-	 */
-	unordered?: boolean | number | number[] | null;
-}
-
-/**
  * Data passed to argument prompt functions.
  */
-export interface ArgumentPromptData {
+export type ArgumentPromptData = {
 	/**
 	 * Amount of retries so far.
 	 */
@@ -835,13 +729,81 @@ export interface ArgumentPromptData {
 	 * The value that failed if there was one, otherwise null.
 	 */
 	failure: null | Flag<FlagType.Fail>;
-}
+};
+export const ArgumentPromptData = z.object({
+	retries: z.number(),
+	infinite: z.boolean(),
+	message: z.instanceof(Message),
+	phrase: z.string(),
+	failure: z.instanceof(Flag<FlagType.Fail>).nullable()
+});
+
+/**
+ * A function returning text for the prompt.
+ * @param message - Message that triggered the command.
+ * @param data - Miscellaneous data.
+ */
+export type PromptContentSupplier = (message: Message, data: ArgumentPromptData) => SyncOrAsync<MessageSendResolvable>;
+export const PromptContentSupplier = z
+	.function()
+	.args(z.instanceof(Message), ArgumentPromptData)
+	.returns(SyncOrAsync(MessageSendResolvable));
+
+export type ArgumentPromptResponse = MessageSendResolvable | PromptContentSupplier;
+export const ArgumentPromptResponse = z.union([MessageSendResolvable, PromptContentSupplier]);
+
+/**
+ * Data passed to functions that run when things failed.
+ */
+export type FailureData = {
+	/**
+	 * The input phrase that failed if there was one, otherwise an empty string.
+	 */
+	phrase: string;
+
+	/**
+	 * The value that failed if there was one, otherwise null.
+	 */
+	failure: null | Flag<FlagType.Fail>;
+};
+export const FailureData = z.object({
+	phrase: z.string(),
+	failure: z.instanceof(Flag<FlagType.Fail>).nullable()
+});
+
+/**
+ * A function returning the content if argument parsing fails.
+ * @param message - Message that triggered the command.
+ * @param data - Miscellaneous data.
+ */
+export type OtherwiseContentSupplier = (message: Message, data: FailureData) => SyncOrAsync<MessageSendResolvable>;
+export const OtherwiseContentSupplier = z
+	.function()
+	.args(z.instanceof(Message), FailureData)
+	.returns(SyncOrAsync(MessageSendResolvable));
+
+/**
+ * A function modifying a prompt text.
+ * @param message - Message that triggered the command.
+ * @param text - Text from the prompt to modify.
+ * @param data - Miscellaneous data.
+ */
+export type PromptContentModifier = (
+	this: Argument,
+	message: Message,
+	text: MessageSendResolvable | OtherwiseContentSupplier,
+	data: ArgumentPromptData
+) => SyncOrAsync<MessageSendResolvable>;
+export const PromptContentModifier = z
+	.function()
+	.args(z.instanceof(Message), z.union([MessageSendResolvable, OtherwiseContentSupplier]))
+	.returns(SyncOrAsync(MessageSendResolvable));
 
 /**
  * A prompt to run if the user did not input the argument correctly.
  * Can only be used if there is not a default value (unless optional is true).
  */
-export interface ArgumentPromptOptions {
+export type ArgumentPromptOptions = {
 	/**
 	 * Whenever an input matches the format of a command, this option controls whether or not to cancel this command and run that command.
 	 * The command to be run may be the same command or some other command.
@@ -942,9 +904,27 @@ export interface ArgumentPromptOptions {
 	 * Text sent on collector time out.
 	 */
 	timeout?: ArgumentPromptResponse;
-}
-
-export type ArgumentPromptResponse = string | MessagePayload | MessageOptions | PromptContentSupplier;
+};
+export const ArgumentPromptOptions = z.object({
+	breakout: z.boolean().default(true),
+	cancel: ArgumentPromptResponse.optional(),
+	cancelWord: z.string().default("cancel"),
+	ended: ArgumentPromptResponse.optional(),
+	infinite: z.boolean().default(false),
+	limit: z.number().default(Infinity),
+	modifyCancel: PromptContentModifier.optional(),
+	modifyEnded: PromptContentModifier.optional(),
+	modifyRetry: PromptContentModifier.optional(),
+	modifyStart: PromptContentModifier.optional(),
+	modifyTimeout: PromptContentModifier.optional(),
+	optional: z.boolean().default(false),
+	retries: z.number().default(1),
+	retry: ArgumentPromptResponse.optional(),
+	start: ArgumentPromptResponse.optional(),
+	stopWord: z.string().default("stop"),
+	time: z.number().default(30000),
+	timeout: ArgumentPromptResponse.optional()
+});
 
 /**
  * The method to match arguments from text.
@@ -969,6 +949,17 @@ export type ArgumentPromptResponse = string | MessagePayload | MessageOptions | 
  * - `none` matches nothing at all and an empty string will be used for type operations.
  */
 export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" | "text" | "content" | "restContent" | "none";
+export const ArgumentMatch = z.union([
+	z.literal("phrase"),
+	z.literal("flag"),
+	z.literal("option"),
+	z.literal("rest"),
+	z.literal("separate"),
+	z.literal("text"),
+	z.literal("content"),
+	z.literal("restContent"),
+	z.literal("none")
+]);
 
 /**
  * - `string` does not cast to any type.
@@ -1090,6 +1081,7 @@ export interface BaseArgumentType {
  * The evaluated argument will be an object containing the `match` and `matches` if global.
  */
 export type ArgumentType = keyof BaseArgumentType | (string | string[])[] | RegExp | string;
+export const ArgumentType = z.union([z.string(), z.string().array(), z.instanceof(RegExp)]);
 
 /**
  * A function for processing user input to use as an argument.
@@ -1100,26 +1092,12 @@ export type ArgumentType = keyof BaseArgumentType | (string | string[])[] | RegE
  * @param phrase - The user input.
  */
 export type ArgumentTypeCaster<R = unknown> = (this: Argument, message: Message, phrase: string) => R;
+export const ArgumentTypeCaster = z.function().args(z.instanceof(Message), z.string());
 
 /**
  * The return type of an argument.
  */
 export type ArgumentTypeCasterReturn<R> = R extends ArgumentTypeCaster<infer S> ? S : R;
-
-/**
- * Data passed to functions that run when things failed.
- */
-export interface FailureData {
-	/**
-	 * The input phrase that failed if there was one, otherwise an empty string.
-	 */
-	phrase: string;
-
-	/**
-	 * The value that failed if there was one, otherwise null.
-	 */
-	failure: null | Flag<FlagType.Fail>;
-}
 
 /**
  * Base Argument options
@@ -1128,7 +1106,7 @@ export interface BaseArgumentOptions {
 	/**
 	 * Default text sent if argument parsing fails.
 	 */
-	otherwise?: string | MessagePayload | MessageOptions | OtherwiseContentSupplier;
+	otherwise?: MessageSendResolvable | OtherwiseContentSupplier;
 
 	/**
 	 * Function to modify otherwise content.
@@ -1165,6 +1143,7 @@ export interface ArgumentDefaults extends BaseArgumentOptions {
  * @param data - Miscellaneous data.
  */
 export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
+export const DefaultValueSupplier = z.function().args(z.instanceof(Message), FailureData).returns(z.any());
 
 /**
  * A function for validating parsed arguments.
@@ -1173,6 +1152,7 @@ export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
  * @param value - The parsed value.
  */
 export type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
+export const ParsedValuePredicate = z.function().args(z.instanceof(Message), z.string(), z.any()).returns(z.boolean());
 
 /**
  * A function modifying a prompt text.
@@ -1183,39 +1163,113 @@ export type ParsedValuePredicate = (message: Message, phrase: string, value: any
 export type OtherwiseContentModifier = (
 	this: Argument,
 	message: Message,
-	text: string | MessagePayload | MessageOptions | OtherwiseContentSupplier,
+	text: MessageSendResolvable | OtherwiseContentSupplier,
 	data: FailureData
-) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+) => SyncOrAsync<MessageSendResolvable>;
+export const OtherwiseContentModifier = z
+	.function()
+	.args(z.instanceof(Message), z.union([MessageSendResolvable, OtherwiseContentSupplier], FailureData))
+	.returns(SyncOrAsync(MessageSendResolvable));
 
 /**
- * A function returning the content if argument parsing fails.
- * @param message - Message that triggered the command.
- * @param data - Miscellaneous data.
+ * Options for how an argument parses text.
  */
-export type OtherwiseContentSupplier = (
-	message: Message,
-	data: FailureData
-) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+export type ArgumentOptions = {
+	/**
+	 * Default value if no input or did not cast correctly.
+	 * If using a flag match, setting the default value to a non-void value inverses the result.
+	 */
+	default?: DefaultValueSupplier | any;
 
-/**
- * A function modifying a prompt text.
- * @param message - Message that triggered the command.
- * @param text - Text from the prompt to modify.
- * @param data - Miscellaneous data.
- */
-export type PromptContentModifier = (
-	this: Argument,
-	message: Message,
-	text: string | MessagePayload | MessageOptions | OtherwiseContentSupplier,
-	data: ArgumentPromptData
-) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+	/**
+	 * The description of the argument
+	 */
+	description?: string | any | any[];
 
-/**
- * A function returning text for the prompt.
- * @param message - Message that triggered the command.
- * @param data - Miscellaneous data.
- */
-export type PromptContentSupplier = (
-	message: Message,
-	data: ArgumentPromptData
-) => string | MessagePayload | MessageOptions | Promise<string | MessagePayload | MessageOptions>;
+	/**
+	 * The string(s) to use as the flag for flag or option match.
+	 * @default null
+	 */
+	flag?: string | string[] | null;
+
+	/**
+	 * ID of the argument for use in the args object. This does nothing inside an ArgumentGenerator.
+	 */
+	id?: string | null;
+
+	/**
+	 * Index of phrase to start from. Applicable to phrase, text, content, rest, or separate match only.
+	 * Ignored when used with the unordered option.
+	 * @default null
+	 */
+	index?: number | null;
+
+	/**
+	 * Amount of phrases to match when matching more than one.
+	 * Applicable to text, content, rest, or separate match only.
+	 * @default Infinity.
+	 */
+	limit?: number | null;
+
+	/**
+	 * Method to match text. Defaults to 'phrase'.
+	 * @default ArgumentMatches.PHRASE
+	 */
+	match?: ArgumentMatch;
+
+	/**
+	 * Function to modify otherwise content.
+	 */
+	modifyOtherwise?: OtherwiseContentModifier | null;
+
+	/**
+	 * Whether or not to have flags process multiple inputs.
+	 * For option flags, this works like the separate match; the limit option will also work here.
+	 * For flags, this will count the number of occurrences.
+	 * @default false
+	 */
+	multipleFlags?: boolean;
+
+	/**
+	 * Text sent if argument parsing fails. This overrides the `default` option and all prompt options.
+	 */
+	otherwise?: MessageSendResolvable | OtherwiseContentSupplier | null;
+
+	/**
+	 * Prompt options for when user does not provide input.
+	 */
+	prompt?: ArgumentPromptOptions | boolean | null;
+
+	/**
+	 * Type to cast to.
+	 * @default ArgumentTypes.STRING
+	 */
+	type?: ArgumentType | ArgumentTypeCaster;
+
+	/**
+	 * Marks the argument as unordered.
+	 * Each phrase is evaluated in order until one matches (no input at all means no evaluation).
+	 * Passing in a number forces evaluation from that index onwards.
+	 * Passing in an array of numbers forces evaluation on those indices only.
+	 * If there is a match, that index is considered used and future unordered args will not check that index again.
+	 * If there is no match, then the prompting or default value is used.
+	 * Applicable to phrase match only.
+	 * @default false
+	 */
+	unordered?: boolean | number | number[];
+};
+export const ArgumentOptions = z.object({
+	default: z.any(),
+	description: z.any(),
+	flag: z.union([z.string(), z.string().array()]).nullish().default(null),
+	id: z.string().nullish(),
+	index: z.number().nullish().default(null),
+	limit: z.number().default(Infinity),
+	match: z.nativeEnum(ArgumentMatches).default(ArgumentMatches.PHRASE),
+	modifyOtherwise: OtherwiseContentModifier.nullish().default(null),
+	multipleFlags: z.boolean().default(false),
+	otherwise: z.union([MessageSendResolvable, OtherwiseContentSupplier]).nullish(),
+	prompt: z.union([ArgumentPromptOptions, z.boolean()]).nullish().default(null),
+	type: z.union([ArgumentType, ArgumentTypeCaster]).default(ArgumentTypes.STRING),
+	unordered: z.union([z.boolean(), z.number(), z.number().array()]).default(false)
+});
