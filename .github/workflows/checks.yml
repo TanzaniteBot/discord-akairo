@@ -26,13 +26,15 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - name: Make Pseudo Auth File
-        run: cp ./test/src/example_auth.json ./test/src/auth.json
+        run: cp ./tests/integration/auth.example.json ./tests/integration/auth.json
       - name: ESLint
         run: yarn lint
       - name: TSC
         run: yarn build
-      - name: Dry Run Test Bot
+      - name: Integration Dry Run
         run: yarn test
+      - name: Unit Tests
+        run: yarn test:unit
 
   check-formatting:
     name: Check formatting
