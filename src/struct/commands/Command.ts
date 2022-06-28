@@ -190,7 +190,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param options - Options for the command.
 	 */
 	// eslint-disable-next-line complexity
-	public constructor(id: string, options?: CommandOptions) {
+	public constructor(id: string, options: CommandOptions = {}) {
 		super(id, { category: options?.category });
 
 		const {
@@ -225,13 +225,13 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 			superUserOnly = false,
 			typing = false,
 			userPermissions = this.userPermissions
-		} = options ?? {};
+		} = options;
 
 		// ts doesn't like it when I reference other properties when using destructuring syntax
 		const {
 			slashDefaultMemberPermissions = userPermissions && typeof userPermissions !== "function" ? userPermissions : undefined,
 			slashDmPermission = slashGuilds.length > 0 ? channel === null || channel === "dm" : undefined
-		} = options ?? {};
+		} = options;
 
 		if (!isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
 		if (typeof args !== "function" && !isArrayOf(args, "object"))
@@ -326,55 +326,6 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	}
 
 	/**
-	 * Generator for arguments.
-	 * When yielding argument options, that argument is ran and the result of the processing is given.
-	 * The last value when the generator is done is the resulting `args` for the command's `exec`.
-	 * @param message - Message that triggered the command.
-	 * @param parsed - Parsed content.
-	 * @param state - Argument processing state.
-	 * @abstract
-	 */
-	public args?(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn;
-
-	/**
-	 * Runs before argument parsing and execution.
-	 * @param message - Message being handled.
-	 * @abstract
-	 */
-	public before?(message: Message): any;
-
-	/**
-	 * Checks if the command should be ran by using an arbitrary condition.
-	 * @param message - Message being handled.
-	 * @abstract
-	 */
-	public condition?(message: Message): SyncOrAsync<boolean>;
-
-	/**
-	 * Executes the command.
-	 * @param message - Message that triggered the command.
-	 * @param args - Evaluated arguments.
-	 * @abstract
-	 */
-	public exec?(message: Message, args: any): any;
-	public exec?(message: Message | AkairoMessage, args: any): any;
-
-	/**
-	 * Execute the slash command
-	 * @param message - Message for slash command
-	 * @param args - Slash command options
-	 * @abstract
-	 */
-	public execSlash?(message: AkairoMessage, ...args: any[]): any;
-
-	/**
-	 * Respond to autocomplete interactions for this command.
-	 * @param interaction The autocomplete interaction
-	 * @abstract
-	 */
-	public autocomplete?(interaction: AutocompleteInteraction): any;
-
-	/**
 	 * Parses content using the command's arguments.
 	 * @param message - Message to use.
 	 * @param content - String to parse.
@@ -383,6 +334,66 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 		const parsed = this.contentParser.parse(content);
 		return this.argumentRunner.run(message, parsed, this.argumentGenerator);
 	}
+}
+
+export interface Command {
+	/**
+	 * Generator for arguments.
+	 * When yielding argument options, that argument is ran and the result of the processing is given.
+	 * The last value when the generator is done is the resulting `args` for the command's `exec`.
+	 * @param message - Message that triggered the command.
+	 * @param parsed - Parsed content.
+	 * @param state - Argument processing state.
+	 * @abstract
+	 *
+	 * @example
+	 * public override *args(): ArgumentGeneratorReturn {
+	 * 	const x = yield {
+	 * 		type: "integer",
+	 * 	};
+	 *
+	 * 	return { x };
+	 * }
+	 */
+	args(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn;
+
+	/**
+	 * Runs before argument parsing and execution.
+	 * @param message - Message being handled.
+	 * @abstract
+	 */
+	before(message: Message): any;
+
+	/**
+	 * Checks if the command should be ran by using an arbitrary condition.
+	 * @param message - Message being handled.
+	 * @abstract
+	 */
+	condition(message: Message): SyncOrAsync<boolean>;
+
+	/**
+	 * Executes the command.
+	 * @param message - Message that triggered the command.
+	 * @param args - Evaluated arguments.
+	 * @abstract
+	 */
+	exec(message: Message, args: any): any;
+	exec(message: Message | AkairoMessage, args: any): any;
+
+	/**
+	 * Execute the slash command
+	 * @param message - Message for slash command
+	 * @param args - Slash command options
+	 * @abstract
+	 */
+	execSlash(message: AkairoMessage, ...args: any[]): any;
+
+	/**
+	 * Respond to autocomplete interactions for this command.
+	 * @param interaction The autocomplete interaction
+	 * @abstract
+	 */
+	autocomplete(interaction: AutocompleteInteraction): any;
 }
 
 patchAbstract(Command, "exec");

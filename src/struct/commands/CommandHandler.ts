@@ -859,8 +859,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				this.emit(CommandHandlerEvents.SLASH_STARTED, message, commandModule, convertedOptions);
 				const ret =
 					Object.getOwnPropertyNames(Object.getPrototypeOf(commandModule)).includes("execSlash") || this.execSlash
-						? await commandModule.execSlash!(message, convertedOptions)
-						: await commandModule.exec!(message, convertedOptions);
+						? await commandModule.execSlash(message, convertedOptions)
+						: await commandModule.exec(message, convertedOptions);
 				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, commandModule, convertedOptions, ret);
 				return true;
 			} catch (err) {
@@ -886,7 +886,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		}
 
 		this.client.emit("akairoDebug", `[handleAutocomplete] Autocomplete started for ${interaction.commandName}`);
-		commandModule.autocomplete!(interaction);
+		commandModule.autocomplete(interaction);
 	}
 
 	/**
@@ -1308,7 +1308,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 		try {
 			this.emit(CommandHandlerEvents.COMMAND_STARTED, message, command, args);
-			const ret = await command.exec!(message, args);
+			const ret = await command.exec(message, args);
 			this.emit(CommandHandlerEvents.COMMAND_FINISHED, message, command, args, ret);
 		} finally {
 			if (typing) clearInterval(typing);
