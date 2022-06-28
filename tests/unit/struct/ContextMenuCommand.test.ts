@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { ApplicationCommandType, BitField } from "discord.js";
 import { describe, expect, it } from "vitest";
-import { ContextMenuCommand } from "../../../dist/src";
+import { ContextMenuCommand } from "../../../dist/src/index.js";
 
 class TestCommand extends ContextMenuCommand {
 	public exec() {
@@ -43,11 +43,11 @@ describe("ContextMenuCommand", () => {
 		expect(new TestCommand("name", { name: "name", type: ApplicationCommandType.Message })).toBeInstanceOf(TestCommand);
 		expect(new TestCommand("name", { name: "name", type: 3 })).toBeInstanceOf(TestCommand);
 		const base = { name: "name", type: ApplicationCommandType.Message } as const;
+		expect(new TestCommand("name", { ...base, category: "category", guilds: [], dmPermission: true })).toBeInstanceOf(
+			TestCommand
+		);
 		expect(
-			new TestCommand("name", { ...base, category: "category", guilds: [], ContextMenuCommandOptions: true })
-		).toBeInstanceOf(TestCommand);
-		expect(
-			() => new TestCommand("name", { ...base, category: "category", guilds: ["8327401987"], ContextMenuCommandOptions: true })
+			() => new TestCommand("name", { ...base, category: "category", guilds: ["8327401987"], dmPermission: true })
 		).toThrow();
 		expect(
 			new TestCommand("name", { ...base, nameLocalizations: { "en-GB": "name", "en-US": "name", "es-ES": "name" } })

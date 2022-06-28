@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import packageJSON from "../package.json";
-import { CommandUtil } from "./struct/commands/CommandUtil.js";
+import type { CommandUtil } from "./struct/commands/CommandUtil.js";
 
 declare module "discord.js" {
 	export interface Message<Cached extends boolean = boolean> extends Base {
@@ -41,6 +40,7 @@ export * from "./util/Category.js";
 export * as Constants from "./util/Constants.js";
 export * as Util from "./util/Util.js";
 
+import packageJSON from "../package.json";
 /**
  * The version of the library.
  */

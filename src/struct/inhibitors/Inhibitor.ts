@@ -80,6 +80,6 @@ export type InhibitorOptions = AkairoModuleOptions & {
 
 export const InhibitorOptions = AkairoModuleOptions.extend({
 	reason: z.string().default(""),
-	type: z.union([z.literal("all"), z.literal("pre"), z.literal("post")]).default("post"),
+	type: z.enum(["all", "pre", "post"] as const).default("post"),
 	priority: z.number().default(0)
 }).passthrough();

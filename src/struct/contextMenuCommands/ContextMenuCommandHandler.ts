@@ -5,7 +5,7 @@ import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constant
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoHandler, AkairoHandlerOptions } from "../AkairoHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
-import { ContextMenuCommand } from "./ContextMenuCommand.js";
+import type { ContextMenuCommand } from "./ContextMenuCommand.js";
 
 /**
  * Loads context menu commands and handles them.
@@ -21,6 +21,8 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 	 * @param options - Options.
 	 */
 	public constructor(client: AkairoClient, options: ContextMenuCommandHandlerOptions) {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
+		const { ContextMenuCommand } = require("./ContextMenuCommand.js") as typeof import("./ContextMenuCommand.js");
 		const {
 			directory,
 			classToHandle = ContextMenuCommand,

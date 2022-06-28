@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { describe, expect, it, vi } from "vitest";
-import { AkairoClient, ContextMenuCommandHandler } from "../../dist/src";
+import { AkairoClient, ContextMenuCommandHandler } from "../../../dist/src/index.js";
 
 describe("ContextMenuCommand", () => {
 	const client = new AkairoClient({ intents: [] });

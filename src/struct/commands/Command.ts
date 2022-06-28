@@ -39,9 +39,14 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	public aliases: string[];
 
 	/**
-	 * Argument options or generator.
+	 * The content parser.
 	 */
-	public _args?: ArgumentOptions[] | ArgumentGenerator;
+	private contentParser: ContentParser;
+
+	/**
+	 * The argument runner.
+	 */
+	private argumentRunner: ArgumentRunner;
 
 	/**
 	 * Default prompt options.
@@ -49,14 +54,19 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	public argumentDefaults: DefaultArgumentOptions;
 
 	/**
-	 * The argument runner.
+	 * Generator for arguments.
 	 */
-	public argumentRunner: ArgumentRunner;
+	private argumentGenerator: ArgumentGenerator;
 
 	/**
 	 * Usable only in this channel type.
 	 */
 	public channel?: string;
+
+	/**
+	 * Usable only by the client owner.
+	 */
+	public ownerOnly: boolean;
 
 	/**
 	 * Permissions required to run command by the client.
@@ -69,14 +79,9 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	public cooldown: number | null;
 
 	/**
-	 * The content parser.
-	 */
-	public contentParser: ContentParser;
-
-	/**
 	 * Description of the command.
 	 */
-	public description: string | any | any[];
+	public description: string | any;
 
 	/**
 	 * Whether or not this command can be ran by an edit.
@@ -114,9 +119,9 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	public onlyNsfw: boolean;
 
 	/**
-	 * Usable only by the client owner.
+	 * Whether or not to allow client superUsers(s) only.
 	 */
-	public ownerOnly: boolean;
+	public superUserOnly: boolean;
 
 	/**
 	 * Command prefix overwrite.
@@ -171,11 +176,6 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	public slashOnly: boolean;
 
 	/**
-	 * Whether or not to allow client superUsers(s) only.
-	 */
-	public superUserOnly: boolean;
-
-	/**
 	 * Whether or not to type during command execution.
 	 */
 	public typing: boolean;
@@ -184,11 +184,6 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * Permissions required to run command by the user.
 	 */
 	public userPermissions?: PermissionResolvable | MissingPermissionSupplier;
-
-	/**
-	 * Generator for arguments.
-	 */
-	public argumentGenerator: ArgumentGenerator;
 
 	/**
 	 * @param id - Command ID.
@@ -200,7 +195,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 
 		const {
 			aliases = [],
-			args = this._args || this.args || [],
+			args = this.args || [],
 			argumentDefaults = {},
 			before = this.before || (() => undefined),
 			channel = null,
@@ -304,10 +299,10 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 		this.localization = <CommandLocalization>localization;
 		this.onlyNsfw = Boolean(onlyNsfw);
 		this.ownerOnly = Boolean(ownerOnly);
+		this.superUserOnly = Boolean(superUserOnly);
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
 		this.ratelimit = ratelimit;
 		this.regex = typeof regex === "function" ? regex.bind(this) : regex;
-		this.superUserOnly = Boolean(superUserOnly);
 		this.typing = Boolean(typing);
 		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
 		this.lock =
@@ -339,29 +334,21 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param state - Argument processing state.
 	 * @abstract
 	 */
-	public *args(
-		this: Command,
-		message: Message,
-		parsed: ContentParserResult,
-		state: ArgumentRunnerState
-		// @ts-expect-error
-	): ArgumentGeneratorReturn {}
+	public args?(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn;
 
 	/**
 	 * Runs before argument parsing and execution.
 	 * @param message - Message being handled.
 	 * @abstract
 	 */
-	public before(message: Message): any {}
+	public before?(message: Message): any;
 
 	/**
 	 * Checks if the command should be ran by using an arbitrary condition.
 	 * @param message - Message being handled.
 	 * @abstract
 	 */
-	public condition(message: Message): SyncOrAsync<boolean> {
-		return false;
-	}
+	public condition?(message: Message): SyncOrAsync<boolean>;
 
 	/**
 	 * Executes the command.

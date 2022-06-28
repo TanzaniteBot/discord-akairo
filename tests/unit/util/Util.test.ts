@@ -1,7 +1,7 @@
 /* eslint-disable */
 import EventEmitter from "events";
 import { describe, expect, it } from "vitest";
-import { AkairoError, Util } from "../../dist/src";
+import { AkairoError, Util } from "../../../dist/src/index.js";
 const {
 	deepAssign,
 	intoArray,
