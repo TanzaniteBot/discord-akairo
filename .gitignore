@@ -24,10 +24,3 @@ tests/integration/auth.json
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-test/.yarn/*
-!test.yarn/patches
-!test.yarn/plugins
-!test.yarn/releases
-!test.yarn/sdks
-!test.yarn/versions
