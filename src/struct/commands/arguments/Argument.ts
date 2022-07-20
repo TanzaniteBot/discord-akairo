@@ -733,6 +733,7 @@ export type ArgumentPromptData = {
 export const ArgumentPromptData = z.object({
 	retries: z.number(),
 	infinite: z.boolean(),
+	// @ts-ignore
 	message: z.instanceof(Message),
 	phrase: z.string(),
 	failure: z.instanceof(Flag<FlagType.Fail>).nullable()
@@ -746,6 +747,7 @@ export const ArgumentPromptData = z.object({
 export type PromptContentSupplier = (message: Message, data: ArgumentPromptData) => SyncOrAsync<MessageSendResolvable>;
 export const PromptContentSupplier = z
 	.function()
+	// @ts-ignore
 	.args(z.instanceof(Message), ArgumentPromptData)
 	.returns(SyncOrAsync(MessageSendResolvable));
 
@@ -779,6 +781,7 @@ export const FailureData = z.object({
 export type OtherwiseContentSupplier = (message: Message, data: FailureData) => SyncOrAsync<MessageSendResolvable>;
 export const OtherwiseContentSupplier = z
 	.function()
+	// @ts-ignore
 	.args(z.instanceof(Message), FailureData)
 	.returns(SyncOrAsync(MessageSendResolvable));
 
@@ -796,6 +799,7 @@ export type PromptContentModifier = (
 ) => SyncOrAsync<MessageSendResolvable>;
 export const PromptContentModifier = z
 	.function()
+	// @ts-ignore
 	.args(z.instanceof(Message), z.union([MessageSendResolvable, OtherwiseContentSupplier]))
 	.returns(SyncOrAsync(MessageSendResolvable));
 
@@ -1092,6 +1096,7 @@ export const ArgumentType = z.union([z.string(), z.string().array(), z.instanceo
  * @param phrase - The user input.
  */
 export type ArgumentTypeCaster<R = unknown> = (this: Argument, message: Message, phrase: string) => R;
+// @ts-ignore
 export const ArgumentTypeCaster = z.function().args(z.instanceof(Message), z.string());
 
 /**
@@ -1143,6 +1148,7 @@ export interface ArgumentDefaults extends BaseArgumentOptions {
  * @param data - Miscellaneous data.
  */
 export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
+// @ts-ignore
 export const DefaultValueSupplier = z.function().args(z.instanceof(Message), FailureData).returns(z.any());
 
 /**
@@ -1152,6 +1158,7 @@ export const DefaultValueSupplier = z.function().args(z.instanceof(Message), Fai
  * @param value - The parsed value.
  */
 export type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
+// @ts-ignore
 export const ParsedValuePredicate = z.function().args(z.instanceof(Message), z.string(), z.any()).returns(z.boolean());
 
 /**
@@ -1168,6 +1175,7 @@ export type OtherwiseContentModifier = (
 ) => SyncOrAsync<MessageSendResolvable>;
 export const OtherwiseContentModifier = z
 	.function()
+	// @ts-ignore
 	.args(z.instanceof(Message), z.union([MessageSendResolvable, OtherwiseContentSupplier], FailureData))
 	.returns(SyncOrAsync(MessageSendResolvable));
 
