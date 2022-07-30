@@ -1,4 +1,5 @@
 import EventEmitter from "node:events";
+import util from "node:util";
 import type { PrefixSupplier } from "../struct/commands/CommandHandler.js";
 import { SyncOrAsync } from "../typings/Util.js";
 import { AkairoError } from "./AkairoError.js";
@@ -67,7 +68,7 @@ export function isEventEmitter(value: unknown): value is EventEmitter {
  * @returns - Whether the value is a promise.
  */
 export function isPromise<T>(value: SyncOrAsync<T>): value is Promise<T> {
-	return value instanceof Promise;
+	return util.types.isPromise(value);
 }
 
 /**
@@ -98,7 +99,7 @@ export function deepEquals<T>(a: unknown, b: T, options?: DeepEqualsOptions): a 
 export function deepEquals(a: any, b: any, options?: DeepEqualsOptions): boolean {
 	const { ignoreUndefined = true, ignoreArrayOrder = true } = options ?? {};
 
-	if (a === b) return true;
+	if (Object.is(a, b)) return true;
 	else if ((typeof a !== "object" || a === null) && (typeof b !== "object" || b === null)) return false;
 	else if (typeof a !== typeof b && (typeof a === "object" || typeof b === "object")) return false;
 	else if (typeof a === typeof b && (a === null || b === null)) return false;
