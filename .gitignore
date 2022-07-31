@@ -23,3 +23,11 @@ test/src/auth.json
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+test/.pnp.*
+test/.yarn/*
+test/!.yarn/patches
+test/!.yarn/plugins
+test/!.yarn/releases
+test/!.yarn/sdks
+test/!.yarn/versions
