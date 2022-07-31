@@ -1,38 +1,36 @@
 name: Checks
 
-on:
-  push:
-    branches:
-      - "*"
-  pull_request:
-    branches:
-      - "*"
-
-  workflow_dispatch:
-
+on: [push, pull_request]
 jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install node.js v16
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-      - name: Yarn Cache
-        uses: c-hive/gha-yarn-cache@v2
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+          
+      - name: Install dependencies
+        run: yarn --immutable
+
       - name: Make Pseudo Auth File
         run: cp ./tests/integration/auth.example.json ./tests/integration/auth.json
+
       - name: ESLint
         run: yarn lint
+
       - name: TSC
         run: yarn build
+
       - name: Integration Dry Run
         run: yarn test
+
       - name: Unit Tests
         run: yarn test:unit
 
@@ -40,27 +38,29 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install node.js v16
+        uses: actions/setup-node@v3
         with:
-          persist-credentials: false
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 16.x
-      - name: Yarn Cache
-        uses: c-hive/gha-yarn-cache@v2
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+          
+      - name: Install dependencies
+        run: yarn --immutable
+
       - name: Configure Git
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+
       - name: Format and Commit
         run: |
           yarn format
           git commit -am "Automatically format code" || true
+
       - name: Push changes
         uses: NotEnoughUpdates/github-push-action@master
         with:
