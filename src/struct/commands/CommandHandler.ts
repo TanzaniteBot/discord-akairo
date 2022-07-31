@@ -848,7 +848,8 @@ export class CommandHandler extends AkairoHandler {
 							"getUser",
 							"getMember",
 							"getRole",
-							"getMentionable"
+							"getMentionable",
+							"getAttachment"
 						] as const
 					).includes(func)
 				)
@@ -924,6 +925,8 @@ export class CommandHandler extends AkairoHandler {
 							case "STRING":
 							case ApplicationCommandOptionTypes.USER:
 							case "USER":
+							case ApplicationCommandOptionTypes.ATTACHMENT:
+							case "ATTACHMENT":
 							default:
 								convertedOptions[option.name] ??= null;
 								break;
@@ -1887,7 +1890,18 @@ export type MentionPrefixPredicate = (message: Message) => boolean | Promise<boo
  */
 export type PrefixSupplier = (message: Message) => string | string[] | Promise<string | string[]>;
 
-const slashResolvable = ["Boolean", "Channel", "String", "Integer", "Number", "User", "Member", "Role", "Mentionable"] as const;
+const slashResolvable = [
+	"Boolean",
+	"Channel",
+	"String",
+	"Integer",
+	"Number",
+	"User",
+	"Member",
+	"Role",
+	"Mentionable",
+	"Attachment"
+] as const;
 export type SlashResolveType = typeof slashResolvable[number];
 
 /**
@@ -1906,10 +1920,6 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["member"]>
 		| NonNullable<CommandInteractionOption["role"]>
 		| NonNullable<CommandInteractionOption["member" | "role" | "user"]>
-		| NonNullable<CommandInteractionOption["message"]>;
+		| NonNullable<CommandInteractionOption["message"]>
+		| NonNullable<CommandInteractionOption["attachment"]>;
 };
-
-/**
- * @typedef {CommandInteractionOptionResolver} VSCodePleaseStopRemovingMyImports
- * @internal
- */

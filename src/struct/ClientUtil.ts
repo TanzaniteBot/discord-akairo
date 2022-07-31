@@ -1,4 +1,4 @@
-import { APIEmbed } from "discord-api-types";
+import { APIEmbed } from "discord-api-types/v9";
 import {
 	BufferResolvable,
 	Collection,
