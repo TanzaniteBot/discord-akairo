@@ -1,4 +1,4 @@
-name: Docs
+name: Generate Docs
 
 on:
   push:
@@ -8,21 +8,26 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    if: github.repository_owner == 'NotEnoughUpdates'
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install node.js v16
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-      - name: Yarn Cache
-        uses: c-hive/gha-yarn-cache@v2
-      - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - name: Install dependencies
+        run: yarn --immutable 
+
       - name: Generate Docs
         run: yarn typedoc src/index.ts
+
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: docs
