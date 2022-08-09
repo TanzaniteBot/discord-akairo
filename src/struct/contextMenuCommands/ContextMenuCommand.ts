@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
 	ApplicationCommandType,
-	BitField,
 	type ContextMenuCommandInteraction,
 	type LocalizationMap,
 	type PermissionResolvable,
 	type Snowflake
 } from "discord.js";
 import { z } from "zod";
+import { PermissionResolvableValidator } from "../../typings/Util.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
@@ -142,6 +142,7 @@ export type ContextMenuCommandOptions = AkairoModuleOptions & {
 	 */
 	dmPermission?: boolean;
 };
+
 export const ContextMenuCommandOptions = AkairoModuleOptions.extend({
 	guilds: z.string().array().default([]),
 	name: z.string(),
@@ -149,15 +150,6 @@ export const ContextMenuCommandOptions = AkairoModuleOptions.extend({
 	superUserOnly: z.boolean().default(false),
 	type: z.union([z.literal(ApplicationCommandType.User), z.literal(ApplicationCommandType.Message)]),
 	nameLocalizations: z.record(z.string().nullish()).optional(),
-	defaultMemberPermissions: z
-		.union([
-			z.bigint(),
-			z.string(),
-			z.instanceof(BitField),
-			z.bigint().array(),
-			z.string().array(),
-			z.instanceof(BitField).array()
-		])
-		.optional(),
+	defaultMemberPermissions: PermissionResolvableValidator.optional(),
 	dmPermission: z.boolean().optional()
 }).passthrough();

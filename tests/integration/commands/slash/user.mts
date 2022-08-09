@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, Formatters, type Message } from "discord.js";
+import { ApplicationCommandOptionType, codeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
 import { Command, type AkairoMessage } from "../../../../src/index.js";
 
@@ -28,7 +28,7 @@ export default class UserCommand extends Command {
 		}
 	) {
 		message.util!.send({
-			embeds: [{ description: Formatters.codeBlock("js", `${inspect(args, { depth: 2 }).slice(0, 4000)}`) }]
+			embeds: [{ description: codeBlock("js", `${inspect(args, { depth: 2 }).slice(0, 4000)}`) }]
 		});
 	}
 }

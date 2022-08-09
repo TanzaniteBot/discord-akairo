@@ -1,5 +1,6 @@
 import { GatewayIntentBits } from "discord.js";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
 	AkairoClient,
 	CommandHandler,
@@ -8,7 +9,9 @@ import {
 	ListenerHandler,
 	TaskHandler
 } from "../../../src/index.js";
-import logger from "./Logger.js";
+import logger from "./Logger.mjs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default class TestClient extends AkairoClient {
 	public commandHandler: CommandHandler;

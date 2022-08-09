@@ -14,19 +14,15 @@ import type {
 	PermissionResolvable,
 	Snowflake
 } from "discord.js";
-import { SyncOrAsync } from "../../typings/Util.js";
-import type { AkairoMessage } from "../../util/AkairoMessage.js";
-import { isArrayOf, isStringArrayStringOrFunc, patchAbstract } from "../../util/Util.js";
-import { AkairoModule, type AkairoModuleOptions } from "../AkairoModule.js";
-import {
-	Argument,
-	type ArgumentOptions,
-	type ArgumentTypeCasterReturn,
-	type DefaultArgumentOptions
-} from "./arguments/Argument.js";
-import { ArgumentRunner, type ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
-import type { CommandHandler, IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
-import { ContentParser, type ContentParserResult } from "./ContentParser.js";
+import { z } from "zod";
+import { ArrayOrNot, MessageInstance, PermissionResolvableValidator, SyncOrAsync } from "../../typings/Util.js";
+import { AkairoMessage } from "../../util/AkairoMessage.js";
+import { patchAbstract } from "../../util/Util.js";
+import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
+import { Argument, ArgumentOptions, DefaultArgumentOptions, type ArgumentTypeCasterReturn } from "./arguments/Argument.js";
+import { ArgumentRunner, ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
+import { CommandHandler, IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
+import { ContentParser, ContentParserResult } from "./ContentParser.js";
 import type { Flag } from "./Flag.js";
 
 /**
@@ -61,7 +57,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * Usable only in this channel type.
 	 */
-	public channel?: string;
+	public channel: string | null;
 
 	/**
 	 * Usable only by the client owner.
@@ -71,7 +67,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * Permissions required to run command by the client.
 	 */
-	public clientPermissions?: PermissionResolvable | MissingPermissionSupplier;
+	public clientPermissions!: PermissionResolvable | MissingPermissionSupplier;
 
 	/**
 	 * Cooldown in milliseconds.
@@ -189,90 +185,51 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param id - Command ID.
 	 * @param options - Options for the command.
 	 */
-	// eslint-disable-next-line complexity
 	public constructor(id: string, options: CommandOptions = {}) {
 		super(id, { category: options?.category });
 
-		const {
-			aliases = [],
+		/* eslint-disable prefer-const */
+		let {
+			aliases,
 			args = this.args || [],
-			argumentDefaults = {},
+			argumentDefaults,
 			before = this.before || (() => undefined),
-			channel = null,
+			channel,
 			clientPermissions = this.clientPermissions,
 			condition = this.condition || (() => false),
-			cooldown = null,
+			cooldown,
 			description = "",
-			editable = true,
-			flags = [],
+			editable,
+			flags,
 			ignoreCooldown,
 			ignorePermissions,
-			localization = {},
+			localization,
 			lock,
-			onlyNsfw = false,
-			optionFlags = [],
-			ownerOnly = false,
+			onlyNsfw,
+			optionFlags,
+			ownerOnly,
 			prefix = this.prefix,
-			quoted = true,
-			ratelimit = 1,
+			quoted,
+			ratelimit,
 			regex = this.regex,
 			separator,
-			slash = false,
-			slashEphemeral = false,
-			slashGuilds = [],
-			slashOnly = false,
+			slash,
+			slashDefaultMemberPermissions,
+			slashDmPermission,
+			slashEphemeral,
+			slashGuilds,
+			slashOnly,
 			slashOptions,
-			superUserOnly = false,
-			typing = false,
-			userPermissions = this.userPermissions
-		} = options;
+			superUserOnly,
+			typing,
+			userPermissions /* = this.userPermissions */
+		} = CommandOptions.parse(options);
+		/* eslint-enable prefer-const */
 
-		// ts doesn't like it when I reference other properties when using destructuring syntax
-		const {
-			slashDefaultMemberPermissions = userPermissions && typeof userPermissions !== "function" ? userPermissions : undefined,
-			slashDmPermission = slashGuilds.length > 0 ? channel === null || channel === "dm" : undefined
-		} = options;
+		userPermissions ??= this.userPermissions;
 
-		if (!isArrayOf(aliases, "string")) throw new TypeError("options.aliases must be an array of strings.");
-		if (typeof args !== "function" && !isArrayOf(args, "object"))
-			throw new TypeError("options.args must be an array of argument objects or a function.");
-		if (typeof argumentDefaults !== "object") throw new TypeError("options.argumentDefaults must be an object.");
-		if (typeof before !== "function") throw new TypeError("options.before must be a function.");
-		if (!(["guild", "dm", null] as const).includes(channel))
-			throw new TypeError('options.channel must be either "guild" or "dm" or null.');
-		if (typeof condition !== "function") throw new TypeError("options.condition must be a function.");
-		if (typeof cooldown !== "number" && cooldown !== null) throw new TypeError("options.cooldown must be a number or null.");
-		if (typeof editable !== "boolean") throw new TypeError("options.editable must be a boolean.");
-		if (!isArrayOf(flags, "string")) throw new TypeError("options.flags must be an array of strings.");
-		if (ignoreCooldown !== undefined && !isStringArrayStringOrFunc(ignoreCooldown))
-			throw new TypeError("options.ignoreCooldown must be a string, function, or array of strings.");
-		if (ignorePermissions !== undefined && !isStringArrayStringOrFunc(ignorePermissions))
-			throw new TypeError("options.ignorePermissions must be a string, function, or array of strings.");
-		if (typeof localization !== "object") throw new TypeError("options.localization must be an object.");
-		if (lock !== undefined && typeof lock !== "function" && !(["channel", "guild", "user"] as const).includes(lock))
-			throw new TypeError("options.lock must be a function or a string with a value of 'channel', 'guild', or 'user'.");
-		if (typeof onlyNsfw !== "boolean") throw new TypeError("options.onlyNsfw must be a boolean.");
-		if (!isArrayOf(optionFlags, "string")) throw new TypeError("options.optionFlags must be an array of strings.");
-		if (typeof ownerOnly !== "boolean") throw new TypeError("options.ownerOnly must be a boolean.");
-		if (prefix !== undefined && !isStringArrayStringOrFunc(prefix))
-			throw new TypeError("options.prefix must be a string, function, or array of strings.");
-		if (typeof quoted !== "boolean") throw new TypeError("options.quoted must be a boolean.");
-		if (typeof ratelimit !== "number") throw new TypeError("options.ratelimit must be a number.");
-		if (regex !== undefined && typeof regex !== "function" && !(regex instanceof RegExp))
-			throw new TypeError("options.regex must be a function or a RegExp.");
-		if (separator !== undefined && typeof separator !== "string") throw new TypeError("options.separator must be a string.");
-		if (typeof slash !== "boolean") throw new TypeError("options.slash must be a boolean.");
-		if (slashDmPermission !== undefined && typeof slashDmPermission !== "boolean")
-			throw new TypeError("options.slashDmPermission must be a boolean.");
-		if (typeof slashDmPermission !== "boolean" && slashGuilds.length > 0)
-			throw new TypeError("You cannot set `options.slashDmPermission` with commands configured with `options.slashGuilds`.");
-		if (typeof slashEphemeral !== "boolean") throw new TypeError("options.slashEphemeral must be a boolean.");
-		if (!isArrayOf(slashGuilds, "string")) throw new TypeError("options.slashGuilds must be an array of strings.");
-		if (typeof slashOnly !== "boolean") throw new TypeError("options.slashOnly must be a boolean.");
-		if (slashOptions !== undefined && !isArrayOf(slashOptions, "object"))
-			throw new TypeError("options.slashOptions must be an array of objects.");
-		if (typeof superUserOnly !== "boolean") throw new TypeError("options.superUserOnly must be a boolean.");
-		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");
+		if (userPermissions && typeof userPermissions !== "function") slashDefaultMemberPermissions ??= userPermissions;
+		if (slashGuilds.length > 0) slashDmPermission ??= channel === null || channel === "dm";
 
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
@@ -290,12 +247,12 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 			: args.bind(this);
 		this.argumentDefaults = argumentDefaults;
 		this.before = before.bind(this);
-		this.channel = channel!;
+		this.channel = channel;
 		this.clientPermissions = typeof clientPermissions === "function" ? clientPermissions.bind(this) : clientPermissions;
 		this.condition = condition.bind(this);
-		this.cooldown = cooldown!;
+		this.cooldown = cooldown;
 		this.description = Array.isArray(description) ? description.join("\n") : description;
-		this.editable = Boolean(editable);
+		this.editable = editable;
 		this.localization = <CommandLocalization>localization;
 		this.onlyNsfw = Boolean(onlyNsfw);
 		this.ownerOnly = Boolean(ownerOnly);
@@ -377,8 +334,8 @@ export interface Command {
 	 * @param args - Evaluated arguments.
 	 * @abstract
 	 */
-	exec(message: Message, args: any): any;
-	exec(message: Message | AkairoMessage, args: any): any;
+	exec(message: Message, args: CommandArguments): any;
+	exec(message: Message | AkairoMessage, args: CommandArguments): any;
 
 	/**
 	 * Execute the slash command
@@ -386,7 +343,7 @@ export interface Command {
 	 * @param args - Slash command options
 	 * @abstract
 	 */
-	execSlash(message: AkairoMessage, ...args: any[]): any;
+	execSlash(message: AkairoMessage, args: CommandArguments): any;
 
 	/**
 	 * Respond to autocomplete interactions for this command.
@@ -401,9 +358,81 @@ patchAbstract(Command, "execSlash");
 patchAbstract(Command, "autocomplete");
 
 /**
+ * Command arguments mapped by their id
+ */
+export type CommandArguments = {
+	[key: string]: any;
+};
+export const CommandArguments = z.record(z.any());
+
+/**
+ * Generator for arguments.
+ * When yielding argument options, that argument is ran and the result of the processing is given.
+ * The last value when the generator is done is the resulting `args` for the command's `exec`.
+ * @param message - Message that triggered the command.
+ * @param parsed - Parsed content.
+ * @param state - Argument processing state.
+ */
+export type ArgumentGenerator = (
+	message: Message,
+	parsed: ContentParserResult,
+	state: ArgumentRunnerState
+) => ArgumentGeneratorReturn;
+export const ArgumentGenerator = z.function().args(MessageInstance, ContentParserResult, ArgumentRunnerState).returns(z.any());
+
+export type ArgumentGeneratorReturn = Generator<
+	ArgumentOptions | Argument | Flag,
+	{ [args: string]: ArgumentTypeCasterReturn<unknown> } | Flag,
+	Flag | any
+>;
+
+/**
+ * A function to run before argument parsing and execution.
+ * @param message - Message that triggered the command.
+ */
+export type BeforeAction = (this: Command, message: Message) => any;
+export const BeforeAction = z.function().args(MessageInstance).returns(z.any());
+
+/**
+ * A function used to check if a message has permissions for the command.
+ * A non-null return value signifies the reason for missing permissions.
+ * @param message - Message that triggered the command.
+ */
+export type MissingPermissionSupplier = (message: Message | AkairoMessage) => SyncOrAsync<any>;
+export const MissingPermissionSupplier = z
+	.function()
+	.args(z.union([MessageInstance, z.instanceof(AkairoMessage)]))
+	.returns(SyncOrAsync(z.any()));
+
+/**
+ * A function used to check if the command should run arbitrarily.
+ * @param message - Message to check.
+ */
+export type ExecutionPredicate = (this: Command, message: Message) => SyncOrAsync<boolean>;
+export const ExecutionPredicate = z.function().args(MessageInstance).returns(SyncOrAsync(z.boolean()));
+
+/**
+ * A function used to supply the key for the locker.
+ * @param message - Message that triggered the command.
+ * @param args - Evaluated arguments.
+ */
+export type KeySupplier = (message: Message | AkairoMessage, args: CommandArguments) => string;
+export const KeySupplier = z
+	.function()
+	.args(z.union([MessageInstance, z.instanceof(AkairoMessage)]), CommandArguments)
+	.returns(z.string());
+
+/**
+ * A function used to return a regular expression.
+ * @param message - Message to get regex for.
+ */
+export type RegexSupplier = (message: Message) => RegExp;
+export const RegexSupplier = z.function().args(MessageInstance).returns(z.instanceof(RegExp));
+
+/**
  * Options to use for command execution behavior.
  */
-export interface CommandOptions extends AkairoModuleOptions {
+export type CommandOptions = AkairoModuleOptions & {
 	/**
 	 * Command names.
 	 * @default []
@@ -412,7 +441,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 
 	/**
 	 * Argument options or generator.
-	 * @default this._args || this.args || []
+	 * @default this.args || []
 	 */
 	args?: ArgumentOptions[] | ArgumentGenerator;
 
@@ -456,7 +485,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * Description of the command.
 	 * @default ""
 	 */
-	description?: string | any | any[];
+	description?: string | ArrayOrNot<any>;
 
 	/**
 	 * Whether or not message edits will run this command.
@@ -473,12 +502,12 @@ export interface CommandOptions extends AkairoModuleOptions {
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	ignoreCooldown?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	ignorePermissions?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
 
 	/**
 	 * The slash command localizations.
@@ -512,7 +541,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * The prefix(es) to overwrite the global one for this command.
 	 * @default this.prefix
 	 */
-	prefix?: string | string[] | PrefixSupplier;
+	prefix?: ArrayOrNot<string> | PrefixSupplier;
 
 	/**
 	 * Whether or not to consider quotes.
@@ -577,6 +606,7 @@ export interface CommandOptions extends AkairoModuleOptions {
 
 	/**
 	 * Only allow this command to be used as a slash command. Also makes `slash` `true`
+	 * @default false
 	 */
 	slashOnly?: boolean;
 
@@ -597,59 +627,45 @@ export interface CommandOptions extends AkairoModuleOptions {
 	 * @default this.userPermissions
 	 */
 	userPermissions?: PermissionResolvable | MissingPermissionSupplier;
-}
-
-/**
- * A function to run before argument parsing and execution.
- * @param message - Message that triggered the command.
- */
-export type BeforeAction = (this: Command, message: Message) => any;
-
-/**
- * A function used to supply the key for the locker.
- * @param message - Message that triggered the command.
- * @param args - Evaluated arguments.
- */
-export type KeySupplier = (message: Message | AkairoMessage, args: any) => string;
-
-/**
- * A function used to check if the command should run arbitrarily.
- * @param message - Message to check.
- */
-export type ExecutionPredicate = (this: Command, message: Message) => SyncOrAsync<boolean>;
-
-/**
- * A function used to check if a message has permissions for the command.
- * A non-null return value signifies the reason for missing permissions.
- * @param message - Message that triggered the command.
- */
-export type MissingPermissionSupplier = (message: Message | AkairoMessage) => SyncOrAsync<any>;
-
-/**
- * A function used to return a regular expression.
- * @param message - Message to get regex for.
- */
-export type RegexSupplier = (message: Message) => RegExp;
-
-/**
- * Generator for arguments.
- * When yielding argument options, that argument is ran and the result of the processing is given.
- * The last value when the generator is done is the resulting `args` for the command's `exec`.
- * @param message - Message that triggered the command.
- * @param parsed - Parsed content.
- * @param state - Argument processing state.
- */
-export type ArgumentGenerator = (
-	message: Message,
-	parsed: ContentParserResult,
-	state: ArgumentRunnerState
-) => ArgumentGeneratorReturn;
-
-export type ArgumentGeneratorReturn = Generator<
-	ArgumentOptions | Argument | Flag,
-	{ [args: string]: ArgumentTypeCasterReturn<unknown> } | Flag,
-	Flag | any
->;
+};
+export const CommandOptions = AkairoModuleOptions.extend({
+	aliases: z.string().array().default([]),
+	args: z.union([ArgumentOptions.array(), ArgumentGenerator]).optional(),
+	argumentDefaults: DefaultArgumentOptions.default({}),
+	before: BeforeAction.optional(),
+	channel: z
+		.union([z.literal("guild"), z.literal("dm")])
+		.nullish()
+		.default(null),
+	clientPermissions: z.union([PermissionResolvableValidator, MissingPermissionSupplier]).optional(),
+	condition: ExecutionPredicate.optional(),
+	cooldown: z.number().nullish().default(null),
+	description: z.union([z.string(), ArrayOrNot(z.any())]).default(""),
+	editable: z.boolean().default(true),
+	flags: z.string().array().default([]),
+	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
+	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
+	localization: z.record(z.any()).default({}),
+	lock: z.union([KeySupplier, z.literal("guild"), z.literal("channel"), z.literal("user")]).optional(),
+	onlyNsfw: z.boolean().default(false),
+	optionFlags: z.string().array().default([]),
+	ownerOnly: z.boolean().default(false),
+	prefix: z.union([ArrayOrNot(z.string()), PrefixSupplier]).optional(),
+	quoted: z.boolean().default(true),
+	ratelimit: z.number().default(1),
+	regex: z.union([z.instanceof(RegExp), RegexSupplier]).optional(),
+	separator: z.string().optional(),
+	slash: z.boolean().default(false),
+	slashDefaultMemberPermissions: PermissionResolvableValidator.optional(),
+	slashDmPermission: z.boolean().optional(),
+	slashEphemeral: z.boolean().default(false),
+	slashGuilds: z.string().array().default([]),
+	slashOptions: z.any().array().optional(),
+	slashOnly: z.boolean().default(false),
+	superUserOnly: z.boolean().default(false),
+	typing: z.boolean().default(false),
+	userPermissions: z.union([PermissionResolvableValidator, MissingPermissionSupplier]).optional()
+});
 
 export interface AkairoApplicationCommandSubGroupData extends ApplicationCommandSubGroupData {
 	options?: AkairoApplicationCommandSubCommandData[];
@@ -741,7 +757,4 @@ export type SlashOption = AkairoApplicationCommandOptionData & {
  */
 export type CommandLocalization = Record<"nameLocalizations" | "descriptionLocalizations", LocalizationMap>;
 
-/**
- * @typedef {ApplicationCommandOptionType} VSCodePleaseStopRemovingMyImports
- * @internal
- */
+export const CommandInstance = z.instanceof(Command as new (...args: any[]) => Command);

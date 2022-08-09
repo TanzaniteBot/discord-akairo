@@ -1,6 +1,6 @@
 import type { ClientEvents } from "discord.js";
 import { Listener } from "../../../src/index.js";
-import logger from "../struct/Logger.js";
+import logger from "../struct/Logger.mjs";
 
 export default class DiscordJsWarnListener extends Listener {
 	public constructor() {

@@ -56,7 +56,7 @@ export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
 
 	/**
 	 * Deregisters a listener.
-	 * @param mod - Listener to use.
+	 * @param listener - Listener to use.
 	 */
 	public override deregister(listener: Listener): void {
 		this.removeFromEmitter(listener.id);

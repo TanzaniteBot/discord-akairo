@@ -7,7 +7,7 @@
 		".git": true
 	},
 	"files.exclude": {
-		"**/node_modules/**": true,
+		// "**/node_modules/**": true,
 		"**/.yarn/cache/**": true,
 		"**/*js.map": false,
 		"**/*d.ts.map": false
@@ -28,5 +28,10 @@
 	"prettier.useEditorConfig": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"typescript.workspaceSymbols.scope": "currentProject",
-	"gitlens.advanced.blame.customArguments": ["--ignore-revs-file", ".git-blame-ignore-revs"]
+	"gitlens.advanced.blame.customArguments": ["--ignore-revs-file", ".git-blame-ignore-revs"],
+	"vitest.enable": true,
+	"vitest.include": ["**/dist/tests/unit/**/*.test.js"],
+	"vitest.exclude": ["**/node_modules/**"],
+	"vitest.commandLine": "yarn vitest",
+	"vitest.showFailMessages": true
 }

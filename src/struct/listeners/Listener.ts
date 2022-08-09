@@ -1,4 +1,3 @@
-/* eslint-disable func-names, @typescript-eslint/no-unused-vars */
 import EventEmitter from "node:events";
 import { z } from "zod";
 import { patchAbstract } from "../../util/Util.js";

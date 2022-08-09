@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-shadow, callback-return, @typescript-eslint/no-unused-vars */
-import { escapeCodeBlock, Formatters, type Message } from "discord.js";
+import { codeBlock, escapeCodeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
 import { Command } from "../../../../src/index.js";
-import logger from "../../struct/Logger.js";
+import logger from "../../struct/Logger.mjs";
 
 export default class EvalCommand extends Command {
 	public constructor() {
@@ -29,7 +29,7 @@ export default class EvalCommand extends Command {
 		const token = this.client.token!.split("").join("[^]{0,2}");
 		const rev = this.client.token!.split("").reverse().join("[^]{0,2}");
 		const tokenRegex = new RegExp(`${token}|${rev}`, "g");
-		const cb = (code: string) => Formatters.codeBlock("js", escapeCodeBlock(code));
+		const cb = (code: string) => codeBlock("js", escapeCodeBlock(code));
 
 		const print = (...a: any[]) => {
 			const cleaned = a.map(obj => {

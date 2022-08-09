@@ -23,7 +23,7 @@ import {
 } from "discord.js";
 import type { URL } from "node:url";
 import { z } from "zod";
-import { MessageSendResolvable, SyncOrAsync } from "../../../typings/Util.js";
+import { MessageInstance, MessageSendResolvable, SyncOrAsync } from "../../../typings/Util.js";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
 import { intoCallable, isPromise } from "../../../util/Util.js";
 import type { AkairoClient } from "../../AkairoClient.js";
@@ -733,8 +733,7 @@ export type ArgumentPromptData = {
 export const ArgumentPromptData = z.object({
 	retries: z.number(),
 	infinite: z.boolean(),
-	// @ts-ignore
-	message: z.instanceof(Message),
+	message: MessageInstance,
 	phrase: z.string(),
 	failure: z.instanceof(Flag<FlagType.Fail>).nullable()
 });
@@ -747,8 +746,7 @@ export const ArgumentPromptData = z.object({
 export type PromptContentSupplier = (message: Message, data: ArgumentPromptData) => SyncOrAsync<MessageSendResolvable>;
 export const PromptContentSupplier = z
 	.function()
-	// @ts-ignore
-	.args(z.instanceof(Message), ArgumentPromptData)
+	.args(MessageInstance, ArgumentPromptData)
 	.returns(SyncOrAsync(MessageSendResolvable));
 
 export type ArgumentPromptResponse = MessageSendResolvable | PromptContentSupplier;
@@ -781,8 +779,7 @@ export const FailureData = z.object({
 export type OtherwiseContentSupplier = (message: Message, data: FailureData) => SyncOrAsync<MessageSendResolvable>;
 export const OtherwiseContentSupplier = z
 	.function()
-	// @ts-ignore
-	.args(z.instanceof(Message), FailureData)
+	.args(MessageInstance, FailureData)
 	.returns(SyncOrAsync(MessageSendResolvable));
 
 /**
@@ -799,8 +796,7 @@ export type PromptContentModifier = (
 ) => SyncOrAsync<MessageSendResolvable>;
 export const PromptContentModifier = z
 	.function()
-	// @ts-ignore
-	.args(z.instanceof(Message), z.union([MessageSendResolvable, OtherwiseContentSupplier]))
+	.args(MessageInstance, z.union([MessageSendResolvable, OtherwiseContentSupplier]))
 	.returns(SyncOrAsync(MessageSendResolvable));
 
 /**
@@ -909,6 +905,7 @@ export type ArgumentPromptOptions = {
 	 */
 	timeout?: ArgumentPromptResponse;
 };
+
 export const ArgumentPromptOptions = z.object({
 	breakout: z.boolean().default(true),
 	cancel: ArgumentPromptResponse.optional(),
@@ -953,6 +950,7 @@ export const ArgumentPromptOptions = z.object({
  * - `none` matches nothing at all and an empty string will be used for type operations.
  */
 export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" | "text" | "content" | "restContent" | "none";
+
 export const ArgumentMatch = z.union([
 	z.literal("phrase"),
 	z.literal("flag"),
@@ -1085,6 +1083,7 @@ export interface BaseArgumentType {
  * The evaluated argument will be an object containing the `match` and `matches` if global.
  */
 export type ArgumentType = keyof BaseArgumentType | (string | string[])[] | RegExp | string;
+
 export const ArgumentType = z.union([z.string(), z.string().array(), z.instanceof(RegExp)]);
 
 /**
@@ -1096,8 +1095,8 @@ export const ArgumentType = z.union([z.string(), z.string().array(), z.instanceo
  * @param phrase - The user input.
  */
 export type ArgumentTypeCaster<R = unknown> = (this: Argument, message: Message, phrase: string) => R;
-// @ts-ignore
-export const ArgumentTypeCaster = z.function().args(z.instanceof(Message), z.string());
+
+export const ArgumentTypeCaster = z.function().args(MessageInstance, z.string()).returns(z.any());
 
 /**
  * The return type of an argument.
@@ -1105,9 +1104,27 @@ export const ArgumentTypeCaster = z.function().args(z.instanceof(Message), z.str
 export type ArgumentTypeCasterReturn<R> = R extends ArgumentTypeCaster<infer S> ? S : R;
 
 /**
+ * A function modifying a prompt text.
+ * @param message - Message that triggered the command.
+ * @param text - Text to modify.
+ * @param data - Miscellaneous data.
+ */
+export type OtherwiseContentModifier = (
+	this: Argument,
+	message: Message,
+	text: MessageSendResolvable | OtherwiseContentSupplier,
+	data: FailureData
+) => SyncOrAsync<MessageSendResolvable>;
+
+export const OtherwiseContentModifier = z
+	.function()
+	.args(MessageInstance, z.union([MessageSendResolvable, OtherwiseContentSupplier], FailureData))
+	.returns(SyncOrAsync(MessageSendResolvable));
+
+/**
  * Base Argument options
  */
-export interface BaseArgumentOptions {
+export type BaseArgumentOptions = {
 	/**
 	 * Default text sent if argument parsing fails.
 	 */
@@ -1117,17 +1134,24 @@ export interface BaseArgumentOptions {
 	 * Function to modify otherwise content.
 	 */
 	modifyOtherwise?: OtherwiseContentModifier;
-}
+};
+export const BaseArgumentOptions = z.object({
+	otherwise: z.union([MessageSendResolvable, OtherwiseContentSupplier]).optional(),
+	modifyOtherwise: OtherwiseContentModifier.optional()
+});
 
 /**
  * Defaults for argument options.
  */
-export interface DefaultArgumentOptions extends BaseArgumentOptions {
+export type DefaultArgumentOptions = BaseArgumentOptions & {
 	/**
 	 * Default prompt options.
 	 */
 	prompt?: ArgumentPromptOptions;
-}
+};
+export const DefaultArgumentOptions = BaseArgumentOptions.extend({
+	prompt: ArgumentPromptOptions.optional()
+});
 
 /**
  * The argument defaults with default values provided.
@@ -1148,8 +1172,7 @@ export interface ArgumentDefaults extends BaseArgumentOptions {
  * @param data - Miscellaneous data.
  */
 export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
-// @ts-ignore
-export const DefaultValueSupplier = z.function().args(z.instanceof(Message), FailureData).returns(z.any());
+export const DefaultValueSupplier = z.function().args(MessageInstance, FailureData).returns(z.any());
 
 /**
  * A function for validating parsed arguments.
@@ -1158,26 +1181,7 @@ export const DefaultValueSupplier = z.function().args(z.instanceof(Message), Fai
  * @param value - The parsed value.
  */
 export type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
-// @ts-ignore
-export const ParsedValuePredicate = z.function().args(z.instanceof(Message), z.string(), z.any()).returns(z.boolean());
-
-/**
- * A function modifying a prompt text.
- * @param message - Message that triggered the command.
- * @param text - Text to modify.
- * @param data - Miscellaneous data.
- */
-export type OtherwiseContentModifier = (
-	this: Argument,
-	message: Message,
-	text: MessageSendResolvable | OtherwiseContentSupplier,
-	data: FailureData
-) => SyncOrAsync<MessageSendResolvable>;
-export const OtherwiseContentModifier = z
-	.function()
-	// @ts-ignore
-	.args(z.instanceof(Message), z.union([MessageSendResolvable, OtherwiseContentSupplier], FailureData))
-	.returns(SyncOrAsync(MessageSendResolvable));
+export const ParsedValuePredicate = z.function().args(MessageInstance, z.string(), z.any()).returns(z.boolean());
 
 /**
  * Options for how an argument parses text.
@@ -1266,6 +1270,7 @@ export type ArgumentOptions = {
 	 */
 	unordered?: boolean | number | number[];
 };
+
 export const ArgumentOptions = z.object({
 	default: z.any(),
 	description: z.any(),

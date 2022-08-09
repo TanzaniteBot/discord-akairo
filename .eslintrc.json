@@ -106,6 +106,7 @@
 		"@typescript-eslint/switch-exhaustiveness-check": "warn",
 		"consistent-this": ["error", "$this"],
 		"@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["$this"] }],
-		"import/extensions": ["error", "ignorePackages"]
+		"import/extensions": ["error", "ignorePackages"],
+		"import/no-cycle": "error"
 	}
 }

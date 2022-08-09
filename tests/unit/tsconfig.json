@@ -1,0 +1,10 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "../../dist/tests/unit",
+		"composite": true,
+		"module": "ES2022"
+	},
+	"references": [{ "path": "../../src" }],
+	"include": ["./**/*.ts", "lib.js"]
+}

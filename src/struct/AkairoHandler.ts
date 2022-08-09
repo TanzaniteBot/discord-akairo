@@ -273,7 +273,7 @@ export class AkairoHandler<
 export type LoadPredicate = (filepath: string) => boolean;
 export const LoadPredicate = z.function().args(z.string()).returns(z.boolean());
 
-export type Extension = `.${string}`;
+export type Extension = `.${string}` | string;
 export const Extension = z.string().regex(/\..*$/);
 
 /**
@@ -310,6 +310,7 @@ export type AkairoHandlerOptions<Module extends AkairoModule<Handler, Module>, H
 	 */
 	loadFilter?: LoadPredicate;
 };
+
 export const AkairoHandlerOptions = z
 	.object({
 		automateCategories: z.boolean().default(false),

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Message } from "discord.js";
 import { z } from "zod";
 import { SyncOrAsync } from "../../typings/Util.js";

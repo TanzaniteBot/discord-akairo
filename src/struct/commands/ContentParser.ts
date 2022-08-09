@@ -593,10 +593,99 @@ export const ContentParserOptions = z.object({
 	separator: z.string().optional()
 });
 
+type BaseParsed = {
+	/**
+	 * The thing that was parsed.
+	 */
+	type: "Phrase" | "Flag" | "OptionFlag";
+
+	/**
+	 * The raw string with whitespace and/or separator.
+	 */
+	raw: string;
+};
+const BaseParsed = z.object({
+	// type is implemented independently
+	raw: z.string()
+});
+
+/**
+ * A parsed phrase.
+ */
+type ParsedPhrase = BaseParsed & {
+	type: "Phrase";
+
+	/**
+	 * The value of the phrase.
+	 */
+	value: string;
+};
+const ParsedPhrase = BaseParsed.extend({
+	type: z.literal("Phrase"),
+	value: z.string()
+});
+
+/**
+ * A parsed flag.
+ */
+type ParsedFlag = BaseParsed & {
+	type: "Flag";
+
+	/**
+	 * The key of the flag.
+	 */
+	key: string;
+};
+const ParsedFlag = BaseParsed.extend({
+	type: z.literal("Flag"),
+	key: z.string()
+});
+
+/**
+ * A parsed option flag.
+ */
+type ParsedOptionFlag = BaseParsed & {
+	type: "OptionFlag";
+
+	/**
+	 * The key of the option flag.
+	 */
+	key: string;
+
+	/**
+	 * The value of the option flag.
+	 */
+	value: string;
+};
+const ParsedOptionFlag = BaseParsed.extend({
+	type: z.literal("OptionFlag"),
+	key: z.string(),
+	value: z.string()
+});
+
+/**
+ * Flags extracted from an argument list.
+ */
+export type ExtractedFlags = {
+	/**
+	 * Words considered flags.
+	 */
+	flagWords: string[];
+
+	/**
+	 * Words considered option flags.
+	 */
+	optionFlagWords: string[];
+};
+export const ExtractedFlags = z.object({
+	flagWords: z.string().array(),
+	optionFlagWords: z.string().array()
+});
+
 /**
  * Result of parsing.
  */
-export interface ContentParserResult {
+export type ContentParserResult = {
 	/**
 	 * All phrases and flags.
 	 */
@@ -616,72 +705,10 @@ export interface ContentParserResult {
 	 * Option flags.
 	 */
 	optionFlags: ParsedOptionFlag[];
-}
-
-interface BaseParsed {
-	/**
-	 * The thing that was parsed.
-	 */
-	type: "Phrase" | "Flag" | "OptionFlag";
-
-	/**
-	 * The raw string with whitespace and/or separator.
-	 */
-	raw: string;
-}
-
-/**
- * A parsed phrase.
- */
-interface ParsedPhrase extends BaseParsed {
-	type: "Phrase";
-
-	/**
-	 * The value of the phrase.
-	 */
-	value: string;
-}
-
-/**
- * A parsed flag.
- */
-interface ParsedFlag extends BaseParsed {
-	type: "Flag";
-
-	/**
-	 * The key of the flag.
-	 */
-	key: string;
-}
-
-/**
- * A parsed option flag.
- */
-interface ParsedOptionFlag extends BaseParsed {
-	type: "OptionFlag";
-
-	/**
-	 * The key of the option flag.
-	 */
-	key: string;
-
-	/**
-	 * The value of the option flag.
-	 */
-	value: string;
-}
-
-/**
- * Flags extracted from an argument list.
- */
-export interface ExtractedFlags {
-	/**
-	 * Words considered flags.
-	 */
-	flagWords: string[];
-
-	/**
-	 * Words considered option flags.
-	 */
-	optionFlagWords: string[];
-}
+};
+export const ContentParserResult = z.object({
+	all: z.union([ParsedPhrase, ParsedFlag, ParsedOptionFlag]).array(),
+	phrases: ParsedPhrase.array(),
+	flags: ParsedFlag.array(),
+	optionFlags: ParsedOptionFlag.array()
+});

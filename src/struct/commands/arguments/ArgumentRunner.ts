@@ -1,4 +1,5 @@
 import type { Message } from "discord.js";
+import { z } from "zod";
 import { AkairoError } from "../../../util/AkairoError.js";
 import { ArgumentMatches } from "../../../util/Constants.js";
 import type { ArgumentGenerator, ArgumentGeneratorReturn, Command } from "../Command.js";
@@ -407,7 +408,7 @@ export class ArgumentRunner {
 /**
  * State for the argument runner.
  */
-export interface ArgumentRunnerState {
+export type ArgumentRunnerState = {
 	/**
 	 * Index in terms of the raw strings.
 	 */
@@ -422,4 +423,9 @@ export interface ArgumentRunnerState {
 	 * Indices already used for unordered match.
 	 */
 	usedIndices: Set<number>;
-}
+};
+export const ArgumentRunnerState = z.object({
+	index: z.number(),
+	phraseIndex: z.number(),
+	usedIndices: z.set(z.number())
+});

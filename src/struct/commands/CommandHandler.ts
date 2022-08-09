@@ -1,4 +1,5 @@
 import {
+	ApplicationCommand,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	Collection,
@@ -17,30 +18,24 @@ import {
 	type TextBasedChannel,
 	type User
 } from "discord.js";
+import { z } from "zod";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events.js";
-import { SyncOrAsync } from "../../typings/Util.js";
+import { ArrayOrNot, MessageInstance, SyncOrAsync } from "../../typings/Util.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
-import {
-	deepAssign,
-	deepEquals,
-	intoArray,
-	intoCallable,
-	isPromise,
-	isStringArrayStringOrFunc,
-	prefixCompare
-} from "../../util/Util.js";
+import { deepAssign, deepEquals, intoArray, intoCallable, isPromise, prefixCompare } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, type AkairoHandlerOptions } from "../AkairoHandler.js";
+import { AkairoHandler, AkairoHandlerOptions, Extension } from "../AkairoHandler.js";
 import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import type { ListenerHandler } from "../listeners/ListenerHandler.js";
 import type { TaskHandler } from "../tasks/TaskHandler.js";
-import type { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
+import { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
 import { TypeResolver } from "./arguments/TypeResolver.js";
 import {
 	Command,
+	CommandInstance,
 	type AkairoApplicationCommandChannelOptionData,
 	type AkairoApplicationCommandChoicesData,
 	type AkairoApplicationCommandNonOptionsData,
@@ -196,67 +191,38 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	// eslint-disable-next-line complexity
 	public constructor(client: AkairoClient, options: CommandHandlerOptions) {
 		const {
 			directory,
 			classToHandle = Command,
-			extensions = [".js", ".ts"],
+			extensions = [".js", ".ts"] as Extension[],
 			automateCategories,
 			loadFilter,
-			blockClient = true,
-			blockBots = true,
-			fetchMembers = false,
-			handleEdits = false,
-			storeMessages = false,
-			commandUtil = false,
-			commandUtilLifetime = 3e5,
-			commandUtilSweepInterval = 3e5,
-			defaultCooldown = 0,
+			blockClient,
+			blockBots,
+			fetchMembers,
+			handleEdits,
+			storeMessages,
+			commandUtil,
+			commandUtilLifetime,
+			commandUtilSweepInterval,
+			defaultCooldown,
 			ignoreCooldown = client.ownerID,
-			ignorePermissions = [],
-			argumentDefaults = {},
-			prefix = "!",
-			allowMention = true,
+			ignorePermissions,
+			argumentDefaults,
+			prefix,
+			allowMention,
 			aliasReplacement,
-			autoDefer = false,
-			typing = false,
-			autoRegisterSlashCommands = false,
-			execSlash = false,
-			skipBuiltInPostInhibitors = false
-			// useSlashPermissions = false
-		} = options ?? {};
+			autoDefer,
+			typing,
+			autoRegisterSlashCommands,
+			execSlash,
+			skipBuiltInPostInhibitors
+		} = CommandHandlerOptions.parse(options);
 
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Command.name);
 		}
-		if (typeof blockClient !== "boolean") throw new TypeError("options.blockClient must be a boolean.");
-		if (typeof blockBots !== "boolean") throw new TypeError("options.blockBots must be a boolean.");
-		if (typeof fetchMembers !== "boolean") throw new TypeError("options.fetchMembers must be a boolean.");
-		if (typeof handleEdits !== "boolean") throw new TypeError("options.handleEdits must be a boolean.");
-		if (typeof storeMessages !== "boolean") throw new TypeError("options.storeMessages must be a boolean.");
-		if (typeof commandUtil !== "boolean") throw new TypeError("options.commandUtil must be a boolean.");
-		if (typeof commandUtilLifetime !== "number") throw new TypeError("options.commandUtilLifetime must be a number.");
-		if (typeof commandUtilSweepInterval !== "number") throw new TypeError("options.commandUtilSweepInterval must be a number.");
-		if (typeof defaultCooldown !== "number") throw new TypeError("options.defaultCooldown must be a number.");
-		if (!isStringArrayStringOrFunc(ignoreCooldown))
-			throw new TypeError("options.ignoreCooldown must be a string, an array of strings, or a function.");
-		if (!isStringArrayStringOrFunc(ignorePermissions))
-			throw new TypeError("options.ignorePermissions must be a string, an array of strings, or a function.");
-		if (typeof argumentDefaults !== "object") throw new TypeError("options.argumentDefaults must be an object.");
-		if (!isStringArrayStringOrFunc(prefix))
-			throw new TypeError("options.prefix must be a string, an array of strings, or a function.");
-		if (typeof allowMention !== "boolean" && typeof allowMention !== "function")
-			throw new TypeError("options.allowMention must be a boolean.");
-		if (aliasReplacement !== undefined && !(aliasReplacement instanceof RegExp))
-			throw new TypeError("options.aliasReplacement must be a RegExp.");
-		if (typeof autoDefer !== "boolean") throw new TypeError("options.autoDefer must be a boolean.");
-		if (typeof typing !== "boolean") throw new TypeError("options.typing must be a boolean.");
-		if (typeof autoRegisterSlashCommands !== "boolean")
-			throw new TypeError("options.autoRegisterSlashCommands must be a boolean.");
-		if (typeof execSlash !== "boolean") throw new TypeError("options.execSlash must be a boolean.");
-		if (typeof skipBuiltInPostInhibitors !== "boolean")
-			throw new TypeError("options.skipBuiltInPostInhibitors must be a boolean.");
 
 		super(client, {
 			directory,
@@ -310,11 +276,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			argumentDefaults
 		);
 		this.prefix = typeof prefix === "function" ? prefix.bind(this) : prefix;
-		this.allowMention = typeof allowMention === "function" ? allowMention.bind(this) : Boolean(allowMention);
+		this.allowMention = typeof allowMention === "function" ? allowMention.bind(this) : allowMention;
 		this.inhibitorHandler = null;
-		this.autoDefer = Boolean(autoDefer);
-		this.execSlash = Boolean(execSlash);
-		this.skipBuiltInPostInhibitors = Boolean(skipBuiltInPostInhibitors);
+		this.autoDefer = autoDefer;
+		this.execSlash = execSlash;
+		this.skipBuiltInPostInhibitors = skipBuiltInPostInhibitors;
 		this.setup();
 	}
 
@@ -363,6 +329,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 */
 	protected async registerInteractionCommands() {
 		this.client.emit("akairoDebug", `[registerInteractionCommands] Started registering interaction commands...`);
+
 		const parsedSlashCommands: (ApplicationCommandData & { guilds: Snowflake[] })[] = [];
 		const guildSlashCommandsParsed: Collection<Snowflake, ApplicationCommandData[]> = new Collection();
 		const parseDescriptionCommand = (description: { content: () => any }) => {
@@ -373,14 +340,14 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			return description;
 		};
 
+		// Parse all commands that have slash enabled
 		for (const [, data] of this.modules) {
 			if (!data.slash) continue;
 			parsedSlashCommands.push({
-				name: data.aliases[0]?.toLowerCase() || data.id?.toLowerCase(),
+				name: data.aliases[0]?.toLocaleLowerCase() || data.id?.toLocaleLowerCase(),
 				description: parseDescriptionCommand(data.description) || "No description provided.",
 				options: data.slashOptions?.map(o => {
-					const temp = { ...o };
-					delete temp.resolve;
+					const temp = { ...o, resolve: undefined };
 					return temp as ApplicationCommandOptionData;
 				}),
 				guilds: data.slashGuilds ?? [],
@@ -392,14 +359,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			});
 		}
 
-		let contextCommandHandler: ContextMenuCommandHandler | undefined;
-		for (const key in this.client) {
-			if (this.client[key as keyof AkairoClient] instanceof ContextMenuCommandHandler) {
-				contextCommandHandler = this.client[key as keyof AkairoClient] as unknown as ContextMenuCommandHandler | undefined;
-				break;
-			}
-		}
+		// find the context command handler on the client (if it exists)
+		const contextCommandHandler: ContextMenuCommandHandler | undefined = Object.values(this.client).find(
+			v => v instanceof ContextMenuCommandHandler
+		);
+
 		if (contextCommandHandler) {
+			// parse all context commands
 			for (const [, data] of contextCommandHandler.modules) {
 				parsedSlashCommands.push({
 					name: data.name,
@@ -412,40 +378,15 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 		}
 
-		/* Global */
+		/* --------------------------- Global Interactions -------------------------- */
 		const slashCommandsApp = parsedSlashCommands
-			.filter(({ guilds }) => !guilds.length)
-			.map(options => ({
-				name: options.name,
-				description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
-				options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
-				defaultMemberPermissions: options.defaultMemberPermissions,
-				dmPermission: options.dmPermission,
-				type: options.type,
-				nameLocalizations: options.nameLocalizations,
-				descriptionLocalizations: options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
-			}))
-			.sort((a, b) => {
-				if (a.name < b.name) return -1;
-				if (a.name > b.name) return 1;
-				return 0;
-			}) as ApplicationCommandData[];
+			.filter(({ guilds }) => guilds.length === 0)
+			.map(this.mapInteraction)
+			.sort(this.sortInteraction);
+
 		const currentGlobalCommands = (await this.client.application?.commands.fetch())!
-			.map(options => ({
-				name: options.name,
-				description: options.description,
-				options: options.options,
-				defaultMemberPermissions: options.defaultMemberPermissions,
-				dmPermission: options.dmPermission,
-				type: options.type,
-				nameLocalizations: options.nameLocalizations,
-				descriptionLocalizations: options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
-			}))
-			.sort((a, b) => {
-				if (a.name < b.name) return -1;
-				if (a.name > b.name) return 1;
-				return 0;
-			}) as ApplicationCommandData[];
+			.map(this.mapInteraction)
+			.sort(this.sortInteraction);
 
 		if (!deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
@@ -457,23 +398,10 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			this.client.emit("akairoDebug", "[registerInteractionCommands] Global interaction commands are up to date.");
 		}
 
-		/* Guilds */
+		/* ----------------------- Guild Specific Interactions ---------------------- */
 		for (const options of parsedSlashCommands) {
 			for (const guildId of options.guilds) {
-				guildSlashCommandsParsed.set(guildId, [
-					...(guildSlashCommandsParsed.get(guildId) ?? []),
-					{
-						name: options.name,
-						description: options.type === ApplicationCommandType.ChatInput ? options.description ?? "" : undefined,
-						options: options.type === ApplicationCommandType.ChatInput ? options.options ?? [] : undefined,
-						defaultMemberPermissions: options.defaultMemberPermissions,
-						dmPermission: options.dmPermission,
-						type: options.type,
-						nameLocalizations: options.nameLocalizations,
-						descriptionLocalizations:
-							options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
-					} as ApplicationCommandData
-				]);
+				guildSlashCommandsParsed.set(guildId, [...(guildSlashCommandsParsed.get(guildId) ?? []), this.mapInteraction(options)]);
 			}
 		}
 
@@ -482,29 +410,9 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				const guild = this.client.guilds.cache.get(key);
 				if (!guild) return;
 
-				const sortedCommands = value.sort((a, b) => {
-					if (a.name < b.name) return -1;
-					if (a.name > b.name) return 1;
-					return 0;
-				});
+				const sortedCommands = value.sort(this.sortInteraction);
 
-				const currentGuildCommands = (await guild.commands.fetch())
-					.map(options => ({
-						name: options.name,
-						description: options.description,
-						options: options.options,
-						defaultMemberPermissions: options.defaultMemberPermissions,
-						dmPermission: options.dmPermission,
-						type: options.type,
-						nameLocalizations: options.nameLocalizations,
-						descriptionLocalizations:
-							options.type === ApplicationCommandType.ChatInput ? options.descriptionLocalizations : undefined
-					}))
-					.sort((a, b) => {
-						if (a.name < b.name) return -1;
-						if (a.name > b.name) return 1;
-						return 0;
-					});
+				const currentGuildCommands = (await guild.commands.fetch()).map(this.mapInteraction).sort(this.sortInteraction);
 
 				if (!deepEquals(currentGuildCommands, sortedCommands)) {
 					this.client.emit(
@@ -523,6 +431,28 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			});
 		}
 	}
+
+	private mapInteraction(interaction: ApplicationCommandData | ApplicationCommand): ApplicationCommandData {
+		return {
+			name: interaction.name,
+			description: interaction.type === ApplicationCommandType.ChatInput ? interaction.description ?? "" : undefined!,
+			options: interaction.type === ApplicationCommandType.ChatInput ? interaction.options ?? [] : undefined,
+			defaultMemberPermissions: interaction.defaultMemberPermissions,
+			dmPermission: interaction.dmPermission!,
+			type: interaction.type,
+			nameLocalizations: interaction.nameLocalizations!,
+			descriptionLocalizations:
+				interaction.type === ApplicationCommandType.ChatInput ? interaction.descriptionLocalizations! : undefined!
+		};
+	}
+
+	private sortInteraction<T extends { name: string }>(a: T, b: T): number {
+		if (a.name < b.name) return -1;
+		if (a.name > b.name) return 1;
+		return 0;
+	}
+
+	// #region fold
 
 	/**
 	 * Registers a module.
@@ -746,23 +676,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
 				const func = `get${originalOption?.resolve ?? (ApplicationCommandOptionType[option.type] as SlashResolveType)}` as const;
-				if (
-					!(
-						[
-							"getBoolean",
-							"getChannel",
-							"getString",
-							"getInteger",
-							"getNumber",
-							"getUser",
-							"getMember",
-							"getRole",
-							"getMentionable",
-							"getAttachment"
-						] as const
-					).includes(func)
-				)
-					throw new Error(`Unknown slash option type: ${option.type}`);
 				convertedOptions[option.name] = interaction.options[func](option.name, false);
 			}
 
@@ -1529,6 +1442,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		return this;
 	}
 }
+// #endregion fold
 
 type Events = CommandHandlerEventsType;
 
@@ -1557,7 +1471,39 @@ export class RegisterInteractionCommandError extends Error {
 	}
 }
 
-export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, CommandHandler> {
+/**
+ * A function that returns whether mentions can be used as a prefix.
+ * @param message - Message to option for.
+ */
+export type MentionPrefixPredicate = (message: Message) => SyncOrAsync<boolean>;
+export const MentionPrefixPredicate = z.function().args(MessageInstance).returns(SyncOrAsync(z.boolean()));
+
+/**
+ * A function that returns whether this message should be ignored for a certain check.
+ * @param message - Message to check.
+ * @param command - Command to check.
+ */
+export type IgnoreCheckPredicate = (
+	this: Command | CommandHandler,
+	message: Message | AkairoMessage,
+	command: Command
+) => boolean;
+export const IgnoreCheckPredicate = z
+	.function()
+	.args(z.union([MessageInstance, z.instanceof(AkairoMessage)]), CommandInstance)
+	.returns(z.boolean());
+
+/**
+ * A function that returns the prefix(es) to use.
+ * @param message - Message to get prefix for.
+ */
+export type PrefixSupplier = (this: Command | CommandHandler, message: Message) => SyncOrAsync<ArrayOrNot<string>>;
+export const PrefixSupplier = z
+	.function()
+	.args(MessageInstance)
+	.returns(SyncOrAsync(ArrayOrNot(z.string())));
+
+export type CommandHandlerOptions = AkairoHandlerOptions<Command, CommandHandler> & {
 	/**
 	 * Regular expression to automatically make command aliases.
 	 * For example, using `/-/g` would mean that aliases containing `-` would be valid with and without it.
@@ -1567,6 +1513,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, Com
 
 	/**
 	 * Whether or not to allow mentions to the client user as a prefix.
+	 * @default true
 	 */
 	allowMention?: boolean | MentionPrefixPredicate;
 
@@ -1578,6 +1525,7 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, Com
 
 	/**
 	 * Automatically defer messages "BotName is thinking"
+	 * @default false
 	 */
 	autoDefer?: boolean;
 
@@ -1641,19 +1589,19 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, Com
 	 * ID of user(s) to ignore cooldown or a function to ignore. Defaults to the client owner(s).
 	 * @default client.ownerID
 	 */
-	ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	ignoreCooldown?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 * @default []
 	 */
-	ignorePermissions?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	ignorePermissions?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
 
 	/**
 	 * The prefix(es) for command parsing.
 	 * @default "!"
 	 */
-	prefix?: string | string[] | PrefixSupplier;
+	prefix?: ArrayOrNot<string> | PrefixSupplier;
 
 	/**
 	 * Whether or not to store messages in CommandUtil.
@@ -1678,12 +1626,34 @@ export interface CommandHandlerOptions extends AkairoHandlerOptions<Command, Com
 	 * @default false
 	 */
 	skipBuiltInPostInhibitors?: boolean;
-}
+};
+export const CommandHandlerOptions = AkairoHandlerOptions.extend({
+	aliasReplacement: z.instanceof(RegExp).optional(),
+	allowMention: z.union([z.boolean(), MentionPrefixPredicate]).default(true),
+	argumentDefaults: DefaultArgumentOptions.default({}),
+	autoDefer: z.boolean().default(false),
+	autoRegisterSlashCommands: z.boolean().default(false),
+	blockBots: z.boolean().default(true),
+	blockClient: z.boolean().default(true),
+	commandUtil: z.boolean().default(false),
+	commandUtilLifetime: z.number().default(3e5),
+	commandUtilSweepInterval: z.number().default(3e5),
+	defaultCooldown: z.number().default(0),
+	fetchMembers: z.boolean().default(false),
+	handleEdits: z.boolean().default(false),
+	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
+	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).default([]),
+	prefix: z.union([ArrayOrNot(z.string()), PrefixSupplier]).default("!"),
+	storeMessages: z.boolean().default(false),
+	typing: z.boolean().default(false),
+	execSlash: z.boolean().default(false),
+	skipBuiltInPostInhibitors: z.boolean().default(false)
+});
 
 /**
  * Data for managing cooldowns.
  */
-export interface CooldownData {
+export type CooldownData = {
 	/**
 	 * When the cooldown ends.
 	 */
@@ -1698,12 +1668,12 @@ export interface CooldownData {
 	 * Number of times the command has been used.
 	 */
 	uses: number;
-}
+};
 
 /**
  * Various parsed components of the message.
  */
-export interface ParsedComponentData {
+export type ParsedComponentData = {
 	/**
 	 * The content to the right of the prefix.
 	 */
@@ -1728,44 +1698,32 @@ export interface ParsedComponentData {
 	 * The prefix used.
 	 */
 	prefix?: string;
-}
+};
 
-/**
- * A function that returns whether this message should be ignored for a certain check.
- * @param message - Message to check.
- * @param command - Command to check.
- */
-export type IgnoreCheckPredicate = (
-	this: Command | CommandHandler,
-	message: Message | AkairoMessage,
-	command: Command
-) => boolean;
+export type SlashResolveType =
+	| "Attachment"
+	| "Boolean"
+	| "Channel"
+	| "Integer"
+	| "Member"
+	| "Mentionable"
+	| "Number"
+	| "Role"
+	| "String"
+	| "User";
 
-/**
- * A function that returns whether mentions can be used as a prefix.
- * @param message - Message to option for.
- */
-export type MentionPrefixPredicate = (message: Message) => SyncOrAsync<boolean>;
-
-/**
- * A function that returns the prefix(es) to use.
- * @param message - Message to get prefix for.
- */
-export type PrefixSupplier = (this: Command | CommandHandler, message: Message) => SyncOrAsync<string | string[]>;
-
-const slashResolvable = [
-	"Attachment",
-	"Boolean",
-	"Channel",
-	"Integer",
-	"Member",
-	"Mentionable",
-	"Number",
-	"Role",
-	"String",
-	"User"
-] as const;
-export type SlashResolveType = typeof slashResolvable[number];
+export const SlashResolveType = z.union([
+	z.literal("Attachment"),
+	z.literal("Boolean"),
+	z.literal("Channel"),
+	z.literal("Integer"),
+	z.literal("Member"),
+	z.literal("Mentionable"),
+	z.literal("Number"),
+	z.literal("Role"),
+	z.literal("String"),
+	z.literal("User")
+]);
 
 type ConvertedOptionsType = {
 	[key: string]:
@@ -1781,8 +1739,3 @@ type ConvertedOptionsType = {
 		| NonNullable<CommandInteractionOption["message"]>
 		| NonNullable<CommandInteractionOption["attachment"]>;
 };
-
-/**
- * @typedef {CommandInteractionOptionResolver} VSCodePleaseStopRemovingMyImports
- * @internal
- */

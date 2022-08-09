@@ -1,4 +1,4 @@
-import { Formatters, type Message } from "discord.js";
+import { codeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
 import { ArgumentGeneratorReturn, Command, Flag } from "../../../../src/index.js";
 
@@ -23,6 +23,6 @@ export default class GenerateCommand extends Command {
 	}
 
 	public override exec(message: Message, args: { x: "2" }) {
-		message.channel.send(Formatters.codeBlock("js", `${inspect(args, { depth: 1 })}`));
+		message.channel.send(codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

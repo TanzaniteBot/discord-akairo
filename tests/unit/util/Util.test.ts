@@ -1,7 +1,7 @@
 /* eslint-disable */
 import EventEmitter from "events";
 import { describe, expect, it } from "vitest";
-import { AkairoError, Util } from "../../../dist/src/index.js";
+import { AkairoError, Util } from "../lib.js";
 const {
 	deepAssign,
 	intoArray,
@@ -176,13 +176,13 @@ describe("deepEquals", () => {
 				() => {}
 			)
 		).toBe(false);
-		// @ts-ignore
+		// @ts-expect-error
 		expect(deepEquals(a => a, null)).toBe(false);
-		// @ts-ignore
+		// @ts-expect-error
 		expect(deepEquals(a => a, {})).toBe(false);
-		// @ts-ignore
+		// @ts-expect-error
 		expect(deepEquals(null, a => a)).toBe(false);
-		// @ts-ignore
+		// @ts-expect-error
 		expect(deepEquals({}, a => a)).toBe(false);
 	});
 

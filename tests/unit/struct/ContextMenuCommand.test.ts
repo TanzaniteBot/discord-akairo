@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { ApplicationCommandType, BitField } from "discord.js";
 import { describe, expect, it } from "vitest";
-import { ContextMenuCommand } from "../../../dist/src/index.js";
+import { ContextMenuCommand } from "../lib.js";
 
 class TestCommand extends ContextMenuCommand {
 	public exec() {

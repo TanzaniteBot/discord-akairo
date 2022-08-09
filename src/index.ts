@@ -41,6 +41,7 @@ export * as Constants from "./util/Constants.js";
 export * as Util from "./util/Util.js";
 
 import packageJSON from "../package.json";
+
 /**
  * The version of the library.
  */

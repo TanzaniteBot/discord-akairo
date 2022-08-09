@@ -1,7 +1,7 @@
-import { Formatters, type Message } from "discord.js";
+import { codeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
 import { Command } from "../../../../src/index.js";
-import logger from "../../struct/Logger.js";
+import logger from "../../struct/Logger.mjs";
 
 export default class PCommand extends Command {
 	public constructor() {
@@ -29,6 +29,6 @@ export default class PCommand extends Command {
 	}
 
 	public override exec(message: Message, args: { integer: bigint }) {
-		message.channel.send(Formatters.codeBlock("js", `${inspect(args, { depth: 1 })}`));
+		message.channel.send(codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

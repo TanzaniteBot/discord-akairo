@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { describe, expect, it, vi } from "vitest";
-import { AkairoClient, ContextMenuCommandHandler } from "../../../dist/src/index.js";
+import { AkairoClient, ContextMenuCommandHandler } from "../lib.js";
 
 describe("ContextMenuCommand", () => {
 	const client = new AkairoClient({ intents: [] });
@@ -28,7 +28,7 @@ describe("ContextMenuCommand", () => {
 	});
 
 	it("should call setup after construction", () => {
-		// @ts-ignore
+		// @ts-expect-error
 		const spy = vi.spyOn(ContextMenuCommandHandler.prototype, "setup");
 		expect(spy).toHaveBeenCalledTimes(0);
 		new ContextMenuCommandHandler(client, { directory: "" });

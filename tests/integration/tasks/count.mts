@@ -1,5 +1,5 @@
 import { Task } from "../../../src/index.js";
-import logger from "../struct/Logger.js";
+import logger from "../struct/Logger.mjs";
 
 export default class CountTask extends Task {
 	public constructor() {
