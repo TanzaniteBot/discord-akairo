@@ -31,6 +31,8 @@ jobs:
         if: steps.pre-release.outputs.release == 'true'
         run: yarn --immutable
 
+      - name: Make Pseudo Auth File
+        run: cp ./tests/integration/auth.example.json ./tests/integration/auth.json
 
       - name: Publish package
         if: steps.pre-release.outputs.release == 'true'
