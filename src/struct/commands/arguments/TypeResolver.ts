@@ -515,7 +515,7 @@ export class TypeResolver {
 	 * @param name - Name of the type.
 	 * @param fn - Function that casts the type.
 	 */
-	public addType(name: string, fn: ArgumentTypeCaster): TypeResolver {
+	public addType(name: string, fn: ArgumentTypeCaster<any>): TypeResolver {
 		this.types.set(name, fn);
 		return this;
 	}
@@ -524,7 +524,7 @@ export class TypeResolver {
 	 * Adds multiple new types.
 	 * @param types  - Object with keys as the type name and values as the cast function.
 	 */
-	public addTypes(types: Record<string, ArgumentTypeCaster>): TypeResolver {
+	public addTypes(types: Record<string, ArgumentTypeCaster<any>>): TypeResolver {
 		for (const [key, value] of Object.entries(types)) {
 			this.addType(key, value);
 		}
