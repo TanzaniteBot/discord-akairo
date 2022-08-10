@@ -41,9 +41,11 @@ export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler
 	 * @param id The ID of module.
 	 * @param options Additional options for this module.
 	 */
-	public constructor(id: string, options?: AkairoModuleOptions) {
+	public constructor(id: string, options: AkairoModuleOptions = {}) {
 		z.string().parse(id);
-		const { category } = AkairoModuleOptions.parse(options);
+		AkairoModuleOptions.parse(options);
+
+		const { category = "default" } = options;
 
 		this.id = id;
 		this.categoryID = category;
@@ -88,6 +90,6 @@ export type AkairoModuleOptions = {
 
 export const AkairoModuleOptions = z
 	.object({
-		category: z.string().default("default")
+		category: z.string().optional()
 	})
 	.passthrough();

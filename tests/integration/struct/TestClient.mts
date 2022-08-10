@@ -68,27 +68,42 @@ export default class TestClient extends AkairoClient {
 				modifyOtherwise: (msg, text) => `${msg.author}, ${text}`
 			},
 			autoRegisterSlashCommands: true,
-			extensions: [".js"]
+			extensions: [".mjs"]
+		});
+		this.commandHandler.on("load", (mod, reload) => {
+			logger.debug("CommandHandler", `${reload ? "Reloaded" : "Loaded"} command ${mod.id}`);
 		});
 
 		this.inhibitorHandler = new InhibitorHandler(this, {
 			directory: join(__dirname, "..", "inhibitors"),
-			extensions: [".js"]
+			extensions: [".mjs"]
+		});
+		this.inhibitorHandler.on("load", (mod, reload) => {
+			logger.debug("InhibitorHandler", `${reload ? "Reloaded" : "Loaded"} inhibitor ${mod.id}`);
 		});
 
 		this.listenerHandler = new ListenerHandler(this, {
 			directory: join(__dirname, "..", "listeners"),
-			extensions: [".js"]
+			extensions: [".mjs"]
+		});
+		this.listenerHandler.on("load", (mod, reload) => {
+			logger.debug("ListenerHandler", `${reload ? "Reloaded" : "Loaded"} listener ${mod.id}`);
 		});
 
 		this.taskHandler = new TaskHandler(this, {
 			directory: join(__dirname, "..", "tasks"),
-			extensions: [".js"]
+			extensions: [".mjs"]
+		});
+		this.taskHandler.on("load", (mod, reload) => {
+			logger.debug("TaskHandler", `${reload ? "Reloaded" : "Loaded"} task ${mod.id}`);
 		});
 
 		this.contextMenuCommandHandler = new ContextMenuCommandHandler(this, {
 			directory: join(__dirname, "..", "context-menu-commands"),
-			extensions: [".js"]
+			extensions: [".mjs"]
+		});
+		this.contextMenuCommandHandler.on("load", (mod, reload) => {
+			logger.debug("ContextMenuCommandHandler", `${reload ? "Reloaded" : "Loaded"} context menu command ${mod.id}`);
 		});
 
 		this.setup();

@@ -92,7 +92,7 @@ export class Argument {
 	/**
 	 * The string(s) to use for flag or option match.
 	 */
-	public flag?: string | string[] | null;
+	public flag: string | string[] | null;
 
 	/**
 	 * The index to start from.
@@ -143,8 +143,9 @@ export class Argument {
 	 * @param command - Command of the argument.
 	 * @param options - Options for the argument.
 	 */
-	// eslint-disable-next-line complexity
 	public constructor(command: Command, options: ArgumentOptions = {}) {
+		ArgumentOptions.parse(options);
+
 		const {
 			match,
 			type,
@@ -157,20 +158,20 @@ export class Argument {
 			default: defaultValue,
 			otherwise,
 			modifyOtherwise
-		} = ArgumentOptions.parse(options);
+		} = options;
 
 		this.command = command;
 		this.match = match ?? ArgumentMatches.PHRASE;
-		this.type = typeof type === "function" ? type.bind(this) : type;
-		this.flag = flag;
-		this.multipleFlags = multipleFlags;
-		this.index = index;
-		this.unordered = unordered;
-		this.limit = limit;
-		this.prompt = prompt;
-		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue;
-		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise;
-		this.modifyOtherwise = modifyOtherwise;
+		this.type = typeof type === "function" ? type.bind(this) : type ?? ArgumentTypes.STRING;
+		this.flag = flag ?? null;
+		this.multipleFlags = multipleFlags ?? false;
+		this.index = index ?? null;
+		this.unordered = unordered ?? false;
+		this.limit = limit ?? Infinity;
+		this.prompt = prompt ?? null;
+		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue ?? null;
+		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise ?? null;
+		this.modifyOtherwise = modifyOtherwise ?? null;
 	}
 
 	/**
@@ -208,6 +209,11 @@ export class Argument {
 			...this.command.argumentDefaults.prompt,
 			...(typeof this.prompt === "object" ? this.prompt : {})
 		};
+
+		/* const promptOptions: ArgumentPromptOptions = {};
+		Object.assign(promptOptions, this.handler.argumentDefaults.prompt);
+		Object.assign(promptOptions, this.command.argumentDefaults.prompt);
+		Object.assign(promptOptions, this.prompt || {}); */
 
 		const isInfinite = promptOptions.infinite || (this.match === ArgumentMatches.SEPARATE && !commandInput);
 		const additionalRetry = Number(Boolean(commandInput));
@@ -907,23 +913,23 @@ export type ArgumentPromptOptions = {
 };
 
 export const ArgumentPromptOptions = z.object({
-	breakout: z.boolean().default(true),
+	breakout: z.boolean().optional(),
 	cancel: ArgumentPromptResponse.optional(),
-	cancelWord: z.string().default("cancel"),
+	cancelWord: z.string().optional(),
 	ended: ArgumentPromptResponse.optional(),
-	infinite: z.boolean().default(false),
-	limit: z.number().default(Infinity),
+	infinite: z.boolean().optional(),
+	limit: z.number().optional(),
 	modifyCancel: PromptContentModifier.optional(),
 	modifyEnded: PromptContentModifier.optional(),
 	modifyRetry: PromptContentModifier.optional(),
 	modifyStart: PromptContentModifier.optional(),
 	modifyTimeout: PromptContentModifier.optional(),
-	optional: z.boolean().default(false),
-	retries: z.number().default(1),
+	optional: z.boolean().optional(),
+	retries: z.number().optional(),
 	retry: ArgumentPromptResponse.optional(),
 	start: ArgumentPromptResponse.optional(),
-	stopWord: z.string().default("stop"),
-	time: z.number().default(30000),
+	stopWord: z.string().optional(),
+	time: z.number().optional(),
 	timeout: ArgumentPromptResponse.optional()
 });
 
@@ -951,17 +957,7 @@ export const ArgumentPromptOptions = z.object({
  */
 export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" | "text" | "content" | "restContent" | "none";
 
-export const ArgumentMatch = z.union([
-	z.literal("phrase"),
-	z.literal("flag"),
-	z.literal("option"),
-	z.literal("rest"),
-	z.literal("separate"),
-	z.literal("text"),
-	z.literal("content"),
-	z.literal("restContent"),
-	z.literal("none")
-]);
+export const ArgumentMatch = z.enum(["phrase", "flag", "option", "rest", "separate", "text", "content", "restContent", "none"]);
 
 /**
  * - `string` does not cast to any type.
@@ -1221,7 +1217,7 @@ export type ArgumentOptions = {
 	 * Applicable to text, content, rest, or separate match only.
 	 * @default Infinity.
 	 */
-	limit?: number | null;
+	limit?: number;
 
 	/**
 	 * Method to match text. Defaults to 'phrase'.
@@ -1274,15 +1270,15 @@ export type ArgumentOptions = {
 export const ArgumentOptions = z.object({
 	default: z.any(),
 	description: z.any(),
-	flag: z.union([z.string(), z.string().array()]).nullish().default(null),
+	flag: z.union([z.string(), z.string().array()]).nullish(),
 	id: z.string().nullish(),
-	index: z.number().nullish().default(null),
-	limit: z.number().default(Infinity),
-	match: z.nativeEnum(ArgumentMatches).default(ArgumentMatches.PHRASE),
-	modifyOtherwise: OtherwiseContentModifier.nullish().default(null),
-	multipleFlags: z.boolean().default(false),
+	index: z.number().nullish(),
+	limit: z.number().optional(),
+	match: z.nativeEnum(ArgumentMatches).optional(),
+	modifyOtherwise: OtherwiseContentModifier.nullish().optional(),
+	multipleFlags: z.boolean().optional(),
 	otherwise: z.union([MessageSendResolvable, OtherwiseContentSupplier]).nullish(),
-	prompt: z.union([ArgumentPromptOptions, z.boolean()]).nullish().default(null),
-	type: z.union([ArgumentType, ArgumentTypeCaster]).default(ArgumentTypes.STRING),
-	unordered: z.union([z.boolean(), z.number(), z.number().array()]).default(false)
+	prompt: z.union([ArgumentPromptOptions, z.boolean()]).nullish(),
+	type: z.union([ArgumentType, ArgumentTypeCaster]).optional(),
+	unordered: z.union([z.boolean(), z.number(), z.number().array()]).optional()
 });

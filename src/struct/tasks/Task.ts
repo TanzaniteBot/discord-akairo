@@ -23,7 +23,9 @@ export abstract class Task extends AkairoModule<TaskHandler, Task> {
 	 * @param options - Options for the task.
 	 */
 	public constructor(id: string, options: TaskOptions = {}) {
-		const { category, delay, runOnStart } = TaskOptions.parse(options);
+		TaskOptions.parse(options);
+
+		const { category, delay, runOnStart = false } = options;
 
 		super(id, { category });
 		this.delay = delay;
@@ -57,5 +59,5 @@ export type TaskOptions = AkairoModuleOptions & {
 
 export const TaskOptions = AkairoModuleOptions.extend({
 	delay: z.number().optional(),
-	runOnStart: z.boolean().default(false)
+	runOnStart: z.boolean().optional()
 }).passthrough();

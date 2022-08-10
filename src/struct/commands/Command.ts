@@ -188,48 +188,46 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	public constructor(id: string, options: CommandOptions = {}) {
 		super(id, { category: options?.category });
 
-		/* eslint-disable prefer-const */
-		let {
-			aliases,
+		CommandOptions.parse(options);
+
+		const {
+			aliases = [],
 			args = this.args || [],
-			argumentDefaults,
+			argumentDefaults = {},
 			before = this.before || (() => undefined),
-			channel,
+			channel = null,
 			clientPermissions = this.clientPermissions,
 			condition = this.condition || (() => false),
-			cooldown,
+			cooldown = null,
 			description = "",
-			editable,
-			flags,
+			editable = true,
+			flags = [],
 			ignoreCooldown,
 			ignorePermissions,
 			localization,
 			lock,
-			onlyNsfw,
-			optionFlags,
-			ownerOnly,
+			onlyNsfw = false,
+			optionFlags = [],
+			ownerOnly = false,
 			prefix = this.prefix,
-			quoted,
-			ratelimit,
+			quoted = true,
+			ratelimit = 1,
 			regex = this.regex,
 			separator,
-			slash,
-			slashDefaultMemberPermissions,
-			slashDmPermission,
-			slashEphemeral,
-			slashGuilds,
-			slashOnly,
+			slash = false,
+			slashEphemeral = false,
+			slashGuilds = [],
+			slashOnly = false,
 			slashOptions,
-			superUserOnly,
-			typing,
-			userPermissions /* = this.userPermissions */
-		} = CommandOptions.parse(options);
-		/* eslint-enable prefer-const */
+			superUserOnly = false,
+			typing = false,
+			userPermissions = this.userPermissions
+		} = options;
 
-		userPermissions ??= this.userPermissions;
+		let { slashDefaultMemberPermissions, slashDmPermission } = options;
 
 		if (userPermissions && typeof userPermissions !== "function") slashDefaultMemberPermissions ??= userPermissions;
-		if (slashGuilds.length > 0) slashDmPermission ??= channel === null || channel === "dm";
+		if (slashGuilds.length === 0) slashDmPermission ??= channel === null || channel === "dm";
 
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
@@ -461,7 +459,7 @@ export type CommandOptions = AkairoModuleOptions & {
 	 * Restricts channel to either 'guild' or 'dm'.
 	 * @default null
 	 */
-	channel?: "guild" | "dm";
+	channel?: "guild" | "dm" | null;
 
 	/**
 	 * Permissions required by the client to run this command.
@@ -479,7 +477,7 @@ export type CommandOptions = AkairoModuleOptions & {
 	 * The command cooldown in milliseconds.
 	 * @default null
 	 */
-	cooldown?: number;
+	cooldown?: number | null;
 
 	/**
 	 * Description of the command.
@@ -629,43 +627,40 @@ export type CommandOptions = AkairoModuleOptions & {
 	userPermissions?: PermissionResolvable | MissingPermissionSupplier;
 };
 export const CommandOptions = AkairoModuleOptions.extend({
-	aliases: z.string().array().default([]),
+	aliases: z.string().array().optional(),
 	args: z.union([ArgumentOptions.array(), ArgumentGenerator]).optional(),
-	argumentDefaults: DefaultArgumentOptions.default({}),
+	argumentDefaults: DefaultArgumentOptions.optional(),
 	before: BeforeAction.optional(),
-	channel: z
-		.union([z.literal("guild"), z.literal("dm")])
-		.nullish()
-		.default(null),
+	channel: z.enum(["guild", "dm"]).nullish(),
 	clientPermissions: z.union([PermissionResolvableValidator, MissingPermissionSupplier]).optional(),
 	condition: ExecutionPredicate.optional(),
-	cooldown: z.number().nullish().default(null),
-	description: z.union([z.string(), ArrayOrNot(z.any())]).default(""),
-	editable: z.boolean().default(true),
-	flags: z.string().array().default([]),
+	cooldown: z.number().nullish(),
+	description: z.union([z.string(), ArrayOrNot(z.any())]).optional(),
+	editable: z.boolean().optional(),
+	flags: z.string().array().optional(),
 	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
 	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
-	localization: z.record(z.any()).default({}),
-	lock: z.union([KeySupplier, z.literal("guild"), z.literal("channel"), z.literal("user")]).optional(),
-	onlyNsfw: z.boolean().default(false),
-	optionFlags: z.string().array().default([]),
-	ownerOnly: z.boolean().default(false),
+	localization: z.record(z.any()).optional(),
+	lock: z.union([KeySupplier, z.enum(["guild", "channel", "user"])]).optional(),
+	onlyNsfw: z.boolean().optional(),
+	optionFlags: z.string().array().optional(),
+	ownerOnly: z.boolean().optional(),
 	prefix: z.union([ArrayOrNot(z.string()), PrefixSupplier]).optional(),
-	quoted: z.boolean().default(true),
-	ratelimit: z.number().default(1),
+	quoted: z.boolean().optional(),
+	ratelimit: z.number().optional(),
 	regex: z.union([z.instanceof(RegExp), RegexSupplier]).optional(),
 	separator: z.string().optional(),
-	slash: z.boolean().default(false),
+	slash: z.boolean().optional(),
 	slashDefaultMemberPermissions: PermissionResolvableValidator.optional(),
 	slashDmPermission: z.boolean().optional(),
-	slashEphemeral: z.boolean().default(false),
-	slashGuilds: z.string().array().default([]),
+	slashEphemeral: z.boolean().optional(),
+	slashGuilds: z.string().array().optional(),
 	slashOptions: z.any().array().optional(),
-	slashOnly: z.boolean().default(false),
-	superUserOnly: z.boolean().default(false),
-	typing: z.boolean().default(false),
+	slashOnly: z.boolean().optional(),
+	superUserOnly: z.boolean().optional(),
+	typing: z.boolean().optional(),
 	userPermissions: z.union([PermissionResolvableValidator, MissingPermissionSupplier]).optional()
-});
+}).passthrough();
 
 export interface AkairoApplicationCommandSubGroupData extends ApplicationCommandSubGroupData {
 	options?: AkairoApplicationCommandSubCommandData[];

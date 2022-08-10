@@ -65,14 +65,15 @@ export class AkairoHandler<
 	 */
 	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Module, Handler>) {
 		z.instanceof(AkairoClient).parse(client);
+		AkairoHandlerOptions.parse(options);
 
 		const {
-			directory,
+			automateCategories = false,
 			classToHandle = AkairoModule,
-			extensions,
-			automateCategories,
-			loadFilter
-		} = AkairoHandlerOptions.parse(options);
+			directory,
+			extensions = [".js", ".json", ".ts"],
+			loadFilter = () => true
+		} = options;
 
 		super();
 
@@ -313,10 +314,10 @@ export type AkairoHandlerOptions<Module extends AkairoModule<Handler, Module>, H
 
 export const AkairoHandlerOptions = z
 	.object({
-		automateCategories: z.boolean().default(false),
+		automateCategories: z.boolean().optional(),
 		classToHandle: z.any(),
 		directory: z.string(),
-		extensions: z.union([Extension.array(), z.set(Extension)]).default([".js", ".json", ".ts"]),
-		loadFilter: LoadPredicate.default(() => () => true)
+		extensions: z.union([Extension.array(), z.set(Extension)]).optional(),
+		loadFilter: LoadPredicate.optional()
 	})
 	.passthrough();

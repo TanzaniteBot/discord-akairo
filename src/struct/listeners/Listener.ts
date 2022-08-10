@@ -28,7 +28,9 @@ export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 	 * @param options - Options for the listener.
 	 */
 	public constructor(id: string, options: ListenerOptions) {
-		const { category, emitter, event, type } = ListenerOptions.parse(options);
+		ListenerOptions.parse(options);
+
+		const { category, emitter, event, type = "on" } = options;
 		super(id, { category });
 
 		this.emitter = emitter;
@@ -46,12 +48,7 @@ export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
 patchAbstract(Listener, "exec");
 
 export type ListenerType = "on" | "once" | "prependListener" | "prependOnceListener";
-export const ListenerType = z.union([
-	z.literal("on"),
-	z.literal("once"),
-	z.literal("prependListener"),
-	z.literal("prependOnceListener")
-]);
+export const ListenerType = z.enum(["on", "once", "prependListener", "prependOnceListener"]);
 
 /**
  * Options to use for listener execution behavior.
@@ -76,5 +73,5 @@ export type ListenerOptions = AkairoModuleOptions & {
 export const ListenerOptions = AkairoModuleOptions.extend({
 	emitter: z.union([z.string(), z.instanceof(EventEmitter)]),
 	event: z.string(),
-	type: ListenerType.default("on")
-});
+	type: ListenerType.optional()
+}).passthrough();

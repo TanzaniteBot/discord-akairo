@@ -63,9 +63,19 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 	 * @param options - Options for the context menu command.
 	 */
 	public constructor(id: string, options: ContextMenuCommandOptions) {
-		// eslint-disable-next-line prefer-const
-		let { category, guilds, name, ownerOnly, superUserOnly, type, nameLocalizations, defaultMemberPermissions, dmPermission } =
-			ContextMenuCommandOptions.parse(options);
+		ContextMenuCommandOptions.parse(options);
+
+		const {
+			category,
+			guilds = [],
+			name,
+			ownerOnly = false,
+			superUserOnly = false,
+			type,
+			nameLocalizations,
+			defaultMemberPermissions
+		} = options;
+		let { dmPermission } = options;
 
 		if (dmPermission != null && guilds.length > 0)
 			throw new TypeError("You cannot set `options.dmPermission` with commands configured with `options.guilds`.");
@@ -144,10 +154,10 @@ export type ContextMenuCommandOptions = AkairoModuleOptions & {
 };
 
 export const ContextMenuCommandOptions = AkairoModuleOptions.extend({
-	guilds: z.string().array().default([]),
+	guilds: z.string().array().optional(),
 	name: z.string(),
-	ownerOnly: z.boolean().default(false),
-	superUserOnly: z.boolean().default(false),
+	ownerOnly: z.boolean().optional(),
+	superUserOnly: z.boolean().optional(),
 	type: z.union([z.literal(ApplicationCommandType.User), z.literal(ApplicationCommandType.Message)]),
 	nameLocalizations: z.record(z.string().nullish()).optional(),
 	defaultMemberPermissions: PermissionResolvableValidator.optional(),

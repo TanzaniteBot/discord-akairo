@@ -1,6 +1,7 @@
 import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
 import { z } from "zod";
 import type { AkairoClientEvents } from "../typings/events.js";
+import { ArrayOrNot } from "../typings/Util.js";
 import * as ClientUtil from "./ClientUtil.js";
 
 /**
@@ -87,18 +88,18 @@ export type AkairoClientOptions = {
 	 * Discord ID of the client owner(s).
 	 * @default []
 	 */
-	ownerID?: Snowflake | Snowflake[];
+	ownerID?: ArrayOrNot<Snowflake>;
 
 	/**
 	 * Discord ID of the client superUsers(s).
 	 * @default []
 	 */
-	superUserID?: Snowflake | Snowflake[];
+	superUserID?: ArrayOrNot<Snowflake>;
 };
 
 export const AkairoClientOptions = z
 	.object({
-		ownerID: z.union([z.string(), z.string().array()]).default([]),
-		superUserID: z.union([z.string(), z.string().array()]).default([])
+		ownerID: ArrayOrNot(z.string()).optional(),
+		superUserID: ArrayOrNot(z.string()).optional()
 	})
 	.passthrough();

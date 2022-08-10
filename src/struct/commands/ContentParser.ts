@@ -67,7 +67,9 @@ class Tokenizer {
 
 	public constructor(content: string, options: ContentParserOptions = {}) {
 		z.string().parse(content);
-		const { flagWords, optionFlagWords, quoted, separator } = ContentParserOptions.parse(options);
+		ContentParserOptions.parse(options);
+
+		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
 
 		this.content = content;
 		this.flagWords = flagWords;
@@ -257,26 +259,18 @@ class Tokenizer {
 }
 
 type TokenType = "FlagWord" | "OptionFlagWord" | "Quote" | "OpenQuote" | "EndQuote" | "Word" | "WS" | "EOF" | "Separator";
-const TokenType = z.union([
-	z.literal("FlagWord"),
-	z.literal("OptionFlagWord"),
-	z.literal("Quote"),
-	z.literal("OpenQuote"),
-	z.literal("EndQuote"),
-	z.literal("Word"),
-	z.literal("WS"),
-	z.literal("EOF"),
-	z.literal("Separator")
-]);
+const TokenType = z.enum(["FlagWord", "OptionFlagWord", "Quote", "OpenQuote", "EndQuote", "Word", "WS", "EOF", "Separator"]);
 
 type Token = {
 	type: TokenType;
 	value: string;
 };
-const Token = z.object({
-	type: TokenType,
-	value: z.string()
-});
+const Token = z
+	.object({
+		type: TokenType,
+		value: z.string()
+	})
+	.passthrough();
 
 const enum TokenizerState {
 	Default = 0,
@@ -301,7 +295,9 @@ class Parser {
 
 	public constructor(tokens: Token[], options: ParserOptions) {
 		Token.array().parse(tokens);
-		const { separated } = ParserOptions.parse(options);
+		ParserOptions.parse(options);
+
+		const { separated } = options;
 
 		this.tokens = tokens;
 		this.separated = separated;
@@ -478,9 +474,11 @@ class Parser {
 export type ParserOptions = {
 	separated: boolean;
 };
-export const ParserOptions = z.object({
-	separated: z.boolean()
-});
+export const ParserOptions = z
+	.object({
+		separated: z.boolean()
+	})
+	.passthrough();
 
 /**
  * Parses content.
@@ -511,7 +509,9 @@ export class ContentParser {
 	 * @param options - Options.
 	 */
 	public constructor(options: ContentParserOptions = {}) {
-		const { flagWords, optionFlagWords, quoted, separator } = ContentParserOptions.parse(options);
+		ContentParserOptions.parse(options);
+
+		const { flagWords = [], optionFlagWords = [], quoted = true, separator } = options;
 
 		this.flagWords = flagWords.sort((a, b) => b.length - a.length);
 		this.optionFlagWords = optionFlagWords.sort((a, b) => b.length - a.length);
@@ -586,12 +586,14 @@ export type ContentParserOptions = {
 	 */
 	separator?: string;
 };
-export const ContentParserOptions = z.object({
-	flagWords: z.string().array().default([]),
-	optionFlagWords: z.string().array().default([]),
-	quoted: z.boolean().default(true),
-	separator: z.string().optional()
-});
+export const ContentParserOptions = z
+	.object({
+		flagWords: z.string().array().optional(),
+		optionFlagWords: z.string().array().optional(),
+		quoted: z.boolean().optional(),
+		separator: z.string().optional()
+	})
+	.passthrough();
 
 type BaseParsed = {
 	/**
@@ -604,10 +606,12 @@ type BaseParsed = {
 	 */
 	raw: string;
 };
-const BaseParsed = z.object({
-	// type is implemented independently
-	raw: z.string()
-});
+const BaseParsed = z
+	.object({
+		// type is implemented independently
+		raw: z.string()
+	})
+	.passthrough();
 
 /**
  * A parsed phrase.
@@ -623,7 +627,7 @@ type ParsedPhrase = BaseParsed & {
 const ParsedPhrase = BaseParsed.extend({
 	type: z.literal("Phrase"),
 	value: z.string()
-});
+}).passthrough();
 
 /**
  * A parsed flag.
@@ -639,7 +643,7 @@ type ParsedFlag = BaseParsed & {
 const ParsedFlag = BaseParsed.extend({
 	type: z.literal("Flag"),
 	key: z.string()
-});
+}).passthrough();
 
 /**
  * A parsed option flag.
@@ -661,7 +665,7 @@ const ParsedOptionFlag = BaseParsed.extend({
 	type: z.literal("OptionFlag"),
 	key: z.string(),
 	value: z.string()
-});
+}).passthrough();
 
 /**
  * Flags extracted from an argument list.
@@ -677,10 +681,12 @@ export type ExtractedFlags = {
 	 */
 	optionFlagWords: string[];
 };
-export const ExtractedFlags = z.object({
-	flagWords: z.string().array(),
-	optionFlagWords: z.string().array()
-});
+export const ExtractedFlags = z
+	.object({
+		flagWords: z.string().array(),
+		optionFlagWords: z.string().array()
+	})
+	.passthrough();
 
 /**
  * Result of parsing.
@@ -706,9 +712,11 @@ export type ContentParserResult = {
 	 */
 	optionFlags: ParsedOptionFlag[];
 };
-export const ContentParserResult = z.object({
-	all: z.union([ParsedPhrase, ParsedFlag, ParsedOptionFlag]).array(),
-	phrases: ParsedPhrase.array(),
-	flags: ParsedFlag.array(),
-	optionFlags: ParsedOptionFlag.array()
-});
+export const ContentParserResult = z
+	.object({
+		all: z.union([ParsedPhrase, ParsedFlag, ParsedOptionFlag]).array(),
+		phrases: ParsedPhrase.array(),
+		flags: ParsedFlag.array(),
+		optionFlags: ParsedOptionFlag.array()
+	})
+	.passthrough();

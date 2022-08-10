@@ -31,7 +31,9 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	 * @param options - Options for the inhibitor.
 	 */
 	public constructor(id: string, options: InhibitorOptions = {}) {
-		const { category, reason, type, priority } = InhibitorOptions.parse(options);
+		InhibitorOptions.parse(options);
+
+		const { category, reason = "", type = "post", priority = 0 } = options;
 
 		super(id, { category });
 
@@ -78,7 +80,7 @@ export type InhibitorOptions = AkairoModuleOptions & {
 };
 
 export const InhibitorOptions = AkairoModuleOptions.extend({
-	reason: z.string().default(""),
-	type: z.enum(["all", "pre", "post"] as const).default("post"),
-	priority: z.number().default(0)
+	reason: z.string().optional(),
+	type: z.enum(["all", "pre", "post"] as const).optional(),
+	priority: z.number().optional()
 }).passthrough();

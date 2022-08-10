@@ -25,7 +25,7 @@ import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
 import { deepAssign, deepEquals, intoArray, intoCallable, isPromise, prefixCompare } from "../../util/Util.js";
-import type { AkairoClient } from "../AkairoClient.js";
+import { AkairoClient } from "../AkairoClient.js";
 import { AkairoHandler, AkairoHandlerOptions, Extension } from "../AkairoHandler.js";
 import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
@@ -192,33 +192,36 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param options - Options.
 	 */
 	public constructor(client: AkairoClient, options: CommandHandlerOptions) {
+		z.instanceof(AkairoClient).parse(client);
+		CommandHandlerOptions.parse(options);
+
 		const {
 			directory,
 			classToHandle = Command,
 			extensions = [".js", ".ts"] as Extension[],
 			automateCategories,
 			loadFilter,
-			blockClient,
-			blockBots,
-			fetchMembers,
-			handleEdits,
-			storeMessages,
-			commandUtil,
-			commandUtilLifetime,
-			commandUtilSweepInterval,
-			defaultCooldown,
+			blockClient = true,
+			blockBots = true,
+			fetchMembers = false,
+			handleEdits = false,
+			storeMessages = false,
+			commandUtil = false,
+			commandUtilLifetime = 3e5,
+			commandUtilSweepInterval = 3e5,
+			defaultCooldown = 0,
 			ignoreCooldown = client.ownerID,
-			ignorePermissions,
-			argumentDefaults,
-			prefix,
-			allowMention,
+			ignorePermissions = [],
+			argumentDefaults = {},
+			prefix = "!",
+			allowMention = true,
 			aliasReplacement,
-			autoDefer,
-			typing,
-			autoRegisterSlashCommands,
-			execSlash,
-			skipBuiltInPostInhibitors
-		} = CommandHandlerOptions.parse(options);
+			autoDefer = false,
+			typing = false,
+			autoRegisterSlashCommands = false,
+			execSlash = false,
+			skipBuiltInPostInhibitors = false
+		} = options;
 
 		if (!(classToHandle.prototype instanceof Command || classToHandle === Command)) {
 			throw new AkairoError("INVALID_CLASS_TO_HANDLE", classToHandle.name, Command.name);
@@ -1629,26 +1632,26 @@ export type CommandHandlerOptions = AkairoHandlerOptions<Command, CommandHandler
 };
 export const CommandHandlerOptions = AkairoHandlerOptions.extend({
 	aliasReplacement: z.instanceof(RegExp).optional(),
-	allowMention: z.union([z.boolean(), MentionPrefixPredicate]).default(true),
-	argumentDefaults: DefaultArgumentOptions.default({}),
-	autoDefer: z.boolean().default(false),
-	autoRegisterSlashCommands: z.boolean().default(false),
-	blockBots: z.boolean().default(true),
-	blockClient: z.boolean().default(true),
-	commandUtil: z.boolean().default(false),
-	commandUtilLifetime: z.number().default(3e5),
-	commandUtilSweepInterval: z.number().default(3e5),
-	defaultCooldown: z.number().default(0),
-	fetchMembers: z.boolean().default(false),
-	handleEdits: z.boolean().default(false),
+	allowMention: z.union([z.boolean(), MentionPrefixPredicate]).optional(),
+	argumentDefaults: DefaultArgumentOptions.optional(),
+	autoDefer: z.boolean().optional(),
+	autoRegisterSlashCommands: z.boolean().optional(),
+	blockBots: z.boolean().optional(),
+	blockClient: z.boolean().optional(),
+	commandUtil: z.boolean().optional(),
+	commandUtilLifetime: z.number().optional(),
+	commandUtilSweepInterval: z.number().optional(),
+	defaultCooldown: z.number().optional(),
+	fetchMembers: z.boolean().optional(),
+	handleEdits: z.boolean().optional(),
 	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
-	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).default([]),
-	prefix: z.union([ArrayOrNot(z.string()), PrefixSupplier]).default("!"),
-	storeMessages: z.boolean().default(false),
-	typing: z.boolean().default(false),
-	execSlash: z.boolean().default(false),
-	skipBuiltInPostInhibitors: z.boolean().default(false)
-});
+	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
+	prefix: z.union([ArrayOrNot(z.string()), PrefixSupplier]).optional(),
+	storeMessages: z.boolean().optional(),
+	typing: z.boolean().optional(),
+	execSlash: z.boolean().optional(),
+	skipBuiltInPostInhibitors: z.boolean().optional()
+}).passthrough();
 
 /**
  * Data for managing cooldowns.
@@ -1712,17 +1715,17 @@ export type SlashResolveType =
 	| "String"
 	| "User";
 
-export const SlashResolveType = z.union([
-	z.literal("Attachment"),
-	z.literal("Boolean"),
-	z.literal("Channel"),
-	z.literal("Integer"),
-	z.literal("Member"),
-	z.literal("Mentionable"),
-	z.literal("Number"),
-	z.literal("Role"),
-	z.literal("String"),
-	z.literal("User")
+export const SlashResolveType = z.enum([
+	"Attachment",
+	"Boolean",
+	"Channel",
+	"Integer",
+	"Member",
+	"Mentionable",
+	"Number",
+	"Role",
+	"String",
+	"User"
 ]);
 
 type ConvertedOptionsType = {
