@@ -204,7 +204,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 			flags = [],
 			ignoreCooldown,
 			ignorePermissions,
-			localization,
+			localization = {},
 			lock,
 			onlyNsfw = false,
 			optionFlags = [],
@@ -251,7 +251,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 		this.cooldown = cooldown;
 		this.description = Array.isArray(description) ? description.join("\n") : description;
 		this.editable = editable;
-		this.localization = <CommandLocalization>localization;
+		this.localization = localization;
 		this.onlyNsfw = Boolean(onlyNsfw);
 		this.ownerOnly = Boolean(ownerOnly);
 		this.superUserOnly = Boolean(superUserOnly);
@@ -750,6 +750,6 @@ export type SlashOption = AkairoApplicationCommandOptionData & {
  *     },
  * }
  */
-export type CommandLocalization = Record<"nameLocalizations" | "descriptionLocalizations", LocalizationMap>;
+export type CommandLocalization = Partial<Record<"nameLocalizations" | "descriptionLocalizations", LocalizationMap>>;
 
 export const CommandInstance = z.instanceof(Command as new (...args: any[]) => Command);
