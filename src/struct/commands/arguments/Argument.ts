@@ -1084,7 +1084,7 @@ export interface BaseArgumentType {
  */
 export type ArgumentType = keyof BaseArgumentType | (string | string[])[] | RegExp | string;
 
-export const ArgumentType = z.union([z.string(), z.string().array(), z.instanceof(RegExp)]);
+export const ArgumentType = z.union([z.string(), z.union([z.string(), z.string().array()]).array(), z.instanceof(RegExp)]);
 
 /**
  * A function for processing user input to use as an argument.
