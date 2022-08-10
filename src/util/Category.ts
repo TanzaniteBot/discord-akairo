@@ -1,5 +1,4 @@
 import { Collection } from "discord.js";
-import { z } from "zod";
 import type { AkairoModule } from "../struct/AkairoModule.js";
 
 /**
@@ -16,8 +15,6 @@ export class Category<K extends string, V extends AkairoModule<any, any>> extend
 	 * @param iterable - Entries to set.
 	 */
 	public constructor(id: string, iterable?: Iterable<readonly [K, V]>) {
-		z.string().parse(id);
-
 		super(iterable);
 		this.id = id;
 	}
