@@ -142,7 +142,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	public slashDefaultMemberPermissions?: PermissionResolvable;
+	public slashDefaultMemberPermissions?: PermissionResolvable | null;
 
 	/**
 	 * Whether the command is enabled in DMs
@@ -574,7 +574,7 @@ export type CommandOptions = AkairoModuleOptions & {
 	 * The default bitfield used to determine whether this command be used in a guild
 	 * @default typeof this.userPermissions !== "function" ? this.userPermissions : undefined
 	 */
-	slashDefaultMemberPermissions?: PermissionResolvable;
+	slashDefaultMemberPermissions?: PermissionResolvable | null;
 
 	/**
 	 * Whether the command is enabled in DMs
@@ -651,7 +651,7 @@ export const CommandOptions = AkairoModuleOptions.extend({
 	regex: z.union([z.instanceof(RegExp), RegexSupplier]).optional(),
 	separator: z.string().optional(),
 	slash: z.boolean().optional(),
-	slashDefaultMemberPermissions: PermissionResolvableValidator.optional(),
+	slashDefaultMemberPermissions: PermissionResolvableValidator.nullish(),
 	slashDmPermission: z.boolean().optional(),
 	slashEphemeral: z.boolean().optional(),
 	slashGuilds: z.string().array().optional(),

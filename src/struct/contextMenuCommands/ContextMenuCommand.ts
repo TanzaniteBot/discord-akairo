@@ -49,7 +49,7 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 	/**
 	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	public defaultMemberPermissions?: PermissionResolvable;
+	public defaultMemberPermissions?: PermissionResolvable | null;
 
 	/**
 	 * Whether the command is enabled in DMs
@@ -142,7 +142,7 @@ export type ContextMenuCommandOptions = AkairoModuleOptions & {
 	/**
 	 * The default bitfield used to determine whether this command be used in a guild
 	 */
-	defaultMemberPermissions?: PermissionResolvable;
+	defaultMemberPermissions?: PermissionResolvable | null;
 
 	/**
 	 * Whether the command is enabled in DMs
@@ -160,6 +160,6 @@ export const ContextMenuCommandOptions = AkairoModuleOptions.extend({
 	superUserOnly: z.boolean().optional(),
 	type: z.union([z.literal(ApplicationCommandType.User), z.literal(ApplicationCommandType.Message)]),
 	nameLocalizations: z.record(z.string().nullish()).optional(),
-	defaultMemberPermissions: PermissionResolvableValidator.optional(),
+	defaultMemberPermissions: PermissionResolvableValidator.nullish(),
 	dmPermission: z.boolean().optional()
 }).passthrough();
