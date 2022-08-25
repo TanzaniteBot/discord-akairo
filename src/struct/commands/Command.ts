@@ -221,12 +221,12 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 			slashOptions,
 			superUserOnly = false,
 			typing = false,
-			userPermissions = this.userPermissions
+			userPermissions = this.userPermissions,
+			slashDefaultMemberPermissions
 		} = options;
 
-		let { slashDefaultMemberPermissions, slashDmPermission } = options;
+		let { slashDmPermission } = options;
 
-		if (userPermissions && typeof userPermissions !== "function") slashDefaultMemberPermissions ??= userPermissions;
 		if (slashGuilds.length === 0) slashDmPermission ??= channel === null || channel === "dm";
 
 		this.aliases = aliases;

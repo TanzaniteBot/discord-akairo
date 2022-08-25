@@ -333,7 +333,9 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	protected async registerInteractionCommands() {
 		this.client.emit("akairoDebug", `[registerInteractionCommands] Started registering interaction commands...`);
 
-		const parsedSlashCommands: (ApplicationCommandData & { guilds: Snowflake[] })[] = [];
+		type ParsedSlashCommand = ApplicationCommandData & { guilds: Snowflake[] };
+
+		const parsedSlashCommands: ParsedSlashCommand[] = [];
 		const guildSlashCommandsParsed: Collection<Snowflake, ApplicationCommandData[]> = new Collection();
 		const parseDescriptionCommand = (description: { content: () => any }) => {
 			if (typeof description === "object") {
@@ -346,7 +348,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		// Parse all commands that have slash enabled
 		for (const [, data] of this.modules) {
 			if (!data.slash) continue;
-			parsedSlashCommands.push({
+			const obj = {
 				name: data.aliases[0]?.toLocaleLowerCase() || data.id?.toLocaleLowerCase(),
 				description: parseDescriptionCommand(data.description) || "No description provided.",
 				options: data.slashOptions?.map(o => {
@@ -354,12 +356,15 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 					return temp as ApplicationCommandOptionData;
 				}),
 				guilds: data.slashGuilds ?? [],
-				defaultMemberPermissions: data.slashDefaultMemberPermissions,
 				dmPermission: data.slashDmPermission,
 				type: ApplicationCommandType.ChatInput,
 				nameLocalizations: data.localization.nameLocalizations,
 				descriptionLocalizations: data.localization.descriptionLocalizations
-			});
+			} as ParsedSlashCommand;
+
+			if ("slashDefaultMemberPermissions" in data) obj.defaultMemberPermissions = data.slashDefaultMemberPermissions;
+
+			parsedSlashCommands.push(obj);
 		}
 
 		// find the context command handler on the client (if it exists)
@@ -370,14 +375,17 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		if (contextCommandHandler) {
 			// parse all context commands
 			for (const [, data] of contextCommandHandler.modules) {
-				parsedSlashCommands.push({
+				const obj = {
 					name: data.name,
 					guilds: data.guilds ?? [],
-					defaultMemberPermissions: data.defaultMemberPermissions,
 					dmPermission: data.dmPermission,
 					type: data.type,
 					nameLocalizations: data.nameLocalizations
-				});
+				} as ParsedSlashCommand;
+
+				if ("defaultMemberPermissions" in data) obj.defaultMemberPermissions = data.defaultMemberPermissions;
+
+				parsedSlashCommands.push(obj);
 			}
 		}
 
