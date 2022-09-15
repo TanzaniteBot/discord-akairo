@@ -33,5 +33,6 @@
 	"vitest.include": ["**/dist/tests/unit/**/*.test.js"],
 	"vitest.exclude": ["**/node_modules/**"],
 	"vitest.commandLine": "yarn vitest",
-	"vitest.showFailMessages": true
+	"vitest.showFailMessages": true,
+	"githubPullRequests.ignoredPullRequestBranches": ["master"]
 }

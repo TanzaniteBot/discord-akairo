@@ -1,6 +1,8 @@
 import {
 	ApplicationCommand,
 	ApplicationCommandOptionType,
+	ApplicationCommandSubCommandData,
+	ApplicationCommandSubGroupData,
 	ApplicationCommandType,
 	Collection,
 	DiscordAPIError,
@@ -33,16 +35,7 @@ import type { ListenerHandler } from "../listeners/ListenerHandler.js";
 import type { TaskHandler } from "../tasks/TaskHandler.js";
 import { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
 import { TypeResolver } from "./arguments/TypeResolver.js";
-import {
-	Command,
-	CommandInstance,
-	type AkairoApplicationCommandChannelOptionData,
-	type AkairoApplicationCommandChoicesData,
-	type AkairoApplicationCommandNonOptionsData,
-	type AkairoApplicationCommandSubCommandData,
-	type AkairoApplicationCommandSubGroupData,
-	type KeySupplier
-} from "./Command.js";
+import { Command, CommandInstance, SlashNonSub, type KeySupplier } from "./Command.js";
 import { CommandUtil } from "./CommandUtil.js";
 import { Flag, FlagType } from "./Flag.js";
 
@@ -686,18 +679,20 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 					continue;
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
-				const func = `get${originalOption?.resolve ?? (ApplicationCommandOptionType[option.type] as SlashResolveType)}` as const;
+				const func = `get${
+					// fuck u typescript
+					originalOption && "resolve" in originalOption && originalOption.resolve
+						? originalOption.resolve
+						: (ApplicationCommandOptionType[option.type] as SlashResolveType)
+				}` as const;
+
 				convertedOptions[option.name] = interaction.options[func](option.name, false);
 			}
 
 			// Makes options that are not found to be null so that it matches the behavior normal commands.
 			out: {
-				type SubCommand = AkairoApplicationCommandSubCommandData;
-				type SubCommandGroup = AkairoApplicationCommandSubGroupData;
-				type NonSubSlashOptions =
-					| AkairoApplicationCommandChoicesData
-					| AkairoApplicationCommandNonOptionsData
-					| AkairoApplicationCommandChannelOptionData;
+				type SubCommand = ApplicationCommandSubCommandData;
+				type SubCommandGroup = ApplicationCommandSubGroupData;
 
 				if (convertedOptions.subcommand || convertedOptions.subcommandGroup) {
 					const usedSubcommandOrGroup = commandModule.slashOptions?.find(o => o.name === convertedOptions.subcommand);
@@ -728,11 +723,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 						throw new AkairoError("UNEXPECTED_SLASH_COMMAND_TYPE", usedSubcommandOrGroup.type);
 					}
 				} else {
-					handleOptions((commandModule.slashOptions ?? []) as NonSubSlashOptions[]);
+					handleOptions((commandModule.slashOptions ?? []) as SlashNonSub[]);
 				}
 
 				// eslint-disable-next-line no-inner-declarations
-				function handleOptions(options: NonSubSlashOptions[]) {
+				function handleOptions(options: SlashNonSub[]) {
 					for (const option of options) {
 						switch (option.type) {
 							case ApplicationCommandOptionType.Boolean:
@@ -748,10 +743,14 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 							case ApplicationCommandOptionType.Attachment:
 								convertedOptions[option.name] ??= null;
 								break;
-							default:
-								// @ts-expect-error:
+							default: {
+								// eslint-disable-next-line @typescript-eslint/no-unused-vars
+								const exhaustiveCheck: never = option;
+
+								// @ts-expect-error
 								convertedOptions[option.name] ??= null;
 								break;
+							}
 						}
 					}
 				}

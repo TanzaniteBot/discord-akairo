@@ -5,36 +5,36 @@ import { ContextMenuCommand } from "../lib.js";
 
 class TestCommand extends ContextMenuCommand {
 	public exec() {
-		// @ts-expect-error
+		// @ts-expect-error: super.exec is monkey patched and should throw an error when called
 		super.exec();
 	}
 }
 
 describe("ContextMenuCommand", () => {
 	it("should error with no parameters", () => {
-		// @ts-expect-error
+		// @ts-expect-error: no parameters
 		expect(() => new TestCommand()).toThrow();
 	});
 
 	it("should error with incorrectly typed parameters", () => {
-		// @ts-expect-error
+		// @ts-expect-error: number provided for id
 		expect(() => new TestCommand(1)).toThrow();
-		// @ts-expect-error
+		// @ts-expect-error: bigint provided for id
 		expect(() => new TestCommand(1n)).toThrow();
-		// @ts-expect-error
+		// @ts-expect-error: object provided for type
 		expect(() => new TestCommand({})).toThrow();
-		// @ts-expect-error
+		// @ts-expect-error: number provided for type & options is not an object
 		expect(() => new TestCommand(1, 1)).toThrow();
-		// @ts-expect-error
+		// @ts-expect-error: options is provided null
 		expect(() => new TestCommand("name", null)).toThrow();
 	});
 
 	it("should only accept valid options", () => {
-		// @ts-expect-error
+		// @ts-expect-error: missing required properties
 		expect(() => new TestCommand("name", {})).toThrow();
-		// @ts-expect-error
+		// @ts-expect-error: options.name should be of type string
 		expect(() => new TestCommand("name", { name: 1 })).toThrow();
-		// @ts-expect-error
+		// @ts-expect-error: options.type is required
 		expect(() => new TestCommand("name", { name: "name" })).toThrow();
 		// @ts-expect-error
 		expect(() => new TestCommand("name", { name: "name" })).toThrow();

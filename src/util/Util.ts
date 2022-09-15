@@ -9,7 +9,7 @@ import { AkairoError } from "./AkairoError.js";
  * @param target The object to assign values to.
  * @param os The objects to assign from.
  */
-export function deepAssign<A, B>(target: A, ...os: B[]): A & B {
+export function deepAssign<A extends Record<string, any>, B extends Record<string, any>>(target: A, ...os: B[]): A & B {
 	for (const o of os) {
 		for (const [key, value] of Object.entries(o)) {
 			const valueIsObject = value && typeof value === "object";

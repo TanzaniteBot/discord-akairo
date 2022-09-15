@@ -1,10 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import type {
-	ApplicationCommandAutocompleteOption,
-	ApplicationCommandChannelOptionData,
-	ApplicationCommandChoicesData,
-	ApplicationCommandNonOptionsData,
-	ApplicationCommandNumericOptionData,
+	ApplicationCommandOptionData,
 	ApplicationCommandOptionType,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
@@ -662,19 +658,7 @@ export const CommandOptions = AkairoModuleOptions.extend({
 	userPermissions: z.union([PermissionResolvableValidator, MissingPermissionSupplier]).optional()
 }).passthrough();
 
-export interface AkairoApplicationCommandSubGroupData extends ApplicationCommandSubGroupData {
-	options?: AkairoApplicationCommandSubCommandData[];
-}
-
-export interface AkairoApplicationCommandSubCommandData extends ApplicationCommandSubCommandData {
-	options?: (
-		| AkairoApplicationCommandChoicesData
-		| AkairoApplicationCommandNonOptionsData
-		| AkairoApplicationCommandChannelOptionData
-	)[];
-}
-
-export interface AkairoApplicationCommandChoicesData extends ApplicationCommandChoicesData {
+export interface SlashExt {
 	/**
 	 * Allows you to get a discord resolved object
 	 *
@@ -683,59 +667,23 @@ export interface AkairoApplicationCommandChoicesData extends ApplicationCommandC
 	resolve?: SlashResolveType;
 }
 
-export interface AkairoApplicationCommandAutocompleteOption extends ApplicationCommandAutocompleteOption {
-	/**
-	 * Allows you to get a discord resolved object
-	 *
-	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
-	 */
-	resolve?: SlashResolveType;
+type Sub = Pick<ApplicationCommandSubGroupData, "options"> | Pick<ApplicationCommandSubCommandData, "options">;
+
+type GetNonSub<T> = T extends Sub ? never : T & SlashExt;
+
+export type SlashNonSub = GetNonSub<ApplicationCommandOptionData>;
+
+export interface ExtGroup extends ApplicationCommandSubGroupData {
+	options?: ExtSub[];
 }
 
-export interface AkairoApplicationCommandNumericOptionData extends ApplicationCommandNumericOptionData {
-	/**
-	 * Allows you to get a discord resolved object
-	 *
-	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
-	 */
-	resolve?: SlashResolveType;
+export interface ExtSub extends ApplicationCommandSubCommandData {
+	options?: SlashNonSub[];
 }
 
-export interface AkairoApplicationCommandNonOptionsData extends ApplicationCommandNonOptionsData {
-	/**
-	 * Allows you to get a discord resolved object
-	 *
-	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
-	 */
-	resolve?: SlashResolveType;
-}
+export type SlashSub = ExtGroup | ExtSub;
 
-export interface AkairoApplicationCommandChannelOptionData extends ApplicationCommandChannelOptionData {
-	/**
-	 * Allows you to get a discord resolved object
-	 *
-	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
-	 */
-	resolve?: SlashResolveType;
-}
-
-export type AkairoApplicationCommandOptionData =
-	| AkairoApplicationCommandSubGroupData
-	| AkairoApplicationCommandNonOptionsData
-	| AkairoApplicationCommandChannelOptionData
-	| AkairoApplicationCommandChoicesData
-	| AkairoApplicationCommandAutocompleteOption
-	| AkairoApplicationCommandNumericOptionData
-	| AkairoApplicationCommandSubCommandData;
-
-export type SlashOption = AkairoApplicationCommandOptionData & {
-	/**
-	 * Allows you to get a discord resolved object
-	 *
-	 * ex. get the resolved member object when the type is {@link ApplicationCommandOptionType.User}
-	 */
-	resolve?: SlashResolveType;
-};
+export type SlashOption = SlashNonSub | SlashSub;
 
 /**
  * The localization for slash commands.
