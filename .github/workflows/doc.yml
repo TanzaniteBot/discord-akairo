@@ -8,7 +8,7 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'NotEnoughUpdates'
+    if: github.repository_owner == 'TanzaniteBot'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
