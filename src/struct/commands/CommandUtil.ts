@@ -3,9 +3,9 @@ import {
 	MessagePayload,
 	type InteractionReplyOptions,
 	type Message,
+	type MessageCreateOptions,
 	type MessageEditOptions,
-	type MessageOptions,
-	type ReplyMessageOptions,
+	type MessageReplyOptions,
 	type Snowflake,
 	type WebhookEditMessageOptions
 } from "discord.js";
@@ -126,13 +126,13 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * If the message is a slash command, it replies or edits the last reply.
 	 * @param options - Options to use.
 	 */
-	public async reply(options: string | MessagePayload | ReplyMessageOptions): Promise<Message>;
+	public async reply(options: string | MessagePayload | MessageReplyOptions): Promise<Message>;
 	public async reply(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
-	public async reply(options: string | MessagePayload | ReplyMessageOptions | InteractionReplyOptions): Promise<Message> {
-		const newOptions = (typeof options === "string" ? { content: options } : options) as ReplyMessageOptions;
+	public async reply(options: string | MessagePayload | MessageReplyOptions | InteractionReplyOptions): Promise<Message> {
+		const newOptions = (typeof options === "string" ? { content: options } : options) as MessageReplyOptions;
 
 		if (!this.isSlashMessage(this.message) && !this.shouldEdit && !(newOptions instanceof MessagePayload) && !this.deleted) {
-			(newOptions as MessageOptions).reply = {
+			(newOptions as MessageCreateOptions).reply = {
 				messageReference: this.message,
 				failIfNotExists: newOptions.failIfNotExists ?? this.handler.client.options.failIfNotExists
 			};
@@ -144,9 +144,9 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * Sends a response or edits an old response if available.
 	 * @param options - Options to use.
 	 */
-	public async send(options: string | MessagePayload | MessageOptions): Promise<Message>;
+	public async send(options: string | MessagePayload | MessageCreateOptions): Promise<Message>;
 	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
-	public async send(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message> {
+	public async send(options: string | MessagePayload | MessageCreateOptions | InteractionReplyOptions): Promise<Message> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files.length > 0;
 		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!this.isSlashMessage(this.message)) {
@@ -159,14 +159,14 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 			) {
 				return await this.lastResponse!.edit(newOptions as MessageEditOptions);
 			}
-			const sent = await this.message.channel?.send(newOptions as MessageOptions);
+			const sent = await this.message.channel?.send(newOptions as MessageCreateOptions);
 
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
 
 			return sent!;
 		} else {
-			(newOptions as MessageOptions).reply = undefined;
+			(newOptions as MessageCreateOptions).reply = undefined;
 			if (this.lastResponse || this.message.interaction.deferred || this.message.interaction.replied) {
 				this.lastResponse = (await this.message.interaction.editReply(newOptions)) as Message;
 				return this.lastResponse;
@@ -184,11 +184,11 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * Sends a response, overwriting the last response.
 	 * @param options - Options to use.
 	 */
-	public async sendNew(options: string | MessagePayload | MessageOptions): Promise<Message>;
+	public async sendNew(options: string | MessagePayload | MessageCreateOptions): Promise<Message>;
 	public async sendNew(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
-	public async sendNew(options: string | MessagePayload | MessageOptions | InteractionReplyOptions): Promise<Message> {
+	public async sendNew(options: string | MessagePayload | MessageCreateOptions | InteractionReplyOptions): Promise<Message> {
 		if (!this.isSlashMessage(this.message)) {
-			const sent = await this.message.channel?.send(options as string | MessagePayload | MessageOptions);
+			const sent = await this.message.channel?.send(options as string | MessagePayload | MessageCreateOptions);
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
 			return sent!;

@@ -74,7 +74,7 @@ export class AkairoMessage<Cached extends CacheType = CacheType> extends Base {
 	 * @param client - AkairoClient
 	 * @param interaction - CommandInteraction
 	 */
-	public constructor(client: AkairoClient, interaction: ChatInputCommandInteraction<Cached>) {
+	public constructor(client: AkairoClient<true>, interaction: ChatInputCommandInteraction<Cached>) {
 		super(client);
 
 		this.author = interaction.user;

@@ -1,8 +1,15 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BitField, Message, MessagePayload, PermissionFlagsBits, PermissionResolvable, type MessageOptions } from "discord.js";
+import {
+	BitField,
+	Message,
+	MessagePayload,
+	PermissionFlagsBits,
+	PermissionResolvable,
+	type MessageCreateOptions
+} from "discord.js";
 import { z, ZodLiteral, ZodType, ZodUnion, type ZodTypeAny } from "zod";
 
-export type MessageSendResolvable = string | MessagePayload | MessageOptions;
+export type MessageSendResolvable = string | MessagePayload | MessageCreateOptions;
 export const MessageSendResolvable = z.union([z.string(), z.instanceof(MessagePayload), z.record(z.any())]);
 
 export type SyncOrAsync<T> = T | Promise<T>;
