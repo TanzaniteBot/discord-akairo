@@ -1,6 +1,7 @@
 import {
 	ChannelType,
 	Collection,
+	ForumChannel,
 	type CategoryChannel,
 	type DirectoryChannel,
 	type DMChannel,
@@ -296,9 +297,9 @@ export class TypeResolver {
 			// @ts-expect-error
 			[ArgumentTypes.DIRECTORY_CHANNELS]: this.multipleChannelBuiltInType<DirectoryChannel>(ChannelType.GuildDirectory),
 
-			[ArgumentTypes.FORUM_CHANNEL]: this.singleChannelBuiltInType<any>(ChannelType.GuildForum),
+			[ArgumentTypes.FORUM_CHANNEL]: this.singleChannelBuiltInType<ForumChannel>(ChannelType.GuildForum),
 
-			[ArgumentTypes.FORUM_CHANNELS]: this.multipleChannelBuiltInType<any>(ChannelType.GuildForum),
+			[ArgumentTypes.FORUM_CHANNELS]: this.multipleChannelBuiltInType<ForumChannel>(ChannelType.GuildForum),
 
 			[ArgumentTypes.TEXT_BASED_CHANNEL]: (message, phrase) => {
 				if (!phrase || !message.inGuild()) return null;

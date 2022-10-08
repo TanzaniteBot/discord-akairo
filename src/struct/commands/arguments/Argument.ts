@@ -1,25 +1,26 @@
 import {
-	CategoryChannel,
-	Collection,
-	DirectoryChannel,
-	Emoji,
-	Guild,
-	GuildBasedChannel,
-	GuildChannel,
-	GuildEmoji,
-	GuildMember,
-	Invite,
-	Message,
-	NewsChannel,
-	Role,
-	Snowflake,
-	StageChannel,
-	TextBasedChannel,
-	TextChannel,
-	ThreadChannel,
-	User,
-	VoiceBasedChannel,
-	VoiceChannel
+	type CategoryChannel,
+	type Collection,
+	type DirectoryChannel,
+	type Emoji,
+	type ForumChannel,
+	type Guild,
+	type GuildBasedChannel,
+	type GuildChannel,
+	type GuildEmoji,
+	type GuildMember,
+	type Invite,
+	type Message,
+	type NewsChannel,
+	type Role,
+	type Snowflake,
+	type StageChannel,
+	type TextBasedChannel,
+	type TextChannel,
+	type ThreadChannel,
+	type User,
+	type VoiceBasedChannel,
+	type VoiceChannel
 } from "discord.js";
 import type { URL } from "node:url";
 import { z } from "zod";
@@ -1039,8 +1040,8 @@ export interface BaseArgumentType {
 	threadChannels: Collection<Snowflake, ThreadChannel> | null;
 	directoryChannel: DirectoryChannel | null;
 	directoryChannels: Collection<Snowflake, DirectoryChannel> | null;
-	forumChannel: unknown | null;
-	forumChannels: Collection<Snowflake, unknown> | null;
+	forumChannel: ForumChannel | null;
+	forumChannels: Collection<Snowflake, ForumChannel> | null;
 	textBasedChannel: TextBasedChannel | null;
 	textBasedChannels: Collection<Snowflake, TextBasedChannel> | null;
 	voiceBasedChannel: VoiceBasedChannel | null;
