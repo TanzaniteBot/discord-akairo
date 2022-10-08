@@ -265,7 +265,7 @@ export class TypeResolver {
 
 			[ArgumentTypes.CATEGORY_CHANNELS]: this.multipleChannelBuiltInType<CategoryChannel>(ChannelType.GuildCategory),
 
-			[ArgumentTypes.NEWS_CHANNEL]: this.singleChannelBuiltInType<NewsChannel>(ChannelType.GuildNews),
+			[ArgumentTypes.NEWS_CHANNEL]: this.singleChannelBuiltInType<NewsChannel>(ChannelType.GuildAnnouncement),
 
 			[ArgumentTypes.NEWS_CHANNELS]: this.multipleChannelBuiltInType<NewsChannel>(ChannelType.GuildCategory),
 
