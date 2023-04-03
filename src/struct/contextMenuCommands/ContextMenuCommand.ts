@@ -87,9 +87,9 @@ export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommand
 		this.name = name;
 		this.ownerOnly = ownerOnly;
 		this.superUserOnly = superUserOnly;
-		this.type = <typeof this["type"]>type;
+		this.type = <(typeof this)["type"]>type;
 		this.nameLocalizations = nameLocalizations;
-		this.defaultMemberPermissions = <typeof this["defaultMemberPermissions"]>defaultMemberPermissions;
+		this.defaultMemberPermissions = <(typeof this)["defaultMemberPermissions"]>defaultMemberPermissions;
 		this.dmPermission = dmPermission;
 	}
 
