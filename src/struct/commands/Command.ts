@@ -674,7 +674,7 @@ type GetNonSub<T> = T extends Sub ? never : T & SlashExt;
 export type SlashNonSub = GetNonSub<ApplicationCommandOptionData>;
 
 export interface ExtGroup extends ApplicationCommandSubGroupData {
-	options?: ExtSub[];
+	options: ExtSub[];
 }
 
 export interface ExtSub extends ApplicationCommandSubCommandData {

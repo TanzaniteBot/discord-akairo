@@ -14,7 +14,7 @@
 		/* Emit */
 		"declaration": true,
 		"declarationMap": true,
-		"importsNotUsedAsValues": "preserve",
+		// "importsNotUsedAsValues": "preserve",
 		"newLine": "lf",
 		"noEmitOnError": true,
 		"preserveConstEnums": true,

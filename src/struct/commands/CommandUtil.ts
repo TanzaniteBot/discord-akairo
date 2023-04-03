@@ -1,13 +1,13 @@
 import {
 	Collection,
 	MessagePayload,
+	type InteractionEditReplyOptions,
 	type InteractionReplyOptions,
 	type Message,
 	type MessageCreateOptions,
 	type MessageEditOptions,
 	type MessageReplyOptions,
-	type Snowflake,
-	type WebhookEditMessageOptions
+	type Snowflake
 } from "discord.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
@@ -112,8 +112,8 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * @param options - Options to use.
 	 */
 	public async edit(options: string | MessageEditOptions | MessagePayload): Promise<Message>;
-	public async edit(options: string | WebhookEditMessageOptions | MessagePayload): Promise<Message>;
-	public async edit(options: string | WebhookEditMessageOptions | WebhookEditMessageOptions | MessagePayload): Promise<Message> {
+	public async edit(options: string | InteractionEditReplyOptions | MessagePayload): Promise<Message>;
+	public async edit(options: string | InteractionEditReplyOptions | MessageEditOptions | MessagePayload): Promise<Message> {
 		if (!this.isSlashMessage(this.message)) {
 			return await this.lastResponse!.edit(options);
 		} else {

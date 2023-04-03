@@ -440,7 +440,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		return {
 			name: interaction.name,
 			description: interaction.type === ApplicationCommandType.ChatInput ? interaction.description ?? "" : undefined!,
-			options: interaction.type === ApplicationCommandType.ChatInput ? interaction.options ?? [] : undefined,
+			options:
+				interaction.type === ApplicationCommandType.ChatInput
+					? // todo: check if this is okay
+					  (interaction.options as ApplicationCommandOptionData[]) ?? []
+					: undefined,
 			defaultMemberPermissions: interaction.defaultMemberPermissions,
 			dmPermission: interaction.dmPermission!,
 			type: interaction.type,
@@ -686,7 +690,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 						: (ApplicationCommandOptionType[option.type] as SlashResolveType)
 				}` as const;
 
-				convertedOptions[option.name] = interaction.options[func](option.name, false);
+				// getMember and getChannel have incompatible signatures with the others
+				convertedOptions[option.name] =
+					func === "getMember"
+						? interaction.options.getMember(option.name)
+						: func === "getChannel"
+						? interaction.options.getChannel(option.name, false)
+						: interaction.options[func](option.name, false);
 			}
 
 			// Makes options that are not found to be null so that it matches the behavior normal commands.
