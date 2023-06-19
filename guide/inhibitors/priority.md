@@ -12,7 +12,7 @@ Whenever both inhibitors block a message, the `commandBlocked` event would fire 
 If you want the global blacklist inhibitor's instead you can use the `priority` option.
 
 ```ts
-import { Inhibitor } from "discord-akairo";
+import { Inhibitor } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 import globalBlacklist from "something";
 

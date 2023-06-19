@@ -21,14 +21,14 @@ Additionally `slashBlocked`/`commandBlocked` can have a reason of `notNsfw`
 
 > Cooldown event will also run on slash commands
 
-To see more information about each event look in the [this file](https://github.com/NotEnoughUpdates/discord-akairo/blob/master/src/typings/events.ts)
+To see more information about each event look in the [this file](../../src/typings/events.ts)
 
 Slash command example:
 
-> Slash commands are turned into [message](https://github.com/NotEnoughUpdates/discord-akairo/blob/master/src/util/AkairoMessage.js) like objects to make interacting with them easier the original infraction is maintained though at message.interaction, if you do not enable `autoRegisterSlashCommands` you will need to register the slash commands yourself with the name of the command.
+> Slash commands are turned into [message-like objects](../../src/util/AkairoMessage.ts) to make interacting with them easier the original infraction is maintained though at `message.interaction`, if you do not enable `autoRegisterSlashCommands` you will need to register the slash commands yourself with the name of the command.
 
 ```ts
-import { AkairoMessage, Command } from "discord-akairo";
+import { AkairoMessage, Command } from "@tanzanite/discord-akairo";
 import { ApplicationCommandOptionType, GuildMember, Message } from "discord.js";
 
 export default class GreetCommand extends Command {
@@ -107,7 +107,7 @@ Example:
 
 ```ts
 // bot.ts
-import { TaskHandler } from "discord-akairo";
+import { TaskHandler } from "@tanzanite/discord-akairo";
 /* ... */
 taskHandler: TaskHandler = new TaskHandler(this, {
   directory: join(__dirname, "..", "tasks")
@@ -120,7 +120,7 @@ this.taskHandler.startAll();
 
 ```ts
 // tasks/task.ts
-import { Task } from "discord-akairo";
+import { Task } from "@tanzanite/discord-akairo";
 export default class extends Task {
   public constructor() {
     super("hello", {
@@ -148,7 +148,7 @@ contextMenuCommandHandler = new ContextMenuCommandHandler(this, {
 ```
 
 ```ts
-import { ContextMenuCommand } from "discord-akairo";
+import { ContextMenuCommand } from "@tanzanite/discord-akairo";
 import { ContextMenuInteraction } from "discord.js";
 
 export default class ViewRawContextMenuCommand extends ContextMenuCommand {
@@ -230,7 +230,7 @@ If a user tries to use a command with `onlyNsfw: true` in a channel that is not 
 Example
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 
 export default class NsfwCommand extends Command {
   public constructor() {
@@ -257,4 +257,4 @@ export default class NsfwCommand extends Command {
 
 If you want a good database, we recommend using an ORM like sequelize. Databases aren't hard to set up by themselves, and are much more convenient when used without being limited by providers.
 
-> For support regarding this fork, you can ping @IRONM00N#0001 in the Akairo discord server or preferably join [my bots discord](https://discord.gg/7FpsYp2c47) and ask there.
+> For support regarding this fork, you can ping [@ironm00n](https://discord.com/users/322862723090219008) in the Akairo discord server or preferably join [my bots discord](https://discord.gg/7FpsYp2c47) and ask there.

@@ -8,7 +8,7 @@ Arguments can be made to be unordered.
 For example, if you want a command where the arguments are a role and a member in any order:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message, Role } from "discord.js";
 
 export default class AddRoleCommand extends Command {

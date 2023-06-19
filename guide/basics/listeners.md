@@ -12,7 +12,7 @@ Let's add some listeners.
 You have to setup a `ListenerHandler` just like with commands and inhibitors.
 
 ```ts
-import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from "discord-akairo";
+import { AkairoClient, CommandHandler, InhibitorHandler, ListenerHandler } from "@tanzanite/discord-akairo";
 
 class MyClient extends AkairoClient {
   public commandHandler: CommandHandler;
@@ -60,7 +60,7 @@ And now, we can make a listener!
 Let's start with a simple client `ready` event.
 
 ```ts
-import { Listener } from "discord-akairo";
+import { Listener } from "@tanzanite/discord-akairo";
 
 export default class ReadyListener extends Listener {
   constructor() {
@@ -107,7 +107,7 @@ They are emitted to the `messageBlocked` (anything with `pre` type or before) or
 Since we set the command handler to the key `commandHandler` up above, we have to use that as the `emitter` option.
 
 ```ts
-import { AkairoMessage, Command, Listener } from "discord-akairo";
+import { AkairoMessage, Command, Listener } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class CommandBlockedListener extends Listener {

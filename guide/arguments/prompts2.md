@@ -8,7 +8,7 @@ Optional prompts are prompts that run if there was input, but the type casting f
 If there was no input, it would go on as normal.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
@@ -49,7 +49,7 @@ Infinite prompts are prompts that go on and on until the user says stop.
 (You can customize the input, but by default it is `stop`.)
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {

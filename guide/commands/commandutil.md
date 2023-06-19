@@ -26,7 +26,7 @@ With `handleEdits` on, the `send` methods will edit responses accordingly.
 This works for prompts as well.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class HelloCommand extends Command {
@@ -57,7 +57,7 @@ The format for command is almost always `<prefix><alias> <arguments>`.
 CommandUtil stores all three of that and more for you.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class HelloCommand extends Command {

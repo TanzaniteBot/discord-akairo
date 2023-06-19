@@ -9,7 +9,7 @@ Because inhibitors are another kind of module, we need another kind of handler.
 To set it up, simply import and instantiate the `InhibitorHandler`, just like with the command handler.
 
 ```ts
-import { AkairoClient, CommandHandler, InhibitorHandler } from "discord-akairo";
+import { AkairoClient, CommandHandler, InhibitorHandler } from "@tanzanite/discord-akairo";
 
 class MyClient extends AkairoClient {
   public commandHandler: CommandHandler;
@@ -51,7 +51,7 @@ this.inhibitorHandler.loadAll();
 Create a folder named `inhibitors`, then a file there to make one.
 
 ```ts
-import { Inhibitor } from "discord-akairo";
+import { Inhibitor } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class BlacklistInhibitor extends Inhibitor {

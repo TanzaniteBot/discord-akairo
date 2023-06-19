@@ -23,6 +23,6 @@ jobs:
         run: yarn --immutable
 
       - name: Deprecate versions
-        run: 'yarn npm-deprecate --name "*dev*" --package "@notenoughupdates/discord-akairo"'
+        run: 'yarn npm-deprecate --name "*dev*" --package "@tanzanite/discord-akairo"'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

@@ -12,7 +12,7 @@ Conditional commands are commands that run if the following conditions are true:
 Multiple conditional commands/regex commands can be triggered on one message.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class ComplimentCommand extends Command {

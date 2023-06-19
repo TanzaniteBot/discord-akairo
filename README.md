@@ -2,23 +2,23 @@
 <div align="center">
   <br />
   <p>
-    <a href="https://github.com/NotEnoughUpdates/discord-akairo/wiki"><img src="https://discord-akairo.github.io/static/logo.svg" width="546" alt="discord-akairo" /></a>
+    <a href="https://github.com/TanzaniteBot/discord-akairo/wiki"><img src="https://discord-akairo.github.io/static/logo.svg" width="546" alt="discord-akairo" /></a>
   </p>
   <br />
   <p>
-    <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://img.shields.io/npm/v/@notenoughupdates/discord-akairo.svg?maxAge=3600" alt="NPM version" /></a>
-    <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://img.shields.io/npm/dt/@notenoughupdates/discord-akairo.svg?maxAge=3600" alt="NPM downloads" /></a>
-    <a href="https://github.com/NotEnoughUpdates/discord-akairo/actions"><img src="https://img.shields.io/github/workflow/status/NotEnoughUpdates/discord-akairo/Test/master" alt="Build status" /></a>
+    <a href="https://www.npmjs.com/package/@tanzanite/discord-akairo"><img src="https://img.shields.io/npm/v/@tanzanite/discord-akairo.svg?maxAge=3600" alt="NPM version" /></a>
+    <a href="https://www.npmjs.com/package/@tanzanite/discord-akairo"><img src="https://img.shields.io/npm/dt/@tanzanite/discord-akairo.svg?maxAge=3600" alt="NPM downloads" /></a>
+    <a href="https://github.com/TanzaniteBot/discord-akairo/actions"><img src="https://img.shields.io/github/actions/workflow/status/TanzaniteBot/discord-akairo/checks.yml?branch=master&label=checks" alt="Checks" /></a>
   </p>
-  <p>
-    <a href="https://www.npmjs.com/package/@notenoughupdates/discord-akairo"><img src="https://nodeico.herokuapp.com/@notenoughupdates/discord-akairo.svg" alt="npm installnfo" /></a>
+  <!-- <p>
+    <a href="https://www.npmjs.com/package/@tanzanite/discord-akairo"><img src="https://nodeico.herokuapp.com/@tanzanite/discord-akairo.svg" alt="npm installnfo" /></a> -->
   </p>
 </div>
 
-### Changes in this fork of akairo
+### Changes in this fork of discord-akairo
 
 Please see [this file](/guide/general/updates.md) for a list of changes in this fork vs normal akairo.
-If you have any questions related to this fork please contact `IRONM00N#0001` in the akairo server or join my [bot's discord](https://discord.gg/7FpsYp2c47).
+If you have any questions related to this fork please contact [ironm00n](https://discord.com/users/322862723090219008) in the akairo server or join my [bot's discord server](https://discord.gg/7FpsYp2c47).
 
 ## Features
 
@@ -72,16 +72,21 @@ If you have any questions related to this fork please contact `IRONM00N#0001` in
 
 ## Installation
 
-##### Requires Node 16+ and Discord.js v13.
+##### Requires Node 16+ and Discord.js v14.
 
-**discord-akairo**<br />`yarn add discord-akairo@npm:@notenoughupdates/discord-akairo@dev`<br />`npm i discord-akairo@npm:@notenoughupdates/discord-akairo`<br />
+**discord-akairo**
+If you do not want to have to update your imports you can install the library using the following:
+`yarn add discord-akairo@npm:@tanzanite/discord-akairo@dev`<br />`npm i discord-akairo@npm:@tanzanite/discord-akairo`<br />
 
-**discord.js fork**<br />_optional you can use regular discord.js instead if you want_<br />`yarn add discord.js@npm:@notenoughupdates/discord.js@dev`<br />`npm i discord.js@npm:@notenoughupdates/discord.js`<br />
+Otherwise you can install the package normally, just make sure to update your imports from `discord-akairo` to `@tanzanite/discord-akairo`:
+`yarn add @tanzanite/discord-akairo@dev`<br />`npm i @tanzanite/discord-akairo`<br />
+
+**discord.js fork**<br />_optional you can use regular discord.js instead if you want_<br />`yarn add discord.js@npm:@tanzanite/discord.js@dev`<br />`npm i discord.js@npm:@tanzanite/discord.js`<br />
 
 ## Links
 
-- [Website](https://github.com/NotEnoughUpdates/discord-akairo/wiki)
-- [Repository](https://github.com/NotEnoughUpdates/discord-akairo)
+- [Website](https://github.com/TanzaniteBot/discord-akairo/wiki)
+- [Repository](https://github.com/TanzaniteBot/discord-akairo)
 - [Discord](https://discord.gg/7FpsYp2c47)
 <!-- - [Changelog](https://github.com/discord-akairo/discord-akairo/releases) -->
 

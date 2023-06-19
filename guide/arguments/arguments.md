@@ -10,7 +10,7 @@ In Akairo, arguments are the most complex things ever, so this tutorial will onl
 Let's make a command that takes three numbers and adds them up.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class AddCommand extends Command {
@@ -31,7 +31,7 @@ Now we will add arguments in the command options with the `args` option.
 This option must be an array of objects, containing info for parsing.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class AddCommand extends Command {

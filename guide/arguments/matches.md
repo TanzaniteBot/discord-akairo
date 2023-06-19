@@ -9,7 +9,7 @@ Obviously, you won't know how many things there are.
 So, we need a different way of matching input instead of phrase by phrase.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {
@@ -35,7 +35,7 @@ export default class PickCommand extends Command {
 To remedy this, we will use the `match` option.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {
@@ -69,7 +69,7 @@ This is where `flag` match comes in handy.
 Here is a command where the user can change the output with a flag:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 import exampleAPI from "example-api";
 
@@ -113,7 +113,7 @@ Here, we will use `option` for unordered input.
 Similar to the above example, but this time, we have many different possibilities.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 import exampleAPI from "example-api";
 
@@ -168,7 +168,7 @@ This would mean having to deal with splitting then casting the types within the 
 We can do this with a custom separator using `separator` option alongside the `separate` match.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PickCommand extends Command {

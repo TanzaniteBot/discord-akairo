@@ -87,7 +87,7 @@ There are other ways to do type-casting instead of a string literal too.
 The first way is with an array:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PokemonCommand extends Command {
@@ -120,7 +120,7 @@ This means that if the array was `['GrasS', 'FIrE']` and the input was `grass`, 
 You can also do aliases with the array type like so:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PokemonCommand extends Command {
@@ -159,7 +159,7 @@ So, the input of `leaf` will give you `grass`, `blue` will give you `water`, etc
 You can also use a regular expression as a type.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class AskCommand extends Command {

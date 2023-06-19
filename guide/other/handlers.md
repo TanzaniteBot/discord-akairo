@@ -9,7 +9,7 @@ So, you can create your own handlers and module types!
 Create a new class for your module.
 
 ```ts
-import { AkairoModule } from "discord-akairo";
+import { AkairoModule } from "@tanzanite/discord-akairo";
 
 export default class CustomModule extends AkairoModule {
   public color: string;
@@ -33,7 +33,7 @@ We throw an error there just in case you forget to implement it.
 Then, create a new class for your handler:
 
 ```ts
-import { AkairoHandler } from "discord-akairo";
+import { AkairoHandler } from "@tanzanite/discord-akairo";
 import CustomModule from "./CustomModule";
 
 export default class CustomHandler extends AkairoHandler {
@@ -53,7 +53,7 @@ For the handler, the `super()` takes the client, the directory for the handler, 
 Now we can add it to our client if we so desire:
 
 ```ts
-import { AkairoClient } from "discord-akairo";
+import { AkairoClient } from "@tanzanite/discord-akairo";
 import CustomHandler from "./CustomHandler";
 
 export default class MyClient extends AkairoClient {

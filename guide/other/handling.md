@@ -7,7 +7,7 @@
 You can categorize a module with the `category` option.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PingCommand extends Command {
@@ -35,7 +35,7 @@ With that said, this means you can add, remove, or reload modules while the bot 
 Here is a basic command that reloads the inputted ID:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class ReloadCommand extends Command {

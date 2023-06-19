@@ -16,7 +16,7 @@ With this, you can do things such as:
 To get started, take this command:
 
 ```ts
-import { ArgumentGeneratorReturn, Command } from "discord-akairo";
+import { ArgumentGeneratorReturn, Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class GeneratorCommand extends Command {

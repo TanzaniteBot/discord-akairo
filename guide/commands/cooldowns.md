@@ -8,7 +8,7 @@ Cooldowns are how you make sure that troublemakers don't spam your bot.
 Akairo allows you to set cooldowns in uses per milliseconds.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 import exampleAPI from "example-api";
 

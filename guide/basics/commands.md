@@ -9,7 +9,7 @@ The handlers deals with loading modules and executing them.
 For commands, we will import and instantiate the `CommandHandler`.
 
 ```ts
-import { AkairoClient, CommandHandler } from "discord-akairo";
+import { AkairoClient, CommandHandler } from "@tanzanite/discord-akairo";
 
 class MyClient extends AkairoClient {
   public commandHandler: CommandHandler;
@@ -58,13 +58,13 @@ We specified that the `directory` is in `./commands/`.
 So, go there, make a new file, and import Akairo.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 ```
 
 Here is a basic ping command:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PingCommand extends Command {

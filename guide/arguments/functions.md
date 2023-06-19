@@ -9,7 +9,7 @@ What if we want to use a default such as the author's username or the guild's ow
 This is where you can use a function.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
@@ -42,7 +42,7 @@ Let's go to using a function for types.
 Take a look at the roll command below.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class RollCommand extends Command {
@@ -71,7 +71,7 @@ While we could do it in the execution function, let's stick it straight into the
 This is much easier with a validation type (see [Composing Types](./compose.md)), but for the sake of example, let's do it anyways.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class RollCommand extends Command {

@@ -10,7 +10,7 @@ They do not actually run on all messages.
 To change that, change the `type` option.
 
 ```ts
-import { Inhibitor } from "discord-akairo";
+import { Inhibitor } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class BlacklistInhibitor extends Inhibitor {

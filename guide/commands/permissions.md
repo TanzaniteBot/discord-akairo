@@ -9,7 +9,7 @@ There are options to help you do this.
 The two options to use are `clientPermissions` and `userPermissions`.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class BanCommand extends Command {
@@ -53,7 +53,7 @@ The return value is the `missing` parameter that is sent to the `missingPermissi
 If the return value is null, then that means they're not missing anything.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class BanCommand extends Command {

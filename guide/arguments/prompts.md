@@ -20,7 +20,7 @@ Let's start with a basic prompt.
 We will be reusing this command:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
@@ -49,7 +49,7 @@ Since prompting will have the user retry until it is finished, `default` won't d
 Now, add the `prompt` property with the options you want.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
@@ -134,7 +134,7 @@ Those prompt options would now be applied to all prompts that do not have those 
 Or, with a command with similar arguments:
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class AddCommand extends Command {

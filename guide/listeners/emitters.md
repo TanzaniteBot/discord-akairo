@@ -21,7 +21,7 @@ The key will be the emitter's name, and the value is the emitter itself.
 Now, we can use a listener on the process:
 
 ```ts
-import { Listener } from "discord-akairo";
+import { Listener } from "@tanzanite/discord-akairo";
 
 export default class UnhandledRejectionListener extends Listener {
   public constructor() {

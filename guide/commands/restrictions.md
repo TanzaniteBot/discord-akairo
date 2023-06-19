@@ -7,7 +7,7 @@
 If a command requires a guild to be used correctly, you can restrict it to a guild with one option.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class NicknameCommand extends Command {
@@ -26,7 +26,7 @@ export default class NicknameCommand extends Command {
 The above breaks in a DM, so let's add the `channel` option.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class NicknameCommand extends Command {
@@ -53,7 +53,7 @@ Your commands can be owner-only, restricting them to be used by the owner(s).
 Simply add `ownerOnly`.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class TokenCommand extends Command {

@@ -40,7 +40,7 @@ Prefix overrides are command-specific prefixes.
 To use them, simply add the `prefix` option.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class SecretCommand extends Command {

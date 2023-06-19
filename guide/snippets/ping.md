@@ -1,7 +1,7 @@
 # Ping Command
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class PingCommand extends Command {

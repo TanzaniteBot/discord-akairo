@@ -13,7 +13,7 @@ Regex commands are commands that run if the following conditions are true:
 Multiple regex commands/conditional commands can be triggered from one message.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class AyyCommand extends Command {
@@ -38,7 +38,7 @@ The `matches` property will be the matches, if using a global regex.
 The `regex` option can also be a function.
 
 ```ts
-import { Command } from "discord-akairo";
+import { Command } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class AyyCommand extends Command {
