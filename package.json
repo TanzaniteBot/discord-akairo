@@ -71,5 +71,8 @@
 		"@sapphire/shapeshift": "^3.9.2",
 		"discord.js": "npm:@tanzanite/discord.js@dev"
 	},
-	"packageManager": "yarn@3.6.0"
+	"packageManager": "yarn@3.6.0",
+	"publishConfig": {
+		"access": "public"
+	}
 }
