@@ -14,6 +14,7 @@ import type { Task } from "../struct/tasks/Task.js";
 import type { TaskHandler } from "../struct/tasks/TaskHandler.js";
 import type { AkairoMessage } from "../util/AkairoMessage.js";
 import type { BuiltInReasons } from "../util/Constants.js";
+import type { MessageUnion } from "./Util.js";
 
 export interface AkairoHandlerEvents<
 	Module extends AkairoModule<Handler, Module>,
@@ -103,7 +104,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command blocked.
 	 * @param remaining - Remaining time in milliseconds for cooldown.
 	 */
-	cooldown: [message: Message | AkairoMessage, command: Command, remaining: number];
+	cooldown: [message: MessageUnion, command: Command, remaining: number];
 
 	/**
 	 * Emitted when a command or inhibitor errors.
@@ -125,7 +126,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param message - Message sent.
 	 * @param reason - Reason for the block.
 	 */
-	messageBlocked: [message: Message | AkairoMessage, reason: string];
+	messageBlocked: [message: MessageUnion, reason: string];
 
 	/**
 	 * Emitted when a message does not start with the prefix or match a command.

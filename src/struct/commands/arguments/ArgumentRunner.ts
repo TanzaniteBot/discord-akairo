@@ -46,7 +46,7 @@ export class ArgumentRunner {
 	public async run(
 		message: Message,
 		parsed: ContentParserResult,
-		generator: ArgumentGenerator
+		generator: OmitThisParameter<ArgumentGenerator>
 	): Promise<Flag | { [args: string]: unknown }> {
 		const state = {
 			usedIndices: new Set<number>(),

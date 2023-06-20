@@ -59,14 +59,14 @@ export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler
 	 * Reloads this module.
 	 */
 	public reload(): Promise<Module> {
-		return this.handler!.reload(this.id) as Promise<Module>;
+		return this.handler.reload(this.id) as Promise<Module>;
 	}
 
 	/**
 	 * Removes this module.
 	 */
 	public remove(): Module {
-		return this.handler!.remove(this.id);
+		return this.handler.remove(this.id);
 	}
 
 	/**

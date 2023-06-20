@@ -1,10 +1,10 @@
 import {
 	ChannelType,
 	Collection,
-	ForumChannel,
 	type CategoryChannel,
-	type DirectoryChannel,
 	type DMChannel,
+	type DirectoryChannel,
+	type ForumChannel,
 	type GuildBasedChannel,
 	type GuildMember,
 	type Message,

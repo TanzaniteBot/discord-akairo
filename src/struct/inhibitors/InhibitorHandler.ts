@@ -1,7 +1,7 @@
-import type { Awaitable, Message } from "discord.js";
+import type { Awaitable } from "discord.js";
+import type { MessageUnion } from "../../typings/Util.js";
 import type { InhibitorHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
-import type { AkairoMessage } from "../../util/AkairoMessage.js";
 import { isPromise } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoHandler, type AkairoHandlerOptions } from "../AkairoHandler.js";
@@ -33,11 +33,7 @@ export class InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler>
 	 * @param message - Message to test.
 	 * @param command - Command to use.
 	 */
-	public async test(
-		type: "all" | "pre" | "post",
-		message: Message | AkairoMessage,
-		command?: Command
-	): Promise<string | null | void> {
+	public async test(type: "all" | "pre" | "post", message: MessageUnion, command?: Command): Promise<string | null | void> {
 		if (!this.modules.size) return null;
 
 		const inhibitors = this.modules.filter(i => i.type === type);

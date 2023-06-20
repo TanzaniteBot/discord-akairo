@@ -21,8 +21,8 @@ import {
 	type User
 } from "discord.js";
 import { z } from "zod";
+import { ArrayOrNot, MessageInstance, MessageUnion, SyncOrAsync } from "../../typings/Util.js";
 import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events.js";
-import { ArrayOrNot, MessageInstance, SyncOrAsync } from "../../typings/Util.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
@@ -33,11 +33,11 @@ import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCom
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import type { ListenerHandler } from "../listeners/ListenerHandler.js";
 import type { TaskHandler } from "../tasks/TaskHandler.js";
-import { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
-import { TypeResolver } from "./arguments/TypeResolver.js";
-import { Command, CommandInstance, SlashNonSub, type KeySupplier } from "./Command.js";
+import { Command, CommandInstance, SlashNonSub } from "./Command.js";
 import { CommandUtil } from "./CommandUtil.js";
 import { Flag, FlagType } from "./Flag.js";
+import { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
+import { TypeResolver } from "./arguments/TypeResolver.js";
 
 /**
  * Loads commands and handles messages.
@@ -56,7 +56,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * Whether or not mentions are allowed for prefixing.
 	 */
-	public allowMention: boolean | MentionPrefixPredicate;
+	public allowMention: boolean | OmitThisParameter<MentionPrefixPredicate>;
 
 	/**
 	 * Default argument options.
@@ -96,7 +96,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * Collection of CommandUtils.
 	 */
-	public commandUtils: Collection<string, CommandUtil<Message | AkairoMessage>>;
+	public commandUtils: Collection<string, CommandUtil<MessageUnion>>;
 
 	/**
 	 * Time interval in milliseconds for sweeping command util instances.
@@ -133,12 +133,12 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	public ignoreCooldown: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
+	public ignoreCooldown: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicateHandler>;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	public ignorePermissions: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
+	public ignorePermissions: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicateHandler>;
 
 	/**
 	 * Inhibitor handler to use.
@@ -148,12 +148,12 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	/**
 	 * The prefix(es) for command parsing.
 	 */
-	public prefix: string | string[] | PrefixSupplier;
+	public prefix: string | string[] | OmitThisParameter<PrefixSupplier>;
 
 	/**
 	 * Collection of prefix overwrites to commands.
 	 */
-	public prefixes: Collection<string | PrefixSupplier, Set<string>>;
+	public prefixes: Collection<string | OmitThisParameter<PrefixSupplier>, Set<string>>;
 
 	/**
 	 * Collection of sets of ongoing argument prompts.
@@ -191,7 +191,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const {
 			directory,
 			classToHandle = Command,
-			extensions = [".js", ".ts"] as Extension[],
+			extensions = [".js", ".ts"] satisfies Extension[],
 			automateCategories,
 			loadFilter,
 			blockClient = true,
@@ -302,7 +302,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 					if (!original) return;
 					if (original.content === message.content) return;
 
-					if (this.handleEdits) this.handle(message as Message);
+					if (this.handleEdits) this.handle(message);
 				});
 			}
 			this.client.on("interactionCreate", i => {
@@ -341,19 +341,19 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		// Parse all commands that have slash enabled
 		for (const [, data] of this.modules) {
 			if (!data.slash) continue;
-			const obj = {
+			const obj: ParsedSlashCommand = {
 				name: data.aliases[0]?.toLocaleLowerCase() || data.id?.toLocaleLowerCase(),
 				description: parseDescriptionCommand(data.description) || "No description provided.",
 				options: data.slashOptions?.map(o => {
-					const temp = { ...o, resolve: undefined };
-					return temp as ApplicationCommandOptionData;
+					const { resolve: _, ...rest } = <any>o;
+					return <ApplicationCommandOptionData>rest;
 				}),
 				guilds: data.slashGuilds ?? [],
 				dmPermission: data.slashDmPermission,
 				type: ApplicationCommandType.ChatInput,
 				nameLocalizations: data.localization.nameLocalizations,
 				descriptionLocalizations: data.localization.descriptionLocalizations
-			} as ParsedSlashCommand;
+			};
 
 			if ("slashDefaultMemberPermissions" in data) obj.defaultMemberPermissions = data.slashDefaultMemberPermissions;
 
@@ -368,13 +368,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		if (contextCommandHandler) {
 			// parse all context commands
 			for (const [, data] of contextCommandHandler.modules) {
-				const obj = {
+				const obj: ParsedSlashCommand = {
 					name: data.name,
 					guilds: data.guilds ?? [],
 					dmPermission: data.dmPermission,
 					type: data.type,
 					nameLocalizations: data.nameLocalizations
-				} as ParsedSlashCommand;
+				};
 
 				if ("defaultMemberPermissions" in data) obj.defaultMemberPermissions = data.defaultMemberPermissions;
 
@@ -671,11 +671,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 			const convertedOptions: ConvertedOptionsType = {};
 
-			if ((interaction.options as CommandInteractionOptionResolver)["_group"])
-				convertedOptions["subcommandGroup"] = (interaction.options as CommandInteractionOptionResolver)["_group"];
-			if ((interaction.options as CommandInteractionOptionResolver)["_subcommand"])
-				convertedOptions["subcommand"] = (interaction.options as CommandInteractionOptionResolver)["_subcommand"];
-			for (const option of (interaction.options as CommandInteractionOptionResolver)["_hoistedOptions"]) {
+			const _opts = interaction.options as CommandInteractionOptionResolver;
+
+			if (_opts["_group"]) convertedOptions["subcommandGroup"] = _opts["_group"];
+			if (_opts["_subcommand"]) convertedOptions["subcommand"] = _opts["_subcommand"];
+			for (const option of _opts["_hoistedOptions"]) {
 				if (
 					option.type === ApplicationCommandOptionType.Subcommand ||
 					option.type === ApplicationCommandOptionType.SubcommandGroup
@@ -684,10 +684,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				const originalOption = commandModule.slashOptions?.find(o => o.name === option.name);
 
 				const func = `get${
-					// fuck u typescript
-					originalOption && "resolve" in originalOption && originalOption.resolve
-						? originalOption.resolve
-						: (ApplicationCommandOptionType[option.type] as SlashResolveType)
+					(originalOption && "resolve" in originalOption && originalOption.resolve) ||
+					(ApplicationCommandOptionType[option.type] as SlashResolveType)
 				}` as const;
 
 				// getMember and getChannel have incompatible signatures with the others
@@ -737,7 +735,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				}
 
 				// eslint-disable-next-line no-inner-declarations
-				function handleOptions(options: SlashNonSub[]) {
+				function handleOptions(options: readonly SlashNonSub[]) {
 					for (const option of options) {
 						switch (option.type) {
 							case ApplicationCommandOptionType.Boolean:
@@ -860,7 +858,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 
 			if (!ignore) {
-				if (command.lock) key = (command.lock as KeySupplier)(message, args);
+				if (command.lock) key = command.lock(message, args);
 				if (isPromise(key)) key = await key;
 				if (key) {
 					if (command.locker?.has(key)) {
@@ -1000,7 +998,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param message - Message to handle.
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
-	public async runAllTypeInhibitors(message: Message | AkairoMessage, slash: boolean = false): Promise<boolean> {
+	public async runAllTypeInhibitors(message: MessageUnion, slash: boolean = false): Promise<boolean> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("all", message) : null;
 
 		if (reason != null) {
@@ -1024,7 +1022,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Runs inhibitors with the pre type.
 	 * @param message - Message to handle.
 	 */
-	public async runPreTypeInhibitors(message: Message | AkairoMessage): Promise<boolean> {
+	public async runPreTypeInhibitors(message: MessageUnion): Promise<boolean> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("pre", message) : null;
 
 		if (reason != null) {
@@ -1042,11 +1040,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command to handle.
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
-	public async runPostTypeInhibitors(
-		message: Message | AkairoMessage,
-		command: Command,
-		slash: boolean = false
-	): Promise<boolean> {
+	public async runPostTypeInhibitors(message: MessageUnion, command: Command, slash: boolean = false): Promise<boolean> {
 		const event = slash ? CommandHandlerEvents.SLASH_BLOCKED : CommandHandlerEvents.COMMAND_BLOCKED;
 
 		if (!this.skipBuiltInPostInhibitors) {
@@ -1114,7 +1108,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command to cooldown.
 	 * @param slash - Whether or not the command is a slash command.
 	 */
-	public async runPermissionChecks(message: Message | AkairoMessage, command: Command, slash: boolean = false): Promise<boolean> {
+	public async runPermissionChecks(message: MessageUnion, command: Command, slash: boolean = false): Promise<boolean> {
 		const event = slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS;
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
@@ -1171,14 +1165,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param message - Message that called the command.
 	 * @param command - Command to cooldown.
 	 */
-	public runCooldowns(message: Message | AkairoMessage, command: Command): boolean {
+	public runCooldowns(message: MessageUnion, command: Command): boolean {
 		const id = message.author?.id;
 		const ignorer = command.ignoreCooldown || this.ignoreCooldown;
 		const isIgnored = Array.isArray(ignorer)
 			? ignorer.includes(id)
 			: typeof ignorer === "function"
-			? // @ts-ignore
-			  ignorer(message, command)
+			? ignorer(message, command)
 			: id === ignorer;
 
 		if (isIgnored) return false;
@@ -1252,7 +1245,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Parses the command and its argument list.
 	 * @param message - Message that called the command.
 	 */
-	public async parseCommand(message: Message | AkairoMessage): Promise<ParsedComponentData> {
+	public async parseCommand(message: MessageUnion): Promise<ParsedComponentData> {
 		const allowMention = await intoCallable(this.prefix)(message);
 		let prefixes = intoArray(allowMention);
 		if (allowMention) {
@@ -1271,19 +1264,19 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Parses the command and its argument list using prefix overwrites.
 	 * @param message - Message that called the command.
 	 */
-	public async parseCommandOverwrittenPrefixes(message: Message | AkairoMessage): Promise<ParsedComponentData> {
+	public async parseCommandOverwrittenPrefixes(message: MessageUnion): Promise<ParsedComponentData> {
 		if (!this.prefixes.size) {
 			return {};
 		}
 
 		const promises = this.prefixes.map(async (cmds, provider) => {
 			const prefixes = intoArray(await intoCallable(provider)(message));
-			return prefixes.map(p => [p, cmds]);
+			return prefixes.map(p => [p, cmds] satisfies [string, Set<string>]);
 		});
 
 		const pairs = (await Promise.all(promises)).flatMap(x => x, 1);
-		pairs.sort(([a]: any, [b]: any) => prefixCompare(a, b));
-		return this.parseMultiplePrefixes(message, pairs as [string, Set<string>][]);
+		pairs.sort(([a], [b]) => prefixCompare(a, b));
+		return this.parseMultiplePrefixes(message, pairs);
 	}
 
 	/**
@@ -1291,7 +1284,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param message - Message to parse.
 	 * @param pairs - Pairs of prefix to associated commands. That is, `[string, Set<string> | null][]`.
 	 */
-	public parseMultiplePrefixes(message: Message | AkairoMessage, pairs: [string, Set<string> | null][]): ParsedComponentData {
+	public parseMultiplePrefixes(message: MessageUnion, pairs: [string, Set<string> | null][]): ParsedComponentData {
 		const parses = pairs.map(([prefix, cmds]) => this.parseWithPrefix(message, prefix, cmds));
 		const result = parses.find(parsed => parsed.command);
 		if (result) {
@@ -1314,7 +1307,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param associatedCommands - Associated commands.
 	 */
 	public parseWithPrefix(
-		message: Message | AkairoMessage,
+		message: MessageUnion,
 		prefix: string,
 		associatedCommands: Set<string> | null = null
 	): ParsedComponentData {
@@ -1351,7 +1344,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param message - Message that called the command.
 	 * @param command - Command that errored.
 	 */
-	public emitError(err: Error, message: Message | AkairoMessage, command?: Command): void {
+	public emitError(err: Error, message: MessageUnion, command?: Command): void {
 		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
 			this.emit(CommandHandlerEvents.ERROR, err, message, command);
 			return;
@@ -1495,7 +1488,7 @@ export class RegisterInteractionCommandError extends Error {
  * A function that returns whether mentions can be used as a prefix.
  * @param message - Message to option for.
  */
-export type MentionPrefixPredicate = (message: Message) => SyncOrAsync<boolean>;
+export type MentionPrefixPredicate = (this: CommandHandler, message: Message) => SyncOrAsync<boolean>;
 export const MentionPrefixPredicate = z.function().args(MessageInstance).returns(SyncOrAsync(z.boolean()));
 
 /**
@@ -1503,15 +1496,8 @@ export const MentionPrefixPredicate = z.function().args(MessageInstance).returns
  * @param message - Message to check.
  * @param command - Command to check.
  */
-export type IgnoreCheckPredicate = (
-	this: Command | CommandHandler,
-	message: Message | AkairoMessage,
-	command: Command
-) => boolean;
-export const IgnoreCheckPredicate = z
-	.function()
-	.args(z.union([MessageInstance, z.instanceof(AkairoMessage)]), CommandInstance)
-	.returns(z.boolean());
+export type IgnoreCheckPredicateHandler = (this: CommandHandler, message: MessageUnion, command: Command) => boolean;
+export const IgnoreCheckPredicateHandler = z.function().args(MessageUnion, CommandInstance).returns(z.boolean());
 
 /**
  * A function that returns the prefix(es) to use.
@@ -1609,13 +1595,13 @@ export type CommandHandlerOptions = AkairoHandlerOptions<Command, CommandHandler
 	 * ID of user(s) to ignore cooldown or a function to ignore. Defaults to the client owner(s).
 	 * @default client.ownerID
 	 */
-	ignoreCooldown?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
+	ignoreCooldown?: ArrayOrNot<Snowflake> | IgnoreCheckPredicateHandler;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 * @default []
 	 */
-	ignorePermissions?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
+	ignorePermissions?: ArrayOrNot<Snowflake> | IgnoreCheckPredicateHandler;
 
 	/**
 	 * The prefix(es) for command parsing.
@@ -1661,8 +1647,8 @@ export const CommandHandlerOptions = AkairoHandlerOptions.extend({
 	defaultCooldown: z.number().optional(),
 	fetchMembers: z.boolean().optional(),
 	handleEdits: z.boolean().optional(),
-	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
-	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
+	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicateHandler]).optional(),
+	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicateHandler]).optional(),
 	prefix: z.union([ArrayOrNot(z.string()), PrefixSupplier]).optional(),
 	storeMessages: z.boolean().optional(),
 	typing: z.boolean().optional(),

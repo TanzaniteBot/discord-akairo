@@ -5,9 +5,13 @@ import {
 	MessagePayload,
 	PermissionFlagsBits,
 	PermissionResolvable,
+	PermissionsString,
 	type MessageCreateOptions
 } from "discord.js";
-import { z, ZodLiteral, ZodType, ZodUnion, type ZodTypeAny } from "zod";
+import { ZodLiteral, ZodType, ZodUnion, z, type ZodTypeAny } from "zod";
+import { AkairoMessage } from "../util/AkairoMessage.js";
+
+type MakeConstructable<T> = new (...args: any[]) => T;
 
 export type MessageSendResolvable = string | MessagePayload | MessageCreateOptions;
 export const MessageSendResolvable = z.union([z.string(), z.instanceof(MessagePayload), z.record(z.any())]);
@@ -15,6 +19,7 @@ export const MessageSendResolvable = z.union([z.string(), z.instanceof(MessagePa
 export type SyncOrAsync<T> = T | Promise<T>;
 export const SyncOrAsync = <T extends ZodTypeAny>(t: T) => z.union([t, z.promise(t)]);
 
+export type MessageInstance = Message;
 export const MessageInstance = z.instanceof(Message as new (...args: any[]) => Message);
 
 export type ArrayOrNot<T> = T | T[];
@@ -24,11 +29,12 @@ export const PermissionKey = z.union(Object.keys(PermissionFlagsBits).map(key =>
 	[ZodLiteral<keyof typeof PermissionFlagsBits>, ZodLiteral<keyof typeof PermissionFlagsBits>]
 >;
 
-const BigIntBitFieldInstance = z.instanceof(
-	BitField as new (...args: any[]) => BitField<keyof typeof PermissionFlagsBits, bigint>
-);
+const BigIntBitFieldInstance = z.instanceof(BitField as MakeConstructable<BitField<PermissionsString, bigint>>);
 
 const BigIntStr = z.string().regex(/^\d*$/) as unknown as ZodLiteral<`${bigint}`>;
+
+export type MessageUnion = Message | AkairoMessage;
+export const MessageUnion = z.union([MessageInstance, z.instanceof(AkairoMessage)]);
 
 /**
  * {@link PermissionResolvable}

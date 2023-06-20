@@ -372,18 +372,18 @@ class Parser {
 	public parseFlag(): ParsedFlag | ParsedOptionFlag {
 		if (this.lookahead("FlagWord")) {
 			const flag = this.match("FlagWord");
-			const parsed = { type: "Flag" as const, key: flag.value, raw: flag.value };
+			const parsed = { type: "Flag", key: flag.value, raw: flag.value } satisfies ParsedFlag;
 			return parsed;
 		}
 
 		// Otherwise, `this.lookahead('OptionFlagWord')` should be true.
 		const flag = this.match("OptionFlagWord");
 		const parsed = {
-			type: "OptionFlag" as const,
+			type: "OptionFlag",
 			key: flag.value,
 			value: "",
 			raw: flag.value
-		};
+		} satisfies ParsedOptionFlag;
 		const ws = this.lookahead("WS") ? this.match("WS") : null;
 		if (ws != null) {
 			parsed.raw += ws.value;
@@ -402,7 +402,7 @@ class Parser {
 	public parsePhrase(): ParsedPhrase {
 		if (!this.separated) {
 			if (this.lookahead("Quote")) {
-				const parsed = { type: "Phrase" as const, value: "", raw: "" };
+				const parsed = { type: "Phrase", value: "", raw: "" } satisfies ParsedPhrase;
 				const openQuote = this.match("Quote");
 				parsed.raw += openQuote.value;
 				while (this.lookahead("Word", "WS")) {
@@ -420,7 +420,7 @@ class Parser {
 			}
 
 			if (this.lookahead("OpenQuote")) {
-				const parsed = { type: "Phrase" as const, value: "", raw: "" };
+				const parsed = { type: "Phrase", value: "", raw: "" } satisfies ParsedPhrase;
 				const openQuote = this.match("OpenQuote");
 				parsed.raw += openQuote.value;
 				while (this.lookahead("Word", "WS")) {
@@ -444,17 +444,17 @@ class Parser {
 			if (this.lookahead("EndQuote")) {
 				const endQuote = this.match("EndQuote");
 				const parsed = {
-					type: "Phrase" as const,
+					type: "Phrase",
 					value: endQuote.value,
 					raw: endQuote.value
-				};
+				} satisfies ParsedPhrase;
 				return parsed;
 			}
 		}
 
 		if (this.separated) {
 			const init = this.match("Word");
-			const parsed = { type: "Phrase" as const, value: init.value, raw: init.value };
+			const parsed = { type: "Phrase", value: init.value, raw: init.value } satisfies ParsedPhrase;
 			while (this.lookahead("WS") && this.lookaheadN(1, "Word")) {
 				const ws = this.match("WS");
 				const word = this.match("Word");
@@ -466,7 +466,7 @@ class Parser {
 		}
 
 		const word = this.match("Word");
-		const parsed = { type: "Phrase" as const, value: word.value, raw: word.value };
+		const parsed = { type: "Phrase", value: word.value, raw: word.value } satisfies ParsedPhrase;
 		return parsed;
 	}
 }

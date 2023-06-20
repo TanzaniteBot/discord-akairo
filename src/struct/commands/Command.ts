@@ -11,15 +11,15 @@ import type {
 	Snowflake
 } from "discord.js";
 import { z } from "zod";
-import { ArrayOrNot, MessageInstance, PermissionResolvableValidator, SyncOrAsync } from "../../typings/Util.js";
+import { ArrayOrNot, MessageInstance, MessageUnion, PermissionResolvableValidator, SyncOrAsync } from "../../typings/Util.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
-import { Argument, ArgumentOptions, DefaultArgumentOptions, type ArgumentTypeCasterReturn } from "./arguments/Argument.js";
-import { ArgumentRunner, ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
-import { CommandHandler, IgnoreCheckPredicate, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
+import { CommandHandler, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
 import { ContentParser, ContentParserResult } from "./ContentParser.js";
 import type { Flag } from "./Flag.js";
+import { Argument, ArgumentOptions, DefaultArgumentOptions, type ArgumentTypeCasterReturn } from "./arguments/Argument.js";
+import { ArgumentRunner, ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
 
 /**
  * Represents a command.
@@ -48,7 +48,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * Generator for arguments.
 	 */
-	private argumentGenerator: ArgumentGenerator;
+	private argumentGenerator: OmitThisParameter<ArgumentGenerator>;
 
 	/**
 	 * Usable only in this channel type.
@@ -63,7 +63,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * Permissions required to run command by the client.
 	 */
-	public clientPermissions!: PermissionResolvable | MissingPermissionSupplier;
+	public clientPermissions!: PermissionResolvable | OmitThisParameter<MissingPermissionSupplier>;
 
 	/**
 	 * Cooldown in milliseconds.
@@ -83,12 +83,12 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	public ignoreCooldown?: Snowflake | Snowflake[] | IgnoreCheckPredicate;
+	public ignoreCooldown?: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicateCommand>;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	public ignorePermissions?: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicate>;
+	public ignorePermissions?: Snowflake | Snowflake[] | OmitThisParameter<IgnoreCheckPredicateCommand>;
 
 	/**
 	 * The slash command localizations.
@@ -258,11 +258,13 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 		this.userPermissions = typeof userPermissions === "function" ? userPermissions.bind(this) : userPermissions;
 		this.lock =
 			typeof lock === "string"
-				? {
-						guild: (message: Message | AkairoMessage): string => message.guild! && message.guild.id!,
-						channel: (message: Message | AkairoMessage): string => message.channel!.id,
-						user: (message: Message | AkairoMessage): string => message.author.id
-				  }[lock]
+				? (
+						{
+							guild: message => message.guild! && message.guild.id!,
+							channel: message => message.channel!.id,
+							user: message => message.author.id
+						} satisfies Record<string, KeySupplier>
+				  )[lock]
 				: lock;
 		if (this.lock) this.locker = new Set();
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;
@@ -359,6 +361,8 @@ export type CommandArguments = {
 };
 export const CommandArguments = z.record(z.any());
 
+export const CommandInstance = z.instanceof(Command as new (...args: any[]) => Command);
+
 /**
  * Generator for arguments.
  * When yielding argument options, that argument is ran and the result of the processing is given.
@@ -368,6 +372,7 @@ export const CommandArguments = z.record(z.any());
  * @param state - Argument processing state.
  */
 export type ArgumentGenerator = (
+	this: Command,
 	message: Message,
 	parsed: ContentParserResult,
 	state: ArgumentRunnerState
@@ -392,11 +397,8 @@ export const BeforeAction = z.function().args(MessageInstance).returns(z.any());
  * A non-null return value signifies the reason for missing permissions.
  * @param message - Message that triggered the command.
  */
-export type MissingPermissionSupplier = (message: Message | AkairoMessage) => SyncOrAsync<any>;
-export const MissingPermissionSupplier = z
-	.function()
-	.args(z.union([MessageInstance, z.instanceof(AkairoMessage)]))
-	.returns(SyncOrAsync(z.any()));
+export type MissingPermissionSupplier = (this: Command, message: MessageUnion) => SyncOrAsync<any>;
+export const MissingPermissionSupplier = z.function().args(MessageUnion).returns(SyncOrAsync(z.any()));
 
 /**
  * A function used to check if the command should run arbitrarily.
@@ -410,11 +412,8 @@ export const ExecutionPredicate = z.function().args(MessageInstance).returns(Syn
  * @param message - Message that triggered the command.
  * @param args - Evaluated arguments.
  */
-export type KeySupplier = (message: Message | AkairoMessage, args: CommandArguments) => string;
-export const KeySupplier = z
-	.function()
-	.args(z.union([MessageInstance, z.instanceof(AkairoMessage)]), CommandArguments)
-	.returns(z.string());
+export type KeySupplier = (message: MessageUnion, args: CommandArguments) => string;
+export const KeySupplier = z.function().args(MessageUnion, CommandArguments).returns(z.string());
 
 /**
  * A function used to return a regular expression.
@@ -422,6 +421,14 @@ export const KeySupplier = z
  */
 export type RegexSupplier = (message: Message) => RegExp;
 export const RegexSupplier = z.function().args(MessageInstance).returns(z.instanceof(RegExp));
+
+/**
+ * A function that returns whether this message should be ignored for a certain check.
+ * @param message - Message to check.
+ * @param command - Command to check.
+ */
+export type IgnoreCheckPredicateCommand = (this: Command, message: MessageUnion, command: Command) => boolean;
+export const IgnoreCheckPredicateCommand = z.function().args(MessageUnion, CommandInstance).returns(z.boolean());
 
 /**
  * Options to use for command execution behavior.
@@ -496,12 +503,12 @@ export type CommandOptions = AkairoModuleOptions & {
 	/**
 	 * ID of user(s) to ignore cooldown or a function to ignore.
 	 */
-	ignoreCooldown?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
+	ignoreCooldown?: ArrayOrNot<Snowflake> | IgnoreCheckPredicateCommand;
 
 	/**
 	 * ID of user(s) to ignore `userPermissions` checks or a function to ignore.
 	 */
-	ignorePermissions?: ArrayOrNot<Snowflake> | IgnoreCheckPredicate;
+	ignorePermissions?: ArrayOrNot<Snowflake> | IgnoreCheckPredicateCommand;
 
 	/**
 	 * The slash command localizations.
@@ -634,8 +641,8 @@ export const CommandOptions = AkairoModuleOptions.extend({
 	description: z.union([z.string(), ArrayOrNot(z.any())]).optional(),
 	editable: z.boolean().optional(),
 	flags: z.string().array().optional(),
-	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
-	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicate]).optional(),
+	ignoreCooldown: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicateCommand]).optional(),
+	ignorePermissions: z.union([ArrayOrNot(z.string()), IgnoreCheckPredicateCommand]).optional(),
 	localization: z.record(z.any()).optional(),
 	lock: z.union([KeySupplier, z.enum(["guild", "channel", "user"])]).optional(),
 	onlyNsfw: z.boolean().optional(),
@@ -674,7 +681,7 @@ type GetNonSub<T> = T extends Sub ? never : T & SlashExt;
 export type SlashNonSub = GetNonSub<ApplicationCommandOptionData>;
 
 export interface ExtGroup extends ApplicationCommandSubGroupData {
-	options: ExtSub[];
+	options: readonly ExtSub[];
 }
 
 export interface ExtSub extends ApplicationCommandSubCommandData {
@@ -699,5 +706,3 @@ export type SlashOption = SlashNonSub | SlashSub;
  * }
  */
 export type CommandLocalization = Partial<Record<"nameLocalizations" | "descriptionLocalizations", LocalizationMap>>;
-
-export const CommandInstance = z.instanceof(Command as new (...args: any[]) => Command);

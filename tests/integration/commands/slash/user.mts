@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType, codeBlock, type Message } from "discord.js";
+import { ApplicationCommandOptionType, codeBlock } from "discord.js";
 import { inspect } from "node:util";
-import { Command, type AkairoMessage } from "../../../../src/index.js";
+import { Command, type MessageUnion } from "../../../../src/index.js";
 
 export default class UserCommand extends Command {
 	public constructor() {
@@ -22,7 +22,7 @@ export default class UserCommand extends Command {
 	}
 
 	public override exec(
-		message: AkairoMessage | Message,
+		message: MessageUnion,
 		args: {
 			user: unknown;
 		}

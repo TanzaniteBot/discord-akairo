@@ -9,6 +9,7 @@ import {
 	type MessageReplyOptions,
 	type Snowflake
 } from "discord.js";
+import { MessageUnion } from "../../typings/Util.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import { CommandHandler, type ParsedComponentData } from "./CommandHandler.js";
@@ -16,7 +17,7 @@ import { CommandHandler, type ParsedComponentData } from "./CommandHandler.js";
 /**
  * Command utilities.
  */
-export class CommandUtil<MessageType extends AkairoMessage | Message> {
+export class CommandUtil<MessageType extends MessageUnion> {
 	/**
 	 * Saved deleted message ids.
 	 */
@@ -82,7 +83,7 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 	 * Whether or not the provided message is a slash message
 	 * @param message - The message to test
 	 */
-	public isSlashMessage(message: Message | AkairoMessage): message is AkairoMessage {
+	public isSlashMessage(message: MessageUnion): message is AkairoMessage {
 		return message instanceof AkairoMessage;
 	}
 
@@ -191,11 +192,9 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 			const sent = await this.message.channel?.send(options as string | MessagePayload | MessageCreateOptions);
 			const lastSent = this.setLastResponse(sent!);
 			this.setEditable(!lastSent.attachments.size);
-			return sent!;
+			return sent;
 		} else {
-			const sent = (await this.message.interaction.followUp(
-				options as string | MessagePayload | InteractionReplyOptions
-			)) as Message;
+			const sent = await this.message.interaction.followUp(options as string | MessagePayload | InteractionReplyOptions);
 			this.setLastResponse(sent);
 			return sent;
 		}
@@ -220,7 +219,7 @@ export class CommandUtil<MessageType extends AkairoMessage | Message> {
 		} else {
 			this.lastResponse = message;
 		}
-		return this.lastResponse as Message;
+		return this.lastResponse!;
 	}
 
 	/**

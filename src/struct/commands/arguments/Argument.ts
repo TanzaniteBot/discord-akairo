@@ -83,7 +83,7 @@ export class Argument {
 	/**
 	 * The default value of the argument or a function supplying the default value.
 	 */
-	public default: DefaultValueSupplier | any;
+	public default: OmitThisParameter<DefaultValueSupplier> | any;
 
 	/**
 	 *  Description of the command.
@@ -123,7 +123,7 @@ export class Argument {
 	/**
 	 * The content or function supplying the content sent when argument parsing fails.
 	 */
-	public otherwise: MessageSendResolvable | OtherwiseContentSupplier | null;
+	public otherwise: MessageSendResolvable | OmitThisParameter<OtherwiseContentSupplier> | null;
 
 	/**
 	 * The prompt options.
@@ -395,7 +395,7 @@ export class Argument {
 			}
 
 			if (modifyOtherwise) {
-				text = await modifyOtherwise.call(this, message, text as string, {
+				text = await modifyOtherwise.call(this, message, text!, {
 					phrase,
 					failure: failure ?? null
 				});
@@ -783,7 +783,11 @@ export const FailureData = z.object({
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export type OtherwiseContentSupplier = (message: Message, data: FailureData) => SyncOrAsync<MessageSendResolvable>;
+export type OtherwiseContentSupplier = (
+	this: Argument,
+	message: Message,
+	data: FailureData
+) => SyncOrAsync<MessageSendResolvable>;
 export const OtherwiseContentSupplier = z
 	.function()
 	.args(MessageInstance, FailureData)
@@ -1168,7 +1172,7 @@ export interface ArgumentDefaults extends BaseArgumentOptions {
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export type DefaultValueSupplier = (message: Message, data: FailureData) => any;
+export type DefaultValueSupplier = (this: Argument, message: Message, data: FailureData) => any;
 export const DefaultValueSupplier = z.function().args(MessageInstance, FailureData).returns(z.any());
 
 /**
