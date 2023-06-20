@@ -11,16 +11,13 @@ import { AkairoError } from "./AkairoError.js";
  */
 export function deepAssign<A extends Record<string, any>, B extends Record<string, any>>(target: A, ...os: B[]): A & B {
 	for (const o of os) {
-		for (const [key, value] of Object.entries(o)) {
+		for (const [key, value] of Object.entries(o) as [keyof typeof o & keyof typeof target, any][]) {
 			const valueIsObject = value && typeof value === "object";
-			const targetKeyIsObject =
-				Object.prototype.hasOwnProperty.call(target, key) &&
-				target[key as keyof typeof target] &&
-				typeof target[key as keyof typeof target] === "object";
+			const targetKeyIsObject = Object.hasOwn(target, key) && target[key] && typeof target[key] === "object";
 			if (valueIsObject && targetKeyIsObject) {
-				deepAssign(target[key as keyof typeof target], value);
+				deepAssign(target[key], value);
 			} else {
-				target[key as keyof typeof target] = value;
+				target[key] = value;
 			}
 		}
 	}
@@ -176,14 +173,6 @@ export function isArrayOf<T>(
 ): boolean {
 	if (!Array.isArray(array)) return false;
 	return array.every(item => typeof item === type);
-}
-
-/**
- * Checks if a value is a string, an array of strings, or a function
- * @private
- */
-export function isStringArrayStringOrFunc(value: any): value is string | string[] | ((...args: any[]) => any) {
-	return typeof value === "string" || typeof value === "function" || isArrayOf(value, "string");
 }
 
 /* eslint-disable @typescript-eslint/ban-types, func-names */

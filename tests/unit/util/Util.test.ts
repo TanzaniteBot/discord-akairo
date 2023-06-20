@@ -13,7 +13,6 @@ const {
 	snakeToCamelCase,
 	pascalToCamelCase,
 	isArrayOf,
-	isStringArrayStringOrFunc,
 	patchAbstract
 } = Util;
 
@@ -311,15 +310,6 @@ describe("isArrayOf", () => {
 		expect(isArrayOf([void 0, undefined], "object")).toBe(false);
 		expect(isArrayOf([{}, null], "function")).toBe(false);
 		expect(isArrayOf([() => {}, Class, new Function()], "number")).toBe(false);
-	});
-});
-
-describe("isStringArrayStringOrFunc", () => {
-	it("returns whether or not the value is an array of strings, a string or a function", () => {
-		expect(isStringArrayStringOrFunc([])).toBe(true);
-		expect(isStringArrayStringOrFunc([1, 2, 3])).toBe(false);
-		expect(isStringArrayStringOrFunc("string")).toBe(true);
-		expect(isStringArrayStringOrFunc(() => {})).toBe(true);
 	});
 });
 
