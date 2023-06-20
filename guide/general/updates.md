@@ -149,13 +149,13 @@ contextMenuCommandHandler = new ContextMenuCommandHandler(this, {
 
 ```ts
 import { ContextMenuCommand } from "@tanzanite/discord-akairo";
-import { ContextMenuInteraction } from "discord.js";
+import { ApplicationCommandType, ContextMenuInteraction } from "discord.js";
 
 export default class ViewRawContextMenuCommand extends ContextMenuCommand {
   public constructor() {
     super("pin", {
       name: "pin",
-      type: "MESSAGE"
+      type: ApplicationCommandType.Message
     });
   }
 
@@ -214,7 +214,7 @@ You can also do this manually
 ```ts
 // command
 /* ... */
-public override exec(message: Message | AkairoMessage) {
+public override exec(message: MessageUnion) {
   if (message.util.isSlashMessage(message)) await message.interaction.deferReply()
   /* ... */
 }
@@ -245,6 +245,8 @@ export default class NsfwCommand extends Command {
       }
     });
   }
+
+  /* ... */
 }
 ```
 

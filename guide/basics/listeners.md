@@ -18,7 +18,7 @@ class MyClient extends AkairoClient {
   public commandHandler: CommandHandler;
   public inhibitorHandler: InhibitorHandler;
   public listenerHandler: ListenerHandler;
-  constructor() {
+  public constructor() {
     super({
       intents: [
         /* choose intents based on what you need your bot needs to do */
@@ -107,8 +107,7 @@ They are emitted to the `messageBlocked` (anything with `pre` type or before) or
 Since we set the command handler to the key `commandHandler` up above, we have to use that as the `emitter` option.
 
 ```ts
-import { AkairoMessage, Command, Listener } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Listener, type Command, type MessageUnion } from "@tanzanite/discord-akairo";
 
 export default class CommandBlockedListener extends Listener {
   public constructor() {
@@ -118,7 +117,7 @@ export default class CommandBlockedListener extends Listener {
     });
   }
 
-  public override exec(message: Message | AkairoMessage, command: Command, reason: string): void {
+  public override exec(message: MessageUnion, command: Command, reason: string): void {
     console.log(`${message.author.username} was blocked from using ${command.id} because of ${reason}!`);
   }
 }
