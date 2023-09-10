@@ -23,6 +23,12 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable 
 
+      - name: Make Pseudo Auth File
+        run: cp ./tests/integration/auth.example.json ./tests/integration/auth.json
+
+      - name: Build
+        run: yarn build
+
       - name: Generate Docs
         run: yarn typedoc src/index.ts
 
