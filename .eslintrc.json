@@ -108,6 +108,7 @@
 		"@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["$this"] }],
 		"import/extensions": ["error", "ignorePackages"],
 		"import/no-cycle": "error",
-		"@typescript-eslint/no-unused-vars": ["warn", { "varsIgnorePattern": "^_" }]
+		"@typescript-eslint/no-unused-vars": ["warn", { "varsIgnorePattern": "^_" }],
+		"@typescript-eslint/no-unsafe-declaration-merging": "off"
 	}
 }

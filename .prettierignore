@@ -2,3 +2,5 @@
 .github/workflows/*
 # dist
 docs
+.yarn/plugins/*
+.yarn/releases/*

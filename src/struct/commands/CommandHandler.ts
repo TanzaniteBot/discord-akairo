@@ -630,7 +630,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			return false;
 		}
 
-		const message = new AkairoMessage(this.client, interaction);
+		const message = new AkairoMessage(<AkairoClient<true>>this.client, interaction);
 
 		try {
 			if (this.fetchMembers && message.guild && !message.member) {
@@ -1668,7 +1668,7 @@ export type CooldownData = {
 	/**
 	 * Timeout object.
 	 */
-	timer: NodeJS.Timer;
+	timer: NodeJS.Timeout;
 
 	/**
 	 * Number of times the command has been used.

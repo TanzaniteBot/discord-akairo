@@ -26,7 +26,7 @@ export default class TestClient extends AkairoClient {
 				GatewayIntentBits.DirectMessageReactions,
 				GatewayIntentBits.DirectMessages,
 				GatewayIntentBits.DirectMessageTyping,
-				GatewayIntentBits.GuildBans,
+				GatewayIntentBits.GuildModeration,
 				GatewayIntentBits.GuildEmojisAndStickers,
 				GatewayIntentBits.GuildIntegrations,
 				GatewayIntentBits.GuildInvites,
