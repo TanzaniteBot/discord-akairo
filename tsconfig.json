@@ -3,6 +3,11 @@
 	"compilerOptions": {
 		"outDir": "dist"
 	},
-	"references": [{ "path": "./src" }, { "path": "./tests/integration" }, { "path": "./tsconfig.pkg.json" }],
+	"references": [
+		{ "path": "./src" },
+		{ "path": "./tests/integration" },
+		{ "path": "./tests/unit" },
+		{ "path": "./tsconfig.pkg.json" }
+	],
 	"files": []
 }

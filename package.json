@@ -36,7 +36,7 @@
 		"lint": "yarn eslint .",
 		"test": "yarn build && node --enable-source-maps ./dist/tests/integration/bot.mjs",
 		"test:run": "yarn test start",
-		"test:unit": "yarn vitest run",
+		"test:unit": "node --enable-source-maps --test ./dist/tests/unit",
 		"test:all": "yarn lint && yarn test && yarn test:unit",
 		"format": "yarn prettier . --write",
 		"build": "yarn tsc --build",
@@ -62,10 +62,8 @@
 		"node-fetch": "^3.3.2",
 		"prettier": "^3.0.3",
 		"rimraf": "^5.0.1",
-		"ts-essentials": "^9.4.0",
 		"typedoc": "^0.25.1",
-		"typescript": "^5.2.2",
-		"vitest": "^0.34.4"
+		"typescript": "^5.2.2"
 	},
 	"resolutions": {
 		"@sapphire/shapeshift": "^3.9.2",

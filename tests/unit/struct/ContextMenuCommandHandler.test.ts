@@ -1,37 +1,46 @@
 /* eslint-disable */
-import { describe, expect, it, vi } from "vitest";
-import { AkairoClient, ContextMenuCommandHandler } from "../lib.js";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+import { AkairoClient, ContextMenuCommandHandler } from "../../../src/index.js";
 
 describe("ContextMenuCommand", () => {
 	const client = new AkairoClient({ intents: [] });
 
 	it("should error with no parameters", () => {
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler()).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler());
 	});
 
 	it("should error with incorrectly typed parameters", () => {
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler(1)).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler(1));
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler(1n)).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler(1n));
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler({})).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler({}));
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler(1, 1)).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler(1, 1));
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler("name", null)).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler("name", null));
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler(client)).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler(client));
 		// @ts-expect-error
-		expect(() => new ContextMenuCommandHandler(client, {})).toThrow();
+		assert.throws(() => new ContextMenuCommandHandler(client, {}));
 	});
 
-	it("should call setup after construction", () => {
+	it("should call setup after construction", t => {
+		t.mock.method(
+			ContextMenuCommandHandler.prototype,
+			// @ts-expect-error
+			"setup"
+		);
+
 		// @ts-expect-error
-		const spy = vi.spyOn(ContextMenuCommandHandler.prototype, "setup");
-		expect(spy).toHaveBeenCalledTimes(0);
+		assert(ContextMenuCommandHandler.prototype["setup"].mock.calls.length === 0);
+
 		new ContextMenuCommandHandler(client, { directory: "" });
-		expect(spy).toHaveBeenCalledOnce();
+
+		// @ts-expect-error
+		assert(ContextMenuCommandHandler.prototype["setup"].mock.calls.length === 1);
 	});
 });
