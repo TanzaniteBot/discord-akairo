@@ -1,6 +1,6 @@
 {
 	"name": "@tanzanite/discord-akairo",
-	"version": "10.1.0",
+	"version": "10.1.1-dev",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
@@ -33,7 +33,7 @@
 	},
 	"homepage": "https://github.com/TanzaniteBot/discord-akairo/wiki",
 	"scripts": {
-		"lint": "yarn eslint .",
+		"lint": "yarn eslint src tests",
 		"test": "yarn build && node --enable-source-maps ./dist/tests/integration/bot.mjs",
 		"test:run": "yarn test start",
 		"test:unit": "node --enable-source-maps --test ./dist/tests/unit",
