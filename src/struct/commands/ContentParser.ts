@@ -277,7 +277,7 @@ const enum TokenizerState {
 	/** ("") */
 	Quotes = 1,
 	/** (“”) */
-	SpecialQuotes = 1
+	SpecialQuotes = 2
 }
 
 class Parser {
