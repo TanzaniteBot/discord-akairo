@@ -55,8 +55,9 @@ export function intoCallable<T>(thing: T | ((...args: any[]) => T)): (...args: a
  * @param value - Value to check.
  * @returns - Whether the value is an event emitter.
  */
-export function isEventEmitter(value: unknown): value is EventEmitter {
-	return value instanceof EventEmitter;
+export function isEventEmitter(value: unknown): value is EventEmitter;
+export function isEventEmitter(value: any): value is EventEmitter {
+	return !!value && typeof value.on === "function" && typeof value.emit === "function";
 }
 
 /**
