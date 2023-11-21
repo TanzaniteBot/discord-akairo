@@ -169,6 +169,10 @@ export function checkRole(text: string, role: Role, caseSensitive = false, whole
  * @param wholeWord - Makes finding by name match full word only.
  */
 export function checkUser(text: string, user: User, caseSensitive = false, wholeWord = false): boolean {
+	if (user == null || user.username == null) {
+		throw new Error("Invalid user passed to checkUser", { cause: user });
+	}
+
 	if (user.id === text) return true;
 
 	const reg = /<@!?(\d{17,19})>/;
