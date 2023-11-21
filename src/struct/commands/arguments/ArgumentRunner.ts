@@ -131,8 +131,8 @@ export class ArgumentRunner {
 				typeof arg.unordered === "number"
 					? Array.from(parsed.phrases.keys()).slice(arg.unordered)
 					: Array.isArray(arg.unordered)
-					? arg.unordered
-					: Array.from(parsed.phrases.keys());
+					  ? arg.unordered
+					  : Array.from(parsed.phrases.keys());
 
 			for (const i of indices) {
 				if (state.usedIndices.has(i)) {

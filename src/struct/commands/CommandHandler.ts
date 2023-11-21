@@ -693,8 +693,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 					func === "getMember"
 						? interaction.options.getMember(option.name)
 						: func === "getChannel"
-						? interaction.options.getChannel(option.name, false)
-						: interaction.options[func](option.name, false);
+						  ? interaction.options.getChannel(option.name, false)
+						  : interaction.options[func](option.name, false);
 			}
 
 			// Makes options that are not found to be null so that it matches the behavior normal commands.
@@ -1134,8 +1134,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			const isIgnored = Array.isArray(ignorer)
 				? ignorer.includes(message.author.id)
 				: typeof ignorer === "function"
-				? ignorer(message, command)
-				: message.author.id === ignorer;
+				  ? ignorer(message, command)
+				  : message.author.id === ignorer;
 
 			if (!isIgnored) {
 				if (typeof command.userPermissions === "function") {
@@ -1171,8 +1171,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const isIgnored = Array.isArray(ignorer)
 			? ignorer.includes(id)
 			: typeof ignorer === "function"
-			? ignorer(message, command)
-			: id === ignorer;
+			  ? ignorer(message, command)
+			  : id === ignorer;
 
 		if (isIgnored) return false;
 
