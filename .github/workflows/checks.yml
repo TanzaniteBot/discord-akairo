@@ -35,7 +35,7 @@ jobs:
         run: yarn test:unit
 
   check-formatting:
-    name: Check formatting
+    name: Check Formatting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -51,18 +51,5 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Configure Git
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-      - name: Format and Commit
-        run: |
-          yarn format
-          git commit -am "Automatically format code" || true
-
-      - name: Push changes
-        uses: NotEnoughUpdates/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+      - name: Prettier Check Formatting
+        run: yarn format

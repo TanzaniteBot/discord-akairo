@@ -39,11 +39,15 @@
 		"test:unit": "node --enable-source-maps --test ./dist/tests/unit/**/*.js",
 		"test:all": "yarn lint && yarn test && yarn test:unit",
 		"format": "yarn prettier . --write",
+		"format:check": "yarn prettier . --check",
 		"build": "yarn tsc --build",
 		"build:no-emit": "yarn tsc --noEmit",
 		"build:clean": "yarn rimraf dist && yarn build",
 		"prepare": "yarn build:clean",
-		"prepublishOnly": "yarn test:all && yarn build:no-emit"
+		"prepublishOnly": "yarn test:all && yarn build:no-emit",
+		"postinstall": "husky install",
+		"prepack": "pinst --disable",
+		"postpack": "pinst --enable"
 	},
 	"dependencies": {
 		"zod": "^3.22.4"
@@ -59,7 +63,9 @@
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-deprecation": "^2.0.0",
 		"eslint-plugin-import": "^2.29.1",
+		"husky": "^8.0.0",
 		"node-fetch": "^3.3.2",
+		"pinst": "^3.0.0",
 		"prettier": "^3.1.1",
 		"rimraf": "^5.0.5",
 		"typedoc": "^0.25.4",
