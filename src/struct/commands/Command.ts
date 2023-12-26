@@ -264,7 +264,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 							channel: message => message.channel!.id,
 							user: message => message.author.id
 						} satisfies Record<string, KeySupplier>
-				  )[lock]
+					)[lock]
 				: lock;
 		if (this.lock) this.locker = new Set();
 		this.ignoreCooldown = typeof ignoreCooldown === "function" ? ignoreCooldown.bind(this) : ignoreCooldown;

@@ -122,10 +122,10 @@ export class AkairoHandler<
 					if (!m) return null;
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
-			  }.call(
+				}.call(
 					this,
 					await eval(`import(${JSON.stringify(`${pathToFileURL(thing as string).toString()}?update=${Date.now()}`)})`)
-			  );
+				);
 
 		if (mod && mod.prototype instanceof this.classToHandle) {
 			mod = new mod(this);
