@@ -13,9 +13,9 @@
 		"**/*d.ts.map": false
 	},
 	"editor.codeActionsOnSave": {
-		"source.organizeImports": true,
-		"source.fixAll.eslint": true,
-		"source.format": true
+		"source.organizeImports": "explicit",
+		"source.fixAll.eslint": "explicit",
+		"source.format": "explicit"
 	},
 	"editor.formatOnSave": true,
 	"diffEditor.wordWrap": "on",

@@ -57,7 +57,7 @@ export function intoCallable<T>(thing: T | ((...args: any[]) => T)): (...args: a
  */
 export function isEventEmitter(value: unknown): value is EventEmitter;
 export function isEventEmitter(value: any): value is EventEmitter {
-	return !!value && typeof value.on === "function" && typeof value.emit === "function";
+	return Boolean(value) && typeof value.on === "function" && typeof value.emit === "function";
 }
 
 /**

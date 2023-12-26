@@ -41,6 +41,7 @@ export function checkChannel<C extends GuildBasedChannel>(
 	caseSensitive = false,
 	wholeWord = false
 ): boolean {
+	if (channel.partial) return false;
 	if (channel.id === text) return true;
 
 	const reg = /<#(\d{17,19})>/;
@@ -108,6 +109,7 @@ export function checkGuild(text: string, guild: Guild, caseSensitive = false, wh
  * @param wholeWord - Makes checking by name match full word only.
  */
 export function checkMember(text: string, member: GuildMember, caseSensitive = false, wholeWord = false): boolean {
+	if (member.partial) return false;
 	if (member.id === text) return true;
 
 	const reg = /<@!?(\d{17,19})>/;
@@ -169,10 +171,7 @@ export function checkRole(text: string, role: Role, caseSensitive = false, whole
  * @param wholeWord - Makes finding by name match full word only.
  */
 export function checkUser(text: string, user: User, caseSensitive = false, wholeWord = false): boolean {
-	if (user == null || user.username == null) {
-		throw new Error("Invalid user passed to checkUser", { cause: user });
-	}
-
+	if (user.partial) return false;
 	if (user.id === text) return true;
 
 	const reg = /<@!?(\d{17,19})>/;
