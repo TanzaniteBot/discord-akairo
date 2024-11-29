@@ -28,8 +28,8 @@ Slash command example:
 > Slash commands are turned into [message-like objects](../../src/util/AkairoMessage.ts) to make interacting with them easier the original infraction is maintained though at `message.interaction`, if you do not enable `autoRegisterSlashCommands` you will need to register the slash commands yourself with the name of the command.
 
 ```ts
-import { AkairoMessage, Command } from "@tanzanite/discord-akairo";
-import { ApplicationCommandOptionType, GuildMember, Message } from "discord.js";
+import { UnionMessage, TextCommandMessage, SlashCommandMessage, Command } from "@tanzanite/discord-akairo";
+import { ApplicationCommandOptionType, GuildMember } from "discord.js";
 
 export default class GreetCommand extends Command {
   public constructor() {
@@ -62,20 +62,20 @@ export default class GreetCommand extends Command {
 
   /* Using exec and execSlash*/
 
-  public override exec(message: Message, { member }: { member: GuildMember }) {
+  public override exec(message: TextCommandMessage, { member }: { member: GuildMember }) {
     message.reply(`Hello ${member}!`);
   }
 
   // By default it will use the normal exec method but if you specify execSlash it will run and not the exec
   // If you want it to always run execSlash you will have to add the execSlash option to your command handler
   // and it will only use the execSlash and throw a error if you aren't using it
-  public override execSlash(message: AkairoMessage, { member }: { member: GuildMember }) {
+  public override execSlash(message: SlashCommandMessage, { member }: { member: GuildMember }) {
     message.reply(`Hello ${member}!`);
   }
 
   /* Using just exec */
 
-  public override exec(message: Message | AkairoMessage, { member }: { member: GuildMember }) {
+  public override exec(message: UnionMessage, { member }: { member: GuildMember }) {
     message.util.reply(`Hello ${member}!`); // message.util can reply to both regular messages and slash commands
   }
 }

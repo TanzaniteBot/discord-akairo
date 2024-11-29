@@ -1,4 +1,3 @@
-import type { Message } from "discord.js";
 import { z } from "zod";
 import { TextCommandMessage } from "../../../typings/Util.js";
 import { AkairoError } from "../../../util/AkairoError.js";
@@ -243,7 +242,12 @@ export class ArgumentRunner {
 	 * @param state - Argument handling state.
 	 * @param arg - Current argument.
 	 */
-	public runFlag(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState, arg: Argument): Promise<Flag> | any {
+	public runFlag(
+		message: TextCommandMessage,
+		parsed: ContentParserResult,
+		state: ArgumentRunnerState,
+		arg: Argument
+	): Promise<Flag> | any {
 		const names = Array.isArray(arg.flag) ? arg.flag : [arg.flag];
 		if (arg.multipleFlags) {
 			const amount = parsed.flags.filter(flag => names.some(name => name?.toLowerCase() === flag.key.toLowerCase())).length;

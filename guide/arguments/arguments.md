@@ -10,8 +10,8 @@ In Akairo, arguments are the most complex things ever, so this tutorial will onl
 Let's make a command that takes three numbers and adds them up.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class AddCommand extends Command {
   public constructor() {
@@ -20,7 +20,7 @@ export default class AddCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     // This doesn't work!
     return message.reply(a + b + c);
   }
@@ -31,8 +31,8 @@ Now we will add arguments in the command options with the `args` option.
 This option must be an array of objects, containing info for parsing.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class AddCommand extends Command {
   public constructor() {
@@ -58,7 +58,10 @@ export default class AddCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
+  public override exec(
+    message: TextCommandMessage,
+    args: { numOne: number; numTwo: number; numThree: number }
+  ): Promise<Message> {
     const sum = args.numOne + args.numTwo + args.numThree;
     return message.reply(`The sum is ${sum}!`);
   }

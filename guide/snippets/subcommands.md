@@ -15,7 +15,7 @@ file and class. To demonstrate this, let's look at a 'list' command.
 ```ts
 // list.ts
 
-import { Command, Flag, type AkairoMessage, type ArgumentGeneratorReturn } from "@tanzanite/discord-akairo";
+import { Command, Flag, type SlashCommandMessage, type ArgumentGeneratorReturn } from "@tanzanite/discord-akairo";
 import { ApplicationCommandOptionType } from "discord.js";
 
 export default class ListCommand extends Command {
@@ -77,7 +77,7 @@ export default class ListCommand extends Command {
   /* exec() is not needed since Flag.continue is used */
 
   public override async execSlash(
-    message: AkairoMessage,
+    message: SlashCommandMessage,
     args: {
       subcommand: string;
       subcommandGroup?: string;
@@ -98,8 +98,7 @@ export default class ListCommand extends Command {
 ```ts
 // list-members.ts
 
-import { Command, type AkairoMessage } from "@tanzanite/discord-akairo";
-import type { Message } from "discord.js";
+import { Command, type UnionMessage } from "@tanzanite/discord-akairo";
 
 export default class ListMembersCommand extends Command {
   public constructor() {
@@ -113,7 +112,7 @@ export default class ListMembersCommand extends Command {
   }
 
   public override async exec(
-    message: Message | AkairoMessage,
+    message: UnionMessage,
     args: {
       /* ... */
     }
@@ -126,8 +125,7 @@ export default class ListMembersCommand extends Command {
 ```ts
 // list-punishments
 
-import { Command, type AkairoMessage, type ArgumentGeneratorReturn } from "@tanzanite/discord-akairo";
-import type { Message } from "discord.js";
+import { Command, type UnionMessage, type ArgumentGeneratorReturn } from "@tanzanite/discord-akairo";
 
 export default class ListPunishmentsCommand extends Command {
   public constructor() {
@@ -164,7 +162,7 @@ export default class ListPunishmentsCommand extends Command {
   }
 
   public override async exec(
-    message: Message | AkairoMessage,
+    message: UnionMessage,
     args: {
       /* ... */
     }
@@ -184,7 +182,7 @@ do that as well. We will use the list command again.
 ```ts
 // list.ts
 
-import { Command, Flag, type AkairoMessage, type ArgumentGeneratorReturn } from "@tanzanite/discord-akairo";
+import { Command, Flag, type UnionMessage, type ArgumentGeneratorReturn } from "@tanzanite/discord-akairo";
 import { ApplicationCommandOptionType } from "discord.js";
 
 export default class ListCommand extends Command {
@@ -272,7 +270,7 @@ export default class ListCommand extends Command {
   }
 
   public override async exec(
-    message: Message | AkairoMessage,
+    message: UnionMessage,
     args: Record<string, any> // This could also be a union of all the possibilities
   ) {
     const whatToList: "members" | "punishments" = message.util.isSlash

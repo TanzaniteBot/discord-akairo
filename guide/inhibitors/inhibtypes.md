@@ -10,8 +10,7 @@ They do not actually run on all messages.
 To change that, change the `type` option.
 
 ```ts
-import { Inhibitor } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Inhibitor, type TextCommandMessage } from "@tanzanite/discord-akairo";
 
 export default class BlacklistInhibitor extends Inhibitor {
   public constructor() {
@@ -21,7 +20,7 @@ export default class BlacklistInhibitor extends Inhibitor {
     });
   }
 
-  public override exec(message: Message): boolean {
+  public override exec(message: TextCommandMessage): boolean {
     // Still a meanie!
     const blacklist = ["81440962496172032"];
     return blacklist.includes(message.author.id);

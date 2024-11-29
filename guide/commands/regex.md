@@ -13,8 +13,8 @@ Regex commands are commands that run if the following conditions are true:
 Multiple regex commands/conditional commands can be triggered from one message.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class AyyCommand extends Command {
   public constructor() {
@@ -23,7 +23,7 @@ export default class AyyCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     return message.reply("lmao");
   }
 }
@@ -38,8 +38,8 @@ The `matches` property will be the matches, if using a global regex.
 The `regex` option can also be a function.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class AyyCommand extends Command {
   public constructor() {
@@ -48,12 +48,12 @@ export default class AyyCommand extends Command {
     });
   }
 
-  public override regex(message: Message) {
+  public override regex(message: TextCommandMessage) {
     // Do some code...
     return /^ayy$/i;
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     return message.reply("lmao");
   }
 }

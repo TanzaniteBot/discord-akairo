@@ -8,8 +8,8 @@ Optional prompts are prompts that run if there was input, but the type casting f
 If there was no input, it would go on as normal.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { GuildMember, Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type GuildMember, type Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
   public constructor() {
@@ -24,14 +24,14 @@ export default class HighestRoleCommand extends Command {
             retry: "That's not a valid member! Try again.",
             optional: true
           },
-          default: (message: Message) => message.member
+          default: (message: TextCommandMessage) => message.member
         }
       ],
       channel: "guild"
     });
   }
 
-  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -49,8 +49,7 @@ Infinite prompts are prompts that go on and on until the user says stop.
 (You can customize the input, but by default it is `stop`.)
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
 
 export default class PickCommand extends Command {
   public constructor() {
@@ -73,7 +72,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { items }) {
+  public override exec(message: TextCommandMessage, args: { items }) {
     const picked = args.items[Math.floor(Math.random() * args.items.length)];
     return message.reply(`I picked ${picked.trim()}!`);
   }

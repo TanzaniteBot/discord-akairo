@@ -87,8 +87,8 @@ There are other ways to do type-casting instead of a string literal too.
 The first way is with an array:
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class PokemonCommand extends Command {
   public constructor() {
@@ -104,7 +104,7 @@ export default class PokemonCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
     if (args.option === "grass") return message.reply("bulbasaur");
     if (args.option === "fire") return message.reply("charmander");
     if (args.option === "water") return message.reply("squirtle");
@@ -120,8 +120,8 @@ This means that if the array was `['GrasS', 'FIrE']` and the input was `grass`, 
 You can also do aliases with the array type like so:
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class PokemonCommand extends Command {
   public constructor() {
@@ -142,7 +142,7 @@ export default class PokemonCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { option: "grass" | "fire" | "water" | "electric" }): Promise<Message> {
     if (args.option === "grass") return message.reply("bulbasaur");
     if (args.option === "fire") return message.reply("charmander");
     if (args.option === "water") return message.reply("squirtle");
@@ -159,8 +159,7 @@ So, the input of `leaf` will give you `grass`, `blue` will give you `water`, etc
 You can also use a regular expression as a type.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
 
 export default class AskCommand extends Command {
   public constructor() {
@@ -175,7 +174,7 @@ export default class AskCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { yesOrNo }) {
+  public override exec(message: TextCommandMessage, args: { yesOrNo }) {
     // {
     //   match: [...],
     //   matches: null

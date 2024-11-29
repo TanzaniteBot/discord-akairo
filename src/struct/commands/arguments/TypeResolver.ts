@@ -7,12 +7,11 @@ import {
 	type GuildBasedChannel,
 	type GuildMember,
 	type GuildTextBasedChannel,
-	type Message,
 	type Snowflake,
 	type VoiceBasedChannel
 } from "discord.js";
 import { URL } from "node:url";
-import { SyncOrAsync } from "../../../typings/Util.js";
+import { SyncOrAsync, TextCommandMessage } from "../../../typings/Util.js";
 import { ArgumentTypes } from "../../../util/Constants.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import type { ContextMenuCommandHandler } from "../../contextMenuCommands/ContextMenuCommandHandler.js";
@@ -81,7 +80,7 @@ export class TypeResolver {
 	}
 
 	private singleChannelBuiltInType<C extends GuildBasedChannel>(predicate: (channel: GuildBasedChannel | null) => channel is C) {
-		return (message: Message, phrase: string): C | null => {
+		return (message: TextCommandMessage, phrase: string): C | null => {
 			if (!phrase || !message.inGuild()) return null;
 			const channel = this.client.util.resolveChannel(phrase, message.guild.channels.cache);
 			if (!predicate(channel)) return null;
@@ -91,7 +90,7 @@ export class TypeResolver {
 	}
 
 	private multipleChannelBuiltInType<C extends GuildBasedChannel>(predicate: (channel: GuildBasedChannel) => channel is C) {
-		return (message: Message, phrase: string): Collection<Snowflake, C> | null => {
+		return (message: TextCommandMessage, phrase: string): Collection<Snowflake, C> | null => {
 			if (!phrase || !message.inGuild()) return null;
 			const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 			if (!channels.size) return null;
@@ -106,7 +105,7 @@ export class TypeResolver {
 	 */
 	public addBuiltInTypes(): void {
 		const builtIns: {
-			[K in keyof BaseArgumentType]: (message: Message, phrase: string) => SyncOrAsync<BaseArgumentType[K]>;
+			[K in keyof BaseArgumentType]: (message: TextCommandMessage, phrase: string) => SyncOrAsync<BaseArgumentType[K]>;
 		} = {
 			[ArgumentTypes.STRING]: (_message, phrase) => {
 				return phrase || null;

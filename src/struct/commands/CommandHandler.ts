@@ -1490,7 +1490,7 @@ export class RegisterInteractionCommandError extends Error {
  * A function that returns whether mentions can be used as a prefix.
  * @param message - Message to option for.
  */
-export type MentionPrefixPredicate = (this: CommandHandler, message: Message) => SyncOrAsync<boolean>;
+export type MentionPrefixPredicate = (this: CommandHandler, message: TextCommandMessage) => SyncOrAsync<boolean>;
 export const MentionPrefixPredicate = z.function().args(MessageInstance).returns(SyncOrAsync(z.boolean()));
 
 /**
@@ -1505,7 +1505,7 @@ export const IgnoreCheckPredicateHandler = z.function().args(MessageUnion, Comma
  * A function that returns the prefix(es) to use.
  * @param message - Message to get prefix for.
  */
-export type PrefixSupplier = (this: Command | CommandHandler, message: Message) => SyncOrAsync<ArrayOrNot<string>>;
+export type PrefixSupplier = (this: Command | CommandHandler, message: TextCommandMessage) => SyncOrAsync<ArrayOrNot<string>>;
 export const PrefixSupplier = z
 	.function()
 	.args(MessageInstance)

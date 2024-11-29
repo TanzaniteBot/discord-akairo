@@ -9,8 +9,8 @@ Obviously, you won't know how many things there are.
 So, we need a different way of matching input instead of phrase by phrase.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class PickCommand extends Command {
   public constructor() {
@@ -25,7 +25,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { items: string }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { items: string }): Promise<Message> {
     const picked = args.items; // ???
     return message.reply(`I picked ${picked}`);
   }
@@ -35,8 +35,8 @@ export default class PickCommand extends Command {
 To remedy this, we will use the `match` option.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class PickCommand extends Command {
   public constructor() {
@@ -51,7 +51,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { items: string }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { items: string }): Promise<Message> {
     const items = args.items.split("|");
     const picked = items[Math.floor(Math.random() * items.length)];
     return message.reply(`I picked ${picked.trim()}!`);
@@ -69,8 +69,8 @@ This is where `flag` match comes in handy.
 Here is a command where the user can change the output with a flag:
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 import exampleAPI from "example-api";
 
 export default class StatsCommand extends Command {
@@ -90,7 +90,7 @@ export default class StatsCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { username: string; advanced: boolean }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { username: string; advanced: boolean }): Promise<Message> {
     const user = exampleAPI.getUser(args.username);
 
     if (args.advanced) {
@@ -113,8 +113,8 @@ Here, we will use `option` for unordered input.
 Similar to the above example, but this time, we have many different possibilities.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 import exampleAPI from "example-api";
 
 export default class StatsCommand extends Command {
@@ -135,7 +135,7 @@ export default class StatsCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { username: string; color: string }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { username: string; color: string }): Promise<Message> {
     const team = exampleAPI.getTeam(args.color);
     const user = team.getUser(args.username);
 
@@ -168,8 +168,8 @@ This would mean having to deal with splitting then casting the types within the 
 We can do this with a custom separator using `separator` option alongside the `separate` match.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class PickCommand extends Command {
   public constructor() {
@@ -186,7 +186,7 @@ export default class PickCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { items: number[] }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { items: number[] }): Promise<Message> {
     const picked = args.items[Math.floor(Math.random() * args.items.length)];
     return message.reply(`I picked ${picked} which is ${picked % 2 === 0 ? "even" : "odd"}!`);
   }

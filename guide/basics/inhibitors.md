@@ -51,8 +51,7 @@ this.inhibitorHandler.loadAll();
 Create a folder named `inhibitors`, then a file there to make one.
 
 ```ts
-import { Inhibitor } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Inhibitor, type TextCommandMessage } from "@tanzanite/discord-akairo";
 
 export default class BlacklistInhibitor extends Inhibitor {
   public constructor() {
@@ -61,7 +60,7 @@ export default class BlacklistInhibitor extends Inhibitor {
     });
   }
 
-  public override exec(message: Message): boolean {
+  public override exec(message: TextCommandMessage): boolean {
     // He's a meanie!
     const blacklist = ["81440962496172032"];
     return blacklist.includes(message.author.id);

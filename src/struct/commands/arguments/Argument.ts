@@ -194,7 +194,7 @@ export class Argument {
 	 * @param message - Message that called the command.
 	 * @param phrase - Phrase to process.
 	 */
-	public cast(message: Message, phrase: string): Promise<any> {
+	public cast(message: TextCommandMessage, phrase: string): Promise<any> {
 		return Argument.cast(this.type, this.handler.resolver, message, phrase);
 	}
 
@@ -224,7 +224,7 @@ export class Argument {
 			promptType: "start" | "retry" | "timeout" | "ended" | "cancel",
 			prompter: ArgumentPromptResponse | undefined,
 			retryCount: number,
-			inputMessage: Message | undefined,
+			inputMessage: TextCommandMessage | undefined,
 			inputPhrase: string | undefined,
 			inputParsed: "stop" | "cancel" | "" | null | undefined | Flag<FlagType.Fail>
 		) => {
@@ -446,10 +446,20 @@ export class Argument {
 	 * @param message - Message that called the command.
 	 * @param phrase - Phrase to process.
 	 */
-	public static cast<T extends ATC>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<ATCR<T>>;
-	public static cast<T extends KBAT>(type: T, resolver: TypeResolver, message: Message, phrase: string): Promise<BAT[T]>;
-	public static cast(type: AT | ATC, resolver: TypeResolver, message: Message, phrase: string): Promise<any>;
-	public static async cast(type: OATC | AT, resolver: TypeResolver, message: Message, phrase: string): Promise<any> {
+	public static cast<T extends ATC>(
+		type: T,
+		resolver: TypeResolver,
+		message: TextCommandMessage,
+		phrase: string
+	): Promise<ATCR<T>>;
+	public static cast<T extends KBAT>(
+		type: T,
+		resolver: TypeResolver,
+		message: TextCommandMessage,
+		phrase: string
+	): Promise<BAT[T]>;
+	public static cast(type: AT | ATC, resolver: TypeResolver, message: TextCommandMessage, phrase: string): Promise<any>;
+	public static async cast(type: OATC | AT, resolver: TypeResolver, message: TextCommandMessage, phrase: string): Promise<any> {
 		if (Array.isArray(type)) {
 			for (const entry of type) {
 				if (Array.isArray(entry)) {
@@ -725,7 +735,7 @@ export type ArgumentPromptData = {
 	/**
 	 * The message that caused the prompt.
 	 */
-	message: Message;
+	message: TextCommandMessage;
 
 	/**
 	 * The input phrase that caused the prompt if there was one, otherwise an empty string.
@@ -750,7 +760,7 @@ export const ArgumentPromptData = z.object({
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export type PromptContentSupplier = (message: Message, data: ArgumentPromptData) => SyncOrAsync<MessageSendResolvable>;
+export type PromptContentSupplier = (message: TextCommandMessage, data: ArgumentPromptData) => SyncOrAsync<MessageSendResolvable>;
 export const PromptContentSupplier = z
 	.function()
 	.args(MessageInstance, ArgumentPromptData)
@@ -785,7 +795,7 @@ export const FailureData = z.object({
  */
 export type OtherwiseContentSupplier = (
 	this: Argument,
-	message: Message,
+	message: TextCommandMessage,
 	data: FailureData
 ) => SyncOrAsync<MessageSendResolvable>;
 export const OtherwiseContentSupplier = z
@@ -801,7 +811,7 @@ export const OtherwiseContentSupplier = z
  */
 export type PromptContentModifier = (
 	this: Argument,
-	message: Message,
+	message: TextCommandMessage,
 	text: MessageSendResolvable | OtherwiseContentSupplier,
 	data: ArgumentPromptData
 ) => SyncOrAsync<MessageSendResolvable>;
@@ -1057,7 +1067,7 @@ export interface BaseArgumentType {
 	guild: Guild | null;
 	guilds: Collection<Snowflake, Guild> | null;
 	message: Message | null;
-	guildMessage: Message | null;
+	guildMessage: Message<true> | null;
 	relevantMessage: Message | null;
 	invite: Invite | null;
 	userMention: User | null;
@@ -1095,7 +1105,7 @@ export const ArgumentType = z.union([z.string(), z.union([z.string(), z.string()
  * @param message - Message that triggered the command.
  * @param phrase - The user input.
  */
-export type ArgumentTypeCaster<R = unknown> = (this: Argument, message: Message, phrase: string) => R;
+export type ArgumentTypeCaster<R = unknown> = (this: Argument, message: TextCommandMessage, phrase: string) => R;
 
 export const ArgumentTypeCaster = z.function().args(MessageInstance, z.string()).returns(z.any());
 
@@ -1112,7 +1122,7 @@ export type ArgumentTypeCasterReturn<R> = R extends ArgumentTypeCaster<infer S> 
  */
 export type OtherwiseContentModifier = (
 	this: Argument,
-	message: Message,
+	message: TextCommandMessage,
 	text: MessageSendResolvable | OtherwiseContentSupplier,
 	data: FailureData
 ) => SyncOrAsync<MessageSendResolvable>;
@@ -1172,7 +1182,7 @@ export interface ArgumentDefaults extends BaseArgumentOptions {
  * @param message - Message that triggered the command.
  * @param data - Miscellaneous data.
  */
-export type DefaultValueSupplier = (this: Argument, message: Message, data: FailureData) => any;
+export type DefaultValueSupplier = (this: Argument, message: TextCommandMessage, data: FailureData) => any;
 export const DefaultValueSupplier = z.function().args(MessageInstance, FailureData).returns(z.any());
 
 /**
@@ -1181,7 +1191,7 @@ export const DefaultValueSupplier = z.function().args(MessageInstance, FailureDa
  * @param phrase - The user input.
  * @param value - The parsed value.
  */
-export type ParsedValuePredicate = (message: Message, phrase: string, value: any) => boolean;
+export type ParsedValuePredicate = (message: TextCommandMessage, phrase: string, value: any) => boolean;
 export const ParsedValuePredicate = z.function().args(MessageInstance, z.string(), z.any()).returns(z.boolean());
 
 /**

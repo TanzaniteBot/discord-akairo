@@ -9,8 +9,8 @@ There are options to help you do this.
 The two options to use are `clientPermissions` and `userPermissions`.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { GuildMember, Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type GuildMember, type Message } from "discord.js";
 
 export default class BanCommand extends Command {
   public constructor() {
@@ -28,7 +28,7 @@ export default class BanCommand extends Command {
     });
   }
 
-  public override async exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override async exec(message: TextCommandMessage, args: { member: GuildMember }): Promise<Message> {
     if (!args.member) {
       return message.reply("No member found with that name.");
     }
@@ -53,8 +53,8 @@ The return value is the `missing` parameter that is sent to the `missingPermissi
 If the return value is null, then that means they're not missing anything.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { GuildMember, Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type GuildMember, type Message } from "discord.js";
 
 export default class BanCommand extends Command {
   constructor() {
@@ -71,7 +71,7 @@ export default class BanCommand extends Command {
     });
   }
 
-  userPermissions(message: Message) {
+  userPermissions(message: TextCommandMessage) {
     if (!message.member.roles.cache.some(role => role.name === "Moderator")) {
       return "Moderator";
     }
@@ -79,7 +79,7 @@ export default class BanCommand extends Command {
     return null;
   }
 
-  async exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  async exec(message: TextCommandMessage, args: { member: GuildMember }): Promise<Message> {
     if (!args.member) {
       return message.reply("No member found with that name.");
     }

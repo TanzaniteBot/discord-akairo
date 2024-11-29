@@ -7,8 +7,8 @@
 You can categorize a module with the `category` option.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class PingCommand extends Command {
   public constructor() {
@@ -18,7 +18,7 @@ export default class PingCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     return message.reply("Pong!");
   }
 }
@@ -35,8 +35,8 @@ With that said, this means you can add, remove, or reload modules while the bot 
 Here is a basic command that reloads the inputted ID:
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class ReloadCommand extends Command {
   public constructor() {
@@ -52,7 +52,7 @@ export default class ReloadCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { commandID: string }) {
+  public override exec(message: TextCommandMessage, args: { commandID: string }) {
     // `this` refers to the command object.
     this.handler.reload(args.commandID);
     return message.reply(`Reloaded command ${args.commandID}!`);

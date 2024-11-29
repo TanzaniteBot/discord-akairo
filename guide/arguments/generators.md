@@ -16,8 +16,7 @@ With this, you can do things such as:
 To get started, take this command:
 
 ```ts
-import { ArgumentGeneratorReturn, Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { ArgumentGeneratorReturn, Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
 
 export default class GeneratorCommand extends Command {
   public constructor() {
@@ -30,7 +29,7 @@ export default class GeneratorCommand extends Command {
     // Here!
   }
 
-  public override exec(message: Message, args) {
+  public override exec(message: TextCommandMessage, args) {
     // Do whatever.
   }
 }

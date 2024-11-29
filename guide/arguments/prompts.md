@@ -20,8 +20,8 @@ Let's start with a basic prompt.
 We will be reusing this command:
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { GuildMember, Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type GuildMember, type Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
   public constructor() {
@@ -31,14 +31,14 @@ export default class HighestRoleCommand extends Command {
         {
           id: "member",
           type: "member",
-          default: (message: Message) => message.member
+          default: (message: TextCommandMessage) => message.member
         }
       ],
       channel: "guild"
     });
   }
 
-  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -49,8 +49,8 @@ Since prompting will have the user retry until it is finished, `default` won't d
 Now, add the `prompt` property with the options you want.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { GuildMember, Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type GuildMember, type Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
   public constructor() {
@@ -70,7 +70,7 @@ export default class HighestRoleCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -84,8 +84,8 @@ args = [
   {
     /* ... */
     prompt: {
-      start: (message: Message) => `Hey ${message.author}, who would you like to get the highest role of?`,
-      retry: (message: Message) => `That\'s not a valid member! Try again, ${message.author}.`
+      start: (message: TextCommandMessage) => `Hey ${message.author}, who would you like to get the highest role of?`,
+      retry: (message: TextCommandMessage) => `That\'s not a valid member! Try again, ${message.author}.`
     }
   }
 ];
@@ -99,7 +99,7 @@ args = [
   {
     /* ... */
     prompt: {
-      start: (message: Message) => {
+      start: (message: TextCommandMessage) => {
         const embed = new MessageEmbed().setDescription("Please input a member!");
         const content = "Please!";
         return { embed, content };
@@ -134,8 +134,8 @@ Those prompt options would now be applied to all prompts that do not have those 
 Or, with a command with similar arguments:
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class AddCommand extends Command {
   public constructor() {
@@ -165,7 +165,10 @@ export default class AddCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { numOne: number; numTwo: number; numThree: number }): Promise<Message> {
+  public override exec(
+    message: TextCommandMessage,
+    args: { numOne: number; numTwo: number; numThree: number }
+  ): Promise<Message> {
     const sum = args.numOne + args.numTwo + args.numThree;
     return message.reply(`The sum is ${sum}!`);
   }
@@ -185,16 +188,16 @@ this.commandHandler = new CommandHandler(this, {
   /* ... */
   argumentDefaults: {
     prompt: {
-      modifyStart: (message: Message, text: string) => `${text}\nType cancel to cancel this command.`,
-      modifyRetry: (message: Message, text: string) => `${text}\nType cancel to cancel this command.`,
-      timeout: 'Time ran out, command has been cancelled.',
-      ended: 'Too many retries, command has been cancelled.',
-      cancel: 'Command has been cancelled.',
+      modifyStart: (message: TextCommandMessage, text: string) => `${text}\nType cancel to cancel this command.`,
+      modifyRetry: (message: TextCommandMessage, text: string) => `${text}\nType cancel to cancel this command.`,
+      timeout: "Time ran out, command has been cancelled.",
+      ended: "Too many retries, command has been cancelled.",
+      cancel: "Command has been cancelled.",
       retries: 4,
       time: 30000
     }
   }
-}
+});
 ```
 
 The options `modifyStart`, `modifyRetry`, etc. are used to modify those types of prompts.  

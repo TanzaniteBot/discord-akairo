@@ -9,7 +9,7 @@ What if we want to use a default such as the author's username or the guild's ow
 This is where you can use a function.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
 import { GuildMember, Message } from "discord.js";
 
 export default class HighestRoleCommand extends Command {
@@ -20,14 +20,14 @@ export default class HighestRoleCommand extends Command {
         {
           id: "member",
           type: "member",
-          default: (message: Message) => message.member
+          default: (message: TextCommandMessage) => message.member
         }
       ],
       channel: "guild"
     });
   }
 
-  public override exec(message: Message, args: { member: GuildMember }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { member: GuildMember }): Promise<Message> {
     return message.reply(args.member.roles.highest.name);
   }
 }
@@ -42,7 +42,7 @@ Let's go to using a function for types.
 Take a look at the roll command below.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class RollCommand extends Command {
@@ -59,7 +59,7 @@ export default class RollCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { amount: number }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { amount: number }): Promise<Message> {
     const res = Math.floor(Math.random() * args.amount);
     return message.reply(`You rolled ${res}!`);
   }
@@ -71,7 +71,7 @@ While we could do it in the execution function, let's stick it straight into the
 This is much easier with a validation type (see [Composing Types](./compose.md)), but for the sake of example, let's do it anyways.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
 import { Message } from "discord.js";
 
 export default class RollCommand extends Command {
@@ -81,7 +81,7 @@ export default class RollCommand extends Command {
       args: [
         {
           id: "amount",
-          type: (message: Message, phrase) => {
+          type: (message: TextCommandMessage, phrase) => {
             if (!phrase || isNaN(phrase)) return null;
             const num = parseInt(phrase);
             if (num < 1 || num > 100) return null;
@@ -93,7 +93,7 @@ export default class RollCommand extends Command {
     });
   }
 
-  public override exec(message: Message, args: { amount: number }): Promise<Message> {
+  public override exec(message: TextCommandMessage, args: { amount: number }): Promise<Message> {
     const res = Math.floor(Math.random() * args.amount);
     return message.reply(`You rolled ${res}!`);
   }

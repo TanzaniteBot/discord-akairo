@@ -12,8 +12,8 @@ Conditional commands are commands that run if the following conditions are true:
 Multiple conditional commands/regex commands can be triggered on one message.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class ComplimentCommand extends Command {
   public constructor() {
@@ -22,11 +22,11 @@ export default class ComplimentCommand extends Command {
     });
   }
 
-  public override condition(message: Message): boolean {
+  public override condition(message: TextCommandMessage): boolean {
     return message.author.id === "126485019500871680";
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     return message.reply("You are a great person!");
   }
 }

@@ -1,5 +1,4 @@
-import type { Message } from "discord.js";
-import { TextCommandMessage } from "../../typings/Util";
+import type { TextCommandMessage } from "../../typings/Util.ts";
 
 /**
  * Represents a special return value during command execution or argument parsing.
@@ -87,7 +86,7 @@ export class Flag<T extends FlagType = FlagType> {
 	 * Creates a flag that retries with another input.
 	 * @param message - Message to handle.
 	 */
-	public static retry(message: Message): Flag<FlagType.Retry> {
+	public static retry(message: TextCommandMessage): Flag<FlagType.Retry> {
 		return new Flag(FlagType.Retry, { message });
 	}
 
@@ -132,7 +131,7 @@ interface FlagTimeoutData {
 }
 
 interface FlagRetryData {
-	message: Message;
+	message: TextCommandMessage;
 }
 
 interface FlagFailData {

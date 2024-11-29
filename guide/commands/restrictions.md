@@ -7,8 +7,8 @@
 If a command requires a guild to be used correctly, you can restrict it to a guild with one option.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class NicknameCommand extends Command {
   public constructor() {
@@ -17,7 +17,7 @@ export default class NicknameCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     return message.reply(`Your nickname is ${message.member.nickname}.`);
   }
 }
@@ -26,8 +26,8 @@ export default class NicknameCommand extends Command {
 The above breaks in a DM, so let's add the `channel` option.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class NicknameCommand extends Command {
   public constructor() {
@@ -37,7 +37,7 @@ export default class NicknameCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     return message.reply(`Your nickname is ${message.member.nickname}.`);
   }
 }
@@ -53,8 +53,8 @@ Your commands can be owner-only, restricting them to be used by the owner(s).
 Simply add `ownerOnly`.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class TokenCommand extends Command {
   public constructor() {
@@ -65,7 +65,7 @@ export default class TokenCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     // Don't actually do this.
     return message.reply(this.client.token);
   }

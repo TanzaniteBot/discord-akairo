@@ -26,8 +26,8 @@ With `handleEdits` on, the `send` methods will edit responses accordingly.
 This works for prompts as well.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class HelloCommand extends Command {
   public constructor() {
@@ -36,7 +36,7 @@ export default class HelloCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     // Also available: util.reply()
     return message.util.send("Hello!");
   }
@@ -57,8 +57,8 @@ The format for command is almost always `<prefix><alias> <arguments>`.
 CommandUtil stores all three of that and more for you.
 
 ```ts
-import { Command } from "@tanzanite/discord-akairo";
-import { Message } from "discord.js";
+import { Command, type TextCommandMessage } from "@tanzanite/discord-akairo";
+import { type Message } from "discord.js";
 
 export default class HelloCommand extends Command {
   public constructor() {
@@ -67,7 +67,7 @@ export default class HelloCommand extends Command {
     });
   }
 
-  public override exec(message: Message): Promise<Message> {
+  public override exec(message: TextCommandMessage): Promise<Message> {
     if (message.util.parsed.alias === "konnichiha") {
       return message.util.send("こんにちは！");
     }

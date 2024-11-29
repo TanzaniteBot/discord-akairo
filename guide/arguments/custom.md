@@ -34,7 +34,7 @@ This means we need access to the guild through the message.
 Good thing the first parameter is the message!
 
 ```ts
-this.commandHandler.resolver.addType("colorRole", (message: Message, phrase: string) => {
+this.commandHandler.resolver.addType("colorRole", (message: TextCommandMessage, phrase: string) => {
   if (!phrase) return null;
 
   const roles = {
@@ -56,7 +56,7 @@ To get another type for use, you use the `type` method on `TypeResolver`.
 The following gives the `member` type and we can use as part of another type.
 
 ```ts
-this.commandHandler.resolver.addType("moderator", (message: Message, phrase: string) => {
+this.commandHandler.resolver.addType("moderator", (message: TextCommandMessage, phrase: string) => {
   if (!phrase) return null;
   const memberType = this.commandHandler.resolver.type("member");
   const member = memberType(message, phrase);
