@@ -6,7 +6,6 @@ import {
 	ApplicationCommandType,
 	Collection,
 	DiscordAPIError,
-	InteractionType,
 	Message,
 	MessageFlags,
 	type ApplicationCommandData,
@@ -307,7 +306,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 			this.client.on("interactionCreate", i => {
 				if (i.isChatInputCommand()) this.handleSlash(i);
-				if (i.type === InteractionType.ApplicationCommandAutocomplete) this.handleAutocomplete(i);
+				if (i.isAutocomplete()) this.handleAutocomplete(i);
 			});
 		});
 
