@@ -159,7 +159,7 @@ export class TypeResolver {
 
 				try {
 					return new URL(phrase);
-				} catch (err) {
+				} catch {
 					return null;
 				}
 			},
@@ -264,9 +264,9 @@ export class TypeResolver {
 
 			[ArgumentTypes.CATEGORY_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildCategory)),
 
-			[ArgumentTypes.NEWS_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
+			[ArgumentTypes.ANNOUNCEMENT_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
 
-			[ArgumentTypes.NEWS_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
+			[ArgumentTypes.ANNOUNCEMENT_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
 
 			[ArgumentTypes.STAGE_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildStageVoice)),
 
@@ -343,7 +343,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				try {
 					return message.channel.messages.fetch(phrase);
-				} catch (e) {
+				} catch {
 					return null;
 				}
 			},
@@ -388,7 +388,7 @@ export class TypeResolver {
 				if (!phrase) return null;
 				try {
 					return this.client.fetchInvite(phrase);
-				} catch (e) {
+				} catch {
 					return null;
 				}
 			},

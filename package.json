@@ -1,6 +1,6 @@
 {
 	"name": "@tanzanite/discord-akairo",
-	"version": "10.1.2-dev",
+	"version": "10.2.0",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
@@ -41,7 +41,7 @@
 		"format": "yarn prettier . --write",
 		"format:check": "yarn prettier . --check",
 		"build": "yarn tsc --build",
-		"build:no-emit": "yarn tsc --noEmit",
+		"build:no-emit": "yarn tsc --build --emitDeclarationOnly",
 		"build:clean": "yarn rimraf dist && yarn build",
 		"prepare": "yarn build:clean",
 		"prepublishOnly": "yarn test:all && yarn build:no-emit",
@@ -50,32 +50,34 @@
 		"postpack": "pinst --enable"
 	},
 	"dependencies": {
-		"zod": "^3.22.4"
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
-		"@favware/npm-deprecate": "^1.0.7",
-		"@types/node": "^20.10.5",
-		"@typescript-eslint/eslint-plugin": "^6.15.0",
-		"@typescript-eslint/parser": "^6.15.0",
+		"@eslint/js": "^9.15.0",
+		"@favware/npm-deprecate": "^2.0.0",
+		"@types/node": "^22.10.1",
+		"@typescript-eslint/eslint-plugin": "^8.16.0",
+		"@typescript-eslint/parser": "^8.16.0",
 		"cp-cli": "^2.0.0",
-		"discord.js": "^14.14.1",
-		"eslint": "^8.56.0",
+		"discord.js": "^14.16.3",
+		"eslint": "^9.15.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-deprecation": "^2.0.0",
-		"eslint-plugin-import": "^2.29.1",
-		"husky": "^8.0.0",
+		"eslint-plugin-import": "^2.31.0",
+		"globals": "^15.12.0",
+		"husky": "^9.1.7",
 		"node-fetch": "^3.3.2",
 		"pinst": "^3.0.0",
-		"prettier": "^3.1.1",
-		"rimraf": "^5.0.5",
-		"typedoc": "^0.25.4",
-		"typescript": "^5.3.3"
+		"prettier": "^3.4.1",
+		"rimraf": "^6.0.1",
+		"typedoc": "^0.27.1",
+		"typescript": "^5.7.2",
+		"typescript-eslint": "^8.16.0"
 	},
 	"resolutions": {
-		"@sapphire/shapeshift": "^3.9.3",
+		"@sapphire/shapeshift": "latest",
 		"discord.js": "npm:@tanzanite/discord.js@dev"
 	},
-	"packageManager": "yarn@4.0.2",
+	"packageManager": "yarn@4.1.0",
 	"publishConfig": {
 		"access": "public"
 	}

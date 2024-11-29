@@ -1,6 +1,7 @@
 import { codeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
-import { Command, Flag } from "../../../../src/index.js";
+import { Command, Flag, TextCommandMessage } from "../../../../src/index.js";
+
 import logger from "../../struct/Logger.mjs";
 
 export default class FCommand extends Command {
@@ -26,7 +27,7 @@ export default class FCommand extends Command {
 		});
 	}
 
-	public override exec(message: Message, args: { x: unknown }) {
+	public override exec(message: TextCommandMessage, args: { x: unknown }) {
 		message.channel.send(codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

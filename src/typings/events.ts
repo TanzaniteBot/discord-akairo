@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import type { ChatInputCommandInteraction, ClientEvents, ContextMenuCommandInteraction, Message } from "discord.js";
 import type { AkairoHandler } from "../struct/AkairoHandler.js";
 import type { AkairoModule } from "../struct/AkairoModule.js";
@@ -112,7 +112,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param message - Message sent.
 	 * @param command - Command executed.
 	 */
-	error: [error: Error, message: Message, command?: Command];
+	error: [error: Error, message: MessageUnion, command?: Command];
 
 	/**
 	 * Emitted when a user is in a command argument prompt.

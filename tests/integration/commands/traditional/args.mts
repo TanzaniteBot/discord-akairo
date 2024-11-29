@@ -1,6 +1,6 @@
-import { codeBlock, type Message } from "discord.js";
+import { codeBlock } from "discord.js";
 import { inspect } from "node:util";
-import { Command } from "../../../../src/index.js";
+import { Command, TextCommandMessage } from "../../../../src/index.js";
 
 export default class ArgsCommand extends Command {
 	public constructor() {
@@ -47,7 +47,7 @@ export default class ArgsCommand extends Command {
 	}
 
 	public override exec(
-		message: Message,
+		message: TextCommandMessage,
 		args: {
 			text: string;
 			content: string;

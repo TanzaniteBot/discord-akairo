@@ -1,25 +1,28 @@
-{
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
-	"plugins": ["@typescript-eslint", "deprecation", "import"],
-	"ignorePatterns": ["dist"],
-	"parserOptions": {
-		"ecmaVersion": 13,
-		"sourceType": "module",
-		"project": "./tsconfig.eslint.json"
+import eslint from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(eslint.configs.recommended, tseslint.configs.recommended, eslintConfigPrettier, {
+	languageOptions: {
+		globals: {
+			...globals.node
+		},
+
+		ecmaVersion: 13,
+		sourceType: "module",
+		parserOptions: { project: "./tsconfig.eslint.json" }
 	},
-	"env": {
-		"es2021": true,
-		"node": true
-	},
-	"rules": {
+
+	rules: {
 		"no-await-in-loop": "off",
 		"no-template-curly-in-string": "error",
 		"no-unsafe-negation": "error",
 		"accessor-pairs": "warn",
 		"array-callback-return": "error",
-		"complexity": ["warn", 25],
+		complexity: ["warn", 25],
 		"consistent-return": "error",
-		"eqeqeq": ["error", "smart"],
+		eqeqeq: ["error", "smart"],
 		"no-console": "warn",
 		"no-empty-function": "off",
 		"no-implied-eval": "error",
@@ -41,7 +44,7 @@
 		"no-void": "error",
 		"no-warning-comments": "warn",
 		"require-await": "warn",
-		"yoda": "error",
+		yoda: "error",
 		"no-label-var": "error",
 		"no-undef-init": "error",
 		"callback-return": "error",
@@ -51,26 +54,31 @@
 		"no-path-concat": "error",
 		"func-names": "error",
 		"func-name-matching": "error",
+
 		"func-style": [
 			"error",
 			"declaration",
 			{
-				"allowArrowFunctions": true
+				allowArrowFunctions: true
 			}
 		],
+
 		"max-depth": ["error", 7],
+
 		"max-nested-callbacks": [
 			"error",
 			{
-				"max": 4
+				max: 4
 			}
 		],
+
 		"max-statements-per-line": [
 			"error",
 			{
-				"max": 2
+				max: 2
 			}
 		],
+
 		"new-cap": "off",
 		"no-array-constructor": "error",
 		"no-inline-comments": "off",
@@ -90,7 +98,7 @@
 		"prefer-spread": "error",
 		"prefer-template": "error",
 		"no-throw-literal": "off",
-		"@typescript-eslint/no-throw-literal": "error",
+		"@typescript-eslint/only-throw-error": "error",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/explicit-module-boundary-types": "off",
@@ -102,13 +110,34 @@
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-deprecated": "warn",
-		"@typescript-eslint/explicit-member-accessibility": ["warn", { "accessibility": "explicit" }],
+
+		"@typescript-eslint/explicit-member-accessibility": [
+			"warn",
+			{
+				accessibility: "explicit"
+			}
+		],
+
 		"@typescript-eslint/switch-exhaustiveness-check": "warn",
 		"consistent-this": ["error", "$this"],
-		"@typescript-eslint/no-this-alias": ["error", { "allowedNames": ["$this"] }],
-		"import/extensions": ["error", "ignorePackages"],
-		"import/no-cycle": "error",
-		"@typescript-eslint/no-unused-vars": ["warn", { "varsIgnorePattern": "^_" }],
+
+		"@typescript-eslint/no-this-alias": [
+			"error",
+			{
+				allowedNames: ["$this"]
+			}
+		],
+
+		// "import/extensions": ["error", "ignorePackages"],
+		// "import/no-cycle": "error",
+
+		"@typescript-eslint/no-unused-vars": [
+			"warn",
+			{
+				varsIgnorePattern: "^_"
+			}
+		],
+
 		"@typescript-eslint/no-unsafe-declaration-merging": "off"
 	}
-}
+});

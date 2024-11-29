@@ -176,7 +176,7 @@ export function isArrayOf<T>(
 	return array.every(item => typeof item === type);
 }
 
-/* eslint-disable @typescript-eslint/ban-types, func-names */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type, func-names */
 /**
  * Defines an abstract method to a class to produce a runtime error.
  * @param Class The class to patch.
@@ -192,7 +192,7 @@ export function patchAbstract(Class: Function, method: string): void {
 		}
 	});
 }
-/* eslint-enable @typescript-eslint/ban-types, func-names */
+/* eslint-enable @typescript-eslint/no-unsafe-function-type, func-names */
 
 // credit https://stackoverflow.com/a/54178819/16940811
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

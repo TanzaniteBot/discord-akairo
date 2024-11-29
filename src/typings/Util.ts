@@ -1,8 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {
 	BitField,
 	Message,
 	MessagePayload,
+	OmitPartialGroupDMChannel,
 	PermissionFlagsBits,
 	PermissionResolvable,
 	PermissionsString,
@@ -33,7 +33,10 @@ const BigIntBitFieldInstance = z.instanceof(BitField as MakeConstructable<BitFie
 
 const BigIntStr = z.string().regex(/^\d*$/) as unknown as ZodLiteral<`${bigint}`>;
 
-export type MessageUnion = Message | AkairoMessage;
+export type TextCommandMessage = OmitPartialGroupDMChannel<Message>;
+export type SlashCommandMessage = AkairoMessage;
+
+export type MessageUnion = TextCommandMessage | SlashCommandMessage;
 export const MessageUnion = z.union([MessageInstance, z.instanceof(AkairoMessage)]);
 
 /**

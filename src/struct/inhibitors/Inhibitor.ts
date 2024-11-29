@@ -1,7 +1,5 @@
-import type { Message } from "discord.js";
 import { z } from "zod";
-import { SyncOrAsync } from "../../typings/Util.js";
-import type { AkairoMessage } from "../../util/AkairoMessage.js";
+import { MessageUnion, SyncOrAsync, TextCommandMessage } from "../../typings/Util.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
@@ -49,8 +47,8 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	 * @param message - Message being handled.
 	 * @param command - Command to check.
 	 */
-	public abstract exec(message: Message, command?: Command): SyncOrAsync<boolean>;
-	public abstract exec(message: Message | AkairoMessage, command?: Command): SyncOrAsync<boolean>;
+	public abstract exec(message: TextCommandMessage, command?: Command): SyncOrAsync<boolean>;
+	public abstract exec(message: MessageUnion, command?: Command): SyncOrAsync<boolean>;
 }
 
 patchAbstract(Inhibitor, "exec");

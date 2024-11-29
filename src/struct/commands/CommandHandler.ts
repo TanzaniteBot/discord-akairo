@@ -7,22 +7,21 @@ import {
 	Collection,
 	DiscordAPIError,
 	InteractionType,
+	Message,
+	MessageFlags,
 	type ApplicationCommandData,
 	type ApplicationCommandOptionData,
 	type AutocompleteInteraction,
-	type Awaitable,
 	type ChatInputCommandInteraction,
 	type CommandInteractionOption,
 	type CommandInteractionOptionResolver,
 	type Guild,
-	type Message,
 	type Snowflake,
 	type TextBasedChannel,
 	type User
 } from "discord.js";
 import { z } from "zod";
-import { ArrayOrNot, MessageInstance, MessageUnion, SyncOrAsync } from "../../typings/Util.js";
-import type { CommandHandlerEvents as CommandHandlerEventsType } from "../../typings/events.js";
+import { ArrayOrNot, MessageInstance, MessageUnion, SyncOrAsync, TextCommandMessage } from "../../typings/Util.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
@@ -184,6 +183,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
+	// eslint-disable-next-line complexity
 	public constructor(client: AkairoClient, options: CommandHandlerOptions) {
 		z.instanceof(AkairoClient).parse(client);
 		CommandHandlerOptions.parse(options);
@@ -289,7 +289,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 			this.client.on("messageCreate", async m => {
 				const message = m.partial ? await m.fetch().catch(() => null) : m;
-				if (!message) return;
+				if (!message || !message.channel.isSendable()) return;
 
 				this.handle(m);
 			});
@@ -388,7 +388,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			.map(this.mapInteraction)
 			.sort(this.sortInteraction);
 
+		const notEntryPoint = <T extends ApplicationCommand>(i: T): i is T & { type: ApplicationCommandData["type"] } =>
+			i.type !== ApplicationCommandType.PrimaryEntryPoint;
+
 		const currentGlobalCommands = (await this.client.application?.commands.fetch())!
+			.filter(notEntryPoint)
 			.map(this.mapInteraction)
 			.sort(this.sortInteraction);
 
@@ -416,7 +420,10 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 				const sortedCommands = value.sort(this.sortInteraction);
 
-				const currentGuildCommands = (await guild.commands.fetch()).map(this.mapInteraction).sort(this.sortInteraction);
+				const currentGuildCommands = (await guild.commands.fetch())
+					.filter(notEntryPoint)
+					.map(this.mapInteraction)
+					.sort(this.sortInteraction);
 
 				if (!deepEquals(currentGuildCommands, sortedCommands)) {
 					this.client.emit(
@@ -436,18 +443,20 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		}
 	}
 
-	private mapInteraction(interaction: ApplicationCommandData | ApplicationCommand): ApplicationCommandData {
+	private mapInteraction(
+		interaction: ApplicationCommandData | (ApplicationCommand & { type: ApplicationCommandData["type"] })
+	): ApplicationCommandData {
 		return {
 			name: interaction.name,
-			description: interaction.type === ApplicationCommandType.ChatInput ? interaction.description ?? "" : undefined!,
+			description: interaction.type === ApplicationCommandType.ChatInput ? (interaction.description ?? "") : undefined!,
 			options:
 				interaction.type === ApplicationCommandType.ChatInput
 					? // todo: check if this is okay
-						(interaction.options as ApplicationCommandOptionData[]) ?? []
+						((interaction.options as ApplicationCommandOptionData[]) ?? [])
 					: undefined,
 			defaultMemberPermissions: interaction.defaultMemberPermissions,
 			dmPermission: interaction.dmPermission!,
-			type: interaction.type,
+			type: interaction.type!,
 			nameLocalizations: interaction.nameLocalizations!,
 			descriptionLocalizations:
 				interaction.type === ApplicationCommandType.ChatInput ? interaction.descriptionLocalizations! : undefined!
@@ -558,7 +567,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Handles a message.
 	 * @param message - Message to handle.
 	 */
-	public async handle(message: Message): Promise<boolean | null> {
+	public async handle(message: TextCommandMessage): Promise<boolean | null> {
 		try {
 			if (this.fetchMembers && message.guild && !message.member && !message.webhookId) {
 				await message.guild.members.fetch(message.author);
@@ -570,7 +579,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 			if (this.commandUtil) {
 				if (this.commandUtils.has(message.id)) {
-					message.util = this.commandUtils.get(message.id) as CommandUtil<Message>;
+					message.util = this.commandUtils.get(message.id) as CommandUtil<TextCommandMessage>;
 				} else {
 					message.util = new CommandUtil(this, message);
 					this.commandUtils.set(message.id, message.util);
@@ -734,7 +743,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 					handleOptions((commandModule.slashOptions ?? []) as SlashNonSub[]);
 				}
 
-				// eslint-disable-next-line no-inner-declarations
 				function handleOptions(options: readonly SlashNonSub[]) {
 					for (const option of options) {
 						switch (option.type) {
@@ -783,7 +791,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 
 			if (this.autoDefer || commandModule.slashEphemeral) {
-				await message.interaction.deferReply({ ephemeral: commandModule.slashEphemeral });
+				await message.interaction.deferReply({ flags: commandModule.slashEphemeral ? MessageFlags.Ephemeral : undefined });
 			}
 
 			try {
@@ -828,7 +836,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param ignore - Ignore inhibitors and other checks.
 	 */
 	public async handleDirectCommand(
-		message: Message,
+		message: TextCommandMessage,
 		content: string,
 		command: Command,
 		ignore: boolean = false
@@ -885,7 +893,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Handles regex and conditional commands.
 	 * @param message - Message to handle.
 	 */
-	public async handleRegexAndConditionalCommands(message: Message): Promise<boolean> {
+	public async handleRegexAndConditionalCommands(message: TextCommandMessage): Promise<boolean> {
 		const ran1 = await this.handleRegexCommands(message);
 		const ran2 = await this.handleConditionalCommands(message);
 		return ran1 || ran2;
@@ -895,7 +903,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Handles regex commands.
 	 * @param message - Message to handle.
 	 */
-	public async handleRegexCommands(message: Message): Promise<boolean> {
+	public async handleRegexCommands(message: TextCommandMessage): Promise<boolean> {
 		const hasRegexCommands = [];
 		for (const command of this.modules.values()) {
 			if (message.editedTimestamp ? command.editable : true) {
@@ -952,7 +960,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Handles conditional commands.
 	 * @param message - Message to handle.
 	 */
-	public async handleConditionalCommands(message: Message): Promise<boolean> {
+	public async handleConditionalCommands(message: TextCommandMessage): Promise<boolean> {
 		const trueCommands: Command[] = [];
 
 		const filterPromises = [];
@@ -1108,6 +1116,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command to cooldown.
 	 * @param slash - Whether or not the command is a slash command.
 	 */
+	// eslint-disable-next-line complexity
 	public async runPermissionChecks(message: MessageUnion, command: Command, slash: boolean = false): Promise<boolean> {
 		const event = slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS;
 		if (command.clientPermissions) {
@@ -1220,7 +1229,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command to handle.
 	 * @param args - Arguments to use.
 	 */
-	public async runCommand(message: Message, command: Command, args: any): Promise<void> {
+	public async runCommand(message: TextCommandMessage, command: Command, args: any): Promise<void> {
 		if (!command || !message) {
 			this.emit(CommandHandlerEvents.COMMAND_INVALID, message, command);
 			return;
@@ -1456,13 +1465,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	}
 }
 // #endregion fold
-
-type Events = CommandHandlerEventsType;
-
-export interface CommandHandler extends AkairoHandler<Command, CommandHandler> {
-	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-}
 
 export class RegisterInteractionCommandError extends Error {
 	public original: DiscordAPIError;

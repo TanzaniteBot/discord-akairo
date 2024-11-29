@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-shadow, callback-return, @typescript-eslint/no-unused-vars */
 import { codeBlock, escapeCodeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
-import { Command } from "../../../../src/index.js";
+import { Command, TextCommandMessage } from "../../../../src/index.js";
+
 import logger from "../../struct/Logger.mjs";
 
 export default class EvalCommand extends Command {
@@ -20,7 +21,7 @@ export default class EvalCommand extends Command {
 		});
 	}
 
-	public override async exec(message: Message, { code }: { code: string }) {
+	public override async exec(message: TextCommandMessage, { code }: { code: string }) {
 		if (!code) return message.util!.reply("No code provided!");
 
 		const evaled: { output?: string; errored?: boolean; message?: Message } = {};

@@ -1,5 +1,4 @@
-import type { Message } from "discord.js";
-import { Command } from "../../../../src/index.js";
+import { Command, TextCommandMessage } from "../../../../src/index.js";
 
 export default class QCommand extends Command {
 	public constructor() {
@@ -8,7 +7,7 @@ export default class QCommand extends Command {
 		});
 	}
 
-	public override exec(message: Message) {
+	public override exec(message: TextCommandMessage) {
 		const command = this.handler.modules.get("p")!;
 		return this.handler.handleDirectCommand(message, "", command);
 	}

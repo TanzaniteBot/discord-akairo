@@ -1,4 +1,4 @@
-import auth from "./auth.json" assert { type: "json" };
+import auth from "./auth.json" with { type: "json" };
 import logger from "./struct/Logger.mjs";
 import TestClient from "./struct/TestClient.mjs";
 

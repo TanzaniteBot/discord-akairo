@@ -6,12 +6,11 @@ export default class DiscordJsDebugListener extends Listener {
 	public constructor() {
 		super("discordJsReady", {
 			emitter: "client",
-			event: "ready"
+			event: "clientReady"
 		});
 	}
 
-	public override exec(...[client]: ClientEvents["ready"]) {
-		// eslint-disable-next-line deprecation/deprecation
+	public override exec(...[client]: ClientEvents["clientReady"]) {
 		logger.log("DiscordJsReady", `logged into ${client.user.tag} (${client.user.id})`);
 	}
 }

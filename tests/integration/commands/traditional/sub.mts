@@ -1,6 +1,6 @@
-import { codeBlock, type Message } from "discord.js";
+import { codeBlock } from "discord.js";
 import { inspect } from "node:util";
-import { Command } from "../../../../src/index.js";
+import { Command, TextCommandMessage } from "../../../../src/index.js";
 
 export default class SubCommand extends Command {
 	public constructor() {
@@ -13,7 +13,7 @@ export default class SubCommand extends Command {
 		});
 	}
 
-	public override exec(message: Message, args: { thing: string }) {
+	public override exec(message: TextCommandMessage, args: { thing: string }) {
 		message.channel.send(codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

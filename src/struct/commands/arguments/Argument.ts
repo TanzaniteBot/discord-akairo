@@ -1,4 +1,5 @@
 import {
+	type AnnouncementChannel,
 	type CategoryChannel,
 	type Collection,
 	type DirectoryChannel,
@@ -11,7 +12,6 @@ import {
 	type GuildMember,
 	type Invite,
 	type Message,
-	type NewsChannel,
 	type Role,
 	type Snowflake,
 	type StageChannel,
@@ -24,7 +24,7 @@ import {
 } from "discord.js";
 import type { URL } from "node:url";
 import { z } from "zod";
-import { MessageInstance, MessageSendResolvable, SyncOrAsync } from "../../../typings/Util.js";
+import { MessageInstance, MessageSendResolvable, SyncOrAsync, TextCommandMessage } from "../../../typings/Util.js";
 import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
 import { intoCallable, isPromise } from "../../../util/Util.js";
 import type { AkairoClient } from "../../AkairoClient.js";
@@ -163,15 +163,15 @@ export class Argument {
 
 		this.command = command;
 		this.match = match ?? ArgumentMatches.PHRASE;
-		this.type = typeof type === "function" ? type.bind(this) : type ?? ArgumentTypes.STRING;
+		this.type = typeof type === "function" ? type.bind(this) : (type ?? ArgumentTypes.STRING);
 		this.flag = flag ?? null;
 		this.multipleFlags = multipleFlags ?? false;
 		this.index = index ?? null;
 		this.unordered = unordered ?? false;
 		this.limit = limit ?? Infinity;
 		this.prompt = prompt ?? null;
-		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : defaultValue ?? null;
-		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : otherwise ?? null;
+		this.default = typeof defaultValue === "function" ? defaultValue.bind(this) : (defaultValue ?? null);
+		this.otherwise = typeof otherwise === "function" ? otherwise.bind(this) : (otherwise ?? null);
 		this.modifyOtherwise = modifyOtherwise ?? null;
 	}
 
@@ -204,7 +204,7 @@ export class Argument {
 	 * @param commandInput - Previous input from command if there was one.
 	 * @param parsedInput - Previous parsed input from command if there was one.
 	 */
-	public async collect(message: Message, commandInput = "", parsedInput: any = null): Promise<Flag | any> {
+	public async collect(message: TextCommandMessage, commandInput = "", parsedInput: any = null): Promise<Flag | any> {
 		const promptOptions = {
 			...this.handler.argumentDefaults.prompt,
 			...this.command.argumentDefaults.prompt,
@@ -268,7 +268,7 @@ export class Argument {
 
 		// eslint-disable-next-line complexity
 		const promptOne = async (
-			prevMessage: Message | undefined,
+			prevMessage: TextCommandMessage | undefined,
 			prevInput: string | undefined,
 			prevParsed: "stop" | "cancel" | "" | null | undefined | Flag<FlagType.Fail>,
 			retryCount: number
@@ -290,7 +290,7 @@ export class Argument {
 				}
 			}
 
-			let input: Message;
+			let input: TextCommandMessage;
 			try {
 				input = (
 					await message.channel.awaitMessages({
@@ -299,9 +299,9 @@ export class Argument {
 						time: promptOptions.time,
 						errors: ["time"]
 					})
-				).first()!;
+				).first()! as TextCommandMessage;
 				if (message.util) message.util.addMessage(input);
-			} catch (err) {
+			} catch {
 				const timeoutText = await getText("timeout", promptOptions.timeout, retryCount, prevMessage, prevInput, "");
 				if (timeoutText) {
 					const sentTimeout = await message.channel.send(timeoutText);
@@ -372,7 +372,7 @@ export class Argument {
 	 * @param message - The message that called the command.
 	 * @param phrase - The phrase to process.
 	 */
-	public async process(message: Message, phrase: string): Promise<Flag | any> {
+	public async process(message: TextCommandMessage, phrase: string): Promise<Flag | any> {
 		const commandDefs = this.command.argumentDefaults;
 		const handlerDefs = this.handler.argumentDefaults;
 		const optional =
@@ -991,7 +991,7 @@ export const ArgumentMatch = z.enum(["phrase", "flag", "option", "rest", "separa
  * - `textChannel` tries to resolve to a text channel.
  * - `voiceChannel` tries to resolve to a voice channel.
  * - `categoryChannel` tries to resolve to a category channel.
- * - `newsChannel` tries to resolve to a news channel.
+ * - `announcementChannel` tries to resolve to a announcement channel.
  * - `stageChannel` tries to resolve to a stage channel.
  * - `threadChannel` tries to resolve a thread channel.
  * - `directoryChannel` tries to resolve to a directory channel.
@@ -1036,8 +1036,8 @@ export interface BaseArgumentType {
 	voiceChannels: Collection<Snowflake, VoiceChannel> | null;
 	categoryChannel: CategoryChannel | null;
 	categoryChannels: Collection<Snowflake, CategoryChannel> | null;
-	newsChannel: NewsChannel | null;
-	newsChannels: Collection<Snowflake, NewsChannel> | null;
+	announcementChannel: AnnouncementChannel | null;
+	announcementChannels: Collection<Snowflake, AnnouncementChannel> | null;
 	stageChannel: StageChannel | null;
 	stageChannels: Collection<Snowflake, StageChannel> | null;
 	threadChannel: ThreadChannel | null;

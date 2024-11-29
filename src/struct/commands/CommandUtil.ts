@@ -1,5 +1,9 @@
 import {
+	BitFieldResolvable,
 	Collection,
+	MessageFlags,
+	MessageFlagsBitField,
+	MessageFlagsString,
 	MessagePayload,
 	type InteractionEditReplyOptions,
 	type InteractionReplyOptions,
@@ -151,7 +155,14 @@ export class CommandUtil<MessageType extends MessageUnion> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files.length > 0;
 		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!this.isSlashMessage(this.message)) {
-			(newOptions as InteractionReplyOptions).ephemeral = undefined;
+			const cast = newOptions as InteractionReplyOptions;
+
+			if (cast.flags) {
+				cast.flags = new MessageFlagsBitField(cast.flags as BitFieldResolvable<MessageFlagsString, number>).remove(
+					MessageFlags.Ephemeral
+				).bitfield;
+			}
+
 			if (
 				this.shouldEdit &&
 				!hasFiles &&
@@ -172,10 +183,9 @@ export class CommandUtil<MessageType extends MessageUnion> {
 				this.lastResponse = (await this.message.interaction.editReply(newOptions)) as Message;
 				return this.lastResponse;
 			} else {
-				Object.assign(newOptions, { fetchReply: true });
-				this.lastResponse = (await this.message.interaction.reply(
-					newOptions as InteractionReplyOptions & { fetchReply: true }
-				)) as Message;
+				Object.assign(newOptions, { withResponse: true });
+				this.lastResponse = (await this.message.interaction.reply(newOptions as InteractionReplyOptions & { withResponse: true }))
+					.resource!.message as Message;
 				return this.lastResponse;
 			}
 		}

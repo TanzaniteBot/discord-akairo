@@ -1,6 +1,6 @@
-import { codeBlock, type Message } from "discord.js";
+import { codeBlock } from "discord.js";
 import { inspect } from "node:util";
-import { ArgumentGeneratorReturn, Command, Flag } from "../../../../src/index.js";
+import { ArgumentGeneratorReturn, Command, Flag, TextCommandMessage } from "../../../../src/index.js";
 
 export default class GenerateCommand extends Command {
 	public constructor() {
@@ -22,7 +22,7 @@ export default class GenerateCommand extends Command {
 		return { x };
 	}
 
-	public override exec(message: Message, args: { x: "2" }) {
+	public override exec(message: TextCommandMessage, args: { x: "2" }) {
 		message.channel.send(codeBlock("js", `${inspect(args, { depth: 1 })}`));
 	}
 }

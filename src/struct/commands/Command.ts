@@ -6,13 +6,19 @@ import type {
 	ApplicationCommandSubGroupData,
 	AutocompleteInteraction,
 	LocalizationMap,
-	Message,
 	PermissionResolvable,
 	Snowflake
 } from "discord.js";
 import { z } from "zod";
-import { ArrayOrNot, MessageInstance, MessageUnion, PermissionResolvableValidator, SyncOrAsync } from "../../typings/Util.js";
-import { AkairoMessage } from "../../util/AkairoMessage.js";
+import {
+	ArrayOrNot,
+	MessageInstance,
+	MessageUnion,
+	PermissionResolvableValidator,
+	SlashCommandMessage,
+	SyncOrAsync,
+	TextCommandMessage
+} from "../../typings/Util.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import { CommandHandler, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
@@ -181,6 +187,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param id - Command ID.
 	 * @param options - Options for the command.
 	 */
+	// eslint-disable-next-line complexity
 	public constructor(id: string, options: CommandOptions = {}) {
 		super(id, { category: options?.category });
 
@@ -283,7 +290,7 @@ export abstract class Command extends AkairoModule<CommandHandler, Command> {
 	 * @param message - Message to use.
 	 * @param content - String to parse.
 	 */
-	public parse(message: Message, content: string): Promise<Flag | any> {
+	public parse(message: TextCommandMessage, content: string): Promise<Flag | any> {
 		const parsed = this.contentParser.parse(content);
 		return this.argumentRunner.run(message, parsed, this.argumentGenerator);
 	}
@@ -308,21 +315,21 @@ export interface Command {
 	 * 	return { x };
 	 * }
 	 */
-	args(message: Message, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn;
+	args(message: TextCommandMessage, parsed: ContentParserResult, state: ArgumentRunnerState): ArgumentGeneratorReturn;
 
 	/**
 	 * Runs before argument parsing and execution.
 	 * @param message - Message being handled.
 	 * @abstract
 	 */
-	before(message: Message): any;
+	before(message: TextCommandMessage): any;
 
 	/**
 	 * Checks if the command should be ran by using an arbitrary condition.
 	 * @param message - Message being handled.
 	 * @abstract
 	 */
-	condition(message: Message): SyncOrAsync<boolean>;
+	condition(message: TextCommandMessage): SyncOrAsync<boolean>;
 
 	/**
 	 * Executes the command.
@@ -330,8 +337,8 @@ export interface Command {
 	 * @param args - Evaluated arguments.
 	 * @abstract
 	 */
-	exec(message: Message, args: CommandArguments): any;
-	exec(message: Message | AkairoMessage, args: CommandArguments): any;
+	exec(message: TextCommandMessage, args: CommandArguments): any;
+	exec(message: MessageUnion, args: CommandArguments): any;
 
 	/**
 	 * Execute the slash command
@@ -339,7 +346,7 @@ export interface Command {
 	 * @param args - Slash command options
 	 * @abstract
 	 */
-	execSlash(message: AkairoMessage, args: CommandArguments): any;
+	execSlash(message: SlashCommandMessage, args: CommandArguments): any;
 
 	/**
 	 * Respond to autocomplete interactions for this command.
@@ -373,7 +380,7 @@ export const CommandInstance = z.instanceof(Command as new (...args: any[]) => C
  */
 export type ArgumentGenerator = (
 	this: Command,
-	message: Message,
+	message: TextCommandMessage,
 	parsed: ContentParserResult,
 	state: ArgumentRunnerState
 ) => ArgumentGeneratorReturn;
@@ -389,7 +396,7 @@ export type ArgumentGeneratorReturn = Generator<
  * A function to run before argument parsing and execution.
  * @param message - Message that triggered the command.
  */
-export type BeforeAction = (this: Command, message: Message) => any;
+export type BeforeAction = (this: Command, message: TextCommandMessage) => any;
 export const BeforeAction = z.function().args(MessageInstance).returns(z.any());
 
 /**
@@ -404,7 +411,7 @@ export const MissingPermissionSupplier = z.function().args(MessageUnion).returns
  * A function used to check if the command should run arbitrarily.
  * @param message - Message to check.
  */
-export type ExecutionPredicate = (this: Command, message: Message) => SyncOrAsync<boolean>;
+export type ExecutionPredicate = (this: Command, message: TextCommandMessage) => SyncOrAsync<boolean>;
 export const ExecutionPredicate = z.function().args(MessageInstance).returns(SyncOrAsync(z.boolean()));
 
 /**
@@ -419,7 +426,7 @@ export const KeySupplier = z.function().args(MessageUnion, CommandArguments).ret
  * A function used to return a regular expression.
  * @param message - Message to get regex for.
  */
-export type RegexSupplier = (message: Message) => RegExp;
+export type RegexSupplier = (message: TextCommandMessage) => RegExp;
 export const RegexSupplier = z.function().args(MessageInstance).returns(z.instanceof(RegExp));
 
 /**

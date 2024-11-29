@@ -276,7 +276,7 @@ export default class ListCommand extends Command {
     args: Record<string, any> // This could also be a union of all the possibilities
   ) {
     const whatToList: "members" | "punishments" = message.util.isSlash
-      ? args.subcommandGroup ?? args.subcommand
+      ? (args.subcommandGroup ?? args.subcommand)
       : args.subcommand;
 
     switch (whatToList) {

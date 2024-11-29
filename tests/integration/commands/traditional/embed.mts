@@ -1,5 +1,4 @@
-import type { Message } from "discord.js";
-import { Command } from "../../../../src/index.js";
+import { Command, TextCommandMessage } from "../../../../src/index.js";
 
 export default class EmbedCommand extends Command {
 	public constructor() {
@@ -24,7 +23,7 @@ export default class EmbedCommand extends Command {
 		});
 	}
 
-	public override exec(message: Message, args: { emptyContent: boolean; emptyEmbed: boolean; phrase: string }) {
+	public override exec(message: TextCommandMessage, args: { emptyContent: boolean; emptyEmbed: boolean; phrase: string }) {
 		if (args.emptyContent) {
 			return message.util!.send({ embeds: [{ description: args.phrase }] });
 		}
