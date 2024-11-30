@@ -7,7 +7,10 @@ import * as ClientUtil from "./ClientUtil.js";
 /**
  * The Akairo framework client. Creates the handlers and sets them up.
  */
-export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready, AkairoClientEvents> {
+export class AkairoClient<
+	Ready extends boolean = boolean,
+	Events extends Record<keyof Events, any[]> = AkairoClientEvents
+> extends Client<Ready, Events | AkairoClientEvents> {
 	/**
 	 * The ID of the owner(s).
 	 */

@@ -4,6 +4,7 @@ import { readdirSync, statSync } from "node:fs";
 import { dirname, extname, join, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
+import { type AkairoHandlerEvents } from "../typings/events.js";
 import { AkairoError } from "../util/AkairoError.js";
 import { Category } from "../util/Category.js";
 import { AkairoHandlerEvent } from "../util/Constants.js";
@@ -18,8 +19,8 @@ export type Class<T> = abstract new (...args: any[]) => T;
 export class AkairoHandler<
 	Module extends AkairoModule<Handler, Module, Events>,
 	Handler extends AkairoHandler<Module, Handler, Events>,
-	Events extends Record<keyof Events, any[]>
-> extends EventEmitter<Events> {
+	Events extends Record<keyof Events, any[]> = AkairoHandlerEvents<Module, Handler>
+> extends EventEmitter<Events | AkairoHandlerEvents<Module, Handler>> {
 	/**
 	 * Whether or not to automate category names.
 	 */
@@ -137,7 +138,6 @@ export class AkairoHandler<
 
 		if (this.modules.has(mod.id)) throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
 		this.register(mod, isClass ? null! : (thing as string));
-		// @ts-expect-error: TODO: Fix this
 		this.emit(AkairoHandlerEvent.LOAD, mod, isReload);
 		return mod;
 	}
@@ -228,7 +228,6 @@ export class AkairoHandler<
 
 		this.deregister(mod);
 
-		// @ts-expect-error: TODO: Fix this
 		this.emit(AkairoHandlerEvent.REMOVE, mod);
 		return mod;
 	}
