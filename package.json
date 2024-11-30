@@ -53,14 +53,14 @@
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.15.0",
+		"@eslint/js": "^9.16.0",
 		"@favware/npm-deprecate": "^2.0.0",
 		"@types/node": "^22.10.1",
 		"@typescript-eslint/eslint-plugin": "^8.16.0",
 		"@typescript-eslint/parser": "^8.16.0",
 		"cp-cli": "^2.0.0",
 		"discord.js": "^14.16.3",
-		"eslint": "^9.15.0",
+		"eslint": "^9.16.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-import": "^2.31.0",
 		"globals": "^15.12.0",
@@ -69,7 +69,7 @@
 		"pinst": "^3.0.0",
 		"prettier": "^3.4.1",
 		"rimraf": "^6.0.1",
-		"typedoc": "^0.27.1",
+		"typedoc": "^0.27.2",
 		"typescript": "^5.7.2",
 		"typescript-eslint": "^8.16.0"
 	},
@@ -77,7 +77,7 @@
 		"@sapphire/shapeshift": "latest",
 		"discord.js": "npm:@tanzanite/discord.js@dev"
 	},
-	"packageManager": "yarn@4.1.0",
+	"packageManager": "yarn@4.5.3",
 	"publishConfig": {
 		"access": "public"
 	}
