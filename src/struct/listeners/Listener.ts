@@ -1,5 +1,6 @@
 import EventEmitter from "node:events";
 import { z } from "zod";
+import { type ListenerHandlerEvents } from "../../typings/events.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { ListenerHandler } from "./ListenerHandler.js";
@@ -7,7 +8,7 @@ import type { ListenerHandler } from "./ListenerHandler.js";
 /**
  * Represents a listener.
  */
-export abstract class Listener extends AkairoModule<ListenerHandler, Listener> {
+export abstract class Listener extends AkairoModule<ListenerHandler, Listener, ListenerHandlerEvents> {
 	/**
 	 * The event emitter.
 	 */

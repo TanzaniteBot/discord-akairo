@@ -1,7 +1,7 @@
-import EventEmitter from "node:events";
+import type EventEmitter from "node:events";
 import util from "node:util";
 import type { PrefixSupplier } from "../struct/commands/CommandHandler.js";
-import { SyncOrAsync } from "../typings/Util.js";
+import { type SyncOrAsync } from "../typings/Util.js";
 import { AkairoError } from "./AkairoError.js";
 
 /**

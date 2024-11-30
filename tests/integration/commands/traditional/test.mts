@@ -1,6 +1,6 @@
 import { codeBlock } from "discord.js";
 import { inspect } from "node:util";
-import { Argument, Command, TextCommandMessage } from "../../../../src/index.js";
+import { Argument, Command, type TextCommandMessage } from "../../../../src/index.js";
 const { compose, range, union } = Argument;
 
 export default class TestCommand extends Command {

@@ -1,5 +1,5 @@
 import { promisify } from "node:util";
-import { Command, TextCommandMessage } from "../../../../src/index.js";
+import { Command, type TextCommandMessage } from "../../../../src/index.js";
 
 const sleep = promisify(setTimeout);
 

@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import { AkairoError } from "../util/AkairoError.js";
 import { Category } from "../util/Category.js";
-import { AkairoHandlerEvents } from "../util/Constants.js";
+import { AkairoHandlerEvent } from "../util/Constants.js";
 import { AkairoClient } from "./AkairoClient.js";
 import { AkairoModule } from "./AkairoModule.js";
 
@@ -16,9 +16,10 @@ export type Class<T> = abstract new (...args: any[]) => T;
  * Base class for handling modules.
  */
 export class AkairoHandler<
-	Module extends AkairoModule<Handler, Module>,
-	Handler extends AkairoHandler<Module, Handler>
-> extends EventEmitter {
+	Module extends AkairoModule<Handler, Module, Events>,
+	Handler extends AkairoHandler<Module, Handler, Events>,
+	Events extends Record<keyof Events, any[]>
+> extends EventEmitter<Events> {
 	/**
 	 * Whether or not to automate category names.
 	 */
@@ -63,7 +64,7 @@ export class AkairoHandler<
 	 * @param client - The Akairo client.
 	 * @param options - Options for module loading and handling.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Module, Handler>) {
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Module, Handler, Events>) {
 		z.instanceof(AkairoClient).parse(client);
 		AkairoHandlerOptions.parse(options);
 
@@ -118,7 +119,7 @@ export class AkairoHandler<
 
 		let mod = isClass
 			? thing
-			: function findExport(this: AkairoHandler<Module, Handler>, m: any): any {
+			: function findExport(this: AkairoHandler<Module, Handler, Events>, m: any): any {
 					if (!m) return null;
 					if (m.prototype instanceof this.classToHandle) return m;
 					return m.default ? findExport.call(this, m.default) : null;
@@ -136,7 +137,8 @@ export class AkairoHandler<
 
 		if (this.modules.has(mod.id)) throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
 		this.register(mod, isClass ? null! : (thing as string));
-		this.emit(AkairoHandlerEvents.LOAD, mod, isReload);
+		// @ts-expect-error: TODO: Fix this
+		this.emit(AkairoHandlerEvent.LOAD, mod, isReload);
 		return mod;
 	}
 
@@ -226,7 +228,8 @@ export class AkairoHandler<
 
 		this.deregister(mod);
 
-		this.emit(AkairoHandlerEvents.REMOVE, mod);
+		// @ts-expect-error: TODO: Fix this
+		this.emit(AkairoHandlerEvent.REMOVE, mod);
 		return mod;
 	}
 
@@ -280,7 +283,11 @@ export const Extension = z.string().regex(/\..*$/);
 /**
  * Options for module loading and handling.
  */
-export type AkairoHandlerOptions<Module extends AkairoModule<Handler, Module>, Handler extends AkairoHandler<Module, Handler>> = {
+export type AkairoHandlerOptions<
+	Module extends AkairoModule<Handler, Module, Events>,
+	Handler extends AkairoHandler<Module, Handler, Events>,
+	Events extends Record<keyof Events, any[]>
+> = {
 	/**
 	 * Whether or not to set each module's category to its parent directory name.
 	 * @default false

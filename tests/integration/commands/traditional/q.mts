@@ -1,4 +1,4 @@
-import { Command, TextCommandMessage } from "../../../../src/index.js";
+import { Command, type TextCommandMessage } from "../../../../src/index.js";
 
 export default class QCommand extends Command {
 	public constructor() {

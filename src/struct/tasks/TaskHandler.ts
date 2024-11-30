@@ -1,4 +1,3 @@
-import type { Awaitable } from "discord.js";
 import type { TaskHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import type { AkairoClient } from "../AkairoClient.js";
@@ -8,12 +7,12 @@ import { Task } from "./Task.js";
 /**
  * Loads tasks.
  */
-export class TaskHandler extends AkairoHandler<Task, TaskHandler> {
+export class TaskHandler extends AkairoHandler<Task, TaskHandler, TaskHandlerEvents> {
 	/**
 	 * @param client - The Akairo client.
 	 * @param options - Options.
 	 */
-	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Task, TaskHandler>) {
+	public constructor(client: AkairoClient, options: AkairoHandlerOptions<Task, TaskHandler, TaskHandlerEvents>) {
 		const { directory, classToHandle = Task, extensions = [".js", ".ts"], automateCategories, loadFilter } = options;
 
 		if (!(classToHandle.prototype instanceof Task || classToHandle === Task)) {
@@ -27,7 +26,7 @@ export class TaskHandler extends AkairoHandler<Task, TaskHandler> {
 	 * Start all tasks.
 	 */
 	public startAll(): void {
-		this.client.once("ready", () => {
+		this.client.once("clientReady", () => {
 			this.modules.forEach(module => {
 				if (!(module instanceof Task)) return;
 				if (module.runOnStart) module.exec();
@@ -39,11 +38,4 @@ export class TaskHandler extends AkairoHandler<Task, TaskHandler> {
 			});
 		});
 	}
-}
-
-type Events = TaskHandlerEvents;
-
-export interface TaskHandler extends AkairoHandler<Task, TaskHandler> {
-	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
 }

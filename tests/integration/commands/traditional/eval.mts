@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow, callback-return, @typescript-eslint/no-unused-vars */
 import { codeBlock, escapeCodeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
-import { Command, TextCommandMessage } from "../../../../src/index.js";
+import { Command, type TextCommandMessage } from "../../../../src/index.js";
 
 import logger from "../../struct/Logger.mjs";
 

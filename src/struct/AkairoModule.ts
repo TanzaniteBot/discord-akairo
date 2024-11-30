@@ -6,7 +6,11 @@ import type { AkairoHandler } from "./AkairoHandler.js";
 /**
  * Base class for a module.
  */
-export abstract class AkairoModule<Handler extends AkairoHandler<Module, Handler>, Module extends AkairoModule<Handler, Module>> {
+export abstract class AkairoModule<
+	Handler extends AkairoHandler<Module, Handler, Events>,
+	Module extends AkairoModule<Handler, Module, Events>,
+	Events extends Record<keyof Events, any[]>
+> {
 	/**
 	 * The category this module belongs to.
 	 */

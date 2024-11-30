@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { TextCommandMessage } from "../../../typings/Util.js";
+import { type TextCommandMessage } from "../../../typings/Util.js";
 import { AkairoError } from "../../../util/AkairoError.js";
-import { ArgumentMatches } from "../../../util/Constants.js";
+import { ArgumentMatch } from "../../../util/Constants.js";
 import type { ArgumentGenerator, ArgumentGeneratorReturn, Command } from "../Command.js";
 import type { ContentParserResult } from "../ContentParser.js";
 import { Flag, FlagType } from "../Flag.js";
@@ -99,15 +99,15 @@ export class ArgumentRunner {
 		arg: Argument
 	): Promise<Flag | any> {
 		const cases = {
-			[ArgumentMatches.PHRASE]: this.runPhrase,
-			[ArgumentMatches.FLAG]: this.runFlag,
-			[ArgumentMatches.OPTION]: this.runOption,
-			[ArgumentMatches.REST]: this.runRest,
-			[ArgumentMatches.SEPARATE]: this.runSeparate,
-			[ArgumentMatches.TEXT]: this.runText,
-			[ArgumentMatches.CONTENT]: this.runContent,
-			[ArgumentMatches.REST_CONTENT]: this.runRestContent,
-			[ArgumentMatches.NONE]: this.runNone
+			[ArgumentMatch.PHRASE]: this.runPhrase,
+			[ArgumentMatch.FLAG]: this.runFlag,
+			[ArgumentMatch.OPTION]: this.runOption,
+			[ArgumentMatch.REST]: this.runRest,
+			[ArgumentMatch.SEPARATE]: this.runSeparate,
+			[ArgumentMatch.TEXT]: this.runText,
+			[ArgumentMatch.CONTENT]: this.runContent,
+			[ArgumentMatch.REST_CONTENT]: this.runRestContent,
+			[ArgumentMatch.NONE]: this.runNone
 		};
 
 		const runFn = cases[arg.match];

@@ -6,6 +6,7 @@ import {
 	type Snowflake
 } from "discord.js";
 import { z } from "zod";
+import { type ContextMenuCommandHandlerEvents } from "../../typings/events.js";
 import { PermissionResolvableValidator } from "../../typings/Util.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
@@ -14,7 +15,11 @@ import type { ContextMenuCommandHandler } from "./ContextMenuCommandHandler.js";
 /**
  * Represents a context menu command.
  */
-export abstract class ContextMenuCommand extends AkairoModule<ContextMenuCommandHandler, ContextMenuCommand> {
+export abstract class ContextMenuCommand extends AkairoModule<
+	ContextMenuCommandHandler,
+	ContextMenuCommand,
+	ContextMenuCommandHandlerEvents
+> {
 	/**
 	 * Assign context menu commands to Specific guilds. This option will make the commands not register globally, but only in the chosen servers.
 	 */

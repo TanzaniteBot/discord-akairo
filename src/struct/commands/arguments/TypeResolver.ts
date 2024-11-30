@@ -11,8 +11,8 @@ import {
 	type VoiceBasedChannel
 } from "discord.js";
 import { URL } from "node:url";
-import { SyncOrAsync, TextCommandMessage } from "../../../typings/Util.js";
-import { ArgumentTypes } from "../../../util/Constants.js";
+import { type SyncOrAsync, type TextCommandMessage } from "../../../typings/Util.js";
+import { BuiltinArgumentType as ArgumentType } from "../../../util/Constants.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import type { ContextMenuCommandHandler } from "../../contextMenuCommands/ContextMenuCommandHandler.js";
 import type { InhibitorHandler } from "../../inhibitors/InhibitorHandler.js";
@@ -107,42 +107,42 @@ export class TypeResolver {
 		const builtIns: {
 			[K in keyof BaseArgumentType]: (message: TextCommandMessage, phrase: string) => SyncOrAsync<BaseArgumentType[K]>;
 		} = {
-			[ArgumentTypes.STRING]: (_message, phrase) => {
+			[ArgumentType.STRING]: (_message, phrase) => {
 				return phrase || null;
 			},
 
-			[ArgumentTypes.LOWERCASE]: (_message, phrase) => {
+			[ArgumentType.LOWERCASE]: (_message, phrase) => {
 				return phrase ? phrase.toLowerCase() : null;
 			},
 
-			[ArgumentTypes.UPPERCASE]: (_message, phrase) => {
+			[ArgumentType.UPPERCASE]: (_message, phrase) => {
 				return phrase ? phrase.toUpperCase() : null;
 			},
 
-			[ArgumentTypes.CHAR_CODES]: (_message, phrase) => {
+			[ArgumentType.CHAR_CODES]: (_message, phrase) => {
 				if (!phrase) return null;
 				const codes = [];
 				for (const char of phrase) codes.push(char.charCodeAt(0));
 				return codes;
 			},
 
-			[ArgumentTypes.NUMBER]: (_message, phrase) => {
+			[ArgumentType.NUMBER]: (_message, phrase) => {
 				if (!phrase || isNaN(+phrase)) return null;
 				return parseFloat(phrase);
 			},
 
-			[ArgumentTypes.INTEGER]: (_message, phrase) => {
+			[ArgumentType.INTEGER]: (_message, phrase) => {
 				if (!phrase || isNaN(+phrase)) return null;
 				return parseInt(phrase);
 			},
 
-			[ArgumentTypes.BIGINT]: (_message, phrase) => {
+			[ArgumentType.BIGINT]: (_message, phrase) => {
 				if (!phrase || isNaN(+phrase)) return null;
 				return BigInt(phrase);
 			},
 
 			// Just for fun.
-			[ArgumentTypes.EMOJINT]: (_message, phrase) => {
+			[ArgumentType.EMOJINT]: (_message, phrase) => {
 				if (!phrase) return null;
 				const n = phrase.replace(/0⃣|1⃣|2⃣|3⃣|4⃣|5⃣|6⃣|7⃣|8⃣|9⃣|🔟/g, m => {
 					return ["0⃣", "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"].indexOf(m).toString();
@@ -152,7 +152,7 @@ export class TypeResolver {
 				return parseInt(n);
 			},
 
-			[ArgumentTypes.URL]: (_message, phrase) => {
+			[ArgumentType.URL]: (_message, phrase) => {
 				if (!phrase) return null;
 				if (/^<.+>$/.test(phrase)) phrase = phrase.slice(1, -1);
 
@@ -163,14 +163,14 @@ export class TypeResolver {
 				}
 			},
 
-			[ArgumentTypes.DATE]: (_message, phrase) => {
+			[ArgumentType.DATE]: (_message, phrase) => {
 				if (!phrase) return null;
 				const timestamp = Date.parse(phrase);
 				if (isNaN(timestamp)) return null;
 				return new Date(timestamp);
 			},
 
-			[ArgumentTypes.COLOR]: (_message, phrase) => {
+			[ArgumentType.COLOR]: (_message, phrase) => {
 				if (!phrase) return null;
 
 				const color = parseInt(phrase.replace("#", ""), 16);
@@ -181,31 +181,31 @@ export class TypeResolver {
 				return color;
 			},
 
-			[ArgumentTypes.USER]: (_message, phrase) => {
+			[ArgumentType.USER]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.client.util.resolveUser(phrase, this.client.users.cache);
 			},
 
-			[ArgumentTypes.USERS]: (_message, phrase) => {
+			[ArgumentType.USERS]: (_message, phrase) => {
 				if (!phrase) return null;
 				const users = this.client.util.resolveUsers(phrase, this.client.users.cache);
 				return users.size ? users : null;
 			},
 
-			[ArgumentTypes.MEMBER]: (message, phrase) => {
+			[ArgumentType.MEMBER]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				return this.client.util.resolveMember(phrase, message.guild.members.cache);
 			},
 
-			[ArgumentTypes.MEMBERS]: (message, phrase) => {
+			[ArgumentType.MEMBERS]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const members = this.client.util.resolveMembers(phrase, message.guild.members.cache);
 				return members.size ? members : null;
 			},
 
-			[ArgumentTypes.RELEVANT]: (message, phrase) => {
+			[ArgumentType.RELEVANT]: (message, phrase) => {
 				if (!phrase) return null;
 
 				const person = message.inGuild()
@@ -222,7 +222,7 @@ export class TypeResolver {
 				return message.guild ? (person as GuildMember).user : person;
 			},
 
-			[ArgumentTypes.RELEVANTS]: (message, phrase) => {
+			[ArgumentType.RELEVANTS]: (message, phrase) => {
 				if (!phrase) return null;
 				const persons = message.inGuild()
 					? this.client.util.resolveMembers(phrase, message.guild.members.cache)
@@ -238,107 +238,107 @@ export class TypeResolver {
 				return message.inGuild() ? (persons as Collection<string, GuildMember>).mapValues(member => member.user) : persons;
 			},
 
-			[ArgumentTypes.CHANNEL]: (message, phrase) => {
+			[ArgumentType.CHANNEL]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				return this.client.util.resolveChannel(phrase, message.guild.channels.cache);
 			},
 
-			[ArgumentTypes.CHANNELS]: (message, phrase) => {
+			[ArgumentType.CHANNELS]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const channels = this.client.util.resolveChannels(phrase, message.guild.channels.cache);
 				return channels.size ? channels : null;
 			},
 
-			[ArgumentTypes.TEXT_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildText)),
+			[ArgumentType.TEXT_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildText)),
 
-			[ArgumentTypes.TEXT_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildText)),
+			[ArgumentType.TEXT_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildText)),
 
-			[ArgumentTypes.VOICE_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildVoice)),
+			[ArgumentType.VOICE_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildVoice)),
 
-			[ArgumentTypes.VOICE_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildVoice)),
+			[ArgumentType.VOICE_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildVoice)),
 
-			[ArgumentTypes.CATEGORY_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildCategory)),
+			[ArgumentType.CATEGORY_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildCategory)),
 
-			[ArgumentTypes.CATEGORY_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildCategory)),
+			[ArgumentType.CATEGORY_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildCategory)),
 
-			[ArgumentTypes.ANNOUNCEMENT_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
+			[ArgumentType.ANNOUNCEMENT_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
 
-			[ArgumentTypes.ANNOUNCEMENT_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
+			[ArgumentType.ANNOUNCEMENT_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildAnnouncement)),
 
-			[ArgumentTypes.STAGE_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildStageVoice)),
+			[ArgumentType.STAGE_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildStageVoice)),
 
-			[ArgumentTypes.STAGE_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildStageVoice)),
+			[ArgumentType.STAGE_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildStageVoice)),
 
-			[ArgumentTypes.THREAD_CHANNEL]: this.singleChannelBuiltInType((c): c is AnyThreadChannel => Boolean(c?.isThread())),
+			[ArgumentType.THREAD_CHANNEL]: this.singleChannelBuiltInType((c): c is AnyThreadChannel => Boolean(c?.isThread())),
 
-			[ArgumentTypes.THREAD_CHANNELS]: this.multipleChannelBuiltInType((c): c is AnyThreadChannel => c.isThread()),
+			[ArgumentType.THREAD_CHANNELS]: this.multipleChannelBuiltInType((c): c is AnyThreadChannel => c.isThread()),
 
 			// @ts-expect-error
-			[ArgumentTypes.DIRECTORY_CHANNEL]: this.singleChannelBuiltInType<DirectoryChannel>(
+			[ArgumentType.DIRECTORY_CHANNEL]: this.singleChannelBuiltInType<DirectoryChannel>(
 				this.isChannelTypeOf(ChannelType.GuildDirectory)
 			),
 
 			// @ts-expect-error
-			[ArgumentTypes.DIRECTORY_CHANNELS]: this.multipleChannelBuiltInType<DirectoryChannel>(
+			[ArgumentType.DIRECTORY_CHANNELS]: this.multipleChannelBuiltInType<DirectoryChannel>(
 				this.isChannelTypeOf(ChannelType.GuildDirectory)
 			),
 
-			[ArgumentTypes.FORUM_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildForum)),
+			[ArgumentType.FORUM_CHANNEL]: this.singleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildForum)),
 
-			[ArgumentTypes.FORUM_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildForum)),
+			[ArgumentType.FORUM_CHANNELS]: this.multipleChannelBuiltInType(this.isChannelTypeOf(ChannelType.GuildForum)),
 
-			[ArgumentTypes.TEXT_BASED_CHANNEL]: this.singleChannelBuiltInType((c): c is GuildTextBasedChannel =>
+			[ArgumentType.TEXT_BASED_CHANNEL]: this.singleChannelBuiltInType((c): c is GuildTextBasedChannel =>
 				Boolean(c?.isTextBased())
 			),
 
-			[ArgumentTypes.TEXT_BASED_CHANNELS]: this.multipleChannelBuiltInType((c): c is GuildTextBasedChannel => c.isTextBased()),
+			[ArgumentType.TEXT_BASED_CHANNELS]: this.multipleChannelBuiltInType((c): c is GuildTextBasedChannel => c.isTextBased()),
 
-			[ArgumentTypes.VOICE_BASED_CHANNEL]: this.singleChannelBuiltInType((c): c is VoiceBasedChannel =>
+			[ArgumentType.VOICE_BASED_CHANNEL]: this.singleChannelBuiltInType((c): c is VoiceBasedChannel =>
 				Boolean(c?.isVoiceBased())
 			),
 
-			[ArgumentTypes.VOICE_BASED_CHANNELS]: this.multipleChannelBuiltInType((c): c is VoiceBasedChannel => c.isVoiceBased()),
+			[ArgumentType.VOICE_BASED_CHANNELS]: this.multipleChannelBuiltInType((c): c is VoiceBasedChannel => c.isVoiceBased()),
 
-			[ArgumentTypes.ROLE]: (message, phrase) => {
+			[ArgumentType.ROLE]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				return this.client.util.resolveRole(phrase, message.guild.roles.cache);
 			},
 
-			[ArgumentTypes.ROLES]: (message, phrase) => {
+			[ArgumentType.ROLES]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const roles = this.client.util.resolveRoles(phrase, message.guild.roles.cache);
 				return roles.size ? roles : null;
 			},
 
-			[ArgumentTypes.EMOJI]: (message, phrase) => {
+			[ArgumentType.EMOJI]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				return this.client.util.resolveEmoji(phrase, message.guild.emojis.cache);
 			},
 
-			[ArgumentTypes.EMOJIS]: (message, phrase) => {
+			[ArgumentType.EMOJIS]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const emojis = this.client.util.resolveEmojis(phrase, message.guild.emojis.cache);
 				return emojis.size ? emojis : null;
 			},
 
-			[ArgumentTypes.GUILD]: (_message, phrase) => {
+			[ArgumentType.GUILD]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.client.util.resolveGuild(phrase, this.client.guilds.cache);
 			},
 
-			[ArgumentTypes.GUILDS]: (_message, phrase) => {
+			[ArgumentType.GUILDS]: (_message, phrase) => {
 				if (!phrase) return null;
 				const guilds = this.client.util.resolveGuilds(phrase, this.client.guilds.cache);
 				return guilds.size ? guilds : null;
 			},
 
-			[ArgumentTypes.MESSAGE]: (message, phrase) => {
+			[ArgumentType.MESSAGE]: (message, phrase) => {
 				if (!phrase) return null;
 				try {
 					return message.channel.messages.fetch(phrase);
@@ -347,7 +347,7 @@ export class TypeResolver {
 				}
 			},
 
-			[ArgumentTypes.GUILD_MESSAGE]: async (message, phrase) => {
+			[ArgumentType.GUILD_MESSAGE]: async (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				for (const channel of message.guild.channels.cache.values()) {
@@ -362,7 +362,7 @@ export class TypeResolver {
 				return null;
 			},
 
-			[ArgumentTypes.RELEVANT_MESSAGE]: async (message, phrase) => {
+			[ArgumentType.RELEVANT_MESSAGE]: async (message, phrase) => {
 				if (!phrase) return null;
 				const hereMsg = await message.channel.messages.fetch(phrase).catch(() => null);
 				if (hereMsg) {
@@ -383,7 +383,7 @@ export class TypeResolver {
 				return null;
 			},
 
-			[ArgumentTypes.INVITE]: (_message, phrase) => {
+			[ArgumentType.INVITE]: (_message, phrase) => {
 				if (!phrase) return null;
 				try {
 					return this.client.fetchInvite(phrase);
@@ -392,14 +392,14 @@ export class TypeResolver {
 				}
 			},
 
-			[ArgumentTypes.USER_MENTION]: (_message, phrase) => {
+			[ArgumentType.USER_MENTION]: (_message, phrase) => {
 				if (!phrase) return null;
 				const id = phrase.match(/<@!?(\d{17,19})>/);
 				if (!id) return null;
 				return this.client.users.cache.get(id[1]) ?? null;
 			},
 
-			[ArgumentTypes.MEMBER_MENTION]: (message, phrase) => {
+			[ArgumentType.MEMBER_MENTION]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const id = phrase.match(/<@!?(\d{17,19})>/);
@@ -407,7 +407,7 @@ export class TypeResolver {
 				return message.guild.members.cache.get(id[1]) ?? null;
 			},
 
-			[ArgumentTypes.CHANNEL_MENTION]: (message, phrase) => {
+			[ArgumentType.CHANNEL_MENTION]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const id = phrase.match(/<#(\d{17,19})>/);
@@ -415,7 +415,7 @@ export class TypeResolver {
 				return message.guild.channels.cache.get(id[1]) ?? null;
 			},
 
-			[ArgumentTypes.ROLE_MENTION]: (message, phrase) => {
+			[ArgumentType.ROLE_MENTION]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.guild) return null;
 				const id = phrase.match(/<@&(\d{17,19})>/);
@@ -423,7 +423,7 @@ export class TypeResolver {
 				return message.guild.roles.cache.get(id[1]) ?? null;
 			},
 
-			[ArgumentTypes.EMOJI_MENTION]: (message, phrase) => {
+			[ArgumentType.EMOJI_MENTION]: (message, phrase) => {
 				if (!phrase) return null;
 				if (!message.inGuild()) return null;
 				const id = phrase.match(/<a?:[a-zA-Z0-9_]+:(\d{17,19})>/);
@@ -431,32 +431,32 @@ export class TypeResolver {
 				return message.guild.emojis.cache.get(id[1]) ?? null;
 			},
 
-			[ArgumentTypes.COMMAND_ALIAS]: (_message, phrase) => {
+			[ArgumentType.COMMAND_ALIAS]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.commandHandler.findCommand(phrase) ?? null;
 			},
 
-			[ArgumentTypes.COMMAND]: (_message, phrase) => {
+			[ArgumentType.COMMAND]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.commandHandler.modules.get(phrase) ?? null;
 			},
 
-			[ArgumentTypes.INHIBITOR]: (_message, phrase) => {
+			[ArgumentType.INHIBITOR]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.inhibitorHandler?.modules.get(phrase) ?? null;
 			},
 
-			[ArgumentTypes.LISTENER]: (_message, phrase) => {
+			[ArgumentType.LISTENER]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.listenerHandler?.modules.get(phrase) ?? null;
 			},
 
-			[ArgumentTypes.TASK]: (_message, phrase) => {
+			[ArgumentType.TASK]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.taskHandler?.modules.get(phrase) ?? null;
 			},
 
-			[ArgumentTypes.CONTEXT_MENU_COMMAND]: (_message, phrase) => {
+			[ArgumentType.CONTEXT_MENU_COMMAND]: (_message, phrase) => {
 				if (!phrase) return null;
 				return this.contextMenuCommandHandler?.modules.get(phrase) ?? null;
 			}

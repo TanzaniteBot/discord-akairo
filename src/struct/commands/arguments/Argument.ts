@@ -24,8 +24,8 @@ import {
 } from "discord.js";
 import type { URL } from "node:url";
 import { z } from "zod";
-import { MessageInstance, MessageSendResolvable, SyncOrAsync, TextCommandMessage } from "../../../typings/Util.js";
-import { ArgumentMatches, ArgumentTypes } from "../../../util/Constants.js";
+import { MessageInstance, MessageSendResolvable, SyncOrAsync, type TextCommandMessage } from "../../../typings/Util.js";
+import { ArgumentMatch, BuiltinArgumentType } from "../../../util/Constants.js";
 import { intoCallable, isPromise } from "../../../util/Util.js";
 import type { AkairoClient } from "../../AkairoClient.js";
 import type { ContextMenuCommand } from "../../contextMenuCommands/ContextMenuCommand.js";
@@ -108,7 +108,7 @@ export class Argument {
 	/**
 	 * The method to match text.
 	 */
-	public match: ArgumentMatch;
+	public match: ArgumentMatchString;
 
 	/**
 	 * Function to modify otherwise content.
@@ -162,8 +162,8 @@ export class Argument {
 		} = options;
 
 		this.command = command;
-		this.match = match ?? ArgumentMatches.PHRASE;
-		this.type = typeof type === "function" ? type.bind(this) : (type ?? ArgumentTypes.STRING);
+		this.match = match ?? ArgumentMatch.PHRASE;
+		this.type = typeof type === "function" ? type.bind(this) : (type ?? BuiltinArgumentType.STRING);
 		this.flag = flag ?? null;
 		this.multipleFlags = multipleFlags ?? false;
 		this.index = index ?? null;
@@ -216,7 +216,7 @@ export class Argument {
 		Object.assign(promptOptions, this.command.argumentDefaults.prompt);
 		Object.assign(promptOptions, this.prompt || {}); */
 
-		const isInfinite = promptOptions.infinite || (this.match === ArgumentMatches.SEPARATE && !commandInput);
+		const isInfinite = promptOptions.infinite || (this.match === ArgumentMatch.SEPARATE && !commandInput);
 		const additionalRetry = Number(Boolean(commandInput));
 		const values: any[] | null = isInfinite ? [] : null;
 
@@ -970,9 +970,7 @@ export const ArgumentPromptOptions = z.object({
  * It preserves the original whitespace between phrases and the quotes around phrases.
  * - `none` matches nothing at all and an empty string will be used for type operations.
  */
-export type ArgumentMatch = "phrase" | "flag" | "option" | "rest" | "separate" | "text" | "content" | "restContent" | "none";
-
-export const ArgumentMatch = z.enum(["phrase", "flag", "option", "rest", "separate", "text", "content", "restContent", "none"]);
+export type ArgumentMatchString = `${ArgumentMatch}`;
 
 /**
  * - `string` does not cast to any type.
@@ -1082,6 +1080,8 @@ export interface BaseArgumentType {
 	task: Task | null;
 	contextMenuCommand: ContextMenuCommand | null;
 }
+
+type BaseArgumentTypeComplete = { [K in `${BuiltinArgumentType}`]: BaseArgumentType[K] };
 
 /**
  * The type that the argument should be cast to.
@@ -1236,9 +1236,9 @@ export type ArgumentOptions = {
 
 	/**
 	 * Method to match text. Defaults to 'phrase'.
-	 * @default ArgumentMatches.PHRASE
+	 * @default ArgumentMatch.PHRASE
 	 */
-	match?: ArgumentMatch;
+	match?: ArgumentMatchString;
 
 	/**
 	 * Function to modify otherwise content.
@@ -1265,7 +1265,7 @@ export type ArgumentOptions = {
 
 	/**
 	 * Type to cast to.
-	 * @default ArgumentTypes.STRING
+	 * @default ArgumentType.STRING
 	 */
 	type?: ArgumentType | ArgumentTypeCaster;
 
@@ -1289,7 +1289,7 @@ export const ArgumentOptions = z.object({
 	id: z.string().nullish(),
 	index: z.number().nullish(),
 	limit: z.number().optional(),
-	match: z.nativeEnum(ArgumentMatches).optional(),
+	match: z.nativeEnum(ArgumentMatch).optional(),
 	modifyOtherwise: OtherwiseContentModifier.nullish().optional(),
 	multipleFlags: z.boolean().optional(),
 	otherwise: z.union([MessageSendResolvable, OtherwiseContentSupplier]).nullish(),

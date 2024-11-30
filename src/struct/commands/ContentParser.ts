@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ArgumentMatches } from "../../util/Constants.js";
+import { ArgumentMatch } from "../../util/Constants.js";
 import type { ArgumentOptions } from "./arguments/Argument.js";
 
 /*
@@ -545,8 +545,8 @@ export class ContentParser {
 		};
 
 		for (const arg of args) {
-			const arr = res[arg.match === ArgumentMatches.FLAG ? "flagWords" : "optionFlagWords"];
-			if (arg.match === ArgumentMatches.FLAG || arg.match === ArgumentMatches.OPTION) {
+			const arr = res[arg.match === ArgumentMatch.FLAG ? "flagWords" : "optionFlagWords"];
+			if (arg.match === ArgumentMatch.FLAG || arg.match === ArgumentMatch.OPTION) {
 				if (Array.isArray(arg.flag)) {
 					arr.push(...arg.flag);
 				} else {

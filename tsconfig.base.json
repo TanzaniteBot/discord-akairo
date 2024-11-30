@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
 		/* Type Checking */
+		"strict": true,
 		"alwaysStrict": true,
 		"noImplicitOverride": true,
-		"strict": true,
 		"useUnknownInCatchVariables": false,
+		"noUncheckedSideEffectImports": true,
 
 		/* Modules */
 		"module": "CommonJS",

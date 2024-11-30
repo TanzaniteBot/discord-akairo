@@ -1,19 +1,19 @@
 import {
-	BitFieldResolvable,
+	type BitFieldResolvable,
 	Collection,
-	MessageFlags,
-	MessageFlagsBitField,
-	MessageFlagsString,
-	MessagePayload,
 	type InteractionEditReplyOptions,
 	type InteractionReplyOptions,
 	type Message,
 	type MessageCreateOptions,
 	type MessageEditOptions,
+	MessageFlags,
+	MessageFlagsBitField,
+	type MessageFlagsString,
+	MessagePayload,
 	type MessageReplyOptions,
 	type Snowflake
 } from "discord.js";
-import { MessageUnion } from "../../typings/Util.js";
+import { type MessageUnion } from "../../typings/Util.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
 import type { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import { CommandHandler, type ParsedComponentData } from "./CommandHandler.js";

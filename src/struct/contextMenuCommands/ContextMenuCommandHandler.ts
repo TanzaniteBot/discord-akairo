@@ -1,16 +1,20 @@
-import type { Awaitable, ContextMenuCommandInteraction } from "discord.js";
+import type { ContextMenuCommandInteraction } from "discord.js";
 import type { ContextMenuCommandHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
-import { BuiltInReasons, ContextCommandHandlerEvents } from "../../util/Constants.js";
+import { BuiltInReason, ContextCommandHandlerEvent } from "../../util/Constants.js";
 import type { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions } from "../AkairoHandler.js";
+import { AkairoHandler, type AkairoHandlerOptions } from "../AkairoHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import { ContextMenuCommand } from "./ContextMenuCommand.js";
 
 /**
  * Loads context menu commands and handles them.
  */
-export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand, ContextMenuCommandHandler> {
+export class ContextMenuCommandHandler extends AkairoHandler<
+	ContextMenuCommand,
+	ContextMenuCommandHandler,
+	ContextMenuCommandHandlerEvents
+> {
 	/**
 	 * Inhibitor handler to use.
 	 */
@@ -42,7 +46,7 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 	 * Set up the context menu command handler
 	 */
 	protected setup() {
-		this.client.once("ready", () => {
+		this.client.once("clientReady", () => {
 			this.client.on("interactionCreate", i => {
 				if (i.isUserContextMenuCommand() || i.isMessageContextMenuCommand()) this.handle(i);
 			});
@@ -57,21 +61,21 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 		const command = this.modules.find(module => module.name === interaction.commandName);
 
 		if (!command) {
-			this.emit(ContextCommandHandlerEvents.NOT_FOUND, interaction);
+			this.emit(ContextCommandHandlerEvent.NOT_FOUND, interaction);
 			return false;
 		}
 
 		if (command.ownerOnly && !this.client.isOwner(interaction.user.id)) {
-			this.emit(ContextCommandHandlerEvents.BLOCKED, interaction, command, BuiltInReasons.OWNER);
+			this.emit(ContextCommandHandlerEvent.BLOCKED, interaction, command, BuiltInReason.OWNER);
 		}
 		if (command.superUserOnly && !this.client.isSuperUser(interaction.user.id)) {
-			this.emit(ContextCommandHandlerEvents.BLOCKED, interaction, command, BuiltInReasons.SUPER_USER);
+			this.emit(ContextCommandHandlerEvent.BLOCKED, interaction, command, BuiltInReason.SUPER_USER);
 		}
 
 		try {
-			this.emit(ContextCommandHandlerEvents.STARTED, interaction, command);
+			this.emit(ContextCommandHandlerEvent.STARTED, interaction, command);
 			const ret = await command.exec(interaction);
-			this.emit(ContextCommandHandlerEvents.FINISHED, interaction, command, ret);
+			this.emit(ContextCommandHandlerEvent.FINISHED, interaction, command, ret);
 			return true;
 		} catch (err) {
 			this.emitError(err, interaction, command);
@@ -86,8 +90,8 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 	 * @param command - Command that errored.
 	 */
 	public emitError(err: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand): void {
-		if (this.listenerCount(ContextCommandHandlerEvents.ERROR)) {
-			this.emit(ContextCommandHandlerEvents.ERROR, err, interaction, command);
+		if (this.listenerCount(ContextCommandHandlerEvent.ERROR)) {
+			this.emit(ContextCommandHandlerEvent.ERROR, err, interaction, command);
 			return;
 		}
 
@@ -95,11 +99,8 @@ export class ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand,
 	}
 }
 
-type Events = ContextMenuCommandHandlerEvents;
-
-export interface ContextMenuCommandHandler extends AkairoHandler<ContextMenuCommand, ContextMenuCommandHandler> {
-	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-}
-
-export type ContextMenuCommandHandlerOptions = AkairoHandlerOptions<ContextMenuCommand, ContextMenuCommandHandler>;
+export type ContextMenuCommandHandlerOptions = AkairoHandlerOptions<
+	ContextMenuCommand,
+	ContextMenuCommandHandler,
+	ContextMenuCommandHandlerEvents
+>;

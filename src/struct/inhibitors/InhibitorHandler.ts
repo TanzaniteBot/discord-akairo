@@ -1,4 +1,3 @@
-import type { Awaitable } from "discord.js";
 import type { MessageUnion } from "../../typings/Util.js";
 import type { InhibitorHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
@@ -6,12 +5,12 @@ import { isPromise } from "../../util/Util.js";
 import type { AkairoClient } from "../AkairoClient.js";
 import { AkairoHandler, type AkairoHandlerOptions } from "../AkairoHandler.js";
 import type { Command } from "../commands/Command.js";
-import { Inhibitor } from "./Inhibitor.js";
+import { Inhibitor, type InhibitorTypeString } from "./Inhibitor.js";
 
 /**
  * Loads inhibitors and checks messages.
  */
-export class InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler> {
+export class InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler, InhibitorHandlerEvents> {
 	/**
 	 * @param client - The Akairo client.
 	 * @param options - Options.
@@ -33,7 +32,7 @@ export class InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler>
 	 * @param message - Message to test.
 	 * @param command - Command to use.
 	 */
-	public async test(type: "all" | "pre" | "post", message: MessageUnion, command?: Command): Promise<string | null | void> {
+	public async test(type: InhibitorTypeString, message: MessageUnion, command?: Command): Promise<string | null | void> {
 		if (!this.modules.size) return null;
 
 		const inhibitors = this.modules.filter(i => i.type === type);
@@ -52,7 +51,7 @@ export class InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler>
 			);
 		}
 
-		const inhibitedInhibitors = (await Promise.all(promises)).filter(r => r) as Inhibitor[];
+		const inhibitedInhibitors = (await Promise.all(promises)).filter(r => r != null);
 		if (!inhibitedInhibitors.length) return null;
 
 		inhibitedInhibitors.sort((a, b) => b.priority - a.priority);
@@ -60,11 +59,4 @@ export class InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler>
 	}
 }
 
-type Events = InhibitorHandlerEvents;
-
-export interface InhibitorHandler extends AkairoHandler<Inhibitor, InhibitorHandler> {
-	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-}
-
-export type InhibitorHandlerOptions = AkairoHandlerOptions<Inhibitor, InhibitorHandler>;
+export type InhibitorHandlerOptions = AkairoHandlerOptions<Inhibitor, InhibitorHandler, InhibitorHandlerEvents>;

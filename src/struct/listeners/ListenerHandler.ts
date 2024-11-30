@@ -1,4 +1,4 @@
-import { Awaitable, Collection } from "discord.js";
+import { Collection } from "discord.js";
 import type EventEmitter from "node:events";
 import type { ListenerHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
@@ -10,7 +10,7 @@ import { Listener } from "./Listener.js";
 /**
  * Loads listeners and registers them with EventEmitters.
  */
-export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
+export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler, ListenerHandlerEvents> {
 	/**
 	 * Class to handle.
 	 */
@@ -105,11 +105,4 @@ export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
 	}
 }
 
-type Events = ListenerHandlerEvents;
-
-export interface ListenerHandler extends AkairoHandler<Listener, ListenerHandler> {
-	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-}
-
-export type ListenerHandlerOptions = AkairoHandlerOptions<Listener, ListenerHandler>;
+export type ListenerHandlerOptions = AkairoHandlerOptions<Listener, ListenerHandler, ListenerHandlerEvents>;

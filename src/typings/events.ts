@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import type { ChatInputCommandInteraction, ClientEvents, ContextMenuCommandInteraction, Message } from "discord.js";
+import type {
+	AutocompleteInteraction,
+	ChatInputCommandInteraction,
+	ClientEvents,
+	ContextMenuCommandInteraction,
+	Message
+} from "discord.js";
 import type { AkairoHandler } from "../struct/AkairoHandler.js";
 import type { AkairoModule } from "../struct/AkairoModule.js";
 import type { Command } from "../struct/commands/Command.js";
@@ -12,35 +18,42 @@ import type { Listener } from "../struct/listeners/Listener.js";
 import type { ListenerHandler } from "../struct/listeners/ListenerHandler.js";
 import type { Task } from "../struct/tasks/Task.js";
 import type { TaskHandler } from "../struct/tasks/TaskHandler.js";
-import type { BuiltInReasons } from "../util/Constants.js";
+import type {
+	AkairoClientEvent,
+	AkairoHandlerEvent,
+	BuiltInReason,
+	CommandHandlerEvent,
+	CommandPermissionMissing,
+	ContextCommandHandlerEvent
+} from "../util/Constants.js";
 import type { MessageUnion, SlashCommandMessage, TextCommandMessage } from "./Util.js";
 
 export interface AkairoHandlerEvents<
-	Module extends AkairoModule<Handler, Module>,
-	Handler extends AkairoHandler<Module, Handler>
+	Module extends AkairoModule<Handler, Module, any>,
+	Handler extends AkairoHandler<Module, Handler, any>
 > {
 	/**
 	 * Emitted when a module is loaded.
 	 * @param mod - Module loaded.
 	 * @param isReload - Whether or not this was a reload.
 	 */
-	load: [mod: Module, isReload: boolean];
+	[AkairoHandlerEvent.LOAD]: [mod: Module, isReload: boolean];
 
 	/**
 	 * Emitted when a module is removed.
 	 * @param mod - Module removed.
 	 */
-	remove: [mod: Module];
+	[AkairoHandlerEvent.REMOVE]: [mod: Module];
 }
 
-export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, CommandHandler> {
+interface CommandHandlerEventsEnum extends AkairoHandlerEvents<Command, CommandHandler> {
 	/**
 	 * Emitted when a command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
 	 * @param message - Message sent.
 	 * @param command - Command blocked.
 	 * @param reason - Reason for the block.
 	 */
-	commandBlocked: [message: TextCommandMessage, command: Command, reason: typeof BuiltInReasons | string];
+	[CommandHandlerEvent.COMMAND_BLOCKED]: [message: TextCommandMessage, command: Command, reason: `${BuiltInReason}` | string];
 
 	/**
 	 * Emitted when a command breaks out with a retry prompt.
@@ -48,7 +61,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command being broken out.
 	 * @param breakMessage - Breakout message.
 	 */
-	commandBreakout: [message: TextCommandMessage, command: Command, breakMessage: Message];
+	[CommandHandlerEvent.COMMAND_BREAKOUT]: [message: TextCommandMessage, command: Command, breakMessage: Message];
 
 	/**
 	 * Emitted when a command is cancelled via prompt or argument cancel.
@@ -56,7 +69,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command executed.
 	 * @param retryMessage - Message to retry with. This is passed when a prompt was broken out of with a message that looks like a command.
 	 */
-	commandCancelled: [message: TextCommandMessage, command: Command, retryMessage?: Message];
+	[CommandHandlerEvent.COMMAND_CANCELLED]: [message: TextCommandMessage, command: Command, retryMessage?: Message];
 
 	/**
 	 * Emitted when a command is cancelled because of a timeout.
@@ -64,7 +77,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command executed.
 	 * @param time - Timeout in milliseconds.
 	 */
-	commandTimeout: [message: TextCommandMessage, command: Command, time: number];
+	[CommandHandlerEvent.COMMAND_TIMEOUT]: [message: TextCommandMessage, command: Command, time: number];
 
 	/**
 	 * Emitted when a command finishes execution.
@@ -73,21 +86,21 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param args - The args passed to the command.
 	 * @param returnValue - The command's return value.
 	 */
-	commandFinished: [message: TextCommandMessage, command: Command, args: any, returnValue: any];
+	[CommandHandlerEvent.COMMAND_FINISHED]: [message: TextCommandMessage, command: Command, args: any, returnValue: any];
 
 	/**
 	 * Emitted when a command is invalid
 	 * @param message - Message sent.
 	 * @param command - Command executed.
 	 */
-	commandInvalid: [message: TextCommandMessage, command: Command];
+	[CommandHandlerEvent.COMMAND_INVALID]: [message: TextCommandMessage, command: Command];
 
 	/**
 	 * Emitted when a command is locked
 	 * @param message - Message sent.
 	 * @param command - Command executed.
 	 */
-	commandLocked: [message: TextCommandMessage, command: Command];
+	[CommandHandlerEvent.COMMAND_LOCKED]: [message: MessageUnion, command: Command];
 
 	/**
 	 * Emitted when a command starts execution.
@@ -95,7 +108,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command executed.
 	 * @param args - The args passed to the command.
 	 */
-	commandStarted: [message: TextCommandMessage, command: Command, args: any];
+	[CommandHandlerEvent.COMMAND_STARTED]: [message: TextCommandMessage, command: Command, args: any];
 
 	/**
 	 * Emitted when a command or slash command is found on cooldown.
@@ -103,7 +116,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command blocked.
 	 * @param remaining - Remaining time in milliseconds for cooldown.
 	 */
-	cooldown: [message: MessageUnion, command: Command, remaining: number];
+	[CommandHandlerEvent.COOLDOWN]: [message: MessageUnion, command: Command, remaining: number];
 
 	/**
 	 * Emitted when a command or inhibitor errors.
@@ -111,27 +124,27 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param message - Message sent.
 	 * @param command - Command executed.
 	 */
-	error: [error: Error, message: MessageUnion, command?: Command];
+	[CommandHandlerEvent.ERROR]: [error: Error, message: MessageUnion, command?: Command];
 
 	/**
 	 * Emitted when a user is in a command argument prompt.
 	 * Used to prevent usage of commands during a prompt.
 	 * @param message - Message sent.
 	 */
-	inPrompt: [message: TextCommandMessage];
+	[CommandHandlerEvent.IN_PROMPT]: [message: TextCommandMessage];
 
 	/**
 	 * Emitted when a message is blocked by a pre-message inhibitor. The built-in inhibitors are 'client' and 'bot'.
 	 * @param message - Message sent.
 	 * @param reason - Reason for the block.
 	 */
-	messageBlocked: [message: MessageUnion, reason: string];
+	[CommandHandlerEvent.MESSAGE_BLOCKED]: [message: MessageUnion, reason: string];
 
 	/**
 	 * Emitted when a message does not start with the prefix or match a command.
 	 * @param message - Message sent.
 	 */
-	messageInvalid: [message: TextCommandMessage];
+	[CommandHandlerEvent.MESSAGE_INVALID]: [message: TextCommandMessage];
 
 	/**
 	 * Emitted when a command permissions check is failed.
@@ -140,7 +153,12 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param type - Either 'client' or 'user'.
 	 * @param missing - The missing permissions.
 	 */
-	missingPermissions: [message: TextCommandMessage, command: Command, type: "client" | "user", missing?: any];
+	[CommandHandlerEvent.MISSING_PERMISSIONS]: [
+		message: TextCommandMessage,
+		command: Command,
+		type: `${CommandPermissionMissing}`,
+		missing?: any
+	];
 
 	/**
 	 * Emitted when a slash command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
@@ -148,7 +166,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command blocked.
 	 * @param reason - Reason for the block.
 	 */
-	slashBlocked: [message: SlashCommandMessage, command: Command, reason: string];
+	[CommandHandlerEvent.SLASH_BLOCKED]: [message: SlashCommandMessage, command: Command, reason: string];
 
 	/**
 	 * Emitted when a slash command errors.
@@ -156,7 +174,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param message - The slash message.
 	 * @param command - Command executed.
 	 */
-	slashError: [error: Error, message: SlashCommandMessage, command: Command];
+	[CommandHandlerEvent.SLASH_ERROR]: [error: Error, message: SlashCommandMessage, command: Command];
 
 	/**
 	 * Emitted when a slash command finishes execution.
@@ -165,7 +183,7 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param args - The args passed to the command.
 	 * @param returnValue - The command's return value.
 	 */
-	slashFinished: [message: SlashCommandMessage, command: Command, args: any, returnValue: any];
+	[CommandHandlerEvent.SLASH_FINISHED]: [message: SlashCommandMessage, command: Command, args: any, returnValue: any];
 
 	/**
 	 * Emitted when a slash command permissions check is failed.
@@ -174,13 +192,18 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param type - Either 'client' or 'user'.
 	 * @param missing - The missing permissions.
 	 */
-	slashMissingPermissions: [message: SlashCommandMessage, command: Command, type: "user" | "client", missing?: any];
+	[CommandHandlerEvent.SLASH_MISSING_PERMISSIONS]: [
+		message: SlashCommandMessage,
+		command: Command,
+		type: `${CommandPermissionMissing}`,
+		missing?: any
+	];
 
 	/**
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
 	 * @param interaction - The incoming interaction.
 	 */
-	slashNotFound: [interaction: ChatInputCommandInteraction];
+	[CommandHandlerEvent.SLASH_NOT_FOUND]: [interaction: ChatInputCommandInteraction | AutocompleteInteraction];
 
 	/**
 	 * Emitted when a slash command starts execution.
@@ -188,30 +211,38 @@ export interface CommandHandlerEvents extends AkairoHandlerEvents<Command, Comma
 	 * @param command - Command executed.
 	 * @param args - The args passed to the command.
 	 */
-	slashStarted: [message: SlashCommandMessage, command: Command, args: any];
+	[CommandHandlerEvent.SLASH_STARTED]: [message: SlashCommandMessage, command: Command, args: any];
 
 	/**
 	 * Emitted when a normal command is blocked because the command is configured to be `slashOnly`
 	 * @param message - Message sent.
 	 * @param command - Command blocked.
 	 */
-	slashOnly: [message: Message, command: Command];
+	[CommandHandlerEvent.SLASH_ONLY]: [message: Message, command: Command];
 }
 
-export interface InhibitorHandlerEvents extends AkairoHandlerEvents<Inhibitor, InhibitorHandler> {}
+export type CommandHandlerEvents = { [K in keyof CommandHandlerEventsEnum as `${K}`]: CommandHandlerEventsEnum[K] };
 
-export interface ListenerHandlerEvents extends AkairoHandlerEvents<Listener, ListenerHandler> {}
+interface InhibitorHandlerEventsEnum extends AkairoHandlerEvents<Inhibitor, InhibitorHandler> {}
 
-export interface TaskHandlerEvents extends AkairoHandlerEvents<Task, TaskHandler> {}
+export type InhibitorHandlerEvents = { [K in keyof InhibitorHandlerEventsEnum as `${K}`]: InhibitorHandlerEventsEnum[K] };
 
-export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents<ContextMenuCommand, ContextMenuCommandHandler> {
+interface ListenerHandlerEventsEnum extends AkairoHandlerEvents<Listener, ListenerHandler> {}
+
+export type ListenerHandlerEvents = { [K in keyof ListenerHandlerEventsEnum as `${K}`]: ListenerHandlerEventsEnum[K] };
+
+interface TaskHandlerEventsEnum extends AkairoHandlerEvents<Task, TaskHandler> {}
+
+export type TaskHandlerEvents = { [K in keyof TaskHandlerEventsEnum as `${K}`]: TaskHandlerEventsEnum[K] };
+
+interface ContextMenuCommandHandlerEventsEnum extends AkairoHandlerEvents<ContextMenuCommand, ContextMenuCommandHandler> {
 	/**
 	 * Emitted when a context menu command errors.
 	 * @param error - The error.
 	 * @param interaction - The interaction.
 	 * @param command - Command executed.
 	 */
-	error: [error: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand];
+	[ContextCommandHandlerEvent.ERROR]: [error: Error, interaction: ContextMenuCommandInteraction, command: ContextMenuCommand];
 
 	/**
 	 * Emitted when a context menu command finishes execution.
@@ -219,13 +250,17 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents<Con
 	 * @param command - Command executed.
 	 * @param returnValue - The command's return value.
 	 */
-	finished: [interaction: ContextMenuCommandInteraction, command: ContextMenuCommand, returnValue: any];
+	[ContextCommandHandlerEvent.FINISHED]: [
+		interaction: ContextMenuCommandInteraction,
+		command: ContextMenuCommand,
+		returnValue: any
+	];
 
 	/**
 	 * Emitted when a an incoming interaction command cannot be matched with a command.
 	 * @param interaction - The incoming interaction.
 	 */
-	notFound: [interaction: ContextMenuCommandInteraction];
+	[ContextCommandHandlerEvent.NOT_FOUND]: [interaction: ContextMenuCommandInteraction];
 
 	/**
 	 * Emitted when a command starts execution.
@@ -233,7 +268,7 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents<Con
 	 * @param command - Command executed.
 	 * @param args - The args passed to the command.
 	 */
-	started: [interaction: ContextMenuCommandInteraction, command: ContextMenuCommand];
+	[ContextCommandHandlerEvent.STARTED]: [interaction: ContextMenuCommandInteraction, command: ContextMenuCommand];
 
 	/**
 	 * Emitted when a command is blocked.
@@ -241,16 +276,22 @@ export interface ContextMenuCommandHandlerEvents extends AkairoHandlerEvents<Con
 	 * @param command - Command blocked.
 	 * @param reason - Reason for the block.
 	 */
-	blocked: [
+	[ContextCommandHandlerEvent.BLOCKED]: [
 		interaction: ContextMenuCommandInteraction,
-		command: Command,
-		reason: typeof BuiltInReasons.OWNER | typeof BuiltInReasons.SUPER_USER
+		command: ContextMenuCommand,
+		reason: `${BuiltInReason.OWNER | BuiltInReason.SUPER_USER}`
 	];
 }
 
-export interface AkairoClientEvents extends ClientEvents {
+export type ContextMenuCommandHandlerEvents = {
+	[K in keyof ContextMenuCommandHandlerEventsEnum as `${K}`]: ContextMenuCommandHandlerEventsEnum[K];
+};
+
+interface AkairoClientEventsEnum extends ClientEvents {
 	/**
 	 * Emitted for akairo debugging information.
 	 */
-	akairoDebug: [message: string, ...other: any[]];
+	[AkairoClientEvent.AKAIRO_DEBUG]: [message: string, ...other: any[]];
 }
+
+export type AkairoClientEvents = { [K in keyof AkairoClientEventsEnum as `${K}`]: AkairoClientEventsEnum[K] };

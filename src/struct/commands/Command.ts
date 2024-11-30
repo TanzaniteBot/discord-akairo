@@ -15,22 +15,23 @@ import {
 	MessageInstance,
 	MessageUnion,
 	PermissionResolvableValidator,
-	SlashCommandMessage,
+	type SlashCommandMessage,
 	SyncOrAsync,
-	TextCommandMessage
+	type TextCommandMessage
 } from "../../typings/Util.js";
+import { type CommandHandlerEvents } from "../../typings/events.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
-import { CommandHandler, PrefixSupplier, SlashResolveType } from "./CommandHandler.js";
+import { type CommandHandler, PrefixSupplier, type SlashResolveType } from "./CommandHandler.js";
 import { ContentParser, ContentParserResult } from "./ContentParser.js";
 import type { Flag } from "./Flag.js";
-import { Argument, ArgumentOptions, DefaultArgumentOptions, type ArgumentTypeCasterReturn } from "./arguments/Argument.js";
+import { Argument, ArgumentOptions, type ArgumentTypeCasterReturn, DefaultArgumentOptions } from "./arguments/Argument.js";
 import { ArgumentRunner, ArgumentRunnerState } from "./arguments/ArgumentRunner.js";
 
 /**
  * Represents a command.
  */
-export abstract class Command extends AkairoModule<CommandHandler, Command> {
+export abstract class Command extends AkairoModule<CommandHandler, Command, CommandHandlerEvents> {
 	/**
 	 * Command names.
 	 */

@@ -1,13 +1,13 @@
-import { Awaitable, Client, ClientOptions, Snowflake, UserResolvable } from "discord.js";
+import { Client, type ClientOptions, type Snowflake, type UserResolvable } from "discord.js";
 import { z } from "zod";
-import type { AkairoClientEvents } from "../typings/events.js";
 import { ArrayOrNot } from "../typings/Util.js";
+import type { AkairoClientEvents } from "../typings/events.js";
 import * as ClientUtil from "./ClientUtil.js";
 
 /**
  * The Akairo framework client. Creates the handlers and sets them up.
  */
-export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
+export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready, AkairoClientEvents> {
 	/**
 	 * The ID of the owner(s).
 	 */
@@ -59,25 +59,6 @@ export class AkairoClient<Ready extends boolean = boolean> extends Client<Ready>
 			? this.superUserID.includes(id) || this.ownerID.includes(id)
 			: id === this.superUserID || id === this.ownerID;
 	}
-}
-
-type Events = AkairoClientEvents;
-
-export interface AkairoClient<Ready extends boolean = boolean> extends Client<Ready> {
-	on<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	on<S extends string | symbol>(event: Exclude<S, keyof Events>, listener: (...args: any[]) => Awaitable<void>): this;
-
-	once<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	once<S extends string | symbol>(event: Exclude<S, keyof Events>, listener: (...args: any[]) => Awaitable<void>): this;
-
-	emit<K extends keyof Events>(event: K, ...args: Events[K]): boolean;
-	emit<S extends string | symbol>(event: Exclude<S, keyof Events>, ...args: unknown[]): boolean;
-
-	off<K extends keyof Events>(event: K, listener: (...args: Events[K]) => Awaitable<void>): this;
-	off<S extends string | symbol>(event: Exclude<S, keyof Events>, listener: (...args: any[]) => Awaitable<void>): this;
-
-	removeAllListeners<K extends keyof Events>(event?: K): this;
-	removeAllListeners<S extends string | symbol>(event?: Exclude<S, keyof Events>): this;
 }
 
 /**

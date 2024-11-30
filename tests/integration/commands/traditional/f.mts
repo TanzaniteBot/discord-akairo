@@ -1,6 +1,6 @@
 import { codeBlock, type Message } from "discord.js";
 import { inspect } from "node:util";
-import { Command, Flag, TextCommandMessage } from "../../../../src/index.js";
+import { Command, Flag, type TextCommandMessage } from "../../../../src/index.js";
 
 import logger from "../../struct/Logger.mjs";
 

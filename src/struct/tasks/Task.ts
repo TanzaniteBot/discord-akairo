@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { type TaskHandlerEvents } from "../../typings/events.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { TaskHandler } from "./TaskHandler.js";
@@ -6,7 +7,7 @@ import type { TaskHandler } from "./TaskHandler.js";
 /**
  * Represents a task.
  */
-export abstract class Task extends AkairoModule<TaskHandler, Task> {
+export abstract class Task extends AkairoModule<TaskHandler, Task, TaskHandlerEvents> {
 	/**
 	 * The time in milliseconds between each time the task is run.
 	 */

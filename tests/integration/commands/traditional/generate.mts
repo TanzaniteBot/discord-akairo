@@ -1,6 +1,6 @@
 import { codeBlock } from "discord.js";
 import { inspect } from "node:util";
-import { ArgumentGeneratorReturn, Command, Flag, TextCommandMessage } from "../../../../src/index.js";
+import { type ArgumentGeneratorReturn, Command, Flag, type TextCommandMessage } from "../../../../src/index.js";
 
 export default class GenerateCommand extends Command {
 	public constructor() {

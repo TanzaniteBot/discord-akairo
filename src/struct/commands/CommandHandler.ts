@@ -1,46 +1,54 @@
 import {
-	ApplicationCommand,
-	ApplicationCommandOptionType,
-	ApplicationCommandSubCommandData,
-	ApplicationCommandSubGroupData,
-	ApplicationCommandType,
-	Collection,
-	DiscordAPIError,
-	Message,
-	MessageFlags,
+	type ApplicationCommand,
 	type ApplicationCommandData,
 	type ApplicationCommandOptionData,
+	ApplicationCommandOptionType,
+	type ApplicationCommandSubCommandData,
+	type ApplicationCommandSubGroupData,
+	ApplicationCommandType,
 	type AutocompleteInteraction,
 	type ChatInputCommandInteraction,
+	Collection,
 	type CommandInteractionOption,
 	type CommandInteractionOptionResolver,
+	DiscordAPIError,
 	type Guild,
+	type Message,
+	MessageFlags,
 	type Snowflake,
 	type TextBasedChannel,
 	type User
 } from "discord.js";
 import { z } from "zod";
-import { ArrayOrNot, MessageInstance, MessageUnion, SyncOrAsync, TextCommandMessage } from "../../typings/Util.js";
+import {
+	ArrayOrNot,
+	MessageInstance,
+	MessageUnion,
+	type SlashCommandMessage,
+	SyncOrAsync,
+	type TextCommandMessage
+} from "../../typings/Util.js";
+import { type CommandHandlerEvents } from "../../typings/events.js";
 import { AkairoError } from "../../util/AkairoError.js";
 import { AkairoMessage } from "../../util/AkairoMessage.js";
-import { BuiltInReasons, CommandHandlerEvents } from "../../util/Constants.js";
+import { AkairoClientEvent, BuiltInReason, CommandHandlerEvent, CommandPermissionMissing } from "../../util/Constants.js";
 import { deepAssign, deepEquals, intoArray, intoCallable, isPromise, prefixCompare } from "../../util/Util.js";
 import { AkairoClient } from "../AkairoClient.js";
-import { AkairoHandler, AkairoHandlerOptions, Extension } from "../AkairoHandler.js";
+import { AkairoHandler, AkairoHandlerOptions, type Extension } from "../AkairoHandler.js";
 import { ContextMenuCommandHandler } from "../contextMenuCommands/ContextMenuCommandHandler.js";
 import type { InhibitorHandler } from "../inhibitors/InhibitorHandler.js";
 import type { ListenerHandler } from "../listeners/ListenerHandler.js";
 import type { TaskHandler } from "../tasks/TaskHandler.js";
-import { Command, CommandInstance, SlashNonSub } from "./Command.js";
+import { Command, CommandInstance, type SlashNonSub } from "./Command.js";
 import { CommandUtil } from "./CommandUtil.js";
 import { Flag, FlagType } from "./Flag.js";
-import { ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
+import { type ArgumentDefaults, DefaultArgumentOptions } from "./arguments/Argument.js";
 import { TypeResolver } from "./arguments/TypeResolver.js";
 
 /**
  * Loads commands and handles messages.
  */
-export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
+export class CommandHandler extends AkairoHandler<Command, CommandHandler, CommandHandlerEvents> {
 	/**
 	 * Collection of command aliases.
 	 */
@@ -283,7 +291,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Set up the command handler
 	 */
 	protected setup() {
-		this.client.once("ready", () => {
+		this.client.once("clientReady", () => {
 			if (this.autoRegisterSlashCommands) this.registerInteractionCommands();
 
 			this.client.on("messageCreate", async m => {
@@ -323,7 +331,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * Registers interaction commands.
 	 */
 	protected async registerInteractionCommands() {
-		this.client.emit("akairoDebug", `[registerInteractionCommands] Started registering interaction commands...`);
+		this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, `[registerInteractionCommands] Started registering interaction commands...`);
 
 		type ParsedSlashCommand = ApplicationCommandData & { guilds: Snowflake[] };
 
@@ -396,13 +404,20 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			.sort(this.sortInteraction);
 
 		if (!deepEquals(currentGlobalCommands, slashCommandsApp)) {
-			this.client.emit("akairoDebug", "[registerInteractionCommands] Updating global interaction commands.", slashCommandsApp);
+			this.client.emit(
+				AkairoClientEvent.AKAIRO_DEBUG,
+				"[registerInteractionCommands] Updating global interaction commands.",
+				slashCommandsApp
+			);
 			await this.client.application?.commands.set(slashCommandsApp).catch(error => {
 				if (error instanceof DiscordAPIError) throw new RegisterInteractionCommandError(error, "global", slashCommandsApp);
 				else throw error;
 			});
 		} else {
-			this.client.emit("akairoDebug", "[registerInteractionCommands] Global interaction commands are up to date.");
+			this.client.emit(
+				AkairoClientEvent.AKAIRO_DEBUG,
+				"[registerInteractionCommands] Global interaction commands are up to date."
+			);
 		}
 
 		/* ----------------------- Guild Specific Interactions ---------------------- */
@@ -426,7 +441,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 				if (!deepEquals(currentGuildCommands, sortedCommands)) {
 					this.client.emit(
-						"akairoDebug",
+						AkairoClientEvent.AKAIRO_DEBUG,
 						`[registerInteractionCommands] Updating guild commands for ${guild.name}.`,
 						sortedCommands
 					);
@@ -436,7 +451,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 						else throw error;
 					});
 				} else {
-					this.client.emit("akairoDebug", `[registerInteractionCommands] No changes needed for ${guild.name}.`);
+					this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, `[registerInteractionCommands] No changes needed for ${guild.name}.`);
 				}
 			});
 		}
@@ -602,7 +617,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 
 			if (parsed.command?.slashOnly) {
-				this.emit(CommandHandlerEvents.SLASH_ONLY, message, parsed.command);
+				this.emit(CommandHandlerEvent.SLASH_ONLY, message, parsed.command);
 				return false;
 			}
 
@@ -614,7 +629,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 
 			if (ran === false) {
-				this.emit(CommandHandlerEvents.MESSAGE_INVALID, message);
+				this.emit(CommandHandlerEvent.MESSAGE_INVALID, message);
 				return false;
 			}
 
@@ -634,7 +649,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const commandModule = this.findCommand(interaction.commandName);
 
 		if (!commandModule) {
-			this.emit(CommandHandlerEvents.SLASH_NOT_FOUND, interaction);
+			this.emit(CommandHandlerEvent.SLASH_NOT_FOUND, interaction);
 			return false;
 		}
 
@@ -674,7 +689,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				message.util.parsed = parsed;
 			}
 
-			if (await this.runPostTypeInhibitors(message, commandModule)) {
+			if (await this.runPostTypeInhibitors(message, commandModule, true)) {
 				return false;
 			}
 			const convertedOptions: ConvertedOptionsType = {};
@@ -713,12 +728,12 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				if (convertedOptions.subcommand || convertedOptions.subcommandGroup) {
 					const usedSubcommandOrGroup = commandModule.slashOptions?.find(o => o.name === convertedOptions.subcommand);
 					if (!usedSubcommandOrGroup) {
-						this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
+						this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, "[handleSlash] Unable to find subcommand");
 						break out;
 					}
 					if (usedSubcommandOrGroup.type === ApplicationCommandOptionType.Subcommand) {
 						if (!(<SubCommand>usedSubcommandOrGroup).options) {
-							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
+							this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, "[handleSlash] Unable to find subcommand options");
 							break out;
 						}
 						handleOptions((<SubCommand>usedSubcommandOrGroup).options!);
@@ -727,10 +742,10 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 							subcommand => subcommand.name === convertedOptions.subcommand
 						);
 						if (!usedSubCommand) {
-							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand");
+							this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, "[handleSlash] Unable to find subcommand");
 							break out;
 						} else if (!usedSubCommand.options) {
-							this.client.emit("akairoDebug", "[handleSlash] Unable to find subcommand options");
+							this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, "[handleSlash] Unable to find subcommand options");
 							break out;
 						}
 
@@ -778,7 +793,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				if (key) {
 					if (commandModule.locker?.has(key)) {
 						key = null;
-						this.emit(CommandHandlerEvents.COMMAND_LOCKED, message, commandModule);
+						this.emit(CommandHandlerEvent.COMMAND_LOCKED, message, commandModule);
 						return true;
 					}
 					commandModule.locker?.add(key);
@@ -794,15 +809,15 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			}
 
 			try {
-				this.emit(CommandHandlerEvents.SLASH_STARTED, message, commandModule, convertedOptions);
+				this.emit(CommandHandlerEvent.SLASH_STARTED, message, commandModule, convertedOptions);
 				const ret =
 					Object.getOwnPropertyNames(Object.getPrototypeOf(commandModule)).includes("execSlash") || this.execSlash
 						? await commandModule.execSlash(message, convertedOptions)
 						: await commandModule.exec(message, convertedOptions);
-				this.emit(CommandHandlerEvents.SLASH_FINISHED, message, commandModule, convertedOptions, ret);
+				this.emit(CommandHandlerEvent.SLASH_FINISHED, message, commandModule, convertedOptions, ret);
 				return true;
 			} catch (err) {
-				this.emit(CommandHandlerEvents.SLASH_ERROR, err, message, commandModule);
+				this.emit(CommandHandlerEvent.SLASH_ERROR, err, message, commandModule);
 				return false;
 			}
 		} catch (err) {
@@ -819,11 +834,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const commandModule = this.findCommand(interaction.commandName);
 
 		if (!commandModule) {
-			this.emit(CommandHandlerEvents.SLASH_NOT_FOUND, interaction);
+			this.emit(CommandHandlerEvent.SLASH_NOT_FOUND, interaction);
 			return;
 		}
 
-		this.client.emit("akairoDebug", `[handleAutocomplete] Autocomplete started for ${interaction.commandName}`);
+		this.client.emit(AkairoClientEvent.AKAIRO_DEBUG, `[handleAutocomplete] Autocomplete started for ${interaction.commandName}`);
 		commandModule.autocomplete(interaction);
 	}
 
@@ -851,13 +866,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 
 			const args = await command.parse(message, content);
 			if (Flag.is(args, FlagType.Cancel)) {
-				this.emit(CommandHandlerEvents.COMMAND_CANCELLED, message, command);
+				this.emit(CommandHandlerEvent.COMMAND_CANCELLED, message, command);
 				return true;
 			} else if (Flag.is(args, FlagType.Timeout)) {
-				this.emit(CommandHandlerEvents.COMMAND_TIMEOUT, message, command, args.time);
+				this.emit(CommandHandlerEvent.COMMAND_TIMEOUT, message, command, args.time);
 				return true;
 			} else if (Flag.is(args, FlagType.Retry)) {
-				this.emit(CommandHandlerEvents.COMMAND_BREAKOUT, message, command, args.message);
+				this.emit(CommandHandlerEvent.COMMAND_BREAKOUT, message, command, args.message);
 				return this.handle(args.message);
 			} else if (Flag.is(args, FlagType.Continue)) {
 				const continueCommand = this.modules.get(args.command)!;
@@ -870,7 +885,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				if (key) {
 					if (command.locker?.has(key)) {
 						key = null;
-						this.emit(CommandHandlerEvents.COMMAND_LOCKED, message, command);
+						this.emit(CommandHandlerEvent.COMMAND_LOCKED, message, command);
 						return true;
 					}
 
@@ -1009,15 +1024,15 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("all", message) : null;
 
 		if (reason != null) {
-			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, reason);
+			this.emit(CommandHandlerEvent.MESSAGE_BLOCKED, message, reason);
 		} else if (!message.author) {
-			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.AUTHOR_NOT_FOUND);
+			this.emit(CommandHandlerEvent.MESSAGE_BLOCKED, message, BuiltInReason.AUTHOR_NOT_FOUND);
 		} else if (this.blockClient && message.author.id === this.client.user?.id) {
-			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.CLIENT);
+			this.emit(CommandHandlerEvent.MESSAGE_BLOCKED, message, BuiltInReason.CLIENT);
 		} else if (this.blockBots && message.author.bot) {
-			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, BuiltInReasons.BOT);
+			this.emit(CommandHandlerEvent.MESSAGE_BLOCKED, message, BuiltInReason.BOT);
 		} else if (!slash && this.hasPrompt(message.channel!, message.author)) {
-			this.emit(CommandHandlerEvents.IN_PROMPT, message);
+			this.emit(CommandHandlerEvent.IN_PROMPT, <TextCommandMessage>message);
 		} else {
 			return false;
 		}
@@ -1033,7 +1048,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("pre", message) : null;
 
 		if (reason != null) {
-			this.emit(CommandHandlerEvents.MESSAGE_BLOCKED, message, reason);
+			this.emit(CommandHandlerEvent.MESSAGE_BLOCKED, message, reason);
 		} else {
 			return false;
 		}
@@ -1047,14 +1062,17 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command to handle.
 	 * @param slash - Whether or not the command should is a slash command.
 	 */
+	public async runPostTypeInhibitors(message: TextCommandMessage, command: Command, slash?: false): Promise<boolean>;
+	public async runPostTypeInhibitors(message: SlashCommandMessage, command: Command, slash: true): Promise<boolean>;
 	public async runPostTypeInhibitors(message: MessageUnion, command: Command, slash: boolean = false): Promise<boolean> {
-		const event = slash ? CommandHandlerEvents.SLASH_BLOCKED : CommandHandlerEvents.COMMAND_BLOCKED;
+		const event = slash ? CommandHandlerEvent.SLASH_BLOCKED : CommandHandlerEvent.COMMAND_BLOCKED;
 
 		if (!this.skipBuiltInPostInhibitors) {
 			if (command.ownerOnly) {
 				const isOwner = this.client.isOwner(message.author);
 				if (!isOwner) {
-					this.emit(event, message, command, BuiltInReasons.OWNER);
+					// the types can't be inferred properly, correct behavior
+					this.emit(event, <SlashCommandMessage>message, command, BuiltInReason.OWNER);
 					return true;
 				}
 			}
@@ -1062,29 +1080,30 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			if (command.superUserOnly) {
 				const isSuperUser = this.client.isSuperUser(message.author);
 				if (!isSuperUser) {
-					this.emit(event, message, command, BuiltInReasons.SUPER_USER);
+					this.emit(event, <SlashCommandMessage>message, command, BuiltInReason.SUPER_USER);
 					return true;
 				}
 			}
 
 			if (command.channel === "guild" && !message.inGuild()) {
-				this.emit(event, message, command, BuiltInReasons.GUILD);
+				this.emit(event, <SlashCommandMessage>message, command, BuiltInReason.GUILD);
 				return true;
 			}
 
 			if (command.channel === "dm" && message.inGuild()) {
-				this.emit(event, message, command, BuiltInReasons.DM);
+				this.emit(event, <SlashCommandMessage>message, command, BuiltInReason.DM);
 				return true;
 			}
 
 			if (command.onlyNsfw && !("nsfw" in (message.channel ?? {}))) {
-				this.emit(event, message, command, BuiltInReasons.NOT_NSFW);
+				this.emit(event, <SlashCommandMessage>message, command, BuiltInReason.NOT_NSFW);
 				return true;
 			}
 		}
 
 		if (!this.skipBuiltInPostInhibitors) {
-			if (await this.runPermissionChecks(message, command, slash)) {
+			// can't model these types properly
+			if (await this.runPermissionChecks(<SlashCommandMessage>message, command, <true>slash)) {
 				return true;
 			}
 		}
@@ -1092,13 +1111,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 		const reason = this.inhibitorHandler ? await this.inhibitorHandler.test("post", message, command) : null;
 
 		if (this.skipBuiltInPostInhibitors && reason == null) {
-			if (await this.runPermissionChecks(message, command, slash)) {
+			if (await this.runPermissionChecks(<SlashCommandMessage>message, command, <true>slash)) {
 				return true;
 			}
 		}
 
 		if (reason != null) {
-			this.emit(event, message, command, reason);
+			this.emit(event, <SlashCommandMessage>message, command, reason);
 			return true;
 		}
 
@@ -1115,23 +1134,25 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command to cooldown.
 	 * @param slash - Whether or not the command is a slash command.
 	 */
-	// eslint-disable-next-line complexity
+
+	public async runPermissionChecks(message: TextCommandMessage, command: Command, slash: false): Promise<boolean>;
+	public async runPermissionChecks(message: SlashCommandMessage, command: Command, slash: true): Promise<boolean>;
 	public async runPermissionChecks(message: MessageUnion, command: Command, slash: boolean = false): Promise<boolean> {
-		const event = slash ? CommandHandlerEvents.SLASH_MISSING_PERMISSIONS : CommandHandlerEvents.MISSING_PERMISSIONS;
+		const event = slash ? CommandHandlerEvent.SLASH_MISSING_PERMISSIONS : CommandHandlerEvent.MISSING_PERMISSIONS;
 		if (command.clientPermissions) {
 			if (typeof command.clientPermissions === "function") {
 				let missing = command.clientPermissions(message);
 				if (isPromise(missing)) missing = await missing;
 
 				if (missing != null) {
-					this.emit(event, message, command, "client", missing);
+					this.emit(event, <SlashCommandMessage>message, command, CommandPermissionMissing.CLIENT, missing);
 					return true;
 				}
 			} else if (message.inGuild()) {
 				if (!message.channel || message.channel.isDMBased()) return false;
 				const missing = message.channel?.permissionsFor(message.guild.members.me!)?.missing(command.clientPermissions);
 				if (missing?.length) {
-					this.emit(event, message, command, "client", missing);
+					this.emit(event, <SlashCommandMessage>message, command, CommandPermissionMissing.USER, missing);
 					return true;
 				}
 			}
@@ -1151,14 +1172,14 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 					if (isPromise(missing)) missing = await missing;
 
 					if (missing != null) {
-						this.emit(event, message, command, "user", missing);
+						this.emit(event, <SlashCommandMessage>message, command, CommandPermissionMissing.USER, missing);
 						return true;
 					}
 				} else if (message.inGuild()) {
 					if (!message.channel || message.channel.isDMBased()) return false;
 					const missing = message.channel?.permissionsFor(message.author)?.missing(command.userPermissions);
 					if (missing?.length) {
-						this.emit(event, message, command, "user", missing);
+						this.emit(event, <SlashCommandMessage>message, command, CommandPermissionMissing.USER, missing);
 						return true;
 					}
 				}
@@ -1214,7 +1235,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 			const end = this.cooldowns.get(id)![command.id].end;
 			const diff = end - message.createdTimestamp;
 
-			this.emit(CommandHandlerEvents.COOLDOWN, message, command, diff);
+			this.emit(CommandHandlerEvent.COOLDOWN, message, command, diff);
 			return true;
 		}
 
@@ -1230,7 +1251,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 */
 	public async runCommand(message: TextCommandMessage, command: Command, args: any): Promise<void> {
 		if (!command || !message) {
-			this.emit(CommandHandlerEvents.COMMAND_INVALID, message, command);
+			this.emit(CommandHandlerEvent.COMMAND_INVALID, message, command);
 			return;
 		}
 		const typing =
@@ -1241,9 +1262,9 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 				: undefined;
 
 		try {
-			this.emit(CommandHandlerEvents.COMMAND_STARTED, message, command, args);
+			this.emit(CommandHandlerEvent.COMMAND_STARTED, message, command, args);
 			const ret = await command.exec(message, args);
-			this.emit(CommandHandlerEvents.COMMAND_FINISHED, message, command, args, ret);
+			this.emit(CommandHandlerEvent.COMMAND_FINISHED, message, command, args, ret);
 		} finally {
 			if (typing) clearInterval(typing);
 		}
@@ -1353,8 +1374,8 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler> {
 	 * @param command - Command that errored.
 	 */
 	public emitError(err: Error, message: MessageUnion, command?: Command): void {
-		if (this.listenerCount(CommandHandlerEvents.ERROR)) {
-			this.emit(CommandHandlerEvents.ERROR, err, message, command);
+		if (this.listenerCount(CommandHandlerEvent.ERROR)) {
+			this.emit(CommandHandlerEvent.ERROR, err, message, command);
 			return;
 		}
 
@@ -1510,7 +1531,7 @@ export const PrefixSupplier = z
 	.args(MessageInstance)
 	.returns(SyncOrAsync(ArrayOrNot(z.string())));
 
-export type CommandHandlerOptions = AkairoHandlerOptions<Command, CommandHandler> & {
+export type CommandHandlerOptions = AkairoHandlerOptions<Command, CommandHandler, CommandHandlerEvents> & {
 	/**
 	 * Regular expression to automatically make command aliases.
 	 * For example, using `/-/g` would mean that aliases containing `-` would be valid with and without it.

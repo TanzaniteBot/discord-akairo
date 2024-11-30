@@ -4,7 +4,7 @@ import type { AkairoModule } from "../struct/AkairoModule.js";
 /**
  * A group of modules.
  */
-export class Category<K extends string, V extends AkairoModule<any, any>> extends Collection<K, V> {
+export class Category<K extends string, V extends AkairoModule<any, any, any>> extends Collection<K, V> {
 	/**
 	 * ID of the category.
 	 */

@@ -3,6 +3,7 @@ import {
 	cleanContent,
 	type CacheType,
 	type ChatInputCommandInteraction,
+	type Client,
 	type InteractionReplyOptions,
 	type Message,
 	type MessagePayload
@@ -75,7 +76,7 @@ export class AkairoMessage<Cached extends CacheType = CacheType> extends Base {
 	 * @param interaction - CommandInteraction
 	 */
 	public constructor(client: AkairoClient<true>, interaction: ChatInputCommandInteraction<Cached>) {
-		super(client);
+		super(client as Client<true>);
 
 		this.author = interaction.user;
 		this.applicationId = interaction.applicationId;

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { MessageUnion, SyncOrAsync, TextCommandMessage } from "../../typings/Util.js";
+import { type InhibitorHandlerEvents } from "../../typings/events.js";
+import { type MessageUnion, type SyncOrAsync, type TextCommandMessage } from "../../typings/Util.js";
 import { patchAbstract } from "../../util/Util.js";
 import { AkairoModule, AkairoModuleOptions } from "../AkairoModule.js";
 import type { Command } from "../commands/Command.js";
@@ -8,7 +9,7 @@ import type { InhibitorHandler } from "./InhibitorHandler.js";
 /**
  * Represents an inhibitor.
  */
-export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor> {
+export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor, InhibitorHandlerEvents> {
 	/**
 	 * The priority of the inhibitor.
 	 */
@@ -22,7 +23,7 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	/**
 	 * The type of the inhibitor for when it should run.
 	 */
-	public type: string;
+	public type: InhibitorTypeString;
 
 	/**
 	 * @param id - Inhibitor ID.
@@ -31,7 +32,7 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 	public constructor(id: string, options: InhibitorOptions = {}) {
 		InhibitorOptions.parse(options);
 
-		const { category, reason = "", type = "post", priority = 0 } = options;
+		const { category, reason = "", type = InhibitorType.Post, priority = 0 } = options;
 
 		super(id, { category });
 
@@ -53,6 +54,25 @@ export abstract class Inhibitor extends AkairoModule<InhibitorHandler, Inhibitor
 
 patchAbstract(Inhibitor, "exec");
 
+export enum InhibitorType {
+	/**
+	 * Runs on all messages.
+	 */
+	All = "all",
+
+	/**
+	 * Runs on messages not blocked by the built-in inhibitors.
+	 */
+	Pre = "pre",
+
+	/**
+	 * Runs on messages that are commands.
+	 */
+	Post = "post"
+}
+
+export type InhibitorTypeString = `${InhibitorType}`;
+
 /**
  * Options to use for inhibitor execution behavior.
  */
@@ -67,7 +87,7 @@ export type InhibitorOptions = AkairoModuleOptions & {
 	 * Can be 'all' to run on all messages, 'pre' to run on messages not blocked by the built-in inhibitors, or 'post' to run on messages that are commands.
 	 * @default "post"
 	 */
-	type?: "all" | "pre" | "post";
+	type?: InhibitorTypeString;
 
 	/**
 	 * Priority for the inhibitor for when more than one inhibitors block a message.
@@ -79,6 +99,6 @@ export type InhibitorOptions = AkairoModuleOptions & {
 
 export const InhibitorOptions = AkairoModuleOptions.extend({
 	reason: z.string().optional(),
-	type: z.enum(["all", "pre", "post"] as const).optional(),
+	type: z.nativeEnum(InhibitorType).optional(),
 	priority: z.number().optional()
 }).passthrough();

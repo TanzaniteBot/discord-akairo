@@ -1,4 +1,4 @@
-export enum ArgumentMatches {
+export enum ArgumentMatch {
 	PHRASE = "phrase",
 	FLAG = "flag",
 	OPTION = "option",
@@ -10,7 +10,7 @@ export enum ArgumentMatches {
 	NONE = "none"
 }
 
-export enum ArgumentTypes {
+export enum BuiltinArgumentType {
 	STRING = "string",
 	LOWERCASE = "lowercase",
 	UPPERCASE = "uppercase",
@@ -73,12 +73,12 @@ export enum ArgumentTypes {
 	CONTEXT_MENU_COMMAND = "contextMenuCommand"
 }
 
-export enum AkairoHandlerEvents {
+export enum AkairoHandlerEvent {
 	LOAD = "load",
 	REMOVE = "remove"
 }
 
-export enum CommandHandlerEvents {
+export enum CommandHandlerEvent {
 	COMMAND_BLOCKED = "commandBlocked",
 	COMMAND_BREAKOUT = "commandBreakout",
 	COMMAND_CANCELLED = "commandCancelled",
@@ -102,7 +102,7 @@ export enum CommandHandlerEvents {
 	SLASH_ONLY = "slashOnly"
 }
 
-export enum ContextCommandHandlerEvents {
+export enum ContextCommandHandlerEvent {
 	ERROR = "error",
 	FINISHED = "finished",
 	NOT_FOUND = "notFound",
@@ -110,7 +110,7 @@ export enum ContextCommandHandlerEvents {
 	BLOCKED = "blocked"
 }
 
-export enum BuiltInReasons {
+export enum BuiltInReason {
 	CLIENT = "client",
 	BOT = "bot",
 	OWNER = "owner",
@@ -119,4 +119,13 @@ export enum BuiltInReasons {
 	DM = "dm",
 	AUTHOR_NOT_FOUND = "authorNotFound",
 	NOT_NSFW = "notNsfw"
+}
+
+export enum AkairoClientEvent {
+	AKAIRO_DEBUG = "akairoDebug"
+}
+
+export enum CommandPermissionMissing {
+	CLIENT = "client",
+	USER = "user"
 }

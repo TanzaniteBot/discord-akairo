@@ -148,7 +148,15 @@ export default tseslint.config(
 				}
 			],
 
-			"@typescript-eslint/no-unsafe-declaration-merging": "off"
+			"@typescript-eslint/no-unsafe-declaration-merging": "off",
+
+			"@typescript-eslint/consistent-type-imports": [
+				"warn",
+				{
+					prefer: "type-imports",
+					fixStyle: "inline-type-imports"
+				}
+			]
 		}
 	}
 );
