@@ -15,6 +15,7 @@ import {
 	type Guild,
 	type Message,
 	MessageFlags,
+	PermissionsBitField,
 	type Snowflake,
 	type TextBasedChannel,
 	type User
@@ -358,7 +359,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 				guilds: data.slashGuilds ?? [],
 				dmPermission: data.slashDmPermission,
 				type: ApplicationCommandType.ChatInput,
-				nameLocalizations: data.localization.nameLocalizations,
+				nameLocalizations: data.localization.nameLocalizations ?? undefined,
 				descriptionLocalizations: data.localization.descriptionLocalizations,
 				defaultMemberPermissions: data.slashDefaultMemberPermissions,
 				nsfw: data.onlyNsfw,
@@ -473,6 +474,15 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 	private mapInteraction(
 		interaction: ApplicationCommandData | (ApplicationCommand & { type: ApplicationCommandData["type"] })
 	): ApplicationCommandData {
+		let defPerm;
+
+		if (interaction.defaultMemberPermissions != null) {
+			const { bitfield } = new PermissionsBitField(interaction.defaultMemberPermissions);
+			defPerm = bitfield !== 0n ? bitfield : undefined;
+		} else {
+			defPerm = undefined;
+		}
+
 		return {
 			name: interaction.name,
 			description: interaction.type === ApplicationCommandType.ChatInput ? (interaction.description ?? "") : undefined!,
@@ -481,12 +491,12 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 					? // todo: check if this is okay
 						((interaction.options as ApplicationCommandOptionData[]) ?? [])
 					: undefined,
-			defaultMemberPermissions: interaction.defaultMemberPermissions,
-			dmPermission: interaction.dmPermission!,
+			defaultMemberPermissions: defPerm,
+			dmPermission: interaction.dmPermission ?? undefined,
 			type: interaction.type!,
-			nameLocalizations: interaction.nameLocalizations!,
+			nameLocalizations: interaction.nameLocalizations ?? undefined,
 			descriptionLocalizations:
-				interaction.type === ApplicationCommandType.ChatInput ? interaction.descriptionLocalizations! : undefined!,
+				interaction.type === ApplicationCommandType.ChatInput ? (interaction.descriptionLocalizations ?? undefined) : undefined,
 			nsfw: interaction.nsfw,
 			contexts: interaction.contexts ?? undefined,
 			integrationTypes: interaction.integrationTypes ?? undefined

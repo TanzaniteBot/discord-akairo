@@ -79,6 +79,11 @@ export abstract class ContextMenuCommand extends AkairoModule<
 	public integrationTypes?: readonly ApplicationIntegrationType[];
 
 	/**
+	 * Whether the command is NSFW
+	 */
+	public nsfw: boolean;
+
+	/**
 	 * @param id - Listener ID.
 	 * @param options - Options for the context menu command.
 	 */
@@ -95,7 +100,8 @@ export abstract class ContextMenuCommand extends AkairoModule<
 			nameLocalizations,
 			defaultMemberPermissions,
 			contexts,
-			integrationTypes
+			integrationTypes,
+			nsfw = false
 		} = options;
 		let { dmPermission } = options;
 
@@ -115,6 +121,7 @@ export abstract class ContextMenuCommand extends AkairoModule<
 		this.dmPermission = dmPermission;
 		this.contexts = contexts;
 		this.integrationTypes = integrationTypes;
+		this.nsfw = nsfw;
 	}
 
 	/**
@@ -189,6 +196,12 @@ export type ContextMenuCommandOptions = AkairoModuleOptions & {
 	 * *Only for globally-scoped commands*
 	 */
 	integrationTypes?: readonly ApplicationIntegrationType[];
+
+	/**
+	 * Whether the command is NSFW
+	 * @default false
+	 */
+	nsfw?: boolean;
 };
 
 export const ContextMenuCommandOptions = AkairoModuleOptions.extend({
