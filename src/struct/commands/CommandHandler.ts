@@ -6,6 +6,7 @@ import {
 	type ApplicationCommandSubCommandData,
 	type ApplicationCommandSubGroupData,
 	ApplicationCommandType,
+	ApplicationIntegrationType,
 	type AutocompleteInteraction,
 	type ChatInputCommandInteraction,
 	Collection,
@@ -497,9 +498,9 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 			nameLocalizations: interaction.nameLocalizations ?? undefined,
 			descriptionLocalizations:
 				interaction.type === ApplicationCommandType.ChatInput ? (interaction.descriptionLocalizations ?? undefined) : undefined,
-			nsfw: interaction.nsfw,
+			nsfw: interaction.nsfw ?? false,
 			contexts: interaction.contexts ?? undefined,
-			integrationTypes: interaction.integrationTypes ?? undefined
+			integrationTypes: interaction.integrationTypes ?? [ApplicationIntegrationType.GuildInstall]
 		};
 	}
 
