@@ -1,6 +1,8 @@
 import {
 	ApplicationCommandType,
+	type ApplicationIntegrationType,
 	type ContextMenuCommandInteraction,
+	type InteractionContextType,
 	type LocalizationMap,
 	type PermissionResolvable,
 	type Snowflake
@@ -63,6 +65,20 @@ export abstract class ContextMenuCommand extends AkairoModule<
 	public dmPermission?: boolean;
 
 	/**
+	 * Interaction context(s) where the command can be used
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	public contexts?: readonly InteractionContextType[];
+
+	/**
+	 * Installation context(s) where the command is available
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	public integrationTypes?: readonly ApplicationIntegrationType[];
+
+	/**
 	 * @param id - Listener ID.
 	 * @param options - Options for the context menu command.
 	 */
@@ -77,7 +93,9 @@ export abstract class ContextMenuCommand extends AkairoModule<
 			superUserOnly = false,
 			type,
 			nameLocalizations,
-			defaultMemberPermissions
+			defaultMemberPermissions,
+			contexts,
+			integrationTypes
 		} = options;
 		let { dmPermission } = options;
 
@@ -95,6 +113,8 @@ export abstract class ContextMenuCommand extends AkairoModule<
 		this.nameLocalizations = nameLocalizations;
 		this.defaultMemberPermissions = <(typeof this)["defaultMemberPermissions"]>defaultMemberPermissions;
 		this.dmPermission = dmPermission;
+		this.contexts = contexts;
+		this.integrationTypes = integrationTypes;
 	}
 
 	/**
@@ -155,6 +175,20 @@ export type ContextMenuCommandOptions = AkairoModuleOptions & {
 	 * @default guilds.length > 0 ? undefined : true
 	 */
 	dmPermission?: boolean;
+
+	/**
+	 * Interaction context(s) where the command can be used
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	contexts?: readonly InteractionContextType[];
+
+	/**
+	 * Installation context(s) where the command is available
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	integrationTypes?: readonly ApplicationIntegrationType[];
 };
 
 export const ContextMenuCommandOptions = AkairoModuleOptions.extend({

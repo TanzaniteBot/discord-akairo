@@ -384,7 +384,9 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 					guilds: data.guilds ?? [],
 					dmPermission: data.dmPermission,
 					type: data.type,
-					nameLocalizations: data.nameLocalizations
+					nameLocalizations: data.nameLocalizations,
+					contexts: data.contexts,
+					integrationTypes: data.integrationTypes
 				};
 
 				if ("defaultMemberPermissions" in data) obj.defaultMemberPermissions = data.defaultMemberPermissions;
@@ -477,7 +479,10 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 			type: interaction.type!,
 			nameLocalizations: interaction.nameLocalizations!,
 			descriptionLocalizations:
-				interaction.type === ApplicationCommandType.ChatInput ? interaction.descriptionLocalizations! : undefined!
+				interaction.type === ApplicationCommandType.ChatInput ? interaction.descriptionLocalizations! : undefined!,
+			nsfw: interaction.nsfw,
+			contexts: interaction.contexts ?? undefined,
+			integrationTypes: interaction.integrationTypes ?? undefined
 		};
 	}
 

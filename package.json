@@ -1,6 +1,6 @@
 {
 	"name": "@tanzanite/discord-akairo",
-	"version": "10.2.4",
+	"version": "10.2.5",
 	"description": "A highly customizable bot framework for Discord.js.",
 	"main": "./dist/src/index.js",
 	"types": "./dist/src/index.d.ts",
