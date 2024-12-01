@@ -412,6 +412,13 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 		if (!deepEquals(currentGlobalCommands, slashCommandsApp)) {
 			this.client.emit(
 				AkairoClientEvent.AKAIRO_DEBUG,
+				"[registerInteractionCommandsCompare] current, new",
+				currentGlobalCommands,
+				slashCommandsApp
+			);
+
+			this.client.emit(
+				AkairoClientEvent.AKAIRO_DEBUG,
 				"[registerInteractionCommands] Updating global interaction commands.",
 				slashCommandsApp
 			);
