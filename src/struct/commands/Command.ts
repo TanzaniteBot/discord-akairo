@@ -4,7 +4,9 @@ import type {
 	ApplicationCommandOptionType,
 	ApplicationCommandSubCommandData,
 	ApplicationCommandSubGroupData,
+	ApplicationIntegrationType,
 	AutocompleteInteraction,
+	InteractionContextType,
 	LocalizationMap,
 	PermissionResolvable,
 	Snowflake
@@ -170,6 +172,20 @@ export abstract class Command extends AkairoModule<CommandHandler, Command, Comm
 	public slashOptions?: SlashOption[];
 
 	/**
+	 * Interaction context(s) where the command can be used
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	public slashContexts?: readonly InteractionContextType[];
+
+	/**
+	 * Installation context(s) where the command is available
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	public slashIntegrationTypes?: readonly ApplicationIntegrationType[];
+
+	/**
 	 * Only allows this command to be executed as a slash command.
 	 */
 	public slashOnly: boolean;
@@ -221,6 +237,8 @@ export abstract class Command extends AkairoModule<CommandHandler, Command, Comm
 			slash = false,
 			slashEphemeral = false,
 			slashGuilds = [],
+			slashContexts,
+			slashIntegrationTypes,
 			slashOnly = false,
 			slashOptions,
 			superUserOnly = false,
@@ -282,6 +300,8 @@ export abstract class Command extends AkairoModule<CommandHandler, Command, Comm
 		this.slashDmPermission = slashDmPermission;
 		this.slashEphemeral = slashEphemeral;
 		this.slashGuilds = slashGuilds;
+		this.slashContexts = slashContexts;
+		this.slashIntegrationTypes = slashIntegrationTypes;
 		this.slashOnly = slashOnly;
 		this.slashOptions = slashOptions;
 	}
@@ -612,6 +632,20 @@ export type CommandOptions = AkairoModuleOptions & {
 	 * Options for using the slash command.
 	 */
 	slashOptions?: SlashOption[];
+
+	/**
+	 * Interaction context(s) where the command can be used
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	slashContexts?: readonly InteractionContextType[];
+
+	/**
+	 * Installation context(s) where the command is available
+	 *
+	 * *Only for globally-scoped commands*
+	 */
+	slashIntegrationTypes?: readonly ApplicationIntegrationType[];
 
 	/**
 	 * Only allow this command to be used as a slash command. Also makes `slash` `true`

@@ -359,7 +359,11 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 				dmPermission: data.slashDmPermission,
 				type: ApplicationCommandType.ChatInput,
 				nameLocalizations: data.localization.nameLocalizations,
-				descriptionLocalizations: data.localization.descriptionLocalizations
+				descriptionLocalizations: data.localization.descriptionLocalizations,
+				defaultMemberPermissions: data.slashDefaultMemberPermissions,
+				nsfw: data.onlyNsfw,
+				contexts: data.slashContexts,
+				integrationTypes: data.slashIntegrationTypes
 			};
 
 			if ("slashDefaultMemberPermissions" in data) obj.defaultMemberPermissions = data.slashDefaultMemberPermissions;
