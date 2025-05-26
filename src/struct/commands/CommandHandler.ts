@@ -361,7 +361,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 				type: ApplicationCommandType.ChatInput,
 				nameLocalizations: data.localization.nameLocalizations ?? undefined,
 				descriptionLocalizations: data.localization.descriptionLocalizations,
-				defaultMemberPermissions: data.slashDefaultMemberPermissions,
 				nsfw: data.onlyNsfw,
 				contexts: data.slashContexts,
 				integrationTypes: data.slashIntegrationTypes
@@ -477,9 +476,9 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 
 		if (interaction.defaultMemberPermissions != null) {
 			const { bitfield } = new PermissionsBitField(interaction.defaultMemberPermissions);
-			defPerm = bitfield !== 0n ? bitfield : undefined;
+			defPerm = bitfield;
 		} else {
-			defPerm = undefined;
+			defPerm = null;
 		}
 
 		return {

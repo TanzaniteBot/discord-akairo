@@ -16,8 +16,8 @@ export default class UserCommand extends Command {
 					required: true,
 					resolve: "Member"
 				}
-			],
-			slashGuilds: ["786417336978112582"]
+			]
+			// slashGuilds: ["786417336978112582"]
 		});
 	}
 
