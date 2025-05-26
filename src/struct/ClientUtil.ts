@@ -6,7 +6,6 @@ import {
 	PermissionFlagsBits,
 	type APIEmbed,
 	type BufferResolvable,
-	type EmbedData,
 	type Emoji,
 	type Guild,
 	type GuildBasedChannel,
@@ -217,7 +216,7 @@ export function compareStreaming(oldMember: GuildMember, newMember: GuildMember)
  * Makes a Embed.
  * @param data - Embed data.
  */
-export function embed(data?: EmbedData | APIEmbed): EmbedBuilder {
+export function embed(data?: APIEmbed): EmbedBuilder {
 	return new EmbedBuilder(data);
 }
 

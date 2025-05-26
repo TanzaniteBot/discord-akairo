@@ -150,13 +150,6 @@ export abstract class Command extends AkairoModule<CommandHandler, Command, Comm
 	public slashDefaultMemberPermissions?: PermissionResolvable | null;
 
 	/**
-	 * Whether the command is enabled in DMs
-	 *
-	 * **Cannot be enabled for commands that specify `slashGuilds`**
-	 */
-	public slashDmPermission?: boolean;
-
-	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
 	 */
 	public slashEphemeral?: boolean;
@@ -247,10 +240,6 @@ export abstract class Command extends AkairoModule<CommandHandler, Command, Comm
 			slashDefaultMemberPermissions
 		} = options;
 
-		let { slashDmPermission } = options;
-
-		if (slashGuilds.length === 0) slashDmPermission ??= channel === null || channel === "dm";
-
 		this.aliases = aliases;
 		const { flagWords, optionFlagWords } = Array.isArray(args)
 			? ContentParser.getFlags(args)
@@ -297,7 +286,6 @@ export abstract class Command extends AkairoModule<CommandHandler, Command, Comm
 		this.ignorePermissions = typeof ignorePermissions === "function" ? ignorePermissions.bind(this) : ignorePermissions;
 		this.slash = slash;
 		this.slashDefaultMemberPermissions = slashDefaultMemberPermissions;
-		this.slashDmPermission = slashDmPermission;
 		this.slashEphemeral = slashEphemeral;
 		this.slashGuilds = slashGuilds;
 		this.slashContexts = slashContexts;
@@ -608,15 +596,6 @@ export type CommandOptions = AkairoModuleOptions & {
 	slashDefaultMemberPermissions?: PermissionResolvable | null;
 
 	/**
-	 * Whether the command is enabled in DMs
-	 *
-	 * **Cannot be enabled for commands that specify `slashGuilds`**
-	 *
-	 * @default this.channel === 'dm'
-	 */
-	slashDmPermission?: boolean;
-
-	/**
 	 * Whether slash command responses for this command should be ephemeral or not.
 	 * @default false
 	 */
@@ -697,7 +676,6 @@ export const CommandOptions = AkairoModuleOptions.extend({
 	separator: z.string().optional(),
 	slash: z.boolean().optional(),
 	slashDefaultMemberPermissions: PermissionResolvableValidator.nullish(),
-	slashDmPermission: z.boolean().optional(),
 	slashEphemeral: z.boolean().optional(),
 	slashGuilds: z.string().array().optional(),
 	slashOptions: z.any().array().optional(),

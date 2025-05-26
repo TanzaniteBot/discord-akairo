@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AkairoHandlerEvents } from "../typings/events.js";
 import type { Category } from "../util/Category.js";
 import type { AkairoClient } from "./AkairoClient.js";
 import type { AkairoHandler } from "./AkairoHandler.js";
@@ -9,7 +10,7 @@ import type { AkairoHandler } from "./AkairoHandler.js";
 export abstract class AkairoModule<
 	Handler extends AkairoHandler<Module, Handler, Events>,
 	Module extends AkairoModule<Handler, Module, Events>,
-	Events extends Record<keyof Events, any[]>
+	Events extends AkairoHandlerEvents<Module, Handler, Events>
 > {
 	/**
 	 * The category this module belongs to.

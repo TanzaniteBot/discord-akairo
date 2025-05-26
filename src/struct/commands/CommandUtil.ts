@@ -10,6 +10,7 @@ import {
 	MessageFlagsBitField,
 	type MessageFlagsString,
 	MessagePayload,
+	MessageReferenceType,
 	type MessageReplyOptions,
 	type Snowflake
 } from "discord.js";
@@ -137,8 +138,11 @@ export class CommandUtil<MessageType extends MessageUnion> {
 		const newOptions = (typeof options === "string" ? { content: options } : options) as MessageReplyOptions;
 
 		if (!this.isSlashMessage(this.message) && !this.shouldEdit && !(newOptions instanceof MessagePayload) && !this.deleted) {
-			(newOptions as MessageCreateOptions).reply = {
-				messageReference: this.message,
+			(newOptions as MessageCreateOptions).messageReference = {
+				channelId: this.message.channelId,
+				guildId: this.message.guildId ?? undefined,
+				messageId: this.message.id,
+				type: MessageReferenceType.Default,
 				failIfNotExists: newOptions.failIfNotExists ?? this.handler.client.options.failIfNotExists
 			};
 		}
@@ -150,8 +154,10 @@ export class CommandUtil<MessageType extends MessageUnion> {
 	 * @param options - Options to use.
 	 */
 	public async send(options: string | MessagePayload | MessageCreateOptions): Promise<Message>;
-	public async send(options: string | MessagePayload | InteractionReplyOptions): Promise<Message>;
-	public async send(options: string | MessagePayload | MessageCreateOptions | InteractionReplyOptions): Promise<Message> {
+	public async send(options: string | MessagePayload | InteractionReplyOptions | InteractionEditReplyOptions): Promise<Message>;
+	public async send(
+		options: string | MessagePayload | MessageCreateOptions | InteractionReplyOptions | InteractionEditReplyOptions
+	): Promise<Message> {
 		const hasFiles = typeof options === "string" || !options.files?.length ? false : options.files.length > 0;
 		const newOptions = typeof options === "string" ? { content: options } : options;
 		if (!this.isSlashMessage(this.message)) {
@@ -178,9 +184,9 @@ export class CommandUtil<MessageType extends MessageUnion> {
 
 			return sent!;
 		} else {
-			(newOptions as MessageCreateOptions).reply = undefined;
+			(newOptions as MessageCreateOptions).messageReference = undefined;
 			if (this.lastResponse || this.message.interaction.deferred || this.message.interaction.replied) {
-				this.lastResponse = (await this.message.interaction.editReply(newOptions)) as Message;
+				this.lastResponse = (await this.message.interaction.editReply(newOptions as InteractionEditReplyOptions)) as Message;
 				return this.lastResponse;
 			} else {
 				Object.assign(newOptions, { withResponse: true });

@@ -1,5 +1,5 @@
+import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter";
 import { Collection } from "discord.js";
-import EventEmitter from "node:events";
 import { readdirSync, statSync } from "node:fs";
 import { dirname, extname, join, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -8,10 +8,18 @@ import { type AkairoHandlerEvents } from "../typings/events.js";
 import { AkairoError } from "../util/AkairoError.js";
 import { Category } from "../util/Category.js";
 import { AkairoHandlerEvent } from "../util/Constants.js";
+import { assertType } from "../util/Util.js";
 import { AkairoClient } from "./AkairoClient.js";
 import { AkairoModule } from "./AkairoModule.js";
 
 export type Class<T> = abstract new (...args: any[]) => T;
+type ConstructableClass<T> = new (...args: any[]) => T;
+
+type BaseEmitter<
+	Module extends AkairoModule<Handler, Module, Events>,
+	Handler extends AkairoHandler<Module, Handler, Events>,
+	Events extends AkairoHandlerEvents<Module, Handler, Events>
+> = AsyncEventEmitter<AkairoHandlerEvents<Module, Handler, Events>>;
 
 /**
  * Base class for handling modules.
@@ -19,8 +27,8 @@ export type Class<T> = abstract new (...args: any[]) => T;
 export class AkairoHandler<
 	Module extends AkairoModule<Handler, Module, Events>,
 	Handler extends AkairoHandler<Module, Handler, Events>,
-	Events extends Record<keyof Events, any[]> = AkairoHandlerEvents<Module, Handler>
-> extends EventEmitter<Events | AkairoHandlerEvents<Module, Handler>> {
+	Events extends AkairoHandlerEvents<Module, Handler, Events>
+> extends AsyncEventEmitter<Events> {
 	/**
 	 * Whether or not to automate category names.
 	 */
@@ -96,7 +104,7 @@ export class AkairoHandler<
 	public deregister(mod: Module): void {
 		if (mod.filepath) delete require.cache[require.resolve(mod.filepath)];
 		this.modules.delete(mod.id);
-		mod.category!.delete(mod.id);
+		mod.category.delete(mod.id);
 	}
 
 	/**
@@ -114,31 +122,70 @@ export class AkairoHandler<
 	 * @param thing - Module class or path to module.
 	 * @param isReload - Whether this is a reload or not.
 	 */
-	public async load(thing: string | Module, isReload = false): Promise<Module | undefined> {
-		const isClass = typeof thing === "function";
-		if (!isClass && !this.extensions.has(extname(thing as string) as Extension)) return undefined;
-
-		let mod = isClass
-			? thing
-			: function findExport(this: AkairoHandler<Module, Handler, Events>, m: any): any {
-					if (!m) return null;
-					if (m.prototype instanceof this.classToHandle) return m;
-					return m.default ? findExport.call(this, m.default) : null;
-				}.call(
-					this,
-					await eval(`import(${JSON.stringify(`${pathToFileURL(thing as string).toString()}?update=${Date.now()}`)})`)
-				);
-
-		if (mod && mod.prototype instanceof this.classToHandle) {
-			mod = new mod(this);
+	public load(thing: string | Module, isReload = false): Promise<Module | undefined> {
+		if (typeof thing === "function") {
+			return this.loadClass(thing, isReload);
 		} else {
-			if (!isClass) delete require.cache[require.resolve(thing as string)];
+			assertType<string>(thing);
+			return this.loadFromFile(thing, isReload);
+		}
+	}
+
+	private alreadyLoadedCheck(mod: Module) {
+		if (this.modules.has(mod.id)) {
+			throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
+		}
+	}
+
+	private async loadClass(moduleClass: ConstructableClass<Module>, isReload: boolean): Promise<Module | undefined> {
+		if (!(moduleClass.prototype instanceof this.classToHandle)) {
 			return undefined;
 		}
 
-		if (this.modules.has(mod.id)) throw new AkairoError("ALREADY_LOADED", this.classToHandle.name, mod.id);
-		this.register(mod, isClass ? null! : (thing as string));
-		this.emit(AkairoHandlerEvent.LOAD, mod, isReload);
+		const mod = new moduleClass(this);
+
+		this.alreadyLoadedCheck(mod);
+
+		this.register(mod, null);
+		// FIXME
+		(this as BaseEmitter<Module, Handler, Events>).emit(AkairoHandlerEvent.LOAD, mod, isReload);
+
+		return mod;
+	}
+
+	private async loadFromFile(filePath: string, isReload: boolean): Promise<Module | undefined> {
+		const exn = extname(filePath) as Extension;
+		if (!this.extensions.has(exn)) {
+			return undefined;
+		}
+
+		const ModuleClass: ConstructableClass<Module> | undefined = function findExport(
+			this: AkairoHandler<Module, Handler, Events>,
+			m: any
+		): any {
+			if (!m) return null;
+			if (m.prototype instanceof this.classToHandle) return m;
+			return m.default ? findExport.call(this, m.default) : null;
+		}.call(
+			this,
+			// note that we need to eval this otherwise TS will turn this into a require
+			eval(`import(${JSON.stringify(`${pathToFileURL(filePath).toString()}?update=${Date.now()}`)})`)
+		);
+
+		let mod: Module;
+
+		if (ModuleClass?.prototype instanceof this.classToHandle) {
+			mod = new ModuleClass(this);
+		} else {
+			delete require.cache[require.resolve(filePath)];
+			return undefined;
+		}
+
+		this.alreadyLoadedCheck(mod);
+
+		this.register(mod, filePath);
+		// FIXME
+		(this as BaseEmitter<Module, Handler, Events>).emit(AkairoHandlerEvent.LOAD, <Module>mod, isReload);
 		return mod;
 	}
 
@@ -169,7 +216,7 @@ export class AkairoHandler<
 	 * @param mod - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public register(mod: Module, filepath?: string): void {
+	public register(mod: Module, filepath: string | null): void {
 		mod.filepath = filepath!;
 		mod.client = this.client;
 		mod.handler = <Handler>(<unknown>this);
@@ -228,7 +275,8 @@ export class AkairoHandler<
 
 		this.deregister(mod);
 
-		this.emit(AkairoHandlerEvent.REMOVE, mod);
+		// FIXME
+		(this as BaseEmitter<Module, Handler, Events>).emit(AkairoHandlerEvent.REMOVE, mod);
 		return mod;
 	}
 
@@ -285,7 +333,7 @@ export const Extension = z.string().regex(/\..*$/);
 export type AkairoHandlerOptions<
 	Module extends AkairoModule<Handler, Module, Events>,
 	Handler extends AkairoHandler<Module, Handler, Events>,
-	Events extends Record<keyof Events, any[]>
+	Events extends AkairoHandlerEvents<Module, Handler, Events>
 > = {
 	/**
 	 * Whether or not to set each module's category to its parent directory name.

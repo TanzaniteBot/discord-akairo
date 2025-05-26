@@ -358,7 +358,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 					return <ApplicationCommandOptionData>rest;
 				}),
 				guilds: data.slashGuilds ?? [],
-				dmPermission: data.slashDmPermission,
 				type: ApplicationCommandType.ChatInput,
 				nameLocalizations: data.localization.nameLocalizations ?? undefined,
 				descriptionLocalizations: data.localization.descriptionLocalizations,
@@ -384,7 +383,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 				const obj: ParsedSlashCommand = {
 					name: data.name,
 					guilds: data.guilds ?? [],
-					dmPermission: data.dmPermission,
 					type: data.type,
 					nameLocalizations: data.nameLocalizations,
 					contexts: data.contexts,
@@ -493,7 +491,6 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 						((interaction.options as ApplicationCommandOptionData[]) ?? [])
 					: undefined,
 			defaultMemberPermissions: defPerm,
-			dmPermission: interaction.dmPermission ?? undefined,
 			type: interaction.type!,
 			nameLocalizations: interaction.nameLocalizations ?? undefined,
 			descriptionLocalizations:
@@ -517,7 +514,7 @@ export class CommandHandler extends AkairoHandler<Command, CommandHandler, Comma
 	 * @param command - Module to use.
 	 * @param filepath - Filepath of module.
 	 */
-	public override register(command: Command, filepath?: string): void {
+	public override register(command: Command, filepath: string | null): void {
 		super.register(command, filepath);
 
 		for (let alias of command.aliases) {

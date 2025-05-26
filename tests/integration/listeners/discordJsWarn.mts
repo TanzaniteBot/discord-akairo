@@ -1,4 +1,4 @@
-import type { ClientEvents } from "discord.js";
+import type { ClientEventTypes } from "discord.js";
 import { Listener } from "../../../src/index.js";
 import logger from "../struct/Logger.mjs";
 
@@ -10,7 +10,7 @@ export default class DiscordJsWarnListener extends Listener {
 		});
 	}
 
-	public override exec(...[message]: ClientEvents["warn"]) {
+	public override exec(...[message]: ClientEventTypes["warn"]) {
 		logger.warn("DiscordJsWarn", message);
 	}
 }

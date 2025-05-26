@@ -1,4 +1,4 @@
-import type { ClientEvents } from "discord.js";
+import type { ClientEventTypes } from "discord.js";
 import { Listener } from "../../../src/index.js";
 import logger from "../struct/Logger.mjs";
 
@@ -10,7 +10,7 @@ export default class DiscordJsDebugListener extends Listener {
 		});
 	}
 
-	public override exec(...[message]: ClientEvents["debug"]) {
+	public override exec(...[message]: ClientEventTypes["debug"]) {
 		logger.debug("DiscordJsDebug", message);
 	}
 }

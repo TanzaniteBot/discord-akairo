@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
+import type { AsyncEventEmitterPredefinedEvents } from "@vladfrangu/async_event_emitter";
 import type {
 	AutocompleteInteraction,
 	ChatInputCommandInteraction,
-	ClientEvents,
+	ClientEventTypes,
 	ContextMenuCommandInteraction,
 	Message
 } from "discord.js";
@@ -28,10 +29,11 @@ import type {
 } from "../util/Constants.js";
 import type { MessageUnion, SlashCommandMessage, TextCommandMessage } from "./Util.js";
 
-export interface AkairoHandlerEvents<
-	Module extends AkairoModule<Handler, Module, any>,
-	Handler extends AkairoHandler<Module, Handler, any>
-> {
+type StringifyKeys<T> = {
+	[K in keyof T as `${K & string}`]: T[K];
+};
+
+interface AkairoHandlerEventsEnum<Module> {
 	/**
 	 * Emitted when a module is loaded.
 	 * @param mod - Module loaded.
@@ -46,7 +48,14 @@ export interface AkairoHandlerEvents<
 	[AkairoHandlerEvent.REMOVE]: [mod: Module];
 }
 
-interface CommandHandlerEventsEnum extends AkairoHandlerEvents<Command, CommandHandler> {
+export interface AkairoHandlerEvents<
+	Module extends AkairoModule<Handler, Module, any>,
+	Handler extends AkairoHandler<Module, Handler, any>,
+	Events extends AkairoHandlerEvents<Module, Handler, Events>
+> extends StringifyKeys<AkairoHandlerEventsEnum<Module>>,
+		AsyncEventEmitterPredefinedEvents {}
+
+interface CommandHandlerEventsEnum {
 	/**
 	 * Emitted when a command is blocked by a post-message inhibitor. The built-in inhibitors are `owner`, `superUser`, `guild`, and `dm`.
 	 * @param message - Message sent.
@@ -221,21 +230,28 @@ interface CommandHandlerEventsEnum extends AkairoHandlerEvents<Command, CommandH
 	[CommandHandlerEvent.SLASH_ONLY]: [message: Message, command: Command];
 }
 
-export type CommandHandlerEvents = { [K in keyof CommandHandlerEventsEnum as `${K}`]: CommandHandlerEventsEnum[K] };
+export interface CommandHandlerEvents
+	extends StringifyKeys<CommandHandlerEventsEnum>,
+		AkairoHandlerEvents<Command, CommandHandler, CommandHandlerEvents> {}
 
-interface InhibitorHandlerEventsEnum extends AkairoHandlerEvents<Inhibitor, InhibitorHandler> {}
+interface InhibitorHandlerEventsEnum {}
 
-export type InhibitorHandlerEvents = { [K in keyof InhibitorHandlerEventsEnum as `${K}`]: InhibitorHandlerEventsEnum[K] };
+export interface InhibitorHandlerEvents
+	extends StringifyKeys<InhibitorHandlerEventsEnum>,
+		AkairoHandlerEvents<Inhibitor, InhibitorHandler, InhibitorHandlerEvents> {}
 
-interface ListenerHandlerEventsEnum extends AkairoHandlerEvents<Listener, ListenerHandler> {}
+interface ListenerHandlerEventsEnum {}
 
-export type ListenerHandlerEvents = { [K in keyof ListenerHandlerEventsEnum as `${K}`]: ListenerHandlerEventsEnum[K] };
+export interface ListenerHandlerEvents
+	extends StringifyKeys<ListenerHandlerEventsEnum>,
+		AkairoHandlerEvents<Listener, ListenerHandler, ListenerHandlerEvents> {}
 
-interface TaskHandlerEventsEnum extends AkairoHandlerEvents<Task, TaskHandler> {}
+interface TaskHandlerEventsEnum extends AkairoHandlerEvents<Task, TaskHandler, TaskHandlerEventsEnum> {}
 
 export type TaskHandlerEvents = { [K in keyof TaskHandlerEventsEnum as `${K}`]: TaskHandlerEventsEnum[K] };
 
-interface ContextMenuCommandHandlerEventsEnum extends AkairoHandlerEvents<ContextMenuCommand, ContextMenuCommandHandler> {
+interface ContextMenuCommandHandlerEventsEnum
+	extends AkairoHandlerEvents<ContextMenuCommand, ContextMenuCommandHandler, ContextMenuCommandHandlerEventsEnum> {
 	/**
 	 * Emitted when a context menu command errors.
 	 * @param error - The error.
@@ -287,7 +303,7 @@ export type ContextMenuCommandHandlerEvents = {
 	[K in keyof ContextMenuCommandHandlerEventsEnum as `${K}`]: ContextMenuCommandHandlerEventsEnum[K];
 };
 
-interface AkairoClientEventsEnum extends ClientEvents {
+interface AkairoClientEventsEnum extends ClientEventTypes {
 	/**
 	 * Emitted for akairo debugging information.
 	 */

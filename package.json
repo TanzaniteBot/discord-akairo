@@ -50,34 +50,35 @@
 		"postpack": "pinst --enable"
 	},
 	"dependencies": {
-		"zod": "^3.23.8"
+		"@vladfrangu/async_event_emitter": "^2.4.6",
+		"zod": "^3.25.7"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.16.0",
+		"@eslint/js": "^9.27.0",
 		"@favware/npm-deprecate": "^2.0.0",
-		"@types/node": "^22.10.1",
-		"@typescript-eslint/eslint-plugin": "^8.16.0",
-		"@typescript-eslint/parser": "^8.16.0",
+		"@types/node": "^22.15.19",
+		"@typescript-eslint/eslint-plugin": "^8.32.1",
+		"@typescript-eslint/parser": "^8.32.1",
 		"cp-cli": "^2.0.0",
-		"discord.js": "^14.16.3",
-		"eslint": "^9.16.0",
-		"eslint-config-prettier": "^9.1.0",
+		"discord.js": "^14.19.3",
+		"eslint": "^9.27.0",
+		"eslint-config-prettier": "^10.1.5",
 		"eslint-plugin-import": "^2.31.0",
-		"globals": "^15.12.0",
+		"globals": "^15.15.0",
 		"husky": "^9.1.7",
 		"node-fetch": "^3.3.2",
 		"pinst": "^3.0.0",
-		"prettier": "^3.4.1",
+		"prettier": "^3.5.3",
 		"rimraf": "^6.0.1",
-		"typedoc": "^0.27.2",
-		"typescript": "^5.7.2",
-		"typescript-eslint": "^8.16.0"
+		"typedoc": "^0.28.4",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "^8.32.1"
 	},
 	"resolutions": {
 		"@sapphire/shapeshift": "latest",
 		"discord.js": "npm:@tanzanite/discord.js@dev"
 	},
-	"packageManager": "yarn@4.5.3",
+	"packageManager": "yarn@4.9.1",
 	"publishConfig": {
 		"access": "public"
 	}

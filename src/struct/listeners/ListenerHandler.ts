@@ -12,11 +12,6 @@ import { Listener } from "./Listener.js";
  */
 export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler, ListenerHandlerEvents> {
 	/**
-	 * Class to handle.
-	 */
-	public override classToHandle!: typeof Listener;
-
-	/**
 	 * EventEmitters for use, mapped by name to EventEmitter.
 	 * By default, 'client' is set to the given client.
 	 */
@@ -68,7 +63,7 @@ export class ListenerHandler extends AkairoHandler<Listener, ListenerHandler, Li
 	 * @param listener - Listener to use.
 	 * @param filepath - Filepath of listener.
 	 */
-	public override register(listener: Listener, filepath?: string): void {
+	public override register(listener: Listener, filepath: string | null): void {
 		super.register(listener, filepath);
 		listener.exec = listener.exec.bind(listener);
 		this.addToEmitter(listener.id);

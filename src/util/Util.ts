@@ -195,5 +195,6 @@ export function patchAbstract(Class: Function, method: string): void {
 /* eslint-enable @typescript-eslint/no-unsafe-function-type, func-names */
 
 // credit https://stackoverflow.com/a/54178819/16940811
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export function assertType<T>(value: unknown): asserts value is T {}
