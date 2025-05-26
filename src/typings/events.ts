@@ -27,11 +27,8 @@ import type {
 	CommandPermissionMissing,
 	ContextCommandHandlerEvent
 } from "../util/Constants.js";
+import type { StringifyKeys } from "../util/Util.js";
 import type { MessageUnion, SlashCommandMessage, TextCommandMessage } from "./Util.js";
-
-type StringifyKeys<T> = {
-	[K in keyof T as `${K & string}`]: T[K];
-};
 
 interface AkairoHandlerEventsEnum<Module> {
 	/**

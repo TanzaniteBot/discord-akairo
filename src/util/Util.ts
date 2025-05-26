@@ -197,4 +197,8 @@ export function patchAbstract(Class: Function, method: string): void {
 // credit https://stackoverflow.com/a/54178819/16940811
 export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+export type StringifyKeys<T> = {
+	[K in keyof T as `${K & string}`]: T[K];
+};
+
 export function assertType<T>(value: unknown): asserts value is T {}
