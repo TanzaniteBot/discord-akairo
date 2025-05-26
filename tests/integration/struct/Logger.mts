@@ -1,26 +1,15 @@
 /* eslint-disable no-console */
 import chalk from "chalk";
 
-function isDaylightSavings(date: Date): boolean {
-	const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
-	const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
-
-	return Math.max(jan, jul) !== date.getTimezoneOffset();
-}
-
 function timestamp(): string {
 	const now = new Date();
-	const hours = isDaylightSavings(now) ? now.getHours() - 1 : now.getHours();
+	const hours = now.getHours();
+	const minutes = now.getMinutes();
 
-	const minute = now.getMinutes();
-	let hour = hours;
-	let amOrPm: "AM" | "PM" = "AM";
-	if (hour > 12) {
-		amOrPm = "PM";
-		hour -= 12;
-	}
+	const twelveHours = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+	const amOrPm: "AM" | "PM" = hours >= 12 ? "PM" : "AM";
 
-	return `${hour >= 10 ? hour : `0${hour}`}:${minute >= 10 ? minute : `0${minute}`} ${amOrPm}`;
+	return `${twelveHours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")} ${amOrPm}`;
 }
 
 export function debug(header: string, content: any, ...moreContent: any[]): void {

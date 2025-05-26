@@ -169,7 +169,7 @@ export class AkairoHandler<
 		}.call(
 			this,
 			// note that we need to eval this otherwise TS will turn this into a require
-			eval(`import(${JSON.stringify(`${pathToFileURL(filePath).toString()}?update=${Date.now()}`)})`)
+			await eval(`import(${JSON.stringify(`${pathToFileURL(filePath).toString()}?update=${Date.now()}`)})`)
 		);
 
 		let mod: Module;
